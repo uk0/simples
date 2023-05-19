@@ -13,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -65,6 +66,21 @@ func StartServer() {
 	err := r.Run("0.0.0.0:80")
 	if err != nil {
 		return
+	}
+}
+
+func gitpull() {
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exPath := filepath.Dir(ex)
+	log.Println("pull ", exPath)
+	cmd := exec.Command("git", "-C", exPath, "pull")
+	cmd.Dir = ""
+	err = cmd.Run()
+	if err != nil {
+		log.Println("error ")
 	}
 }
 
@@ -172,6 +188,7 @@ func getInfo() SystemInfo {
 func main() {
 	go func() {
 		for {
+			gitpull()
 			tmp := GenPage()
 			allPage = tmp
 			GenIndex()
