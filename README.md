@@ -20,3 +20,5 @@ nohup ./simples  >blog.log 2>&1 &
 
 
 #### 简单干净
+
+* http://firsh.me
