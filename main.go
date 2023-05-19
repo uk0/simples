@@ -62,7 +62,7 @@ func StartServer() {
 	r := gin.Default()
 	r.Use(static.Serve("/", static.LocalFile("static", true)))
 	r.StaticFS("/static", http.Dir("./static"))
-	err := r.Run()
+	err := r.Run("0.0.0.0:80")
 	if err != nil {
 		return
 	}
