@@ -112,7 +112,6 @@ func GenIndex() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(index)
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
