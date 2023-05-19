@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rust-1.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<p>Model: GPT-4</p>  
+  
+<blockquote>  
+<p>1 / 1</p>  
+  
+<p>帮我解析一段代码的意思 impl Sender { pub fn new(signal: Arc<a href="atomic::AtomicBool">atomic::AtomicBool</a>, stream: UnixStream) -&gt; Self { let thread_signal = signal.clone(); let mut buf = Vec::<u8>::with_capacity(DEFAULT_SENDER_BUF_SIZE); buf.push(0xdc); buf.push(0); buf.push(0); let rbuffer = Arc::new(Mutex::new(buf)); let wbuffer = rbuffer.clone(); let mut w = BufWriter::new(stream); std::thread::spawn(move || loop { if thread_signal.load(atomic::Ordering::Relaxed) { if let Ok(inner) = w.into_inner() { let _ = inner.shutdown(std::net::Shutdown::Both); } return; } let mut buf = wbuffer.lock(); if ((buf[1] as u16) &lt;&lt; 8) + (buf[2] as u16) != 0 { match w.write(buf.as_slice()).and(w.flush()) { Err(e) =&gt; { thread_signal.store(true, atomic::Ordering::Relaxed); println!(&ldquo;{:?}&rdquo;, e); return; } Ok(_) =&gt; {} } buf.clear(); buf.push(0xdc); buf.push(0); buf.push(0); } drop(buf); std::thread::sleep(std::time::Duration::from_millis(125)); }); Self { buffer: rbuffer, signal, } } pub fn send<T: Serialize>(&amp;self, data: &amp;T) -&gt; Result&lt;()&gt; { if self.signal.load(atomic::Ordering::Relaxed) { return Err(anyhow!(&ldquo;Send error. Must exit.&rdquo;)); } let mut buf = self.buffer.lock(); buf.extend(rmp_serde::encode::to_vec_named(data)?); let mut len = ((buf[1] as u16) &lt;&lt; 8) + (buf[2] as u16); if len == u16::MAX { return Err(anyhow!(&ldquo;Reached maximum length. Cannot send.&rdquo;)); } len += 1; buf[1] = (len &gt;&gt; 8) as u8; buf[2] = len as u8; Ok(()) }</p>  
+</blockquote>  
+  
+<p>1 / 1</p>  
+  
+<p>这段代码是在Rust中实现了一个名为Sender的结构体及其相关方法。Sender结构体的作用是向一个UnixStream中发送数据，同时在另一个线程中监听信号来关闭连接。</p>  
+  
+<p>这段代码定义了两个方法：</p>  
+  
+<ol>  
+<li><code>new</code>: 创建一个Sender实例。它接受一个<code>Arc&lt;atomic::AtomicBool&gt;</code>类型的信号和一个<code>UnixStream</code>类型的流。在这个方法中，创建了一个缓冲区<code>buf</code>并初始化它，将初始化后的缓冲区存储到<code>rbuffer</code>和<code>wbuffer</code>中。同时，还创建了一个线程，监听信号，根据信号决定是否关闭连接。最后，返回一个Sender实例。<br />  
+</li>  
+<li><code>send</code>: 在Sender实例上发送一个可序列化的数据。首先，检查信号是否已经为真，如果为真，则返回错误。接着，将序列化后的数据添加到缓冲区，并计算长度。如果长度已经达到最大值，则返回错误。最后，更新缓冲区的长度。<br />  
+</li>  
+</ol>  
+  
+<p>简而言之，这段代码实现了一个Sender结构体，可以将序列化的数据通过UnixStream发送到另一端，并在另一个线程中监听信号以便在需要时关闭连接。</p>  
+  
+<blockquote>  
+<p>1 / 1</p>  
+  
+<p>如果 unix stream 用go实现需要怎么样对接</p>  
+</blockquote>  
+  
+<p>1 / 1</p>  
+  
+<p>要在Go语言中实现Unix Stream的对接，您需要使用<code>net</code>包中的<code>UnixConn</code>类型。以下是一个简单的示例，展示如何创建一个Unix Stream服务器和客户端，以及如何在Go中接收来自Rust实现的Sender的数据。</p>  
+  
+<p>首先，这是一个简单的Go Unix Stream服务器：</p>  
+  
+<p>go</p>  
+  
+<pre><code class="language-go">package main  
+  
+import (  
+	&quot;fmt&quot;  
+	&quot;net&quot;  
+	&quot;os&quot;  
+)  
+  
+func main() {  
+    // 创建一个Unix socket地址  
+    addr := &amp;net.UnixAddr{  
+        Name: &quot;/tmp/my_socket.sock&quot;,  
+        Net:  &quot;unix&quot;,  
+    }  
+  
+    // 移除可能已存在的同名socket文件  
+    os.Remove(addr.Name)  
+  
+    // 创建Unix监听器  
+    listener, err := net.ListenUnix(&quot;unix&quot;, addr)  
+    if err != nil {  
+        fmt.Println(&quot;Error creating listener:&quot;, err)  
+        return  
+    }  
+    defer listener.Close()  
+  
+    // 等待客户端连接  
+    conn, err := listener.AcceptUnix()  
+    if err != nil {  
+        fmt.Println(&quot;Error accepting connection:&quot;, err)  
+        return  
+    }  
+    defer conn.Close()  
+  
+    // 接收并处理数据  
+    buf := make([]byte, 1024)  
+    for {  
+        n, err := conn.Read(buf)  
+        if err != nil {  
+            fmt.Println(&quot;Error reading from connection:&quot;, err)  
+            break  
+        }  
+        data := buf[:n]  
+        fmt.Println(&quot;Received data:&quot;, data)  
+    }  
+}  
+</code></pre>  
+  
+<p>要与Rust实现的Sender进行对接，可以创建一个Go Unix Stream客户端，用于接收来自Sender的数据：</p>  
+  
+<p>go</p>  
+  
+<pre><code class="language-go">package main  
+  
+import (  
+	&quot;fmt&quot;  
+	&quot;net&quot;  
+)  
+  
+func main() {  
+    // 创建一个Unix socket地址  
+    addr := &amp;net.UnixAddr{  
+        Name: &quot;/tmp/my_socket.sock&quot;,  
+        Net:  &quot;unix&quot;,  
+    }  
+  
+    // 连接到Unix Stream服务器  
+    conn, err := net.DialUnix(&quot;unix&quot;, nil, addr)  
+    if err != nil {  
+        fmt.Println(&quot;Error connecting to server:&quot;, err)  
+        return  
+    }  
+    defer conn.Close()  
+  
+    // 接收并处理数据  
+    buf := make([]byte, 1024)  
+    for {  
+        n, err := conn.Read(buf)  
+        if err != nil {  
+            fmt.Println(&quot;Error reading from connection:&quot;, err)  
+            break  
+        }  
+        data := buf[:n]  
+        fmt.Println(&quot;Received data:&quot;, data)  
+    }  
+}  
+</code></pre>  
+  
+<p>这个客户端程序会连接到Go Unix Stream服务器，然后接收并处理来自Rust实现的Sender的数据。请注意，您需要根据实际需求对数据进行解码或反序列化。在这个示例中，我们仅将接收到的数据原样输出。</p>  
+  
+<blockquote>  
+<p>1 / 1</p>  
+  
+<p>rust 的结构体 是这样的 那么 sender 是怎么工作的 这是rust 结构体 #[derive(Debug, Serialize)] struct SyscallHook&lt;&lsquo;a&gt; { hidden: &amp;&lsquo;a str, syscall_number: &amp;&lsquo;a str, module_name: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct CreateFile&lt;&lsquo;a&gt; { sid: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, dport: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, socket_pid: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, sip: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, username: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, dip: &amp;&lsquo;a str, sport: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, file_path: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, socket_argv: &amp;&lsquo;a str, sa_family: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct UpdateCred&lt;&lsquo;a&gt; { tgid: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, old_uid: &amp;&lsquo;a str, res: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, username: &amp;&lsquo;a str, old_username: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Connect&lt;&lsquo;a&gt; { res: &amp;&lsquo;a str, dport: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, username: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, connect_type: &amp;&lsquo;a str, sport: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, dip: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, sip: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, sa_family: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct LoadModule&lt;&lsquo;a&gt; { pns: &amp;&lsquo;a str, ko_file: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, run_path: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, username: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct ProcFileHook&lt;&lsquo;a&gt; { module_name: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, hidden: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Rename&lt;&lsquo;a&gt; { run_path: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, username: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, new_name: &amp;&lsquo;a str, old_name: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Mount&lt;&lsquo;a&gt; { pid_tree: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, username: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, dev_name: &amp;&lsquo;a str, flags: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, fstype: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, file_path: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct MemfdCreate&lt;&lsquo;a&gt; { exe: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, flags: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, username: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, fdname: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Link&lt;&lsquo;a&gt; { argv: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, username: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, new_name: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, run_path: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, old_name: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Dns&lt;&lsquo;a&gt; { sip: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, domain_info: &amp;&lsquo;a str, rcode: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, dip: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, dport: &amp;&lsquo;a str, sa_family: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, qr: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, sport: &amp;&lsquo;a str, username: &amp;&lsquo;a str, query: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, opcode: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Prctl&lt;&lsquo;a&gt; { option: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, new_name: &amp;&lsquo;a str, username: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Setsid&lt;&lsquo;a&gt; { username: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Execve&lt;&lsquo;a&gt; { uid: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, ld_preload: &amp;&lsquo;a str, run_path: &amp;&lsquo;a str, username: &amp;&lsquo;a str, sport: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, socket_argv: &amp;&lsquo;a str, res: &amp;&lsquo;a str, sa_family: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, stdin: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, socket_pid: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, sip: &amp;&lsquo;a str, dip: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, ssh: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, dport: &amp;&lsquo;a str, tty: &amp;&lsquo;a str, stdout: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct LkmHidden&lt;&lsquo;a&gt; { module_name: &amp;&lsquo;a str, hidden: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Bind&lt;&lsquo;a&gt; { sid: &amp;&lsquo;a str, sport: &amp;&lsquo;a str, sa_family: &amp;&lsquo;a str, res: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, sip: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, username: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, pid_tree: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, } #[derive(Debug, Serialize)] struct Ptrace&lt;&lsquo;a&gt; { pid_tree: &amp;&lsquo;a str, username: &amp;&lsquo;a str, pns: &amp;&lsquo;a str, uid: &amp;&lsquo;a str, ppid: &amp;&lsquo;a str, pgid: &amp;&lsquo;a str, exe: &amp;&lsquo;a str, pid: &amp;&lsquo;a str, target_pid: &amp;&lsquo;a str, comm: &amp;&lsquo;a str, addr: &amp;&lsquo;a str, data: &amp;&lsquo;a str, tgid: &amp;&lsquo;a str, data_type: &amp;&lsquo;a str, sessionid: &amp;&lsquo;a str, timestamp: &amp;&lsquo;a str, ppid_argv: &amp;&lsquo;a str, ptrace_request: &amp;&lsquo;a str, sid: &amp;&lsquo;a str, pgid_argv: &amp;&lsquo;a str, argv: &amp;&lsquo;a str, root_pns: &amp;&lsquo;a str, exe_hash: &amp;&lsquo;a str, nodename: &amp;&lsquo;a str, }</p>  
+</blockquote>  
+  
+<p>1 / 1</p>  
+  
+<p>在这里，您提供了一些Rust结构体。为了使用Rust的<code>tokio</code>库实现UNIX Stream socket sender，我们可以按照以下步骤操作：</p>  
+  
+<ol>  
+<li>为这些结构体实现<code>Serialize</code> trait，使它们可以通过UNIX Stream发送。<br />  
+</li>  
+<li>使用<code>serde_json</code>库将结构体序列化为JSON字符串。<br />  
+</li>  
+<li>将JSON字符串转换为字节。<br />  
+</li>  
+<li>使用<code>tokio</code>库实现UNIX Stream socket发送功能。<br />  
+</li>  
+</ol>  
+  
+<p>首先，请确保您的<code>Cargo.toml</code>中包含以下依赖项：</p>  
+  
+<p>toml</p>  
+  
+<pre><code class="language-toml">[dependencies]  
+serde = { version = &quot;1.0&quot;, features = [&quot;derive&quot;] }  
+serde_json = &quot;1.0&quot;  
+tokio = { version = &quot;1.0&quot;, features = [&quot;full&quot;] }  
+</code></pre>  
+  
+<p>接下来，让我们创建一个发送数据的函数：</p>  
+  
+<p>rust</p>  
+  
+<pre><code class="language-rust">use serde::Serialize;  
+use tokio::net::UnixStream;  
+use std::io::Error;  
+  
+async fn send_data&lt;T: Serialize&gt;(data: &amp;T, socket_path: &amp;str) -&gt; Result&lt;(), Error&gt; {  
+    // Serialize the data to a JSON string  
+    let json_data = serde_json::to_string(data).unwrap();  
+  
+    // Connect to the UNIX stream socket  
+    let mut stream = UnixStream::connect(socket_path).await?;  
+  
+    // Send the JSON string as bytes  
+    stream.write_all(json_data.as_bytes()).await?;  
+  
+    Ok(())  
+}  
+</code></pre>  
+  
+<p>您可以使用此<code>send_data</code>函数发送任何实现了<code>Serialize</code> trait的结构体。以下是一个使用这个函数发送<code>SyscallHook</code>结构体的示例：</p>  
+  
+<p>rust</p>  
+  
+<pre><code class="language-rust">#[tokio::main]  
+async fn main() {  
+    let syscall_hook = SyscallHook {  
+        hidden: &quot;example_hidden&quot;,  
+        syscall_number: &quot;example_number&quot;,  
+        module_name: &quot;example_module&quot;,  
+        timestamp: &quot;example_timestamp&quot;,  
+        data_type: &quot;example_data_type&quot;,  
+    };  
+  
+    let socket_path = &quot;/tmp/socket_example.sock&quot;;  
+  
+    match send_data(&amp;syscall_hook, socket_path).await {  
+        Ok(()) =&gt; println!(&quot;Data sent successfully.&quot;),  
+        Err(e) =&gt; eprintln!(&quot;Error sending data: {:?}&quot;, e),  
+    }  
+}  
+</code></pre>  
+  
+<p>请注意，这里的<code>socket_path</code>是UNIX Stream socket的文件路径。您需要确保在运行这段代码之前，已经有一个在该路径上监听的UNIX Stream socket服务器。</p>  
+  
+<blockquote>  
+<p>1 / 1</p>  
+  
+<p>如果 unixserver 是go写的呢 我该如何接收这些结构体 请给出go实现</p>  
+</blockquote>  
+  
+<p>1 / 1</p>  
+  
+<p>如果你的<code>unixserver</code>是用Go编写的，那么你需要使用Go结构体来接收和处理这些数据。首先，你需要定义Go结构体，它们与Rust结构体具有相同的字段和类型。然后，你可以使用<code>encoding/json</code>包对接收到的JSON数据进行解码。</p>  
+  
+<p>以下是相应的Go结构体定义：</p>  
+  
+<p>go</p>  
+  
+<pre><code class="language-go">package main  
+  
+import (  
+	&quot;encoding/json&quot;  
+	&quot;net&quot;  
+	&quot;fmt&quot;  
+)  
+  
+type SyscallHook struct {  
+	Hidden        string `json:&quot;hidden&quot;`  
+	SyscallNumber string `json:&quot;syscall_number&quot;`  
+	ModuleName    string `json:&quot;module_name&quot;`  
+	Timestamp     string `json:&quot;timestamp&quot;`  
+	DataType      string `json:&quot;data_type&quot;`  
+}  
+  
+// ... 其他结构体定义，与上面的Rust结构体一一对应  
+// 注意将字段名改为大写以便导出，并添加`json`标签以匹配Rust结构体中的小写字段名  
+</code></pre>  
+  
+<p>接下来，你需要在Go的<code>unixserver</code>中使用<code>net.UnixConn</code>来接收数据，并使用<code>json.Unmarshal</code>将接收到的数据解码到相应的结构体。以下是一个简化的示例，展示了如何接收和解码<code>SyscallHook</code>结构体：</p>  
+  
+<p>go</p>  
+  
+<pre><code class="language-go">func main() {  
+	// 创建Unix域套接字  
+	addr := net.UnixAddr{  
+		Name: &quot;/tmp/mysocket.sock&quot;,  
+		Net:  &quot;unix&quot;,  
+	}  
+	conn, err := net.ListenUnix(&quot;unix&quot;, &amp;addr)  
+	if err != nil {  
+		panic(err)  
+	}  
+	defer conn.Close()  
+  
+	for {  
+		// 接收数据  
+		buf := make([]byte, 4096)  
+		n, _, err := conn.ReadFrom(buf)  
+		if err != nil {  
+			panic(err)  
+		}  
+  
+		// 解码接收到的JSON数据  
+		var hook SyscallHook  
+		err = json.Unmarshal(buf[:n], &amp;hook)  
+		if err != nil {  
+			fmt.Println(&quot;Error decoding JSON:&quot;, err)  
+			continue  
+		}  
+  
+		// 处理SyscallHook数据  
+		fmt.Printf(&quot;Received SyscallHook: %+v\n&quot;, hook)  
+	}  
+}  
+</code></pre>  
+  
+<p>你需要根据你的需求来处理接收到的不同结构体数据。这里仅展示了如何接收和解码<code>SyscallHook</code>结构体。你需要为其他结构体重复类似的操作。</p>  
+
+
+</body>
+
+</html>
