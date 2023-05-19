@@ -12,9 +12,8 @@ simples
 
 
 ```bash
-
-go build . && ./simples
-
+go build .
+nohup ./simples  >blog.log 2>&1 &
 ```
 
 ![img.png](img.png)
