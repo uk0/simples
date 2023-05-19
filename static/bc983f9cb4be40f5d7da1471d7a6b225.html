@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2016-12-07-nginx-Kubernetes集群安全配置案例.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title: Kubernetes集群安全配置案例[link]。<br />  
+categories: GitHub<br />  
+description: Kubernetes。</p>  
+  
+<h2>keywords: Java, GitHub Pages</h2>  
+  
+<p>Kubernetes集群安全配置案例。</p>  
+  
+<p>## 文章</p>  
+  
+<p>###Kubernetes 系统提供了三种认证方式：CA 认证、Token 认证 和 Base 认证。安全功能是一把双刃剑，它保护系统不被攻击，但是也带来额外的性能损耗。集群内的各组件访问 API Server 时，由于它们与 API Server 同时处于同一局域网内，所以建议用非安全的方式访问 API Server 效率更高。</p>  
+  
+<p>####接下来对集群的双向认证配置和简单认证配置过程进行详细说明。</p>  
+  
+<p>####双向认证配置</p>  
+  
+<p>####双向认证方式是最为严格和安全的集群安全配置方式，主要配置流程如下：</p>  
+  
+<ul>  
+<li>生成根证书、API Server 服务端证书、服务端私钥、各个组件所用的客户端证书和客户端私钥。<br />  
+</li>  
+<li>修改 Kubernetes 各个服务进程的启动参数，启用双向认证模式。<br />  
+</li>  
+<li>详细的配置操作流程如下：<br />  
+</li>  
+</ul>  
+  
+<p>####生成根证书</p>  
+  
+<p>#####用 openssl 工具生成 CA 证书，请注意将其中 subject 等参数改为用户所需的数据，CN 的值通常是域名、主机名或 IP 地址。</p>  
+  
+<pre><code class="language-html">$ cd /var/run/kubernetes  
+$ openssl genrsa -out dd_ca.key 2048  
+$ openssl req -x509 -new -nodes -key dd_ca.key -subj &quot;/CN=YOUDOMAIN.COM&quot; -days 5000 -out dd_ca.crt  
+</code></pre>  
+  
+<p>#####生成 API Server 服务端证书和私钥</p>  
+  
+<pre><code class="language-html">$ openssl genrsa -out dd_server.key 2048  
+$ HN=`hostname`  
+$ openssl req -new -key dd_server.key -subj &quot;/CN=$HN&quot; -out dd_server.csr  
+$ openssl x509 -req -in dd_server.csr -CA dd_ca.crt -CAkey dd_ca.key -CAcreateserial-out dd_server.crt -days 5000  
+</code></pre>  
+  
+<p>#####生成 Controller Manager 与 Scheduler 进程共用的证书和私钥</p>  
+  
+<pre><code class="language-html">$ openssl genrsa -out dd_cs_client.key 2048  
+$ openssl req -new -key dd_cs_client.key -subj &quot;/CN=$HN&quot; -out dd_cs_client.csr  
+$ openssl x509 -req -in dd_cs_client.csr －CA dd_ca.crt -CAkey dd_ca.key -CAcreateserial -out dd_cs_client.crt -days 5000  
+</code></pre>  
+  
+<p>#####生成 Kubelet 所用的客户端证书和私钥<br />  
+######注意，这里假设 Kubelet 所在机器的 IP 地址为 192.168.1.129。</p>  
+  
+<pre><code class="language-html">$ openssl genrsa -out dd_kubelet_client.key 2048  
+$ openssl req -new -key dd_kubelet_client.key -subj &quot;/CN=192.168.1.129&quot; -out dd_kubelet_client.csr  
+$ openssl x509 -req -in dd_kubelet_client.csr -CA dd_ca.crt -CAkey dd_ca.key -CAcreateserial -out dd_kubelet_client.crt -days 5000  
+</code></pre>  
+  
+<p>#####修改 API Server 的启动参数<br />  
+#####增加 CA 根证书、Server 自身证书等参数并设置安全端口为 443.</p>  
+  
+<p>修改/etc/kubernetes/apiserver 配置文件的 KUBE_API_ARGS 参数：</p>  
+  
+<pre><code class="language-html">KUBE_API_ARGS=&quot;--log-dir=/var/log/kubernetes --secure-port=443 --client_ca_file=/var/run/kubernetes/dd_ca.crt --tls-private-key-file=/var/run/kubernetes/dd_server.key --tls-cert-file=/var/run/kubernetes/dd_server.crt&quot;  
+</code></pre>  
+  
+<p>####重启 kube-apiserver 服务：<br />  
+####systemctl restart kube-apiserver<br />  
+####验证 API Server 的 HTTPS 服务。</p>  
+  
+<pre><code class="language-html">$ curl https://kubernetes-master:443/api/v1/nodes --cert /var/run/kubernetes/dd_cs_client.crt --key /var/run/kubernetes/dd_cs_client.key --cacert /var/run/kubernetes/dd_ca.crt  
+修改 Controller Manager 的启动参数  
+修改/etc/kubernetes/controller-manager 配置文件  
+KUBE_CONTROLLER_MANAGER_ARGS=&quot;--log-dir=/var/log/kubernetes --service_account_private_key_file=/var/run/kubernetes/server.key --root-ca-file=/var/run/kubernetes/ca.crt --master=https://kubernetes-master:443 --kubeconfig=/etc/kubernetes/cmkubeconfig&quot;  
+</code></pre>  
+  
+<ul>  
+<li>创建/etc/kubernetes/cmkubeconfig 文件，配置证书等相关参数，具体内容如下：<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-html">apiVersion: v1  
+kind: Config  
+users  
+- name: controllermanager  
+  user:  
+    client-certificate: /var/run/kubernetes/dd_cs_client.crt  
+    client-key: /var/run/kubernetes/dd_cs_client.key  
+clusters:  
+- name: local  
+  cluster:  
+    certificate-authority: /var/run/kubernetes/dd_ca.crt  
+contexts:  
+- context:  
+    cluster: local  
+    user: controllermanager  
+  name: my-context  
+current-context: my-context  
+</code></pre>  
+  
+<p>重启 kube-controller-manager 服务：</p>  
+  
+<h1>systemctl restart kube-controller-manager</h1>  
+  
+<ul>  
+<li>配置各个节点上的 Kubelet 进程<br />  
+</li>  
+<li>复制 Kubelet 的证书、私钥 与 CA 根证书到所有 Node 上。<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-html">$ scp /var/run/kubernetes/dd_kubelet* root@kubernetes-minion1:/home  
+$ scp /var/run/kubernetes/dd_ca.* root@kubernetes-minion:/home  
+</code></pre>  
+  
+<ul>  
+<li><p>在每个 Node 上创建/var/lib/kubelet/kubeconfig 文件，内容如下：</p>  
+  
+<pre><code>apiVersion: v1  
+kind: Config  
+users:  
+- name: kubelet  
+user:  
+client-certificats: /home/dd_kubelet_client.crt  
+client-key: /home/dd_kubelet_client.key  
+clusters:  
+- name: local  
+cluster:  
+certificate-authority: /home/dd_ca.crt  
+contexts:  
+- context:  
+cluster: local  
+user: kubelet  
+name: my-context  
+current-context: my-context  
+</code></pre></li>  
+  
+<li><p>修改 Kubelet 的启动参数，以修改/etc/kubernetes/kubelet 配置文件为例：</p>  
+  
+<pre><code>KUBELET_API_SERVER=&quot;--api_servers=https://kubernetes-master:443&quot;  
+KUBELET_ARGS=&quot;--pod_infro_container_image=192.168.1.128:1180/google_containers/pause:latest --cluster_dns=10.2.0.100 --cluster_domain=cluster.local --kubeconfig=/var/lib/kubelet/kubeconfig&quot;  
+</code></pre></li>  
+</ul>  
+  
+<p>#重启 kubelet 服务：</p>  
+  
+<p>###systemctl restart kubelet</p>  
+  
+<ul>  
+<li><p>配置 kube-proxy<br />  
+</p></li>  
+  
+<li><p>首先，创建/var/lib/kubeproxy/proxykubeconfig 文件，内容如下：</p>  
+  
+<pre><code>apiVersion: v1  
+kind: Config  
+users:  
+- name: kubeproxy  
+user:  
+client-certificate: /home/dd_kubelet_client.crt  
+client-key: /home/dd_kubelet_client.key  
+clusters:  
+- name: local  
+cluster:  
+certificate-authority: /home/dd_ca.crt  
+contexts:  
+- context:  
+cluster: local  
+user: kubeproxy  
+name: my-context  
+current-context: my-context  
+</code></pre></li>  
+  
+<li><p>然后，修改 kube-proxy 的启动参数，引用上述文件并指明 API Server 在安全模式下的访问地址，以修改配置文件/etc/kubenetes/proxy 为例：</p>  
+  
+<pre><code>KUBE_PROXY_ARGS=&quot;--kubeconfig=/var/lib/kubeproxy/proxykubeconfig --master=https://kubenetes-master:443&quot;  
+</code></pre></li>  
+  
+<li><p>重启 kube-proxy 服务：</p></li>  
+</ul>  
+  
+<h1>systemctl restart kube-proxy</h1>  
+  
+<ul>  
+<li>至此，一个双向认证的 Kubernetes 集群环境就搭建完成了。<br />  
+</li>  
+<li>简单认证配置<br />  
+</li>  
+<li>除了双向认证方式，Kubernets 也提供了基于 Token 和 HTTP Base 的简单认证方式。通信方式仍然采用 HTTPS，但不使用数字证书。<br />  
+</li>  
+<li>采用基于 Token 和 HTTP Base 的简单认证方式时，API Server 对外暴露 HTTPS 端口，客户端提供 Token 或用户名、密码来完成认证过程。这里需要说明的一点是 Kubelet 比较特殊，它同时支持双向认证与简单认证两种模式，其他组件智能配置为双向认证或非安全模式。<br />  
+</li>  
+</ul>  
+  
+<h4>API Server 基于 Token 认证的配置过程如下</h4>  
+  
+<ul>  
+<li><p>建立包括用户名、密码和 UID 的文件 token_auth_file：</p>  
+  
+<pre><code>$ cat /root/token_auth_file  
+dingmingk,dingmingk,1  
+admin,admin,2  
+system,system,3  
+修改 API Server 的配置，采用上述文件进行安全认证  
+$ vi /etc/kubernetes/apiserver  
+KUBE_API_ARGS=&quot;--secure-port=443 --token_auth_file=/root/token_auth_file&quot;  
+重启 API Server 服务  
+# systemctl restart kube-apiserver  
+用 curl 验证连接 API Server  
+$ curl https://kubenetes-master:443/version --header &quot;Authorization: Bearer dingmingk&quot; -k  
+{  
+&quot;major&quot;: &quot;1&quot;,  
+&quot;minor&quot;: &quot;0&quot;,  
+&quot;gitVersion&quot;: &quot;v1.0.0&quot;,  
+&quot;gitCommit&quot;: &quot;xxxHASHCODE&quot;,  
+&quot;gitTreeState&quot;: &quot;clean&quot;  
+}  
+</code></pre></li>  
+  
+<li><p>API Server 基于 HTTP Base 认证的配置过程如下</p></li>  
+  
+<li><p>创建包括用户名、密码和 UID 的文件 basic_auth_file：</p>  
+  
+<pre><code>$ cat /root/basic_auth_file  
+dingmingk,dingmingk,1  
+admin,admin,2  
+system,system,3  
+</code></pre></li>  
+  
+<li><p>修改 API Server 的配置，采用上述文件进行安全认证</p></li>  
+</ul>  
+  
+<pre><code class="language-$">  
+```KUBE_API_ARGS=&quot;--secure-port=443 --basic_auth_file=/root/basic_auth_file&quot;```
+
+### 重启 API Server 服务
+
+### systemctl restart kube-apiserver
+* 用 curl 验证连接 API Server
+
+```html  
+$ curl https://kubernetes-master:443/version --basic -u dingmingk:dingmingk -k  
+{  
+  &quot;major&quot;: &quot;1&quot;,  
+  &quot;minor&quot;: &quot;0&quot;,  
+  &quot;gitVersion&quot;: &quot;v1.0.0&quot;,  
+  &quot;gitCommit&quot;: &quot;xxxHASHCODE&quot;,  
+  &quot;gitTreeState&quot;: &quot;clean&quot;  
+}  
+使用 Kubelet 时则需要指定用户名和密码来访问 API Server  
+$ kubectl get nodes --server=&quot;https://kubernetes-master:443&quot; --api-version=&quot;v1&quot; --username=&quot;dingmingk&quot; --password=&quot;dingmingk&quot; --insecure-skip-tls-verify=true  
+</code></pre>  
+  
+<p>###kubectl config set-cluster<br />  
+####在kubeconfig配置文件中设置一个集群项。</p>  
+  
+<ul>  
+<li>摘要<br />  
+</li>  
+<li>在kubeconfig配置文件中设置一个集群项。 如果指定了一个已存在的名字，将合并新字段并覆盖旧字段。<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-html">kubectl config set-cluster NAME [--server=server] [--certificate-authority=path/to/certficate/authority] [--insecure-skip-tls-verify=true]  
+</code></pre>  
+  
+<ul>  
+<li><p>示例</p>  
+  
+<h1>仅设置e2e集群项中的server字段，不影响其他字段</h1></li>  
+</ul>  
+  
+<pre><code class="language-html">kubectl config set-cluster e2e --server=https://1.2.3.4  
+</code></pre>  
+  
+<h1>向e2e集群项中添加认证鉴权数据</h1>  
+  
+<pre><code class="language-html">kubectl config set-cluster e2e --certificate-authority=~/.kube/e2e/kubernetes.ca.crt  
+</code></pre>  
+  
+<p>####取消dev集群项中的证书检查</p>  
+  
+<p><code>html  
+kubectl config set-cluster e2e --insecure-skip-tls-verify=true  
+选项  
+      --api-version=&quot;&quot;: 设置kuebconfig配置文件中集群选项中的api-version。  
+      --certificate-authority=&quot;&quot;: 设置kuebconfig配置文件中集群选项中的certificate-authority路径。  
+      --embed-certs[=false]: 在是否则kubeconfig配置文件中嵌入客户端证书/key。  
+      --insecure-skip-tls-verify[=false]: 设置kuebconfig配置文件中集群选项中的insecure-skip-tls-verify开关。  
+      --server=&quot;&quot;: 设置kuebconfig配置文件中集群选项中的server。  
+继承自父命令的选项  
+      --alsologtostderr[=false]: 同时输出日志到标准错误控制台和文件。  
+      --certificate-authority=&quot;&quot;: 用以进行认证授权的.cert文件路径。  
+      --client-certificate=&quot;&quot;: TLS使用的客户端证书路径。  
+      --client-key=&quot;&quot;: TLS使用的客户端密钥路径。  
+      --cluster=&quot;&quot;: 指定使用的kubeconfig配置文件中的集群名。  
+      --context=&quot;&quot;: 指定使用的kubeconfig配置文件中的环境名。  
+      --insecure-skip-tls-verify[=false]: 如果为true，将不会检查服务器凭证的有效性，这会导致你的HTTPS链接变得不安全。  
+      --kubeconfig=&quot;&quot;: 命令行请求使用的配置文件路径。  
+      --log-backtrace-at=:0: 当日志长度超过定义的行数时，忽略堆栈信息。  
+      --log-dir=&quot;&quot;: 如果不为空，将日志文件写入此目录。  
+      --log-flush-frequency=5s: 刷新日志的最大时间间隔。  
+      --logtostderr[=true]: 输出日志到标准错误控制台，不输出到文件。  
+      --match-server-version[=false]: 要求服务端和客户端版本匹配。  
+      --namespace=&quot;&quot;: 如果不为空，命令将使用此namespace。  
+      --password=&quot;&quot;: API Server进行简单认证使用的密码。  
+  -s, --server=&quot;&quot;: Kubernetes API Server的地址和端口号。  
+      --stderrthreshold=2: 高于此级别的日志将被输出到错误控制台。  
+      --token=&quot;&quot;: 认证到API Server使用的令牌。  
+      --user=&quot;&quot;: 指定使用的kubeconfig配置文件中的用户名。  
+      --username=&quot;&quot;: API Server进行简单认证使用的用户名。  
+      --v=0: 指定输出日志的级别。  
+      --vmodule=: 指定输出日志的模块，格式如下：pattern=N，使用逗号分隔。  
+</code></p>  
+
+
+</body>
+
+</html>

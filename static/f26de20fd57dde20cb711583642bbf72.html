@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-12-25-2017-12-25-serverless-1.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: java serverless docker yaml<br />  
+title: Serverless for Java development<br />  
+date: 2017-12-25 14:13:23 +0800<br />  
+description: 我的第一个ServerLess 程序</p>  
+  
+<h2>keywords: Serverless kubeless</h2>  
+  
+<p>Server Less 我的第一个简单的实例。</p>  
+  
+<h1>前言</h1>  
+  
+<p>Serverless 适用场景：</p>  
+  
+<ul>  
+<li><p>1 运算密集 —— 如图片压缩、数据分析。因为使用 Serverless 方案同一秒里可以运行千上万个 Lambda，能轻易实现传统架构无法实现的超强处理能力，并且只在使用时收费。</p></li>  
+  
+<li><p>2  为其它服务提供编程支持 —— 例如，当 AWS DynamoDB 数据发生变化时，调用 AWS Lambda 生成 PDF 报表。再如，为 AWS API Gateway 提供自定义权限验证脚本。</p></li>  
+  
+<li><p>3  定时任务 —— 以往使用 cron 编写的定时任务可以改用 AWS Lambda 实现，很明显的好处是任务不执行的时候完全不收费。</p></li>  
+  
+<li><p>4  瘦容器 —— 因为 AWS Lambda 本身基于 Docker 容器实现，Lambda 方法跑在 Amazon Linux AMI 中，虽然官方支持的编程语言只有 NodeJS、Java、Python，但其实可以用 NodeJS 的 shim 运行大部分能在 Linux 下运行的程序。以至于有人用这个特性做了 LambCI 这种脑洞大开的 Serverless CI 服务。</p></li>  
+  
+<li><p>5   无人运维 —— Serverless 的核心优势就是不需要管理服务器，自伸缩的特性如果用传统方案解决会相对复杂很多。如果你需要一个服务为你跑好几年，期间完全不需要担心它的服务器运行情况，Serverless 会是最好的选择。</p></li>  
+</ul>  
+  
+<h1>quick start [fnproject]</h1>  
+  
+<ul>  
+<li><p>Docker ，fn cli ，nodejs</p>  
+  
+<pre><code>* 用到以下两个工具  
+https://github.com/fnproject/fn   
+  
+  
+https://github.com/fnproject/ui  
+  
+  
+* brew install fn # 安装fn command命令行  
+  
+  
+* 执行fn start 启动 FN_Server  
+![](http://112firshme11224.test.upcdn.net/demos/574abd7a-5de7-4de3-ba11-84517eb23074.png)  
+  
+  
+* 请求  
+![](http://112firshme11224.test.upcdn.net/demos/9b1eb8af-ccb5-415e-bc77-89e72c2dc05d.png)  
+  
+  
+* 请求实例  
+![](http://112firshme11224.test.upcdn.net/demos/b8491fa5-4bd1-48ff-ac51-2151a096406a.png)  
+  
+  
+* coder  
+  
+  
+![](http://112firshme11224.test.upcdn.net/demos/25648265-1603-4516-bab5-21e95b3c47d2.png)  
+  
+  
+* yaml 配置  
+  
+  
+![](http://112firshme11224.test.upcdn.net/demos/54eae79d-7c0b-422c-966f-3701f1dc40f2.png)  
+  
+  
+* deploy hello  
+  
+  
+![](http://112firshme11224.test.upcdn.net/demos/f4c7ebb2-3674-49b5-9848-9f16d4390a73.png)  
+</code></pre></li>  
+</ul>  
+  
+<h1>kubeless [整理中]</h1>  
+  
+<ul>  
+<li>kubeless function1.yaml<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-yaml">  
+  ---  
+apiVersion: k8s.io/v1  
+kind: Function  
+metadata:  
+  name: function1  
+spec:  
+  handler: hello.foobar  
+  image: registry.timeondata.com/firsh_demo/kubeless_runtime_python:2.7.1  
+  runtime: python2.7  
+  deps: |  
+    cowpy  
+  function: |  
+      import time  
+      import random  
+      from cowpy import cow  
+      def foobar():  
+        # NB: delay will be negative and sleep will raise an error  
+        # occasionally.  This is a feature for demoing errors.  
+        delay = random.normalvariate(0.3, 0.2)  
+        time.sleep(delay)  
+        msg = &quot;hello world - with a %0.2fs artificial delay&quot; % delay  
+        c = cow.get_cow()  
+        return c().milk(msg)  
+</code></pre>  
+  
+<ul>  
+<li>启动<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash">  ➜ python git:(master) ✗ kubectl create -f function1.yaml  
+  
+</code></pre>  
+  
+<ul>  
+<li>检查启动<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash"> # 检查启动  
+ ➜  python git:(master) ✗ kubeless function ls  
+NAME     	NAMESPACE	HANDLER     	RUNTIME  	TYPE	TOPIC	DEPENDENCIES	STATUS  
+function1	default  	hello.foobar	python2.7	    	     	cowpy       	1/1 READY  
+</code></pre>  
+  
+<ul>  
+<li>测试调用<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash">    kubeless function call  function1  
+</code></pre>  
+  
+<ul>  
+<li>结果<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash">  
+➜  python git:(master) ✗ kubeless function call  function1  
+ _____________________________________________  
+&lt; hello world - with a 0.42s artificial delay &gt;  
+ ---------------------------------------------  
+     \   ^__^  
+      \  (oo)\_______  
+         (__)\       )\/\  
+           ||----w |  
+           ||     ||  
+  
+</code></pre>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

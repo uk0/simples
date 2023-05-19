@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2018-04-23-gitlab-cicd-java-runner.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: git lab<br />  
+title: Gitlab JC/CD 第一篇<br />  
+date: 2018-04-23 10:45:02 +0800<br />  
+description: spring-cloud java cicd gitlab</p>  
+  
+<h2>keywords:</h2>  
+  
+<h2>just now</h2>  
+  
+<ul>  
+<li>不再介绍如何安装<code>Gitlab</code><br />  
+</li>  
+<li>从<code>runner</code> 开始介绍<br />  
+</li>  
+</ul>  
+  
+<h2>配置Runner</h2>  
+  
+<ul>  
+<li>管理员用户登录 第一步<br />  
+</li>  
+</ul>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/demos/e0a5ba5a-3b77-4871-a06d-b280040fcf8d.png" alt="" /></p>  
+  
+<ul>  
+<li>第二步进入Runner配置项<br />  
+</li>  
+</ul>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/demos/f5f17d52-ff64-44a9-8f10-61a171ddbaf4.png" alt="" /></p>  
+  
+<ul>  
+<li>获得runner的注册信息<br />  
+</li>  
+</ul>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/demos/7a0076af-57c3-4886-9bfb-e7edc4f03750.png" alt="" /></p>  
+  
+<ul>  
+<li>启动一个Runner 并且配置<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash">  
+sudo docker run -d --name gitlab-java --restart always \  
+  -v /srv/gitlab-java/config:/etc/gitlab-runner \  
+  -v /var/run/docker.sock:/var/run/docker.sock \  
+  gitlab/gitlab-runner:latest  
+  
+</code></pre>  
+  
+<ul>  
+<li>注册runner 到 Gitlab<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash">sudo docker exec -it gitlab-java gitlab-runner register \  
+  --url &quot;http://gitlab.emosa.com/&quot; \  
+  --registration-token &quot;hyNYzSsoJKjGqy1y4D-Q&quot; \  
+  --executor docker \  
+  --description &quot;Java-Runner&quot; \  
+  --docker-image &quot;debian&quot; \  
+  --docker-volumes /var/run/docker.sock:/var/run/docker.sock  
+  
+  
+# gitlab-runner register  
+Please enter the gitlab-ci coordinator URL:  
+# 示例：http://gitlab.emosa.com/  
+Please enter the gitlab-ci token for this runner:  
+# hyNYzSsoJKjGqy1y4D-Q  
+Please enter the gitlab-ci description for this runner:  
+# Java-Runner  
+Please enter the gitlab-ci tags for this runner (comma separated):  
+# java  
+这个地方还有一个配置 默认即可  
+#false  
+Whether to run untagged builds [true/false]:  
+# true  
+Please enter the executor: docker, parallels, shell, kubernetes, docker-ssh, ssh, virtualbox, docker+machine, docker-ssh+machine:  
+# docker  
+Please enter the default Docker image (e.g. ruby:2.1):  
+# debian  
+  
+</code></pre>  
+  
+<ul>  
+<li>检查启动结果<br />  
+</li>  
+</ul>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/demos/a8e8f6f4-2567-4434-af95-4de02ee55c8a.png" alt="" /></p>  
+  
+<ul>  
+<li>Gitlab Runner 就配置完成了。<br />  
+</li>  
+</ul>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

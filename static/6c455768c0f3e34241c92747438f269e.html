@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2018-04-23-docker-swarm-spring-cloud.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: docker swarm spring<br />  
+title: docker swarm 集成 Spring Cloud 验证<br />  
+date: 2018-04-23 10:18:14 +0800<br />  
+description: docekr swarm spring cloud 验证</p>  
+  
+<h2>keywords: swarm</h2>  
+  
+<h2>开始</h2>  
+  
+<ul>  
+<li>机器选择 Centos 7 4Gb内存<br />  
+</li>  
+<li>systemctl stop firewalld<br />  
+</li>  
+<li>systemctl disable firewalld<br />  
+</li>  
+<li>yum install -y docker-io<br />  
+</li>  
+<li>yum install -y vim<br />  
+</li>  
+<li>systemctl start docker<br />  
+</li>  
+<li>systemctl enable docker<br />  
+</li>  
+</ul>  
+  
+<h2>docker swarm init</h2>  
+  
+<ul>  
+<li>任意一台机器执行 <code>docker swarm init</code><br />  
+</li>  
+<li>讲得到的 结果 <code>copy</code><br />  
+</li>  
+<li>在其他两台机器上执行<br />  
+</li>  
+<li>配置 docker swarm 的启动文件<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-yaml">version: '3'  
+services:  
+  eureka1:  
+    image: registry.ap-northeast-1.aliyuncs.com/emos_prod/emos.register.test:latest  
+    networks:  
+      - springcloud-overlay  
+    ports:  
+      - &quot;8098:8098&quot;  
+    environment:  
+      - ADDITIONAL_EUREKA_SERVER_LIST=http://emos:emos@eureka2:8098/eureka/,http://emos:emos@eureka3:8098/eureka/  
+    tty: true  
+    command: [&quot;bash&quot;,&quot;-i&quot;,&quot;bin/Entrypoint.sh&quot;,&quot;start&quot;]  
+  eureka2:  
+    image: registry.ap-northeast-1.aliyuncs.com/emos_prod/emos.register.test:latest  
+    networks:  
+      - springcloud-overlay  
+    ports:  
+      - &quot;8097:8098&quot;  
+    environment:  
+      - ADDITIONAL_EUREKA_SERVER_LIST=http://emos:emos@eureka1:8098/eureka/,http://emos:emos@eureka3:8098/eureka/  
+    tty: true  
+    command: [&quot;bash&quot;,&quot;-i&quot;,&quot;bin/Entrypoint.sh&quot;,&quot;start&quot;]  
+  eureka3:  
+    image: registry.ap-northeast-1.aliyuncs.com/emos_prod/emos.register.test:latest  
+    networks:  
+      - springcloud-overlay  
+    ports:  
+      - &quot;8096:8098&quot;  
+    environment:  
+      - ADDITIONAL_EUREKA_SERVER_LIST=http://emos:emos@eureka1:8098/eureka/,http://emos:emos@eureka2:8098/eureka/  
+    tty: true  
+    command: [&quot;bash&quot;,&quot;-i&quot;,&quot;bin/Entrypoint.sh&quot;,&quot;start&quot;]  
+  
+  
+  emos-config:  
+    image: registry.ap-northeast-1.aliyuncs.com/emos_prod/emos.config.test:latest  
+    ports:  
+      - &quot;8888&quot;  
+    networks:  
+      - springcloud-overlay  
+    environment:  
+      - EUREKA_SERVER_ADDRESS=http://emos:emos@eureka1:8098/eureka/,http://emos:emos@eureka2:8098/eureka/,http://emos:emos@eureka3:8098/eureka/  
+    tty: true  
+    depends_on:  
+      - eureka1  
+      - eureka2  
+      - eureka3  
+    command: [&quot;bash&quot;,&quot;-i&quot;,&quot;bin/Entrypoint.sh&quot;,&quot;start&quot;]  
+  ths-account:  
+    image: registry.ap-northeast-1.aliyuncs.com/emos_prod/emos.account.test:latest  
+    ports:  
+      - &quot;8006&quot;  
+    networks:  
+      - springcloud-overlay  
+    depends_on:  
+      - eureka1  
+      - eureka2  
+      - eureka3  
+      - emos-config  
+    environment:  
+      - EUREKA_SERVER_ADDRESS=http://emos:emos@eureka1:8098/eureka/,http://emos:emos@eureka2:8098/eureka/,http://emos:emos@eureka3:8098/eureka/  
+    tty: true  
+    command: [&quot;bash&quot;,&quot;-i&quot;,&quot;bin/Entrypoint.sh&quot;,&quot;start&quot;]  
+  emos-gateway:  
+    image: registry.ap-northeast-1.aliyuncs.com/emos_prod/emos.gateway.test:latest  
+    ports:  
+      - &quot;8002&quot;  
+    networks:  
+      - springcloud-overlay  
+    depends_on:  
+      - eureka1  
+      - eureka2  
+      - eureka3  
+      - ths-account  
+      - emos-config  
+    environment:  
+      - EUREKA_SERVER_ADDRESS=http://emos:emos@eureka1:8098/eureka/,http://emos:emos@eureka2:8098/eureka/,http://emos:emos@eureka3:8098/eureka/  
+    tty: true  
+    command: [&quot;bash&quot;,&quot;-i&quot;,&quot;bin/Entrypoint.sh&quot;,&quot;start&quot;]  
+networks:  
+  springcloud-overlay:  
+    driver: overlay  
+</code></pre>  
+  
+<h2>注意启动顺序</h2>  
+  
+<pre><code class="language-bash">#可以拆开分开执行  
+docker stack deploy -c  emeos.yml demo  
+</code></pre>  
+  
+<h3>问题解析</h3>  
+  
+<ul>  
+<li>其中spring-clou<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-yaml">  
+spring:  
+  cloud:  
+    config:  
+      profile: ${config.profile:dev}  
+      discovery:  
+        enabled: true  
+        service-id: ${APPLICATION_CONFIG_NAME}  
+  application:  
+      name: ${APPLICATION_NAME}  
+security:  
+  basic:  
+    enabled: false  
+  user:  
+    name: emos #eureka 用户名  
+    password: emos #eureka 密码  
+eureka:  
+  client:  
+    serviceUrl:  
+      defaultZone: ${EUREKA_SERVER_ADDRESS}  
+  instance:  
+    status-page-url-path: /swagger-ui.html  
+    hostname: ${HOST_NAME}  
+management:  
+  security:  
+    enabled: false  
+  
+</code></pre>  
+  
+<ul>  
+<li><code>HOST_NAME</code> 是要用 <code>swarm</code> 启动的服务名来定义的例如：<code>ths-account</code><br />  
+</li>  
+<li><code>EUREKA_SERVER_ADDRESS</code> 是高可用服务<br />  
+</li>  
+<li><code>APPLICATION_NAME</code> 是当前的 <code>APPLICATION</code>的名字需要进行配置<br />  
+</li>  
+<li><code>APPLICATION_CONFIG_NAME</code> 是<code>config</code>服务的<code>application</code>名称 有些服务需要配置此项<br />  
+</li>  
+<li><code>以上可能不善于表达，仅仅是技术方向的实现验证时间：2018年4月23日</code><br />  
+</li>  
+</ul>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

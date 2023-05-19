@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2019-12-26-native_spark-study1.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: spark<br />  
+title: Rust Native Spark Sample Install<br />  
+date: 2019-12-26 10:34:51 +0800<br />  
+description: Native Spark for rust fast spark</p>  
+  
+<h2>keywords: fast spark native spark</h2>  
+  
+<p>本文简单介绍Rust版本的Spark 安装 以及dev版本的测试。</p>  
+  
+<h3>介绍 Native Spark For Rust</h3>  
+  
+<ul>  
+<li>github 地址 ： <a href="https://github.com/rajasekarv/native_spark">https://github.com/rajasekarv/native_spark</a><br />  
+</li>  
+</ul>  
+  
+<h3>Sample</h3>  
+  
+<pre><code class="language-bash">## clone project  
+git clone https://github.com/rajasekarv/native_spark  
+## Use Ubuntu18.04  
+  
+    curl -ssf https://sh.rustup.rs | sh  # 如果失败 curl https://sh.rustup.rs &gt; a.sh &amp;&amp; ./a.sh -y 强制执行  
+     apt install openssl  
+     apt install openssl-dev  
+     apt install openssl-sys  
+     apt install libssl-dev  
+## clone capnproto  
+## 序列化工具包  
+git clone https://github.com/sandstorm-io/capnproto.git  
+cd capnproto  
+sudo  apt install autoreconf  
+sudo  apt install autoconf  
+sudo  apt install automake  
+sudo  apt install libtool  
+autoreconf -i  
+./configure  
+make -j4 check  
+sudo make install  
+  
+## 进入项目测试  
+  
+cd native_spark  
+## 安装nightly 版本  
+rustup install nightly  
+## 强行覆盖一波  
+rustup override set nightly  
+## run example  
+cargo run --example make_rdd  
+  
+## cd native_spark/docker  
+# build docker 镜像  
+./build_image.sh  
+# 启动测试节点 并且将当前的 target 目录映射到 容器内的 /home/dev  
+./test_cluster.sh  
+  
+</code></pre>  
+  
+<h2>图示</h2>  
+  
+<ul>  
+<li>看一下代码<br />  
+</li>  
+</ul>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-46-14.png!100" alt="" /></p>  
+  
+<ul>  
+<li>启动测试节点<br />  
+</li>  
+</ul>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-47-39.png!100" alt="" /></p>  
+  
+<ul>  
+<li>进入Master<br />  
+</li>  
+</ul>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-48-47.png!100" alt="" /></p>  
+  
+<ul>  
+<li>测试native_spark<br />  
+</li>  
+</ul>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-50-53.png!100" alt="" /></p>  
+  
+<ul>  
+<li>在容器内测试native_spark 集群 <code>./file_read --deployment_mode distributed --local_ip=0.0.0.0</code><br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash">RUST_BACKTRACE=full ./file_read --deployment_mode distributed --local_ip=0.0.0.0  
+</code></pre>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-11-07-11.png!100" alt="" /></p>  
+  
+<h4>未完结</h4>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

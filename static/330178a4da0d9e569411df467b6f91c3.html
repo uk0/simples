@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-06-24-java-development-b-desc.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title: java 开发代码规范，命名规范<br />  
+categories: IDEA,java,mac<br />  
+description: matching,mac</p>  
+  
+<h2>keywords: java, IDEA,mac</h2>  
+  
+<p>Java 代码书写规范，以及部分注释。</p>  
+  
+<h2>1、Java 规范很重要：</h2>  
+  
+<pre><code class="language-text">代码书写规范  
+  
+一、           命名规范（所有命名均要求有意义）  
+  
+项目命名规范  
+       所有工程名全部为小写单词，要求有意义，能代表所做的是什么项目  
+  
+包命名规范  
+       所有的包命名全部由小写英文单词  
+       以下的 | 符号代表或者取其一的意思  
+       我们采用com|org|edu|net.公司名|组织名|学校名|网站名.项目名称.分层文件夹名  
+       例如：项目中采用 com.tod.code.gen  
+  
+类命名规范  
+       所有Java类采取大写字母开头，如果类名称由多个单词组成，则每个单词的首字母均应为大 写例如AdminBean；如果类名称中包含单词缩写，则这个所写词的每个字母均应大写，如：XMLExample,还有一点命名技巧就是由于类是设计用来 代表对象的，所以在命名类时应尽量选择名词。    　　  
+方法命名规范  
+驼峰命名法  
+方法名的第一个单词应以小写字母作为开头，后面的每一个单词的首字母则用大写字母开头。  
+例如:getParameter();  
+  
+变量，参数命名规范  
+驼峰命名法  
+变量名|参数名的第一个单词应以小写字母作为开头，后面的每一个单词的首字母则用大写开头。  
+例如：pageContext.  
+  
+常量命名方法（即final类型的变量命名规则）  
+       单词的所有字母全部用大写字母进行命名，如果涉及到多个单词那么要用 _ 分开  
+       例如:MAX_VALUE  
+  
+  
+  
+二、           注释规范  
+  
+文件注释规范：写在所有类的文件的最上边的注释  
+/*  
+* 文 件 名：  
+* 版权(c) 2017-xxx公司 xxx项目组：  
+* 版 本 号：  
+*/  
+  
+       类 | 接口 | 抽象类 注释规范：写在类声明的上边，包名的下边  
+/**  
+* Project:  项目工程名  
+* Module ID:  (模块)类编号，可以引用系统设计中的类编号  
+* Comments:  对此类的描述，可以引用系统设计中的描述  
+* @author： 作者名称  
+* @author： 作者名称  
+* @version 1.0 , 2017-06-24  
+* @since  JDK版本号  
+* @see 一些相应的参考类，没有的话可以不加  
+* @see  
+* Modified By： 修改人姓名(如果有其他人修改时增加这三项)  
+* Modified Date: 修改日期  
+* Why &amp; What is modified  修改原因描述  
+*/  
+  
+构造方法注释规范：写在所要注释的构造方法前  
+/**  
+* Description ：  构造函数的描述,  
+* @param：  参数名  
+*/  
+  
+方法注释规范：写在所要注释的方法前  
+/**  
+* 方法描述：  
+* @param：  参数名  
+* @param：  参数名(解释：@param后面空格后跟着参数的变量名字  
+*            （不是类型），空格后跟着对该参数的描述。)*  
+* @return:    类型 &lt;说明&gt; ,如果返回不同的值有不同的意义要加以说明。  
+*@throws : 抛出的异常  
+*/  
+  
+成员变量 | 成员常量注释规范：写到需要进行注释的变量或者常量的上边  
+/** 变量或者常量的描述 */  
+  
+局部变量注释规范：在每个局部变量上边即可。  
+//  
+  
+三、           格式规范  
+  
+所有的类代码文件要求都有统一的缩进对齐  
+  
+</code></pre>  
+  
+<ul>  
+<li>感谢孙浩大哥提醒代码规范的重要性。<br />  
+</li>  
+</ul>  
+
+
+</body>
+
+</html>

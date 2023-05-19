@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2019-08-03-file_to_rocketmq_middleware.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: rocketmq golang<br />  
+title: 读取数据发送到MQ<br />  
+date: 2019-08-03 14:01:12 +0800<br />  
+description: 监控文件夹变动产生新文件读取该文件内容每一行都发送到RocketMQ</p>  
+  
+<h2>keywords: RocketMQ Golang</h2>  
+  
+<p>数据通过FTP上传到服务器要求将数据发送到RocketMQ原版本用Java写的（不是本人）TPS上不去资源消耗大等问题。</p>  
+  
+<h2>缘由</h2>  
+  
+<ul>  
+<li>数据通过FTP上传到服务器要求将数据发送到RocketMQ原版本用Java写的（不是本人）TPS上不去资源消耗大等问题。<br />  
+</li>  
+<li>解决方案：采用Golang 重新实现，用到了Golang的 Go关键字 WaitGroup MMAP等。<br />  
+</li>  
+<li>目前TPS 在虚拟机上跑 TPS稳定 5600 - 4700 <br />  
+</li>  
+<li>链接如下：<a href="https://github.com/uk0/file_to_rocketmq_middleware">https://github.com/uk0/file_to_rocketmq_middleware</a><br />  
+</li>  
+</ul>  
+  
+<h2>核心代码介绍</h2>  
+  
+<pre><code class="language-go">package main  
+  
+import (  
+	&quot;fmt&quot;  
+	&quot;github.com/astaxie/beego/logs&quot;  
+	&quot;github.com/zjykzk/rocketmq-client-go/log&quot;  
+	&quot;github.com/zjykzk/rocketmq-client-go/message&quot;  
+	&quot;github.com/zjykzk/rocketmq-client-go/producer&quot;  
+	&quot;math/rand&quot;  
+	&quot;os&quot;  
+	&quot;runtime&quot;  
+	&quot;strings&quot;  
+	&quot;sync/atomic&quot;  
+	&quot;time&quot;  
+	&quot;unsafe&quot;  
+)  
+  
+type Client struct {  
+	P            *producer.Producer  
+	Group        string  
+	NamesrvAddrs string  
+	DataChan     chan Message  
+}  
+  
+func newLogger(filename string) (log.Logger, error) {  
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)  
+	if err != nil {  
+		println(&quot;create file error&quot;, err.Error())  
+		return nil, err  
+	}  
+  
+	logger := log.New(file, &quot;&quot;, log.Ldefault)  
+	logger.Level = log.Ldebug  
+  
+	return logger, nil  
+}  
+  
+func (cli *Client) SendMsg(stati *statiBenchmarkProducerSnapshot) {  
+	now := time.Now()  
+	var count = 1;  
+	for messageBody := range cli.DataChan {  
+		m := &amp;message.Message{Topic: messageBody.topic, Body: []byte(messageBody.line)}  
+  
+		r, err := cli.P.SendSync(m)  
+		if err != nil {  
+			logs.Debug(&quot;Send with sync error:%s\n&quot;, err)  
+			continue  
+		}  
+  
+		// 取模  
+		//var BatchLines = []message.Data{};  
+		//BatchLines = append(BatchLines, message.Data{Body: []byte(messageBody.line)})  
+		//if count%defaultSendLimitbatch == 0 {  
+		//  
+		//	r, err3 := client.SendBatchSync(&amp;message.Batch{Topic: messageBody.topic, Datas: BatchLines})  
+		//	if err3 != nil {  
+		//		logs.Debug(&quot;SendWithBatchSync error:%s\n&quot;, err3)  
+		//		continue  
+		//	}  
+		//	logs.Debug(fmt.Sprintf(&quot;BatchSendMessageResult: %s FileName = %s  Process = %f%%  ProcessCount = %d , TotalCount = %d&quot;, r.OffsetID, messageBody.FileName, float32(messageBody.ProcessCount)/float32(messageBody.TotalCount)*100, messageBody.ProcessCount, messageBody.TotalCount))  
+		//}  
+  
+		//selector  
+		//r, err2 := client.SendSyncWithSelector(m, messageQueueSelector{}, count)  
+		//if err2 != nil {  
+		//	logs.Debug(&quot;SendWithSelector error:%s\n&quot;, err2)  
+		//	continue  
+		//}  
+  
+		if r.Status == producer.OK {  
+			atomic.AddInt64(&amp;stati.receiveResponseSuccessCount, 1)  
+			atomic.AddInt64(&amp;stati.sendRequestSuccessCount, 1)  
+			currentRT := int64(time.Since(now) / time.Millisecond)  
+			atomic.AddInt64(&amp;stati.sendMessageSuccessTimeTotal, currentRT)  
+			prevRT := atomic.LoadInt64(&amp;stati.sendMessageMaxRT)  
+			for currentRT &gt; prevRT {  
+				if atomic.CompareAndSwapInt64(&amp;stati.sendMessageMaxRT, prevRT, currentRT) {  
+					break  
+				}  
+				prevRT = atomic.LoadInt64(&amp;stati.sendMessageMaxRT)  
+			}  
+			if count%1000 == 0 {  
+				logs.Debug(fmt.Sprintf(&quot;SendMessageResultQueueOffset : %d FileName = %s  Process = %f%%  ProcessCount = %d , TotalCount = %d&quot;, r.QueueOffset, messageBody.FileName, float32(messageBody.ProcessCount)/float32(messageBody.TotalCount)*100, messageBody.ProcessCount, messageBody.TotalCount))  
+			}  
+		}  
+		count++;  
+	}  
+	logs.Debug(&quot;DONE&quot;)  
+}  
+  
+func NewMQSender(groupId string,nameSvr string) (cli *Client, err error) {  
+	cli = &amp;Client{  
+		Group:groupId,  
+		NamesrvAddrs:nameSvr,  
+		DataChan:data,  
+	}  
+	stati := statiBenchmarkProducerSnapshot{}  
+	snapshots := produceSnapshots{cur: &amp;stati}  
+  
+  
+	logger, err := newLogger(&quot;producer.log&quot;)  
+	if err != nil {  
+		logs.Debug(&quot;new logger of producer.loge error:%s\n&quot;, err)  
+		return  
+	}  
+  
+	client := producer.New(groupId, strings.Split(nameSvr, &quot;;&quot;), logger)  
+  
+	err = client.Start()  
+	if err != nil {  
+		logs.Debug(&quot;start producer error: &quot;, err)  
+		return  
+	}  
+	//defer client.Shutdown()  
+  
+	cli.P = client  
+	// 根据CPU来协商启动协程数  
+	for i := 0; i &lt; runtime.GOMAXPROCS(runtime.NumCPU()); i++ {  
+		go func() {  
+			waitgroup.Add(1)  
+			cli.SendMsg(&amp;stati)  
+			waitgroup.Done()  
+		}()  
+	}  
+	// snapshot  
+	go func() {  
+		waitgroup.Add(1)  
+		defer waitgroup.Done()  
+		ticker := time.NewTicker(time.Second)  
+		for {  
+			select {  
+			case &lt;-ticker.C:  
+				snapshots.TakeSnapshot()  
+			}  
+		}  
+	}()  
+	// print statistic  
+	go func() {  
+		waitgroup.Add(1)  
+		defer waitgroup.Done()  
+		ticker := time.NewTicker(time.Second * 10)  
+		for {  
+			select {  
+			case &lt;-ticker.C:  
+				snapshots.TrintStati()  
+			}  
+		}  
+	}()  
+	return  
+}  
+  
+type messageQueueSelector struct{}  
+  
+func (s messageQueueSelector) Select(mqs []*message.Queue, m *message.Message, arg interface{}) *message.Queue {  
+	orderID := arg.(int)  
+	return mqs[orderID%len(mqs)]  
+}  
+  
+const (  
+	letterBytes   = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;  
+	letterIdxMask = 1&lt;&lt;6 - 1 // All 1-bits, as many as 6  
+)  
+  
+// 随机  
+var src = rand.NewSource(time.Now().UnixNano())  
+  
+func RandStringBytesMaskImprSrc(n int) string {  
+	b := make([]byte, n)  
+	// A src.Int63() generates 63 random bits, enough for 10 characters!  
+	for i, cache, remain := n-1, src.Int63(), 10; i &gt;= 0; {  
+		if remain == 0 {  
+			cache, remain = src.Int63(), 10  
+		}  
+		b[i] = letterBytes[int(cache&amp;letterIdxMask)%len(letterBytes)]  
+		i--  
+		cache &gt;&gt;= 6  
+		remain--  
+	}  
+	return *(*string)(unsafe.Pointer(&amp;b))  
+}  
+  
+  
+</code></pre>  
+  
+<ul>  
+<li>调用方式 <code>	_, _ = NewMQSender(TConfig.SendGroup, TConfig.RocketMQNameserver)  
+</code><br />  
+</li>  
+</ul>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-08-02-docker-hdfs-sink.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title:  Docker Development HDFS for Flink  Sink<br />  
+categories: HDFS,Mongodb<br />  
+description: 笔记</p>  
+  
+<h2>keywords: HDFS,flink</h2>  
+  
+<p>因工作需求所整合Flink + HDFS 作为一个Demo 帮助大家跳坑。<br />  
+HDFS + Docker 采用集群主从模式。</p>  
+  
+<h1>HDFS with Docker</h1>  
+  
+<ul>  
+<li>Docker image for single <code>HDFS</code> node.。<br />  
+</li>  
+<li><code>Only for development purpose.</code><br />  
+</li>  
+<li>License: <code>MIT</code><br />  
+</li>  
+</ul>  
+  
+<h1>start</h1>  
+  
+<pre><code>* docker pull mdouchement/hdfs  
+</code></pre>  
+  
+<h1>Local build</h1>  
+  
+<pre><code class="language-bash">$ docker build -t mdouchement/hdfs .  
+</code></pre>  
+  
+<h1>Running HDFS container</h1>  
+  
+<pre><code class="language-bash"># Running and get a Bash interpreter  
+$ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -it mdouchement/hdfs  
+  
+# With NFS  
+$ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -p 111:111 -p 2049:2049 -it mdouchement/hdfs  
+  
+# Running as daemon  
+$ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -d mdouchement/hdfs  
+  
+</code></pre>  
+  
+<ul>  
+<li>Ports<br />  
+  
+  
+<ul>  
+<li>Portmap -&gt; 111<br />  
+</li>  
+<li>NFS -&gt; 2049<br />  
+</li>  
+<li>HDFS namenode -&gt; 8020 (hdfs://localhost:8020)<br />  
+</li>  
+<li>HDFS datanode -&gt; 50010<br />  
+</li>  
+<li>HDFS datanode (ipc) -&gt; 50020<br />  
+</li>  
+<li>HDFS Web browser -&gt; 50070<br />  
+</li>  
+<li>HDFS datanode (http) -&gt; 50075<br />  
+</li>  
+<li>HDFS secondary namenode -&gt; 50090<br />  
+</li>  
+<li>SSH -&gt; 22<br />  
+</li>  
+</ul></li>  
+</ul>  
+  
+<h1>Contributing</h1>  
+  
+<ul>  
+<li>All PRs are welcome.<br />  
+  
+  
+<ul>  
+<li>1.Fork it ( <a href="https://github.com/[my-github-username]/gemsupport/fork">https://github.com/[my-github-username]/gemsupport/fork</a> )<br />  
+</li>  
+<li>2.Create your feature branch (git checkout -b my-new-feature)<br />  
+</li>  
+<li>3.Commit your changes (git commit -am &lsquo;Add some feature&rsquo;)<br />  
+</li>  
+<li>4.Push to the branch (git push origin my-new-feature)<br />  
+</li>  
+<li>5.Create a new Pull Request<br />  
+</li>  
+</ul></li>  
+</ul>  
+  
+<h1>dev</h1>  
+  
+<pre><code class="language-java"> /**HDFS Config*/  
+  configuration.set(&quot;fs.default.name&quot;, &quot;hdfs://localhost:8020&quot;);  
+</code></pre>  
+  
+<h1><code>Docker</code>这个是为了快速测试代码，以及快速开发。</h1>  
+  
+<ul>  
+<li><p>真的很方便，用后直接销毁。<br />  
+</p></li>  
+  
+<li><p>也可以持久化储存数据。<br />  
+</p></li>  
+  
+<li><p>详情请查看<code>Docker</code> 官网。</p></li>  
+  
+<li><p>Owner <code>breakEval13</code></p></li>  
+  
+<li><p><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></p></li>  
+  
+<li><p><code>Docker</code>  <a href="https://docker.com">https://docker.com</a></p></li>  
+</ul>  
+
+
+</body>
+
+</html>

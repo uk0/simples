@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2018-01-24-rocketmq-master-all.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: java rocketmq<br />  
+title: rocketmq 多Master集群搭建<br />  
+date: 2018-01-24 15:01:53 +0800<br />  
+description: 搭建一个多Master的rocketmq 集群</p>  
+  
+<h2>keywords: rocketmq</h2>  
+  
+<p>搭建一套多个Master的集群（RocketMQ）<br />  
+    为了项目测试使用。</p>  
+  
+<h2>quick start</h2>  
+  
+<ul>  
+<li>准备RocketMQ 4.2.0 tar<br />  
+</li>  
+<li>准备JDK 1.8<br />  
+</li>  
+</ul>  
+  
+<h2>config</h2>  
+  
+<ul>  
+<li><p>三个broker的配置 broker-a，broker-b，broker-c<br />  
+broker-a.properties<br />  
+broker-b.properties<br />  
+broker-c.properties<br />  
+修改下面配置文件的 <code>brokerName</code>即可</p>  
+  
+<pre><code class="language-bash">    #所属集群名字  
+    brokerClusterName=rocketmq-aom  
+    #broker名字，注意此处不同的配置文件填写的不一样  
+    brokerName=broker-a|b|c  
+    #0 表示 Master，&gt;0 表示 Slave  
+    brokerId=0  
+    #nameServer地址，分号分割  
+    namesrvAddr=tod1:9876;tod2:9876;tod3:9876  
+    #在发送消息时，自动创建服务器不存在的topic，默认创建的队列数  
+    defaultTopicQueueNums=4  
+    #是否允许 Broker 自动创建Topic，建议线下开启，线上关闭  
+    autoCreateTopicEnable=true  
+    #是否允许 Broker 自动创建订阅组，建议线下开启，线上关闭  
+    autoCreateSubscriptionGroup=true  
+    #Broker 对外服务的监听端口  
+    listenPort=10911  
+    #删除文件时间点，默认凌晨 4点  
+    deleteWhen=04  
+    #文件保留时间，默认 48 小时  
+    fileReservedTime=120  
+    #commitLog每个文件的大小默认1G  
+    mapedFileSizeCommitLog=1073741824  
+    #ConsumeQueue每个文件默认存30W条，根据业务情况调整  
+    mapedFileSizeConsumeQueue=300000  
+    #destroyMapedFileIntervalForcibly=120000  
+    #redeleteHangedFileInterval=120000  
+    #检测物理文件磁盘空间  
+    diskMaxUsedSpaceRatio=88  
+    #存储路径  
+    storePathRootDir=/home/aom/data/rocketmq/store  
+    #commitLog 存储路径  
+    storePathCommitLog=/home/aom/data/rocketmq/store/commitlog  
+    #消费队列存储路径存储路径  
+    storePathConsumeQueue=/home/aom/data/rocketmq/store/consumequeue  
+    #消息索引存储路径  
+    storePathIndex=/home/aom/data/rocketmq/store/index  
+    #checkpoint 文件存储路径  
+    storeCheckpoint=/home/aom/data/rocketmq/store/checkpoint  
+    #abort 文件存储路径  
+    abortFile=/home/aom/data/rocketmq/store/abort  
+    #限制的消息大小  
+    maxMessageSize=65536  
+    #flushCommitLogLeastPages=4  
+    #flushConsumeQueueLeastPages=2  
+    #flushCommitLogThoroughInterval=10000  
+    #flushConsumeQueueThoroughInterval=60000  
+    #Broker 的角色  
+    #- ASYNC_MASTER 异步复制Master  
+    #- SYNC_MASTER 同步双写Master  
+    #- SLAVE  
+    brokerRole=ASYNC_MASTER  
+    #刷盘方式  
+    #- ASYNC_FLUSH 异步刷盘  
+    #- SYNC_FLUSH 同步刷盘  
+    flushDiskType=ASYNC_FLUSH  
+    #checkTransactionMessageEnable=false  
+    #发消息线程池数量  
+    #sendMessageThreadPoolNums=128  
+    #拉消息线程池数量  
+    #pullMessageThreadPoolNums=128  
+</code></pre>  
+<h2>start</h2>  
+  
+<ul>  
+<li>修改脚本参数<br />  
+<code>bash  
+#runbroker.sh  
+JAVA_OPT=&quot;${JAVA_OPT} -server -Xms1g  -Xmx1g -Xmn512m -XX:PermSize=128m -XX:MaxPermSize=320m&quot;  
+#runserver.sh  
+JAVA_OPT=&quot;${JAVA_OPT} -server -Xms1g -Xmx1g -Xmn512m -XX:PermSize=128m -XX:MaxPermSize=320m  
+</code><br />  
+</li>  
+</ul></li>  
+  
+<li><p>启动RocketMQ</p>  
+  
+<pre><code class="language-bash">  
+  
+   #先启动Nameserv（三台机器）  
+    nohup sh mqnamesrv &amp;  
+    nohup sh mqnamesrv &amp;  
+    nohup sh mqnamesrv &amp;  
+   # 启动 broker（三台机器）  
+    nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-a.properties &gt;/dev/null 2&gt;&amp;1 &amp;  
+  
+  
+    nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-b.properties &gt;/dev/null 2&gt;&amp;1 &amp;  
+  
+  
+    nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-c.properties &gt;/dev/null 2&gt;&amp;1 &amp;  
+</code></pre>  
+<h2>test</h2>  
+  
+<ul>  
+<li>test RocketMQ<br />  
+<code>text  
+[root@tod1 bin]# ./mqadmin clusterList -n 192.168.1.149:9876  
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0  
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0  
+#Cluster Name     #Broker Name            #BID  #Addr                  #Version                #InTPS(LOAD)       #OutTPS(LOAD) #PCWait(ms) #Hour #SPACE  
+rocketmq-aom      broker-a                0     192.168.1.149:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0128  
+rocketmq-aom      broker-b                0     192.168.1.150:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0116  
+rocketmq-aom      broker-c                0     192.168.1.151:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0116  
+</code><br />  
+</li>  
+</ul></li>  
+</ul>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

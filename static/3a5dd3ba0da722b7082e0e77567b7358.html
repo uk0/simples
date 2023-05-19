@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-08-04-RocketMQ-source-open.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title:  Flink的自定义Source 如何给重写的open方法传递参数.<br />  
+categories: Flink,rocektmq<br />  
+description: 笔记</p>  
+  
+<h2>keywords: flink,rocektmq</h2>  
+  
+<p>因工作需求所整合Flink + RocketMQ,中间遇到许多问题本文章将问题解决。</p>  
+  
+<h1>部分代码：</h1>  
+  
+<ul>  
+<li>Flink程序入口<br />  
+</li>  
+<li>继承RichSinkFunction，重写<code>open</code> 和 <code>invoke</code>方法，还有<code>close</code>。<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-java"> final ParameterTool parameterTool = ParameterTool.fromArgs(args);  
+        if (parameterTool.getNumberOfParameters() &lt; 3) {  
+                System.out.println(&quot;Missing parameters!&quot;);  
+                System.out.println(&quot;\nUsage: RocketMQ \n&quot; +  
+                        &quot;--topic &lt;topic&gt; \n&quot; +  
+                        &quot;--cgroup &lt;consumerGroupName&gt; \n&quot; +  
+                        &quot;--conf &lt;consumerGroupName&gt; \n&quot; +  
+                        &quot;--hdfs &lt;hdfs path&gt;\n&quot;  
+                );  
+                return;  
+        }  
+            env.getConfig().enableSysoutLogging();  
+            env.getConfig().setRestartStrategy(RestartStrategies  
+                    .fixedDelayRestart(4, 100));  
+            env.enableCheckpointing(5000);  
+            env.setMaxParallelism(72);  
+               /**创建 Configuration 对象**/  
+            Configuration conf = new Configuration();  
+            conf.setString(&quot;topic&quot;,parameterTool.get(&quot;topic&quot;));  
+            conf.setString(&quot;cgroup&quot;,parameterTool.get(&quot;cgroup&quot;));  
+            conf.setString(&quot;conf&quot;,parameterTool.get(&quot;conf&quot;));  
+            conf.setString(&quot;hdfs&quot;,parameterTool.get(&quot;hdfs&quot;));  
+            /**将Configuration存入数据，放入全局执行环境内*/  
+            env.getConfig().setGlobalJobParameters(conf);  
+            RocketMQSource rocketMQSource = new RocketMQSource();  
+            DataStream&lt;String&gt; sourceStream = env.addSource(rocketMQSource);  
+</code></pre>  
+  
+<h1>Source [重点]</h1>  
+  
+<ul>  
+<li>自定义Source的一部分代码<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-java"> @Override  
+    public void open(Configuration parameters) throws Exception {  
+        super.open(parameters);  
+        /**获取运行环境内的参数**/  
+        ExecutionConfig.GlobalJobParameters globalParams = getRuntimeContext().getExecutionConfig().getGlobalJobParameters();  
+        /**执行参数提取**/  
+        Configuration globConf = (Configuration) globalParams;  
+        queue = new LinkedBlockingQueue&lt;&gt;(1000);  
+        MQConfig.getInstance(globConf.getString(&quot;conf&quot;,null));  
+        /**拿到存入参数，并且设置默认值**/  
+        consumer = new DefaultMQPushConsumer( globConf.getString(&quot;cgroup&quot;, null));  
+        consumer.setNamesrvAddr( MQConfig.getMQ());  
+        consumer.setInstanceName(UUID.randomUUID().toString());  
+        consumer.setMessageModel(MessageModel.CLUSTERING);// 消费模式  
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);  
+        consumer.registerMessageListener(this);  
+        consumer.subscribe(globConf.getString(&quot;topic&quot;, null), &quot;*&quot;);  
+        consumer.setConsumeThreadMax(64);  
+        consumer.setConsumeThreadMin(8);  
+        consumer.setConsumeMessageBatchMaxSize(8);//消息数量每次读取的消息数量  
+        System.out.println(&quot;启动线程&quot;);  
+        consumer.start();  
+        System.out.println(&quot;RocketMQ Started.&quot;);  
+        LOG.info(&quot;consumeBatchSize:{} pullBatchSize:{} consumeThread:{}&quot;,consumer.getConsumeMessageBatchMaxSize(),consumer.getPullBatchSize(),consumer.getConsumeThreadMax());  
+    }  
+</code></pre>  
+  
+<ul>  
+<li>以上代码经过验证可以直接拿去修改调用<br />  
+</li>  
+<li>Owner <code>breakEval13</code><br />  
+</li>  
+<li><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></li>  
+</ul>  
+
+
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-11-06-nginx-up.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title: Nginx 分段配置负载均衡[原创]<br />  
+categories: lua<br />  
+description: nginx</p>  
+  
+<h2>keywords: linux,负载均衡,Nginx</h2>  
+  
+<p>Nginx 分段配置负载均衡</p>  
+  
+<p>date：2017-11-06<br />  
+author：zhangjianxin</p>  
+  
+<p>#<br />  
+[*] 解决方案</p>  
+  
+<h1>nginx config</h1>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/images/WX20171106-142637@2x.png" alt="" /></p>  
+  
+<pre><code class="language-bash">    user  nginx;  
+    worker_processes  5;  
+    error_log  /var/log/nginx/error.log warn;  
+    pid        /var/run/nginx.pid;  
+    worker_rlimit_nofile 1024;  
+  
+    events {  
+      worker_connections  1024;  
+    }  
+  
+    http {  
+        include       mime.types;  
+        default_type  application/octet-stream;  
+  
+        log_format  main  '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '  
+                         '$status $body_bytes_sent &quot;$http_referer&quot; '  
+                          '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';  
+  
+        log_format  error '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '  
+                         '$status $body_bytes_sent &quot;$http_referer&quot; '  
+                          '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';  
+  
+        access_log  logs/access.log  main;  
+  
+        sendfile        on;  
+  
+        keepalive_timeout  65;  
+  
+        gzip  on;  
+        include /etc/nginx/conf.d/upstream/*.conf;  
+        include /etc/nginx/conf.d/vhost/*.conf;  
+    }  
+</code></pre>  
+  
+<h1>nginx upstream config</h1>  
+  
+<pre><code>```bash
+
+upstream post_servers {
+    ip_hash;
+    server dscn01:80 weight=5 backup;
+    server dscn02:80 weight=10 max_fails=3 fail_timeout=30s;
+}
+
+```  
+</code></pre>  
+  
+<h1>nginx vhost  config</h1>  
+  
+<pre><code class="language-bash">  
+server {  
+    listen       80;      #监听80端口  
+    access_log   logs/post.access.log main;  #使用main等级配置访问日志。  
+    error_log    logs/post.error.log error;          #使用error等级配置错误日志。  
+  
+    set $post_servers_upstream   &quot;post_servers&quot;;   #使用set指令配置upstream为：'post_servers'  
+    location / {  #将所有的请求代理到post_servers_upstream中。  
+      proxy_pass      http://$post_servers_upstream;  
+    }  
+  }  
+  
+</code></pre>  
+  
+<p><img src="http://112firshme11224.test.upcdn.net/images/WX20171106-142733@2x.png" alt="" /></p>  
+  
+<ul>  
+<li>以上操作经过验证可以直接拿去。<br />  
+</li>  
+<li>auther <code>breakEval13</code><br />  
+</li>  
+<li><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></li>  
+</ul>  
+
+
+</body>
+
+</html>

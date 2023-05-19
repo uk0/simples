@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2019-02-18-mount-disk-some.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: Linux<br />  
+title: 一次磁盘挂载<br />  
+date: 2019-02-18 19:19:53 +0800<br />  
+description: 磁盘挂载Lvm</p>  
+  
+<h2>keywords: Linux</h2>  
+  
+<p>服务器10台每台16块盘 其中两块系统盘,剩下的皆为数据盘，因为涉及到扩容，所以有一个大目录采用lvm挂载。</p>  
+  
+<h3>一次磁盘挂载（Centos7）</h3>  
+  
+<pre><code class="language-bash">#!/usr/bin/env bash  
+################## base ###############  
+bashPath=$(cd `dirname $0`; pwd)  
+  
+${bashPath}/lvms.sh  
+  
+sleep 2  
+  
+${bashPath}/parted.sh  
+</code></pre>  
+  
+<ul>  
+<li>lvms.sh<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash">#!/bin/bash  
+yum install -y lvm2  
+  
+## disk---&gt;pv---&gt;vg---&gt;lv  
+  
+disk_index=14                  # 第14块盘  
+  
+partition=/data            # 定义最终挂载的名称  
+  
+j=`echo $disk_index|awk '{printf &quot;%c&quot;,97+$disk_index}'`  
+  
+## 直接disk  
+fdisk /dev/sd$j &lt;&lt; FORMAT  
+d  
+w  
+FORMAT  
+  
+parted /dev/sd$j &lt;&lt;ESXU  
+mklabel gpt  
+yes  
+mkpart primary 0 100%  
+ignore  
+quit  
+ESXU  
+  
+echo -e &quot;\033[32m disk successfully lvm $j \033[0m&quot;  
+  
+mkdir -p $partition  
+  
+pvcreate /dev/sd${j}1  
+  
+vgcreate vg_data_${j}  /dev/sd${j}1  
+  
+lvcreate  -l 100%FREE  -n  lv_data_${j}  vg_data_${j}  
+  
+mkfs.ext4  /dev/vg_data_${j}/lv_data_${j}  
+  
+mount=&quot;/dev/mapper/vg_data_${j}-lv_data_${j}      ${partition}  ext4    defaults        0       0&quot;  
+  
+echo $mount &gt;&gt;/etc/fstab                #写入分区表  
+  
+sleep 1s  
+  
+mount -a  
+  
+  
+</code></pre>  
+  
+<ul>  
+<li>parted.sh<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash">#!/bin/bash  
+PATH=/bin:/sbin:/usr/bin:/usr/sbin  
+export PATH  
+i=1  
+while [ $i -lt 14 ]                  #硬盘数量,除系统盘之外是13块  
+do  
+j=`echo $i|awk '{printf &quot;%c&quot;,97+$i}'` #系统盘是sda1,如果是其它的需要修改脚本97=a  
+  
+unmount -v /dev/sd$j  
+  
+parted /dev/sd$j &lt;&lt;FORMAT  
+mklabel gpt  
+mkpart primary 0 100%  
+ignore  
+quit  
+FORMAT  
+mkfs.ext4 -T largefile  /dev/sd${j}1    #格式化磁盘  
+mkdir -p /data/disk${i}  
+mount=&quot;/dev/sd${j}1       /data/disk${i}  ext4    defaults        0       0&quot;  
+rm -rf /data/disk${i}/*  
+echo $mount &gt;&gt;/etc/fstab                #写入分区表  
+i=$(($i+1))  
+done  
+echo -e &quot;\033[32m *****Formating  and Mounting have finished wait 5s **** \033[0m&quot;  
+  
+chmod -R 777 /data/*  
+  
+sleep 5  
+  
+mount -a  
+</code></pre>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

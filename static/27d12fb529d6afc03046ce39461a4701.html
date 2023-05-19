@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-12-05-ehecache-terracotta.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title: ehcache集群配置terracotta。<br />  
+categories: mongo<br />  
+description: ehcache集群配置terracotta</p>  
+  
+<h2>keywords: ehcache, terracotta</h2>  
+  
+<h1>ehcache集群配置terracotta</h1>  
+  
+<ul>  
+<li>ehcache for maven conf<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-xml">        &lt;dependency&gt;  
+            &lt;groupId&gt;org.ehcache&lt;/groupId&gt;  
+            &lt;artifactId&gt;ehcache&lt;/artifactId&gt;  
+            &lt;version&gt;${ehcache.version}&lt;/version&gt;  
+        &lt;/dependency&gt;  
+        &lt;dependency&gt;  
+            &lt;groupId&gt;org.ehcache&lt;/groupId&gt;  
+            &lt;artifactId&gt;ehcache-clustered&lt;/artifactId&gt;  
+            &lt;version&gt;${ehcache.version}&lt;/version&gt;  
+        &lt;/dependency&gt;  
+  
+</code></pre>  
+  
+<ul>  
+<li>tc-config.xml (ehcache3.4.0)版本已经被合并了里面包含<code>terracotta</code><br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;  
+&lt;tc-config xmlns=&quot;http://www.terracotta.org/config&quot;  
+           xmlns:ohr=&quot;http://www.terracotta.org/config/offheap-resource&quot;&gt;  
+  &lt;!--  
+    This is the default Terracotta server configuration file for the Ehcache kit.  
+  
+    It defines a single offheap resource of 512MB to be used for caching data.  
+  
+    It also defines a single server, but you can add another one to benefit from high availability.  
+  --&gt;  
+  
+  &lt;plugins&gt;  
+    &lt;config&gt;  
+      &lt;ohr:offheap-resources&gt;  
+        &lt;ohr:resource name=&quot;main&quot; unit=&quot;MB&quot;&gt;512&lt;/ohr:resource&gt;  
+      &lt;/ohr:offheap-resources&gt;  
+    &lt;/config&gt;  
+  &lt;/plugins&gt;  
+  
+  &lt;servers&gt;  
+    &lt;server host=&quot;10.11.0.224&quot; name=&quot;s1&quot;&gt;  
+      &lt;!--  
+        Indicates the location for logs files - %H will resolve to user home directory.  
+        Note that relative path will be resolved from the location of this configuration file.  
+       --&gt;  
+      &lt;logs&gt;/home/hadmin/data/logs/ehcache/ehcache-server/terracotta-logs-s1&lt;/logs&gt;  
+  
+      &lt;!--  
+        This port is used by clients to communicate to the server.  
+        Its value is actually the default one and is thus omitted.  
+      --&gt;  
+      &lt;tsa-port&gt;9410&lt;/tsa-port&gt;  
+  
+      &lt;!--  
+        This port is used for server to server communication.  
+        Its value is actually the default one and is thus omitted.  
+      --&gt;  
+      &lt;tsa-group-port&gt;9430&lt;/tsa-group-port&gt;  
+    &lt;/server&gt;  
+    &lt;server host=&quot;10.11.0.225&quot; name=&quot;s2&quot;&gt;  
+      &lt;!--  
+                   Indicates the location for logs files - %H will resolve to user home directory.  
+        Note that relative path will be resolved from the location of this configuration file.  
+       --&gt;  
+      &lt;logs&gt;/home/hadmin/data/logs/ehcache/ehcache-server/terracotta-logs-s2&lt;/logs&gt;  
+  
+      &lt;!--  
+                   This port is used by clients to communicate to the server.  
+        Its value is actually the default one and is thus omitted.  
+      --&gt;  
+      &lt;tsa-port&gt;9410&lt;/tsa-port&gt;  
+  
+      &lt;!--  
+                   This port is used for server to server communication.  
+        Its value is actually the default one and is thus omitted.  
+      --&gt;  
+      &lt;tsa-group-port&gt;9430&lt;/tsa-group-port&gt;  
+    &lt;/server&gt;  
+  
+    &lt;!--  
+      Below a sample server definition that will give HA to the cluster if run on a different host.  
+  
+      Servers know how to communicate between each others because each version of the config file on each host  
+      will list all servers in it.  
+    --&gt;  
+    &lt;!--&lt;server host=&quot;otherhost&quot; name=&quot;other-server&quot;&gt;--&gt;  
+      &lt;!--&lt;logs&gt;logs&lt;/logs&gt;--&gt;  
+      &lt;!--&lt;tsa-port&gt;9410&lt;/tsa-port&gt;--&gt;  
+    &lt;!--&lt;/server&gt;--&gt;  
+  
+    &lt;!--  
+      Indicates how much time a server taking over after a failure in an active will wait  
+      to allow existing clients to reconnect. The time unit is seconds.  
+    --&gt;  
+    &lt;client-reconnect-window&gt;120&lt;/client-reconnect-window&gt;  
+  &lt;/servers&gt;  
+&lt;/tc-config&gt;  
+  
+</code></pre>  
+  
+<ul>  
+<li><p>以上的配置文件为两个节点</p></li>  
+  
+<li><p>分别在两个节点上运行相应命令。</p></li>  
+</ul>  
+  
+<pre><code class="language-bash"># 1  
+nohup ./bin/start-tc-server.sh  -f conf/tc-config.xml  -n s1 &amp;  
+# 2  
+nohup ./bin/start-tc-server.sh  -f conf/tc-config.xml  -n s2 &amp;  
+  
+</code></pre>  
+  
+<ul>  
+<li><p>这样两台基本的Ehcache 服务集群就搭建成功了。</p></li>  
+  
+<li><p>文章写的比较着急，不忙了在继续整理，望理解。</p></li>  
+  
+<li><p>测试代码</p></li>  
+</ul>  
+  
+<pre><code class="language-java">  
+  
+package todcloud.utils.ehcache;  
+  
+/**  
+ * Created by zhangjianxin on 2017/12/4.  
+ * Github Breakeval13  
+ * blog firsh.me  
+ */  
+import java.net.URI;  
+  
+import org.ehcache.Cache;  
+import org.ehcache.CacheManager;  
+import org.slf4j.Logger;  
+  
+import static java.net.URI.create;  
+import static org.ehcache.clustered.client.config.builders.ClusteredResourcePoolBuilder.clusteredDedicated;  
+import static org.ehcache.clustered.client.config.builders.ClusteringServiceConfigurationBuilder.cluster;  
+import static org.ehcache.config.builders.CacheConfigurationBuilder.newCacheConfigurationBuilder;  
+import static org.ehcache.config.builders.CacheManagerBuilder.newCacheManagerBuilder;  
+import static org.ehcache.config.builders.ResourcePoolsBuilder.heap;  
+import static org.ehcache.config.units.MemoryUnit.MB;  
+import static org.slf4j.LoggerFactory.getLogger;  
+  
+public class ClusteredProgrammatic {  
+    private static final Logger LOGGER = getLogger(ClusteredProgrammatic.class);  
+  
+    public static void main(String[] args) {  
+        LOGGER.info(&quot;Creating clustered cache manager&quot;);  
+        final URI uri = create(&quot;terracotta://10.11.0.224:9410/s1&quot;);  
+        try (CacheManager cacheManager = newCacheManagerBuilder()  
+                .with(cluster(uri).autoCreate().defaultServerResource(&quot;main&quot;))  
+                .withCache(&quot;basicCache&quot;,  
+                        newCacheConfigurationBuilder(Long.class, String.class,  
+                                heap(100).offheap(1, MB).with(clusteredDedicated(512, MB))))  
+                .build(true)) {  
+            Cache&lt;Long, String&gt; basicCache = cacheManager.getCache(&quot;basicCache&quot;, Long.class, String.class);  
+  
+            LOGGER.info(&quot;Putting to cache&quot;);  
+//            basicCache.put(100L, &quot;da one!&quot;);  
+//            basicCache.put(1L, &quot;da one1L!&quot;);  
+            System.out.println(basicCache.get(1L));  
+            LOGGER.info(&quot;Closing cache manager&quot;);  
+        }  
+  
+        LOGGER.info(&quot;Exiting&quot;);  
+    }  
+}  
+  
+</code></pre>  
+
+
+</body>
+
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-10-18-re-port-python.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title: Python端口转发<br />  
+categories: python<br />  
+description: python进行端口数据转发</p>  
+  
+<h2>keywords: linux,python</h2>  
+  
+<p>一个用Python做端口转发的源码示例</p>  
+  
+<h1>先看代码</h1>  
+  
+<p>date：2017-10-17<br />  
+author：zhangjianxin</p>  
+  
+<p>[TOC]</p>  
+  
+<pre><code class="language-python">  
+import socket,asyncore  
+  
+class forwarder(asyncore.dispatcher):  
+    def __init__(self, ip, port, remoteip,remoteport,backlog=5):  
+        asyncore.dispatcher.__init__(self)  
+        self.remoteip=remoteip  
+        self.remoteport=remoteport  
+        self.create_socket(socket.AF_INET,socket.SOCK_STREAM)  
+        self.set_reuse_addr()  
+        self.bind((ip,port))  
+        self.listen(backlog)  
+  
+    def handle_accept(self):  
+        conn, addr = self.accept()  
+        # print '--- Connect --- '  
+        sender(receiver(conn),self.remoteip,self.remoteport)  
+  
+class receiver(asyncore.dispatcher):  
+    def __init__(self,conn):  
+        asyncore.dispatcher.__init__(self,conn)  
+        self.from_remote_buffer=''  
+        self.to_remote_buffer=''  
+        self.sender=None  
+  
+    def handle_connect(self):  
+        pass  
+  
+    def handle_read(self):  
+        read = self.recv(4096)  
+        # print '%04i --&gt;'%len(read)  
+        self.from_remote_buffer += read  
+  
+    def writable(self):  
+        return (len(self.to_remote_buffer) &gt; 0)  
+  
+    def handle_write(self):  
+        sent = self.send(self.to_remote_buffer)  
+        # print '%04i &lt;--'%sent  
+        self.to_remote_buffer = self.to_remote_buffer[sent:]  
+  
+    def handle_close(self):  
+        self.close()  
+        if self.sender:  
+            self.sender.close()  
+  
+class sender(asyncore.dispatcher):  
+    def __init__(self, receiver, remoteaddr,remoteport):  
+        asyncore.dispatcher.__init__(self)  
+        self.receiver=receiver  
+        receiver.sender=self  
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)  
+        self.connect((remoteaddr, remoteport))  
+  
+    def handle_connect(self):  
+        pass  #www.iplaypy.com  
+  
+    def handle_read(self):  
+        read = self.recv(4096)  
+        # print '&lt;-- %04i'%len(read)  
+        self.receiver.to_remote_buffer += read  
+  
+    def writable(self):  
+        return (len(self.receiver.from_remote_buffer) &gt; 0)  
+  
+    def handle_write(self):  
+        sent = self.send(self.receiver.from_remote_buffer)  
+        # print '--&gt; %04i'%sent  
+        self.receiver.from_remote_buffer = self.receiver.from_remote_buffer[sent:]  
+  
+    def handle_close(self):  
+        self.close()  
+        self.receiver.close()  
+  
+if __name__=='__main__':  
+    import optparse  
+  
+    parser = optparse.OptionParser()  
+  
+    parser.add_option(  
+        '-l','--local-ip',  
+        dest='local_ip',default='127.0.0.1',  
+        help='Local IP address to bind to')  
+  
+    parser.add_option(  
+        '-p','--local-port',  
+        type='int',dest='local_port',default=80,  
+        help='Local port to bind to')  
+  
+    parser.add_option(  
+        '-r','--remote-ip',dest='remote_ip',  
+        help='Local IP address to bind to')  
+  
+    parser.add_option(  
+        '-P','--remote-port',  
+        type='int',dest='remote_port',default=80,  
+        help='Remote port to bind to')  
+  
+    options, args = parser.parse_args()  
+  
+    forwarder(options.local_ip,options.local_port,options.remote_ip,options.remote_port)  
+  
+    asyncore.loop()  
+  
+</code></pre>  
+  
+<ul>  
+<li>以上操作经过验证可以直接拿去。<br />  
+</li>  
+<li>Owner <code>breakEval13</code><br />  
+</li>  
+<li><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></li>  
+</ul>  
+
+
+</body>
+
+</html>

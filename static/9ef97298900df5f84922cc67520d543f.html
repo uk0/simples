@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-07-02-linux-ls-wc.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title: Linux/Mac下统计当前文件夹下的文件个数、目录个数<br />  
+categories: ls,wc<br />  
+description: linux</p>  
+  
+<h2>keywords: Linux, Mac,bash</h2>  
+  
+<p>发这个贴的原因，是因为今天写了一个爬虫，爬下来的图片存储起来了，没办法看已经有多少张图片了。<br />  
+于是下面的事情发生了&hellip;..</p>  
+  
+<p>这篇文章主要介绍了Linux下统计当前文件夹下的文件个数、目录个数,本文使用ls命令配合管理、grep命令实现统计需求,需要的朋友可以参考下<br />  
+不好意思，为了不让该帖子沉下去，造福需要改机的机友们，所以加上了回复才能查看的内容。</p>  
+  
+<h2>1.统计当前文件夹下文件的个数</h2>  
+  
+<pre><code class="language-bash">  
+    ls -l |grep &quot;^-&quot;|wc -l  
+</code></pre>  
+  
+<h2>2、 统计当前文件夹下目录的个数</h2>  
+  
+<pre><code class="language-bash">         ls -l |grep &quot;^d&quot;|wc -l  
+</code></pre>  
+  
+<h2>3、 统计当前文件夹下文件的个数，包括子文件夹里的</h2>  
+  
+<pre><code class="language-bash">    ls -lR|grep &quot;^-&quot;|wc -l  
+   ```
+## 4、统计文件夹下目录的个数，包括子文件夹里的
+   ```bash  
+   ls -lR|grep &quot;^d&quot;|wc -l  
+</code></pre>  
+  
+<h2>5. 说明</h2>  
+  
+<pre><code class="language-text">  代码如下:  
+  
+  ls -l  
+  
+  长列表输出当前文件夹下文件信息(注意这里的文件，不同于一般的文件，可能是目录、链接、设备文件等)  
+  
+  代码如下:  
+  
+  grep &quot;^-&quot;  
+  
+  这里将长列表输出信息过滤一部分，只保留一般文件，如果只保留目录就是 ^d  
+  代码如下:  
+  
+  wc -l  
+  
+  统计输出信息的行数，因为已经过滤得只剩一般文件了，所以统计结果就是一般文件信息的行数，又由于一行信息对应一个文件，所以也就是文件的个数。  
+</code></pre>  
+  
+<blockquote>  
+<p>Over</p>  
+</blockquote>  
+
+
+</body>
+
+</html>

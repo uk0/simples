@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-07-06-esay-table-Tools-core.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title:  简易Table封装类,所有的Table都需要通过此工具操作合并col，row<br />  
+categories: Handtable,HandtableExcel<br />  
+description: 回顾</p>  
+  
+<h2>keywords: javascript, Handtable</h2>  
+  
+<p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>  
+  
+<h2>代码</h2>  
+  
+<pre><code class="language-javascript">/**  
+ * divId:插入表格的divId  
+ * listTitle:插入表格标题  
+ * listData:插入表格数据  
+ */  
+function addTable(divId, listTitle, listData,n) {  
+	var num = parseInt(Math.random()*100);  
+	var tableDivId = &quot;table&quot;+num.toString();  
+	var div = document.getElementById(divId);  
+	div.innerHTML = &quot;&quot;;  
+	var strTitle = &quot;&quot;;  
+	var scendTitle = &quot;&quot;;  
+	var strDate = &quot;&quot;;  
+	for (var i = 0; i &lt; listTitle.length; i++) {  
+		if (listTitle[i].indexOf(&quot;:&quot;) != -1) {  
+			var strs = listTitle[i].split(&quot;:&quot;);  
+			strTitle += '&lt;th&gt;' + strs[0] + '&lt;/th&gt;';  
+		} else {  
+			strTitle += '&lt;th&gt;' + listTitle[i] + '&lt;/th&gt;';  
+		}  
+	}  
+	for (var i = 0; i &lt; listTitle.length; i++) {  
+		if (listTitle[i].indexOf(&quot;:&quot;) != -1) {  
+			var strs = listTitle[i].split(&quot;:&quot;);  
+			scendTitle += '&lt;th&gt;' + strs[1] + '&lt;/th&gt;';  
+		} else {  
+			scendTitle += '&lt;th&gt;' + listTitle[i] + '&lt;/th&gt;';  
+		}  
+	}  
+	/**alert(listData.length);*/  
+	for (i = 0; i &lt; listData.length; i++) {  
+		strDate += '&lt;tr&gt;';  
+		for (j = 0; j &lt; listData[0].length; j++) {  
+			strDate += '&lt;td&gt;' + listData[i][j] + '&lt;/td&gt;';  
+		}  
+		strDate += '&lt;/tr&gt;';  
+	}  
+	var table = '&lt;table class=&quot;t1&quot; id='+tableDivId+' width=&quot;100%&quot;  cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; &gt;&lt;thead&gt;' + '&lt;tr&gt;' + strTitle + '&lt;/tr&gt;&lt;tr&gt;' + scendTitle + '&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;' + strDate + '&lt;/tbody&gt;&lt;/table&gt;';  
+	div.innerHTML = table;  
+	uniteTdCells(tableDivId,n);  
+	uniteTdRells(tableDivId);  
+}  
+/*  
+ * 合并行  
+ * tableId:需要操作表格的Id  
+ */  
+function uniteTdCells(tableDivId,n) {  
+	var table = document.getElementById(tableDivId);  
+	var nLeftCol = n;  
+	for (var r = 0; r &lt; table.rows.length; r++) {  
+		for (var c = 0; c &lt; table.rows[r].cells.length; c++) {  
+			/**选择要合并的列序数，去掉默认全部合并*/  
+			if (r &gt;= 2 &amp;&amp; c &gt;= nLeftCol) {  
+				continue;  
+			}  
+			for (j = r + 1; j &lt; table.rows.length; j++) {  
+				var cell1 = table.rows[r].cells[c].innerHTML;  
+				var cell2 = table.rows[j].cells[c].innerHTML;  
+				if (cell1 == cell2) {  
+					table.rows[j].cells[c].style.display = 'none';  
+					table.rows[r].cells[c].rowSpan++;  
+				} else {  
+					break;  
+				}  
+			}  
+		}  
+	}  
+}  
+  
+/*  
+ *合并列  
+ *tableId：操作表格ID  
+ */  
+function uniteTdRells(tableDivId) {  
+	var table = document.getElementById(tableDivId);  
+	for (var c = 0; c &lt; table.rows[0].cells.length; c++) {  
+		for (j = c + 1; j &lt; table.rows[0].cells.length; j++) {  
+			var strOne = table.rows[0].cells[c].innerHTML;  
+			var strTwo = table.rows[0].cells[j].innerHTML;  
+			if (strOne == strTwo) {  
+				table.rows[0].cells[j].style.display = 'none';  
+				table.rows[0].cells[c].colSpan++;  
+			}  
+		}  
+	}  
+}  
+  
+  
+  
+function uniteTdCellsOne( n) {  
+	var table = document.getElementById(tableId);  
+	var nLeftCol = n;  
+	for (var r = 0; r &lt; table.rows.length; r++) {  
+		for (var c = 7; c &lt; table.rows[r].cells.length; c++) {  
+			/**             	/**选择要合并的列序数，去掉默认全部合并*/  
+			/** 	        	if (r &gt;= 2 &amp;&amp; c &gt;= nLeftCol)*/  
+			/** 	        	{*/  
+			/** 	        		continue; */  
+			/** 	        	}*/  
+			for (j = r + 1; j &lt; table.rows.length; j++) {  
+				var cell1 = table.rows[r].cells[c].innerHTML;  
+				var cell2 = table.rows[j].cells[c].innerHTML;  
+				if (cell1 == cell2) {  
+					table.rows[j].cells[c].style.display = 'none';  
+					table.rows[r].cells[c].rowSpan++;  
+				} else {  
+					break;  
+				}  
+			}  
+		}  
+	}  
+}  
+  
+</code></pre>  
+
+
+</body>
+
+</html>

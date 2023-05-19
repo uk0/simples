@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2018-04-04-check-disk-manager.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: awk<br />  
+title: linux硬盘检查大小awk脚本全自动执行,以及日志抽取<br />  
+date: 2018-04-04 17:08:52 +0800<br />  
+description: 硬盘监测</p>  
+  
+<h2>keywords: awk linux 硬盘检查</h2>  
+  
+<h2>DISK 监测剩余量</h2>  
+  
+<pre><code class="language-bash">#!/bin/bash  
+temp=0.0  
+DISK_SIZE=0.0  
+for i in {0..26}  
+do  
+    echo -e &quot;dscn0$i Disk&quot;  
+    echo &quot;剩余可用大小GB&quot;  
+    temp=`ssh dscn0$i df -m|grep hadoop | awk '$4~/^[0-9]/ {split($4,array,&quot;[A-Z]&quot;);b+=array[1]} END {print b/1024}'`  
+    DISK_SIZE=$(echo &quot;$DISK_SIZE + $temp&quot; | bc)  
+  
+    echo -e &quot;总数 剩余 占比 目录&quot;  
+    ssh dscn0$i df -h | grep hadoop  | awk '{print$2, $4, $5, $6}'  
+done  
+echo -e &quot;\033[32m 剩余总大小: $DISK_SIZE GB \033[0m&quot;  
+  
+</code></pre>  
+  
+<h2>bash 样式</h2>  
+  
+<pre><code class="language-bash">  
+    PS1='\[\e[1;32m\]\u@\h\[\e[m\]:\[\e[1;34m\]\W\[\e[1;33m\]\$\[\e[m\] '  
+  
+</code></pre>  
+  
+<h2>抽取一天的日志到另一个日志文件</h2>  
+  
+<pre><code class="language-bash">#!/bin/bash  
+  
+TIME_LINE=$(date +%Y%m%d%H%M%S)  
+  
+  
+function getOne(){  
+    # 设定变量  
+    if [ -z $1 ];then  
+        echo -e &quot;\033[31m Error: log Name is Null  \033[0m&quot;  
+        echo -e &quot;\033[32m Simple : ./readlogs.sh getOne xxx.log  \033[0m&quot;  
+        exit 1  
+    fi  
+    log=$1  
+    s=`date -d yesterday +%F` #前一天  
+    #s=$(date +%F) #今天  
+    e=$(date +%F) #今天  
+    # 根据条件获得开始和结束的行号  
+    sl=`cat -n $log | grep $s | head -1 | sed 's/^[ \t]*//g' | cut -f 1`  
+    el=`cat -n $log | grep $e | tail -1 | sed 's/^[ \t]*//g' | cut -f 1`  
+    echo -e &quot;\033[32m start Line $sl \033[0m&quot;  
+    echo -e &quot;\033[32m end Line $el \033[0m&quot;  
+    # 获取结果并输出到 `date`.log 文件  
+    sed -n &quot;$sl,$el&quot;'p' $log &gt;&gt; check_auto_$TIME_LINE.log  
+}  
+  
+case $1 in  
+  
+&quot;getOne&quot;)  
+	getOne $2  
+	;;  
+*)  
+	echo -e &quot;\033[1m usage: \n \t  [getOne] \033[0m&quot;  
+	echo -e &quot;\033[1m DESC: \n \t getOne : 获得一天内的文件日志，并且进行导出。 \033[0m&quot;  
+	exit 2 # Command to come out of the program with status 1  
+	;;  
+esac  
+exit 0  
+  
+</code></pre>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

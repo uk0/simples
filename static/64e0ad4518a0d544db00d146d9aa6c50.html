@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2018-12-26-python-logview-simple.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: python<br />  
+title: python 远程启动mapreduce作业<br />  
+date: 2018-12-26 18:08:19 +0800<br />  
+description: python 模拟实现tail -f</p>  
+  
+<h2>keywords: python</h2>  
+  
+<p>本文基于Python2.7 进行测试</p>  
+  
+<h3>源码</h3>  
+  
+<pre><code class="language-python"># -*- coding:utf-8 -*-  
+import BaseHTTPServer  
+import threading  
+import logging  
+import time  
+import urllib  
+import urlparse  
+import shlex  
+import subprocess  
+import io, shutil  
+import re  
+import random  
+import time  
+import os  
+from multiprocessing import Queue, Pool  
+import multiprocessing, time, random  
+class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):  
+    '''处理请求并返回页面'''  
+  
+    def do_GET(s):  
+        try:  
+            if None != re.search('/api/v1/startjar*', s.path) and '?' in s.path:  
+                print(&quot;in controller&quot;)  
+                content = &quot;&quot;  
+                startjar = &quot;&quot;  
+                query = urllib.splitquery(s.path)  
+                action = query[0]  
+                if query[1]:  # 接收get参数  
+                    queryParams = {}  
+                    for qp in query[1].split('&amp;'):  
+                        kv = qp.split('=')  
+                        queryParams[kv[0]] = urllib.unquote(kv[1]).decode(&quot;utf-8&quot;, 'ignore')  
+                        content += kv[0] + ':' + queryParams[kv[0]] + &quot;\r\n&quot;  
+                        if kv[0] == 'jar':  
+                            startjar = queryParams[kv[0]]  
+  
+                shell_cmd = ' hadoop fs -copyToLocal /task/mr/'+startjar+' /opt/cm/lib/cloudera-scm-agent/jobs/myjar.jar &amp;&amp; hadoop jar /opt/cm/lib/cloudera-scm-agent/jobs/myjar.jar &amp;&amp; yes|rm /opt/cm/lib/cloudera-scm-agent/jobs/myjar.jar'  
+                print(&quot;cmd is &quot; + shell_cmd)  
+                cmd = shlex.split(shell_cmd)  
+                p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  
+                while p.poll() is None:  
+                    line = p.stdout.readline()  
+                    line = line.strip()  
+                    if line:  
+                        s.wfile.write(line + &quot;\n&quot;)  
+                if p.returncode == 0:  
+                    print('Subprogram success')  
+                else:  
+                    print('Subprogram failed')  
+        except Exception:  
+            s.wfile.close()  
+            print(&quot;Error &quot;)  
+  
+  
+# ---------------------------------------------------------------------  
+  
+if __name__ == '__main__':  
+    serverAddress = ('', 8881)  
+    server = BaseHTTPServer.HTTPServer(serverAddress, RequestHandler)  
+    server.serve_forever()  
+  
+</code></pre>  
+  
+<h3>python 远程执行作业，（作业通过serverless 上传到hdfs）</h3>  
+  
+<ul>  
+<li>用的http服务是python2.7 自带的（简单）<br />  
+</li>  
+<li>实现比较简单就是利用了 subprocess 的PIPE 通过管道将结果输出，实现一个watch on 的效果（大佬勿喷）<br />  
+</li>  
+</ul>  
+  
+<h3>补充 serverless 上传jar的代码</h3>  
+  
+<ul>  
+<li>注意 kubeless 1.0.0版本 Python 的runtime是基于<code>bottle</code>还是可以做点手脚的。<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-python"># /usr/bin/env python  
+# coding=utf-8  
+  
+import paramiko  
+import os  
+from hdfs import Client  
+from bottle import route, run  
+from bottle import request  
+  
+client = Client(&quot;http://hdfs-web-svc.cloudera:50070&quot;, root=&quot;/&quot;, timeout=100, session=False)  
+# 文件上传的HTML模板，这里没有额外去写html模板了，直接写在这里，方便点吧  
+@route('/upload')  
+def upload():  
+    return '''  
+        &lt;html&gt;  
+            &lt;head&gt;  
+            &lt;/head&gt;  
+            &lt;body&gt;  
+                &lt;form action&quot;/upload&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;  
+                    &lt;input type=&quot;file&quot; name=&quot;data&quot; /&gt;  
+                    &lt;input type=&quot;submit&quot; value=&quot;Upload&quot; /&gt;  
+                &lt;/form&gt;  
+            &lt;/body&gt;  
+        &lt;/html&gt;  
+    '''  
+# 文件上传，overwrite=True为覆盖原有的文件，  
+# 如果不加这参数，当服务器已存在同名文件时，将返回“IOError: File exists.”错误  
+@route('/upload', method='POST')  
+def doupload():  
+    upload = request.files.getall('data')  
+    for meta in upload:  
+        buf = meta.file.read()  
+        name, ext = os.path.splitext(meta.filename)  
+        if ext not in ('.jar', '.tar'):  
+            return 'File extension not allowed. type [JAR]'  
+        path = '/task/mr/' + name + ext  
+        # ssh root@agent-2.agent-svc.cloudera.svc.cluster.local  
+        print(&quot;--------------save Task To&quot; + path)  
+        with client.write(path, overwrite=True) as writer:  
+            writer.write(buf);  
+    return 'ok'  
+  
+</code></pre>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>

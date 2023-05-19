@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-11-06-安全加固.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title: Linux 丛裸机进行安全加固[原创]<br />  
+categories: linux<br />  
+description: 运维</p>  
+  
+<h2>keywords: linux</h2>  
+  
+<p>Linux 丛裸机进行安全加固</p>  
+  
+<p>date：2017-10-06<br />  
+author：杨然儿</p>  
+  
+<h1>创建用户</h1>  
+  
+<p>useradd abs<br />  
+password abs</p>  
+  
+<h1>一、ssh加固</h1>  
+  
+<pre><code>	vi /etc/ssh/sshd_config  
+		####################  
+		Port 35791  
+		Protocol 2  
+		MaxAuthTries 3  
+		MaxSessions 3  
+		RSAAuthentication yes  
+		PubkeyAuthentication yes  
+		UsePAM yes  
+		X11Forwarding yes  
+		Banner none  
+		UseDNS no  
+		PermitRootLogin no  
+		PasswordAuthentication yes  
+		#####################  
+	service sshd reload  
+</code></pre>  
+  
+<h1>二、环境变量加固profile</h1>  
+  
+<pre><code>	vi /etc/profile  
+		#######################################  
+		##记录历史命令时间  
+		export HISTTIMEFORMAT=&quot;`whoami`  %F   %T  &quot;  
+		##修改帐户TMOUT值，600秒无操作自动退出  
+		export PS1='$LOGNAME@'`hostname`:'$PWD''$ '  
+		umask 022  
+		TMOUT=600  
+		#######################################  
+	source /etc/profile  
+</code></pre>  
+  
+<h1>三、屏蔽banner信息</h1>  
+  
+<pre><code>	备份方法：  
+			#cp -p /etc/ssh/sshd_config /etc/ssh/sshd_config_bak  
+			#cp -p /etc/motd /etc/motd_bak  
+  
+	加固方法：  
+			#vi /etc/ssh/sshd_config  
+			banner NONE  
+  
+			#vi /etc/motd  
+			删除全部内容或更新成自己想要添加的内容  
+</code></pre>  
+  
+<h1>四、禁用x_windows服务</h1>  
+  
+<pre><code>		vi /etc/inittab  
+		################################################################  
+		id:5:initdefault:                   --5改成3  
+		#######################################################################  
+</code></pre>  
+  
+<h1>五、打开审计</h1>  
+  
+<pre><code>		chkconfig auditd on  
+		service auditd restart  
+</code></pre>  
+  
+<h1>六、清理不必要的信任主机</h1>  
+  
+<pre><code>	--删除其中不必要的主机  
+		#vi /etc/hosts.equiv  
+		#vi /$HOME/.rhosts  
+</code></pre>  
+  
+<h1>七、安装基础包</h1>  
+  
+<pre><code>1、安装rz sz和 screen  
+	1).安装  
+	yum install -y lrzsz  
+	yum install -y screen  
+	2).查看  
+	rz      ##会弹出一个框  
+  
+2、安装iftop  
+	1).安装  
+		yum -y install flex byacc  libpcap ncurses ncurses-devel libpcap-devel  
+		wget http://www.ex-parrot.com/pdw/iftop/download/iftop-1.0pre2.tar.gz  
+		tar zxvf iftop-1.0pre2.tar.gz  
+		cd iftop-1.0pre2  
+		./configure  
+		make &amp;&amp; make install  
+	2).查看带宽  
+		iftop -B -n  -N -p  
+  
+3、安装jdk （1.6.0   1.7.0   1.8.0）这三个版本的jdk包 默认为1.8.0版本  
+	1).下载安装包到某个路径  
+		mkdir /opt/jdk/  
+		 jdk-8u65-linux-x64.gz  
+		 jdk-7u80-linux-x64.gz  
+  
+	2).解压  
+		tar xf jdk-7u80-linux-x64.gz  
+		tar xf jdk-8u65-linux-x64.gz  
+  
+	3).修改环境变量  
+		vim /etc/profile  
+		##################################################################################################  
+			export JAVA_HOME=/opt/jdk/jdk1.8.0_65  
+			export JRE_HOME=/opt/jdk/jdk1.8.0_65/jre  
+			export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH  
+			export PATH=$PATH:$JAVA_HOME/bin/  
+		###################################################################################################  
+		source /etc/profile  
+	4).查看java版本  
+		java -version  
+		----------------------------------------------------------------------  
+		 java version &quot;1.8.0_65&quot;  
+		 Java(TM) SE Runtime Environment (build 1.8.0_65-b17)  
+		 Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)  
+  
+		------------------------------------------------------------------------  
+	5).安装jdk1.6.0版本  
+		cd /opt/jdk/  
+		chmod 755 jdk-6u45-linux-x64.bin  
+		./jdk-6u45-linux-x64.bin （注意，这个步骤一定要在jdk-6u45-linux-x64.bin所在目录下）  
+		会生成一个jdk1.6.0_45目录  
+	6).查看1.6.0或1.7.0的版本  
+		./jdk1.6.0_45/bin/java -version  
+		-----------------------------------------------------------------------------  
+		java version &quot;1.6.0_45&quot;  
+		Java(TM) SE Runtime Environment (build 1.6.0_45-b06)  
+		Java HotSpot(TM) 64-Bit Server VM (build 20.45-b01, mixed mode)  
+  
+		------------------------------------------------------------------------------  
+		或  
+		./jdk1.7.0_80/bin/java -version  
+		-------------------------------------------------------------------------------  
+		java version &quot;1.7.0_80&quot;  
+		Java(TM) SE Runtime Environment (build 1.7.0_80-b15)  
+		Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)  
+  
+		--------------------------------------------------------------------------------  
+  
+  
+4、安装Python  
+	1).安装 sqlite-devel(因为 Flask 应用程序可能使用能 Sqlite 数据库，所以这个得装上（之前因为没装这个，导致 Python 无法导入 sqlite3 库）)  
+		yum install sqlite-devel -y  
+	2).安装Python2.7  
+		wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz  
+		tar xf Python-2.7.8.tgz  
+		cd Python-2.7.8  
+		./configure --prefix=/usr/local  
+		make &amp;&amp; make install  
+	安装成功之后，你可以在 /usr/local/bin/python2.7 找到 Python 2.7。  
+  
+5、安装aide  
+	1. 安装mhash  
+		yum -y install mhash-devel.x86_64 mhash.x86_64  
+	2.安装aide  
+		yum -y install aide.x86_64  
+	3. 配置(默认即可)  
+		vim /etc/aide.conf  
+		--可以不改,按默认就可以了  
+	4.生成初始化数据库  
+		# aide --init  
+		# mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz  
+	5. 开始检测  
+		# aide --check  
+  
+6、Lynis安全检查工具  
+	1).介绍  
+		https://cisofy.com/  
+		Lynis是一个为系统管理员提供的 Linux和Unix的审计工具 。 Lynis扫描系统的配置，并创建概述系统信息与安全问题所使用的专业审计。  
+		当用户启动该软件后，Lynis会会逐次扫描系统的内核、用户目录、软件信息等，并最后生成一个全面的报告。  
+		需要说明的是，该工具只能生成一个扫描检测后的报告，对用户起到提醒作用，本身并不能提高系统的安全性。  
+		但是该工具却可以成为其他安全软件、系统测评软件的模块。  
+  
+	2).安装  
+		yum -y install lynis  
+		或  
+		wget https://cisofy.com/files/lynis-2.1.1.tar.gz  
+  
+	3).全面检查  
+		lynis --check-all -Q  
+  
+	4).自动检查  
+		lynis -c --auditor &quot;automated&quot; --cronjob &gt; /var/log/lynis/report.txt  
+  
+	5).检查某项目  
+		lynis --tests FILE-6354 --quick  
+  
+	6).查看警告  
+		grep Warning /var/log/lynis.log  
+  
+	7).查看建议  
+		grep Suggestion /var/log/lynis.log  
+</code></pre>  
+  
+<h1>八、建立主机间的信任</h1>  
+  
+<pre><code>1、生成密钥(默认的是rsa)  
+	ssh-keygen -t rsa  
+2、将生成的密钥（公钥）拷贝给另一台主机  
+	ssh-copy-id -i ~/.ssh/id_rsa.pub &quot;-p 35791 root@192.168.1.4&quot;  
+	指定端口时记得使用双引号，以免报错  
+3、测试  
+	ssh -p 35791 root@192.168.1.4  
+	这样直接连接到192.168.1.4这一台主机上，不用输入密码就是添加信任成功  
+</code></pre>  
+  
+<h1>九、修改主机名</h1>  
+  
+<pre><code>1.临时修改主机名  
+	查看当前主机名：  
+	spark@localhost:~$ hostname  
+	localhost  
+  
+	修改主机名并查看当前主机名：  
+	spark@localhost:~$ sudo hostname hadoop  
+	spark@localhost:~$ hostname  
+	hadoop  
+PS:以上的修改只是临时修改，重启后就恢复原样了。  
+  
+2.永久修改主机名  
+	步骤1：  
+  
+	修改/etc/sysconfig/network中的hostname  
+  
+	vi /etc/sysconfig/network  
+	HOSTNAME=localhost.localdomain  #修改localhost.localdomain为orcl1  
+	修改network的HOSTNAME项。点前面是主机名，点后面是域名。没有点就是主机名。  
+  
+	这个是永久修改，重启后生效。目前不知道怎么立即生效。  
+  
+	想立即生效，可以同时采用第一种方法。  
+  
+	步骤2：  
+	修改/etc/hosts文件  
+  
+	vi /etc/hosts  
+	127.0.0.1    localhost.localdomain  #修改localhost.localdomain为orcl1  
+	shutdown -r now    #最后，重启服务器即可。  
+</code></pre>  
+  
+<h1>十、配置防火墙</h1>  
+  
+<pre><code>1、进入配置文件  
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
+	vim /etc/sysconfig/iptables  
+		########################################################  
+		*filter  
+		################ NULL Accept Hosts ######################  
+		###允许保垒机  
+		-A INPUT -s 221.41.47.213/32 -p tcp   --dport 35791 -j ACCEPT  
+		-A INPUT -s 10.168.189.37/32 -p tcp   --dport 35791 -j ACCEPT  
+		###允许本机  
+		-A INPUT -s 221.43.178.5/32 -p tcp    --dport 35791 -j ACCEPT  
+		-A INPUT -s 10.0.0.10/32 -p tcp       --dport 35791 -j ACCEPT  
+		###允许内网  
+		-A INPUT -s 10.0.0.0/8 -p tcp         --dport 35791 -j ACCEPT  
+		###允许腾讯众创空间  
+		-A INPUT -s 221.69.10.134/32 -p tcp   --dport 35791 -j ACCEPT  
+  
+  
+		#### MMSS 249  
+		-A INPUT -s 100.41.85.249/32 -p tcp  -j ACCEPT  
+		-A INPUT -d 100.41.85.249/32 -p tcp  -j ACCEPT  
+  
+  
+		###限制连接数  
+		-A INPUT -p tcp --dport 8080 -m connlimit --connlimit-above 3000 -j DROP  
+		-A INPUT -p tcp --dport 8888 -m connlimit --connlimit-above 3000 -j DROP  
+		-A INPUT -p tcp --dport 28080 -m connlimit --connlimit-above 3000 -j DROP  
+  
+  
+		###允许除35791之外所有端口  
+		-A INPUT -p tcp --dport 35791 -j DROP  
+		-A INPUT -p tcp ! --dport 35791 -j ACCEPT  
+  
+  
+		################ Black List  ############################  
+		#-A INPUT -s 106.187.53.56/32 -p tcp --dport 35791 -j DROP  
+  
+  
+		########### DNS Resolved ##############################  
+		-A INPUT -p udp -m udp --sport 53 -j ACCEPT  
+		-A INPUT -p udp -m udp --dport 53 -j ACCEPT  
+  
+  
+		################# ALLOW Local  ########################  
+		-A INPUT -i lo -j ACCEPT  
+  
+  
+		################# Forbidden Ping #######################  
+		-A INPUT -i eth0 -p icmp -s 0/0 -d 0/0 -j DROP  
+  
+  
+		################# NFS Backup Server ####################  
+		-A INPUT -s 10.168.189.37/32 -p all -j ACCEPT  
+		-A INPUT -s 121.41.47.213/32 -p all -j ACCEPT  
+  
+  
+		################# Forbidden ALL ########################  
+		-P INPUT DROP  
+  
+		################# OUTPUT Settings ####################  
+		-P OUTPUT ACCEPT  
+		COMMIT  
+		#####################################################  
+</code></pre>  
+  
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>  
+  
+<h1>十一、阿里云服务器安装安骑士</h1>  
+  
+<pre><code>1、安装64位的执行命令  
+	wget 'http://update.aegis.aliyun.com/download/AliAqsInstall_64.sh' &amp;&amp; sh AliAqsInstall_64.sh i24iJ7  
+  
+2、安装32位的执行命令  
+	wget 'http://update.aegis.aliyun.com/download/AliAqsInstall_32.sh' &amp;&amp; sh AliAqsInstall_32.sh i24iJ7  
+</code></pre>  
+  
+<ul>  
+<li>以上操作经过验证可以直接拿去。<br />  
+</li>  
+<li>auther <code>breakEval13</code><br />  
+</li>  
+<li><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></li>  
+</ul>  
+
+
+</body>
+
+</html>

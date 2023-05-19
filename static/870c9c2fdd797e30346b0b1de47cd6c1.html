@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2017-06-6-Jenkins-docker-kubectl-same-master.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+title: jenkins + docker + git 持续集成<br />  
+categories: [jenkins, docker]<br />  
+description: jenkins + docker + git 持续集成</p>  
+  
+<h2>keywords: jenkins, docker</h2>  
+  
+<blockquote>  
+<p>git push 以后， jenkins 自动触发 代码打包，生成docker image , docker push 到 仓库，发布到环境里。</p>  
+</blockquote>  
+  
+<h1>安装jenkins</h1>  
+  
+<p>这里不建议用 Docker 镜像，因为下面 Jenkins 自身会需要调用 Docker 来启动任务。</p>  
+  
+<p>Jenkins + Docker + kubectl + git + Blue Ocean。</p>  
+  
+<h2>导入 jenkins 源</h2>  
+  
+<pre><code>  
+wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins.io/redhat-stable/jenkins.repo  
+rpm --import http://pkg.jenkins.io/redhat-stable/jenkins.io.key  
+  
+  
+yum -y install jenkins  
+</code></pre>  
+  
+<h2>修改jenkins配置</h2>  
+  
+<pre><code>vi /etc/sysconfig/jenkins  
+  
+# 修改jenkins 目录  
+JENKINS_HOME=&quot;/opt/jenkins&quot;  
+  
+# 修改jenkins 端口  
+JENKINS_PORT=&quot;9999&quot;  
+</code></pre>  
+  
+<h2>移动目录</h2>  
+  
+<pre><code># 将目录移动过来，否则程序报错  
+mv /var/lib/jenkins /opt/  
+</code></pre>  
+  
+<h2>启动服务</h2>  
+  
+<pre><code>systemctl start jenkins  
+systemctl enable jenkins  
+</code></pre>  
+  
+<h2>访问WEB UI</h2>  
+  
+<pre><code>http://myip:9999/  
+</code></pre>  
+  
+<p>生成密钥</p>  
+  
+<pre><code># 切换用户  
+su jenkins  
+  
+  
+# 生成key  
+ssh-keygen -t rsa -b 4096 -C &quot;jenkins@git&quot;  
+  
+# 查看key信息  
+cat /home/jenkins/.ssh/id_rsa.pub  
+</code></pre>  
+  
+<h2>jenkins 后台配置</h2>  
+  
+<p>进入 jenkins &ndash;&gt; Credentials &ndash;&gt; Add Credentials<br />  
+<img src="http://jicki.me/images/posts/jenkins/4.png" alt="此处输入图片的描述" title="" /></p>  
+  
+<p>选择 系统管理 &ndash; &gt; 管理插件</p>  
+  
+<ol>  
+<li>添加 Gradle Plugin 插件<br />  
+</li>  
+<li>添加 Git plugin 插件<br />  
+<code>  
+常用插件  
+Build WIth Parameters   # 执行 构建 前手工输入参数  
+pipeline  
+Deploy Plugin   # build war 包以后部署  
+Email Extension Plugin  # 邮件发送  
+Multiple SCMs Plugin #多项目构建工具  
+</code><br />  
+</li>  
+</ol>  
+  
+<p>下载慢可直接下载 hpi 文件，通过高级 导入插件安装</p>  
+  
+<p>选择 系统管理 &ndash; &gt; Global Tool Configuration</p>  
+  
+<p>安装JDK</p>  
+  
+<p><img src="http://jicki.me/images/posts/jenkins/1.png" alt="描述" title="" /></p>  
+  
+<p>安装 Gradle</p>  
+  
+<p><img src="http://jicki.me/images/posts/jenkins/2.png" alt="此处输入图片的描述" title="" /></p>  
+  
+<p>安装 Git</p>  
+  
+<p><img src="http://jicki.me/images/posts/jenkins/3.png" alt="此处输入图片的描述" title="" /></p>  
+  
+<p>创建项目  选择 自由风格 的项目</p>  
+  
+<p>源码管理选择 Git</p>  
+  
+<p><img src="http://jicki.me/images/posts/jenkins/5.png" alt="此处输入图片的描述" title="" /></p>  
+  
+<p>构建 选择  Invoke Gradle script</p>  
+  
+<p><img src="http://jicki.me/images/posts/jenkins/6.png" alt="此处输入图片的描述" title="" /></p>  
+  
+<h2>构建触发器</h2>  
+  
+<pre><code># 勾选 Poll SCM  
+  
+# 每两分钟检查一次git代码是否有更新  
+H/2 * * * *  
+</code></pre>  
+  
+<h2>配置 邮件</h2>  
+  
+<p>首先必须安装 Email Extension Plugin 插件</p>  
+  
+<p>系统管理 &ndash;&gt; 系统设置 &ndash; &gt; Jenkins Location</p>  
+  
+<p>配置系统管理员邮件地址 &mdash; &gt;  xxx@163.com</p>  
+  
+<p>配置 Extended E-mail Notification</p>  
+  
+<p>SMTP Server =</p>  
+  
+<p>点击高级</p>  
+  
+<p>勾选 Use SMTP Authentication</p>  
+  
+<p>输入 发送 用户 与 密码</p>  
+  
+<p>填写 SMTP port</p>  
+  
+<p>Default Content Type 选择 HTML (text/html)</p>  
+  
+<pre><code>Default Subject =  构建通知:$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!  
+  
+  
+Default Content =  
+  
+&lt;b style=&quot;font-size:12px&quot;&gt;(本邮件是程序自动下发的，请勿回复，&lt;span style=&quot;color:red&quot;&gt;请相关人员fix it,重新提交到git 构建&lt;/span&gt;)&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+&lt;b style=&quot;font-size: 12px;&quot;&gt;项目名称：$PROJECT_NAME&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+&lt;b style=&quot;font-size: 12px;&quot;&gt;构建编号：$BUILD_NUMBER&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+&lt;b style=&quot;font-size: 12px;&quot;&gt;GIT版本号：${GIT_REVISION}&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+&lt;b style=&quot;font-size: 12px;&quot;&gt;构建状态：$BUILD_STATUS&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+&lt;b style=&quot;font-size: 12px;&quot;&gt;触发原因：${CAUSE}&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+&lt;b style=&quot;font-size: 12px;&quot;&gt;构建日志地址：&lt;a href=&quot;${BUILD_URL}console&quot;&gt;${BUILD_URL}console&lt;/a&gt;&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+&lt;b style=&quot;font-size: 12px;&quot;&gt;构建地址：&lt;a href=&quot;$BUILD_URL&quot;&gt;$BUILD_URL&lt;/a&gt;&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+&lt;b style=&quot;font-size: 12px;&quot;&gt;变更集:${JELLY_SCRIPT,template=&quot;html&quot;}&lt;br&gt;&lt;/b&gt;&lt;hr&gt;  
+  
+</code></pre>  
+  
+<p><img src="http://jicki.me/images/posts/jenkins/8.png" alt="此处输入图片的描述" title="" /></p>  
+  
+<p>项目 &ndash; &gt; 构建后操作 &mdash; &gt; 添加 Editable Email Notification</p>  
+  
+<p>拉到最下面 &mdash; &gt; 点击 Advanced Settings&hellip;</p>  
+  
+<p><img src="http://jicki.me/images/posts/jenkins/9.png" alt="此处输入图片的描述" title="" /></p>  
+  
+<p>Recipient List 添加 收件邮箱 多个邮件以空格 隔开</p>  
+  
+<p><img src="http://jicki.me/images/posts/jenkins/10.png" alt="此处输入图片的描述" title="" /></p>  
+  
+<p>原文作者 <a href="https://jicki.me/" title="Title">小炒肉</a> .</p>  
+
+
+</body>
+
+</html>

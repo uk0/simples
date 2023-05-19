@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2018-11-05-kubeless-serverless-hdfs-put-data.md</title>
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<style>
+    html{--static-white:#fff;--bg-body:#fff;--bg-filler:#eff0f1;--bg-body-overlay:#f5f6f7;--text-title:#1f2329;--text-link-hover:#3370ff;--text-caption:#646a73;--text-placeholder:#8f959e;--primary-pri-400:#4e83fd;--primary-pri-500:#3370ff;--primary-pri-600:#245bdb;--line-border-card:#dee0e3;--shadow-default-sm:rgba(31, 35, 41, 0.12);--ccmtoken-mindnote-highlightcolor-neutral-raw:222,224,227;--icon-n1:#2b2f36;--icon-n2:#646a73}html[data-theme=dark]{--static-white:#fff;--bg-body:#1a1a1a;--bg-filler:#373737;--bg-body-overlay:#2e2e2e;--text-title:#f0f0f0;--text-link-hover:#4c88ff;--text-caption:#a6a6a6;--text-placeholder:#939393;--primary-pri-400:#2e65d1;--primary-pri-500:#4c88ff;--primary-pri-600:#70a0ff;--line-border-card:#5f5f5f;--shadow-default-sm:rgba(0, 0, 0, 0.32);--ccmtoken-mindnote-highlightcolor-neutral-raw:80,80,80;--icon-n1:#e8e8e8;--icon-n2:#a6a6a6}
+    body
+    {
+        width:auto; margin-top:5%; margin-left: 21%; margin-right: 26%;
+        float:right;
+         
+        font-family: LarkHackSafariFont,LarkEmojiFont,LarkChineseQuote,-apple-system,BlinkMacSystemFont,Helvetica Neue,Tahoma,PingFang SC,Microsoft Yahei,Arial,Hiragino Sans GB,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-size:14px;
+        color: #312222;
+        line-height:23px;
+        letter-spacing:1px
+    }
+</style>
+</head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.highlightAll();
+document.querySelectorAll('div.code').forEach(el => {
+    
+    hljs.highlightElement(el);
+
+});
+</script>
+
+<body style="background-color: #FFFFFF">
+<hr />  
+  
+<p>layout: post<br />  
+categories: hdfs<br />  
+title: seerverless操作hdfs上传数据。<br />  
+date: 2018-11-05 20:00:33 +0800<br />  
+description: serverless 通过 python 操作hdfs</p>  
+  
+<h2>keywords: hdfs</h2>  
+  
+<p>这只是一次尝试。。。。</p>  
+  
+<h2>kubernetes serverless 操作 Hadoop Hdfs</h2>  
+  
+<ul>  
+<li>serverless Python 操作hdfs<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-bash"># /usr/bin/env python  
+# coding=utf-8  
+  
+import paramiko  
+import os  
+from hdfs import Client  
+from bottle import route, run  
+from bottle import request  
+  
+client = Client(&quot;http://hdfs-web-svc.cloudera:50070&quot;, root=&quot;/&quot;, timeout=100, session=False)  
+# 文件上传的HTML模板，这里没有额外去写html模板了，直接写在这里，方便点吧  
+@route('/upload')  
+def upload():  
+    return '''  
+        &lt;html&gt;  
+            &lt;head&gt;  
+            &lt;/head&gt;  
+            &lt;body&gt;  
+                &lt;form action&quot;/upload&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;  
+                    &lt;input type=&quot;file&quot; name=&quot;data&quot; /&gt;  
+                    &lt;input type=&quot;submit&quot; value=&quot;Upload&quot; /&gt;  
+                &lt;/form&gt;  
+            &lt;/body&gt;  
+        &lt;/html&gt;  
+    '''  
+  
+  
+# 文件上传，overwrite=True为覆盖原有的文件，  
+# 如果不加这参数，当服务器已存在同名文件时，将返回“IOError: File exists.”错误  
+@route('/upload', method='POST')  
+def doupload():  
+    upload = request.files.getall('data')  
+    for meta in upload:  
+        buf = meta.file.read()  
+        name, ext = os.path.splitext(meta.filename)  
+        if ext not in ('.jar', '.tar'):  
+            return 'File extension not allowed. type [JAR]'  
+        path = '/task/mr/' + name + ext  
+        # ssh root@agent-2.agent-svc.cloudera.svc.cluster.local  
+        print(&quot;--------------save Task To&quot; + path)  
+        with client.write(path, overwrite=True) as writer:  
+            writer.write(buf);  
+  
+    return 'ok'  
+</code></pre>  
+  
+<ul>  
+<li>serverless.yml<br />  
+</li>  
+</ul>  
+  
+<pre><code class="language-yaml"># Welcome to Serverless!  
+#  
+# For full config options, check the kubeless plugin docs:  
+#    https://github.com/serverless/serverless-kubeless  
+#  
+# For documentation on kubeless itself:  
+#    http://kubeless.io  
+  
+# Update the service name below with your own service name  
+service: put-taskjar  
+  
+# Please ensure the serverless-kubeless provider plugin is installed globally.  
+# $ npm install -g serverless-kubeless  
+#  
+# ...before installing project dependencies to register this provider.  
+# $ npm install  
+  
+provider:  
+  name: kubeless  
+  namespace: ${env:K8S_NAMESPACE, 'cloudera'}  
+  runtime: python2.7  
+  
+plugins:  
+  - serverless-kubeless  
+  
+functions:  
+  upload:  
+    handler: task.upload  
+  
+</code></pre>  
+  
+<ul>  
+<li>具体信息看第一条关于 serverless 的文章。<br />  
+</li>  
+</ul>  
+  
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>  
+
+
+</body>
+
+</html>
