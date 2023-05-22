@@ -2,10 +2,12 @@ package main
 
 import (
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"fmt"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/russross/blackfriday/v2"
 	"github.com/shirou/gopsutil/process"
 	"html/template"
@@ -19,8 +21,12 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 )
+
+var Totalaccept = sync.Map{}
 
 var allPage []Page
 
@@ -35,6 +41,12 @@ type MK struct {
 	//Content string
 	Content template.HTML
 	Title   template.HTML
+}
+type ReMsg struct {
+	Id       int
+	SendTime template.HTML
+	Name     template.HTML
+	Context  template.HTML
 }
 
 type Page struct {
@@ -59,10 +71,142 @@ type Index struct {
 	SystemInfo SystemInfo `json:"systemInfo"`
 }
 
+// 获取ip
+func GetRequestIP(c *gin.Context) {
+	reqIP := c.ClientIP()
+	if reqIP == "::1" {
+		reqIP = "127.0.0.1"
+	}
+	var accept any
+	var ok bool
+	if accept, ok = Totalaccept.Load(reqIP); ok {
+		c := accept.(int64)
+		atomic.AddInt64(&c, 1)
+		Totalaccept.Store(reqIP, c)
+	} else {
+		var c int64
+		atomic.AddInt64(&c, 1)
+		Totalaccept.Store(reqIP, c)
+	}
+	log.Printf("accept ip %s accept count %d \n", reqIP, accept)
+	c.Next()
+}
+
+type Comment struct {
+	Id        int       `json:"id"`
+	Content   string    `json:"content"`
+	ParentId  int       `json:"parentId"`
+	RootId    int       `json:"rootId"`
+	Timestamp time.Time `json:"timestamp"`
+	Username  string    `json:"username"`
+	Website   string    `json:"website"`
+	Page      string    `json:"page"`
+}
+
+var db *sql.DB
+
+func InitDB() {
+	var err error
+	db, err = sql.Open("sqlite3", "./comments.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	/**
+	  CREATE TABLE IF NOT EXISTS comments(
+	        id TEXT NOT NULL PRIMARY KEY,
+	        rootId TEXT,
+	        parentId TEXT,
+	        username TEXT NOT NULL,
+	        website TEXT NOT NULL,
+	        content TEXT NOT NULL
+	    )
+	*/
+
+	statement, _ := db.Prepare(`
+	CREATE TABLE IF NOT EXISTS comments (
+	    id INTEGER PRIMARY KEY,
+		content TEXT,
+		parentId INTEGER,
+		rootId INTEGER,
+		username TEXT,
+		page TEXT,
+		website TEXT,
+		timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+	)
+`)
+	statement.Exec()
+}
+
+func getComments(page string) ([]Comment, error) {
+	//rows, err := db.Query("SELECT id, content, parentId, rootId, username, website, timestamp FROM comments WHERE rootId = ?", rootid)
+	rows, err := db.Query("SELECT id, content, parentId, rootId, username, website, timestamp FROM comments  WHERE page = ?", page)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []Comment
+	for rows.Next() {
+		var comment Comment
+		err := rows.Scan(&comment.Id, &comment.Content, &comment.ParentId, &comment.RootId, &comment.Username, &comment.Website, &comment.Timestamp)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
+}
+
+func insertComment(comment Comment) error {
+	statement, err := db.Prepare(`
+		INSERT INTO comments (page,content, parentId, rootId, username, website) VALUES (?, ?, ?, ?, ?, ?)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = statement.Exec(comment.Page, comment.Content, comment.ParentId, comment.RootId, comment.Username, comment.Website)
+	if err != nil {
+		return err
+	}
+	log.Println("statement.Insert")
+	return nil
+}
+
 func StartServer() {
 	r := gin.Default()
+	r.Use(GetRequestIP)
 	r.Use(static.Serve("/", static.LocalFile("static", true)))
 	r.StaticFS("/static", http.Dir("./static"))
+	r.GET("/comments", func(c *gin.Context) {
+		page := c.Query("page")
+		comments, err := getComments(page)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, comments)
+	})
+
+	r.POST("/comments", func(c *gin.Context) {
+		var comment Comment
+		err := c.BindJSON(&comment)
+		if err != nil {
+			log.Println(err.Error())
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+		err = insertComment(comment)
+		if err != nil {
+			log.Println(err.Error())
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.Status(201)
+	})
+
 	err := r.Run("0.0.0.0:80")
 	if err != nil {
 		return
@@ -184,7 +328,11 @@ func getInfo() SystemInfo {
 		Goroutine: template.HTML(fmt.Sprintf("%v", gNum)),
 	}
 }
+
+var DB *sql.DB
+
 func main() {
+	InitDB()
 	go func() {
 		for {
 			gitpull()
