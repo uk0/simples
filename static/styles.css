@@ -16,6 +16,10 @@
 
 }
 
+#comment-list{
+    padding-left: 3%;
+}
+
 .reply-button{
     background-color: #008CBA;
     color: white;
@@ -44,14 +48,13 @@ p span{
     background-color: #f8f8f8;
     padding: 40px;
     border-radius: 5px;
-    width: 80%;
-}
+ }
 
 #comment-form input,
 #comment-form textarea {
+    padding-left: 3%;
     display: block;
-    width: 80%;
-    padding: 10px;
+    width: 100%;
     margin-bottom: 10px;
     border-radius: 5px;
     border: 1px solid #ddd;
