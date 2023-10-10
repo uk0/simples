@@ -8,13 +8,13 @@ keywords: RocketMQ Golang
 ---
 
 
-数据通过FTP上传到服务器要求将数据发送到RocketMQ原版本用Java写的（不是本人）TPS上不去资源消耗大等问题。
+数据通过FTP上传到服务器要求将数据发送到RocketMQ原版本用Java写的，TPS上不去资源消耗大等问题。
 
 
 
 ## 缘由
 
- * 数据通过FTP上传到服务器要求将数据发送到RocketMQ原版本用Java写的（不是本人）TPS上不去资源消耗大等问题。
+ * 数据通过FTP上传到服务器要求将数据发送到RocketMQ原版本用Java写的（老版本）TPS上不去资源消耗大等问题。
  * 解决方案：采用Golang 重新实现，用到了Golang的 Go关键字 WaitGroup MMAP等。
  * 目前TPS 在虚拟机上跑 TPS稳定 5600 - 4700 
  * 链接如下：https://github.com/uk0/file_to_rocketmq_middleware
