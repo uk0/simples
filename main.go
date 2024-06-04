@@ -207,7 +207,7 @@ func StartServer() {
 		c.Status(201)
 	})
 
-	err := r.Run("0.0.0.0:80")
+	err := r.Run("0.0.0.0:8080")
 	if err != nil {
 		return
 	}
