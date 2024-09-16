@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArangoDB安装,For Centos7[原创]</title>
+<meta name="description" content="笔记">
+<meta name="keywords" content="ArangoDB,linxu,centos">
+<style>
+    body {
+        font-family: sans-serif;
+        line-height: 1.6;
+        max-width: 820px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f4f4f4; /* 默认白天模式 */
+        color: #333;
+        transition: background-color 0.5s ease, color 0.5s ease; 
+    }
+    
+    body.night-mode {
+        background-color: #121212;
+        color: #eee;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 600;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    h3 {
+        font-size: 16px;
+    }
+
+    h4 {
+        font-size: 14px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+    h6 {
+        font-size: 11px;
+    }
+
+    code {
+        font-family: monospace;
+        background-color: #eee;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+
+    pre {
+        background-color: #eee;
+        padding: 10px;
+        overflow-x: auto;
+        border-radius: 3px;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .container {
+        position: relative;
+    }
+
+    .shadow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.1); 
+        z-index: -1; 
+    }
+    
+    .center-text {
+        text-align: center; 
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="shadow"></div> 
+        <h1 class="center-text">ArangoDB安装,For Centos7[原创]</h1>
+        <p class="center-text">date：2017-08-17<br>author：zhangjianxin</p>
+        <p><a href="#1-下载arangodbrpm">1.下载ArangoDB rpm</a><br><a href="#2-installarangodb">2.Install ArangoDB</a><br><a href="#3-start">3.start</a><br><a href="#4-status">4.status</a><br><a href="#5-配置arangosh">5.配置arangosh</a><br><a href="#6-配置arangod">6.配置arangod</a><br><a href="#7-访问测试">7.访问测试</a><br><a href="#8-解决没有权限问题">8.解决没有权限问题</a></p>
+        <h1 id="arangodb安装">ArangoDB安装，以及访问出现无权限，导致无法连接arangosh，的解决方法。</h1>
+        <h1 id="1-下载arangodbrpm"> 1.下载ArangoDB rpm</h1>
+        <pre><code class="language-bash">wget http://112firshme11224.test.upcdn.net/blog/arangodb3-3.2.0-1.x86_64.rpm
+</code></pre>
+        <h1 id="2-installarangodb"> 2.Install ArangoDB</h1>
+        <pre><code class="language-bash">rpm -ivh arangodb3-3.2.0-1.x86_64.rpm
+</code></pre>
+        <h1 id="3-start"> 3.start</h1>
+        <pre><code class="language-bash">systemctl start arangodb3
+</code></pre>
+        <h1 id="4-status"> 4.status</h1>
+        <pre><code class="language-bash">
+
+systemctl status arangodb3
+</code></pre>
+        <h1 id="5-配置arangosh"> 5.配置arangosh</h1>
+        <pre><code class="language-bash">/etc/arangodb3/arangosh.conf
+----------------------------------------------
+[console]
+pretty-print = true
+
+[server]
+endpoint = tcp://127.0.0.1:8529
+authentication = true
+# username = root
+# password =
+
+[log]
+file = -
+
+[javascript]
+startup-directory = /usr/share/arangodb3/js
+</code></pre>
+        <h1 id="6-配置arangod"> 6.配置arangod</h1>
+        <pre><code class="language-bash"># ArangoDB configuration file
+#
+# Documentation:
+# https://docs.arangodb.com/Manual/Administration/Configuration/
+
+[database]
+directory = /var/lib/arangodb3
+
+# maximal-journal-size = 33554432
+
+[server]
+# Specify the endpoint for HTTP requests by clients.
+#  tcp://ipv4-address:port
+#  tcp://[ipv6-address]:port
+#  ssl://ipv4-address:port
+#  ssl://[ipv6-address]:port
+#  unix:///path/to/socket
+#
+# Examples:
+#   endpoint = tcp://0.0.0.0:8529
+#   endpoint = tcp://127.0.0.1:8529
+#   endpoint = tcp://localhost:8529
+#   endpoint = tcp://myserver.arangodb.com:8529
+#   endpoint = tcp://[::]:8529
+#   endpoint = tcp://[fe80::21a:5df1:aede:98cf]:8529
+#
+endpoint = tcp://[::]:8529
+storage-engine = auto
+
+# reuse a port on restart or wait until it is freed by the operating system
+# reuse-address = false
+
+authentication = true
+
+# number of server threads. use 0 to make arangod determine the
+# number of threads automatically, based on available CPUs
+# threads = 0
+
+# gather server statistics
+statistics = true
+
+# the user and group are normally set in the start script
+# uid = arangodb
+# gid = arangodb
+
+uid = arangodb
+
+
+[scheduler]
+# number of threads used for I/O, use 0 to make arangod determine
+# the number of threads automatically
+# threads = 0
+
+[javascript]
+startup-directory = /usr/share/arangodb3/js
+app-path = /var/lib/arangodb3-apps
+# app-path = //arangodb3/apps
+
+# number of V8 contexts available for JavaScript execution. use 0 to
+# make arangod determine the number of contexts automatically.
+# v8-contexts = 0
+
+[foxx]
+# enable Foxx queues in the server
+# queues = true
+
+# interval (seconds) to use for polling jobs in Foxx queues
+# queues-poll-interval = 1
+
+[log]
+level = info
+file = /var/log/arangodb3/arangod.log
+
+[cluster]
+
+[rocksdb]
+# encryption-keyfile=/your-encryption-file
+</code></pre>
+        <p><strong>以上完成安装</strong></p>
+        <h1 id="7-访问测试"> 7.访问测试</h1>
+        <pre><code class="language-bash">arangosh
+# 进入arangodb bash
+</code></pre>
+        <p><img src="http://112firshme11224.test.upcdn.net/blog/20E4E40601E232AFEB557A2260F5BA20.png" alt=""></p>
+        <h1 id="8-解决没有权限问题"> 8.解决没有权限问题</h1>
+        <pre><code class="language-bash"> # 停止 `systemctl stop arangodb3`
+ # 不启用授权启动arangodb
+/usr/sbin/arangod --server.authentication false
+
+ </code></pre>
+        <p><img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231202@2x.png" alt=""></p>
+        <ul>
+            <li>注意启动以后开启另一个<code>shell</code>窗口,当前的不要结束，图上面是已经<code>Control + C </code>了，这一步在什么时候做下面会说。</li>
+            <li>接下来执行<code>arangosh</code> 它会让你输入密码，直接会车即可。</li>
+        </ul>
+        <p><img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231311@2x.png" alt=""></p>
+        <ul>
+            <li>在出现的arangodb shell 里面执行如下命令。</li>
+        </ul>
+        <pre><code class="language-bash">require(&quot;@arangodb/users&quot;).replace(&quot;root&quot;, &quot;new-password&quot;);
+#通过他的客户端进行直接修改`root`密码
+</code></pre>
+        <ul>
+            <li>输入完密码，进行退出<code>exit</code></li>
+            <li>退出后去第一个shell窗口执行 <code>Control + C </code>。</li>
+            <li>然后在任意shell窗口进行访问<code>arangosh</code>,并且输入修改后的密码,即可成功登录arangodb。</li>
+        </ul>
+        <p><img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231323@2x.png" alt=""></p>
+        <h2>不推荐使用<code> arango-secure-installation</code>进行修改root密码。</h2>
+        <ul>
+            <li>以上操作经过验证可以直接拿去。</li>
+            <li>Owner <code>breakEval13</code></li>
+            <li><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></li>
+        </ul>
+    </div>
+    <footer>Power By Gemini TextGenerate 2024-09-16</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script>
+        hljs.highlightAll(); 
+        Prism.highlightAll(); 
+
+        const date = new Date();
+        const currentHour = date.getHours();
+
+        if (currentHour >= 19 || currentHour <= 6) { 
+            document.body.classList.add('night-mode');
+        }
+    </script>
+</body>
+</html>
