@@ -129,6 +129,68 @@ func generateIndexHTML(articles []Article, avatarURL string) {
 	<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "38ef94cda57d43a1a9de524646e66805"}'></script>
     <!-- End Cloudflare Web Analytics -->
 	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+	<script>
+        function generateRandomColor() {
+            return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+        }
+
+        function createCubeIcon() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+
+            const color1 = generateRandomColor();
+            const color2 = generateRandomColor();
+            const color3 = generateRandomColor();
+
+            // 绘制顶面
+            ctx.beginPath();
+            ctx.moveTo(32, 10);
+            ctx.lineTo(54, 20);
+            ctx.lineTo(32, 30);
+            ctx.lineTo(10, 20);
+            ctx.closePath();
+            ctx.fillStyle = color1;
+            ctx.fill();
+
+            // 绘制右面
+            ctx.beginPath();
+            ctx.moveTo(54, 20);
+            ctx.lineTo(54, 52);
+            ctx.lineTo(32, 62);
+            ctx.lineTo(32, 30);
+            ctx.closePath();
+            ctx.fillStyle = color2;
+            ctx.fill();
+
+            // 绘制左面
+            ctx.beginPath();
+            ctx.moveTo(10, 20);
+            ctx.lineTo(32, 30);
+            ctx.lineTo(32, 62);
+            ctx.lineTo(10, 52);
+            ctx.closePath();
+            ctx.fillStyle = color3;
+            ctx.fill();
+
+            return canvas.toDataURL('image/png');
+        }
+
+        function setFavicon() {
+            const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'shortcut icon';
+            link.href = createCubeIcon();
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
+
+        // 页面加载时设置favicon
+        window.onload = setFavicon;
+
+        // 每5秒更新一次favicon
+        setInterval(setFavicon, 96);
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         	
@@ -234,7 +296,7 @@ func generateIndexHTML(articles []Article, avatarURL string) {
         {{end}}
     </ul>
     <footer>
-        Power By Gemini TextGenerate
+        Power By Gemini AutoTextGenerate
     </footer>
 
     <script>
