@@ -1,119 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TDengine在量化交易中提供数据分析[更新中]。</title>
-<meta name="description" content="TDengine 在量化交易里面的数据分析实践">
-<meta name="keywords" content="TDengine db python xgboost">
-<style>
-body {
-  background-color: #f2f2f2; /* 白天模式 */
-  font-family: Arial, sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDengine在量化交易中提供数据分析[更新中]。</title>
+    <meta name="description" content="TDengine 在量化交易里面的数据分析实践" style="text-align:center;">
+    <meta name="keywords" content="TDengine db python xgboost" style="text-align:center;">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            max-width: 820px;
+            margin: 0 auto;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+        }
 
-h1 {
-  font-size: 20px;
-  text-align: center;
-  margin-bottom: 20px;
-}
+        h1 {
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
 
-h2 {
-  font-size: 18px;
-  margin-top: 30px;
-}
+        h2 {
+            font-size: 18px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
 
-h3 {
-  font-size: 16px;
-  margin-top: 20px;
-}
+        h3 {
+            font-size: 16px;
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
 
-h4 {
-  font-size: 14px;
-  margin-top: 15px;
-}
+        h4 {
+            font-size: 14px;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
 
-h5 {
-  font-size: 12px;
-  margin-top: 10px;
-}
+        h5 {
+            font-size: 12px;
+            margin-top: 8px;
+            margin-bottom: 2px;
+        }
 
-h6 {
-  font-size: 11px;
-  margin-top: 5px;
-}
+        h6 {
+            font-size: 11px;
+            margin-top: 6px;
+            margin-bottom: 1px;
+        }
 
-code {
-  display: block;
-  padding: 10px;
-  background-color: #f2f2f2;
-  border: 1px solid #ddd;
-  margin-bottom: 20px;
-}
+        pre {
+            background-color: #222;
+            color: #eee;
+            padding: 10px;
+            margin: 10px 0;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
 
-pre {
-  background-color: #f2f2f2;
-  border: 1px solid #ddd;
-  padding: 10px;
-  overflow-x: auto;
-}
+        code {
+            background-color: #222;
+            color: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
 
-.night-mode {
-  background-color: #222; /* 夜晚模式 */
-  color: #fff;
-}
-
-.night-mode code {
-  background-color: #222;
-  color: #fff;
-}
-
-.night-mode pre {
-  background-color: #222;
-  color: #fff;
-}
-
-footer {
-  text-align: center;
-  margin-top: 30px;
-  font-size: 12px;
-}
-</style>
-<script>
-// 获取当前时间
-const now = new Date();
-const hour = now.getHours();
-
-// 判断是白天还是夜晚
-if (hour >= 18 || hour < 6) {
-  document.body.classList.add('night-mode');
-}
-
-// 使用Highlight.js或Prism.js实现代码高亮
-// 请在此处添加必要的代码，例如：
-// window.onload = () => {
-//   hljs.highlightAll();
-// };
-</script>
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
-<h1>TDengine在量化交易中提供数据分析[更新中]。</h1>
-<h2 style="text-align: center;">记录一下量化交易的开始</h2>
-<h3 style="text-align: center;">准备工具</h3>
-<ul>
-<li>DB TDengine</li>
-<li>编程语言 Golang + Python</li>
-<li>环境 Unix Linux</li>
-<li>交易所 Bitmex Huobi Binance Okex</li>
-<li>每天增量300w数据</li>
-<li>机器配置 I7-8700 + 32GB DDR4 + GTX2060 + GTX1080 (Xgboost) 磁盘 6TB（SATA6GB/s）</li>
-</ul>
-<h3 style="text-align: center;">编译 TDengine （修改表字段限制）</h3>
-<pre><code>yum install gcc gcc-c++ make maven  -y # centos 7
+    <h1>TDengine在量化交易中提供数据分析[更新中]。</h1>
+    <h2>记录一下量化交易的开始</h2>
+    <h3>准备工具</h3>
+    <ul>
+        <li>DB TDengine</li>
+        <li>编程语言 Golang + Python</li>
+        <li>环境 Unix Linux</li>
+        <li>交易所 Bitmex Huobi Binance Okex</li>
+        <li>每天增量300w数据</li>
+        <li>机器配置 I7-8700 + 32GB DDR4 + GTX2060 + GTX1080 (Xgboost) 磁盘 6TB（SATA6GB/s）</li>
+    </ul>
+    <h3>编译 TDengine （修改表字段限制）</h3>
+    <pre>
+        <code class="bash">
+yum install gcc gcc-c++ make maven  -y # centos 7
 
 git clone https://github.com/taosdata/TDengine
 
@@ -145,18 +127,24 @@ make install
 
 # 出现这个说明已经安装好了
 
-</code></pre>
-<h3 style="text-align: center;">修改Taos DB 配置文件</h3>
-<pre><code># 将数据存储地址修改成 数据盘 日志改为 日志盘
+        </code>
+    </pre>
+    <h3>修改Taos DB 配置文件</h3>
+    <pre>
+        <code class="bash">
+# 将数据存储地址修改成 数据盘 日志改为 日志盘
 # data file's directory
 dataDir               /data
 
 # log file's directory
 logDir                /data/log
 
-</code></pre>
-<h3 style="text-align: center;">创建数据库</h3>
-<pre><code>create database bitmex;
+        </code>
+    </pre>
+    <h3>创建数据库</h3>
+    <pre>
+        <code class="sql">
+create database bitmex;
 use bitmex;
 --- 订单订阅数据表
 CREATE TABLE bitmex.trade
@@ -219,22 +207,28 @@ CREATE TABLE bitmex.order_l1_10
      bids_10_p        FLOAT, 
      bids_10_s        FLOAT 
   ); 
-</code></pre>
-<h3 style="text-align: center;">启动采集工具 （开始实时的通过WebSocket接收数据）</h3>
-<pre><code># 采集部分两部分
+        </code>
+    </pre>
+    <h3>启动采集工具 （开始实时的通过WebSocket接收数据）</h3>
+    <pre>
+        <code class="bash">
+# 采集部分两部分
 
 # 采集端 Agent（通过SSL GRPC 将数据传输到 Server）多个 Agent 同时传输
 
 # Server端 将通过GRPC 接收到的数据 通过http接口落库（这里用http接口是因为开发和部署的机器都是Unix的机器，数据库在内网的一台mac上运行。）
 
-</code></pre>
-<h4 style="text-align: center;">采集服务目录结构</h4>
-<img src="http://112firshme11224.test.upcdn.net/blog/2020-02-25-22-06-16.png!100" alt="采集服务目录结构">
-<h4 style="text-align: center;">采集服务日志恢复</h4>
-<img src="http://112firshme11224.test.upcdn.net/blog/2020-02-25-22-12-48.png!100" alt="采集服务日志恢复">
-<h3 style="text-align: center;">通过Middware将数据实时的放入TDEngine（这里存在一层日志备份未来可能存储到Hdfs走FLink训练）</h3>
-<h3 style="text-align: center;">确认数据</h3>
-<pre><code>{
+        </code>
+    </pre>
+    <h4>采集服务目录结构</h4>
+    <img src="http://112firshme11224.test.upcdn.net/blog/2020-02-25-22-06-16.png!100" alt="采集服务目录结构">
+    <h4>采集服务日志恢复</h4>
+    <img src="http://112firshme11224.test.upcdn.net/blog/2020-02-25-22-12-48.png!100" alt="采集服务日志恢复">
+    <h3>通过Middware将数据实时的放入TDEngine（这里存在一层日志备份未来可能存储到Hdfs走FLink训练）</h3>
+    <h3>确认数据</h3>
+    <pre>
+        <code class="json">
+{
     "status": "succ",
     "head": [
         "ts",
@@ -332,12 +326,26 @@ CREATE TABLE bitmex.order_l1_10
     ],
     "rows": 1
 }
-</code></pre>
-<h3 style="text-align: center;">提供Web界面 空和多 多家交易所对比，以及瞬时趋势</h3>
-<h3 style="text-align: center;">Python 调用数据开启分析 基础分析 EMA 交叉 （四家交易所同时10秒计算一次）</h3>
-<h3 style="text-align: center;">每天计算趋势图</h3>
-<h3 style="text-align: center;">钉钉通知。</h3>
-<h3 style="text-align: center;">纠正模型</h3>
-<footer>Power By Gemini TextGenerate 2024-09-16</footer>
+        </code>
+    </pre>
+    <h3>提供Web界面 空和多 多家交易所对比，以及瞬时趋势</h3>
+    <h3>Python 调用数据开启分析 基础分析 EMA 交叉 （四家交易所同时10秒计算一次）</h3>
+    <h3>每天计算趋势图</h3>
+    <h3>钉钉通知。</h3>
+    <h3>纠正模型</h3>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 21:28:27
+    </footer>
+    <script>
+        const now = new Date();
+        const hour = now.getHours();
+        if (hour >= 6 && hour <= 18) {
+            document.body.style.backgroundColor = "#f0f0f0";
+            document.body.style.color = "#000";
+        } else {
+            document.body.style.backgroundColor = "#000";
+            document.body.style.color = "#fff";
+        }
+    </script>
 </body>
 </html>

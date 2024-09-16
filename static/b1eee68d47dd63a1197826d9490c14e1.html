@@ -8,103 +8,107 @@
     <meta name="keywords" content="HDFS,flink">
     <style>
         body {
+            background-color: #111;
+            color: #eee;
             font-family: sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .container {
             max-width: 820px;
-            margin: 0 auto;
             padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.5s ease;
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
             font-size: 20px;
+            margin-bottom: 10px;
         }
 
         h2 {
             font-size: 18px;
+            margin-bottom: 8px;
         }
 
         h3 {
             font-size: 16px;
+            margin-bottom: 6px;
         }
 
         h4 {
             font-size: 14px;
+            margin-bottom: 4px;
         }
 
         h5 {
             font-size: 12px;
+            margin-bottom: 2px;
         }
 
         h6 {
             font-size: 11px;
+            margin-bottom: 1px;
         }
 
         pre {
-            background-color: #f5f5f5;
+            background-color: #333;
             padding: 10px;
-            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
             overflow-x: auto;
         }
 
         code {
             font-family: monospace;
-            background-color: #f5f5f5;
-            padding: 2px 4px;
-            border-radius: 3px;
         }
 
-        .meta {
-            text-align: center;
+        .highlight {
+            background-color: #444;
+            color: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
         }
 
         footer {
             text-align: center;
-            font-size: 12px;
             margin-top: 20px;
-            border-top: 1px solid #ddd;
-            padding: 10px;
-        }
-
-        .night-mode {
-            background-color: #222;
-            color: #eee;
-        }
-
-        .night-mode code {
-            background-color: #333;
-            color: #eee;
-        }
-
-        .night-mode pre {
-            background-color: #333;
+            font-size: 12px;
+            color: #aaa;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+    </script>
 </head>
 <body>
-    <div class="meta">
+    <div class="container">
         <h1>Docker Development HDFS for Flink Sink</h1>
-        <p>笔记</p>
-        <p>HDFS,flink</p>
-    </div>
-    <p>因工作需求所整合Flink + HDFS 作为一个Demo 帮助大家跳坑。</p>
-    <p>HDFS + Docker 采用集群主从模式。</p>
-    <h1 id="hdfs-with-docker">HDFS with Docker</h1>
-    <ul>
-        <li>Docker image for single <code>HDFS</code> node.</li>
-        <li><code>Only for development purpose.</code></li>
-        <li>License: <code>MIT</code></li>
-    </ul>
-    <h1 id="start">start</h1>
-    <ul>
-        <li>docker pull mdouchement/hdfs</li>
-    </ul>
-    <h1 id="local-build">Local build</h1>
-    <pre><code class="language-bash">$ docker build -t mdouchement/hdfs .</code></pre>
-    <h1 id="running-hdfs-container">Running HDFS container</h1>
-    <pre><code class="language-bash"># Running and get a Bash interpreter
+        <p>因工作需求所整合Flink + HDFS 作为一个Demo 帮助大家跳坑。</p>
+        <p>HDFS + Docker 采用集群主从模式。</p>
+        <h2>HDFS with Docker</h2>
+        <ul>
+            <li>Docker image for single <code>HDFS</code> node.</li>
+            <li><code>Only for development purpose.</code></li>
+            <li>License: <code>MIT</code></li>
+        </ul>
+        <h2>start</h2>
+        <ul>
+            <li>docker pull mdouchement/hdfs</li>
+        </ul>
+        <h2>Local build</h2>
+        <pre><code class="bash">$ docker build -t mdouchement/hdfs .</code></pre>
+        <h2>Running HDFS container</h2>
+        <pre><code class="bash"># Running and get a Bash interpreter
 $ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -it mdouchement/hdfs
 
 # With NFS
@@ -112,72 +116,46 @@ $ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:500
 
 # Running as daemon
 $ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -d mdouchement/hdfs
-
 </code></pre>
-    <ul>
-        <li>Ports
-            <ul>
-                <li>Portmap -> 111</li>
-                <li> NFS -> 2049</li>
-                <li> HDFS namenode -> 8020 (hdfs://localhost:8020)</li>
-                <li> HDFS datanode -> 50010</li>
-                <li> HDFS datanode (ipc) -> 50020</li>
-                <li> HDFS Web browser -> 50070</li>
-                <li> HDFS datanode (http) -> 50075</li>
-                <li> HDFS secondary namenode -> 50090</li>
-                <li> SSH -> 22</li>
-            </ul>
-        </li>
-    </ul>
-    <h1 id="contributing">Contributing</h1>
-    <ul>
-        <li>All PRs are welcome.
-            <ul>
-                <li>1.Fork it ( <a href="https://github.com/[my-github-username]/gemsupport/fork">https://github.com/[my-github-username]/gemsupport/fork</a> )</li>
-                <li>2.Create your feature branch (git checkout -b my-new-feature)</li>
-                <li>3.Commit your changes (git commit -am 'Add some feature')</li>
-                <li>4.Push to the branch (git push origin my-new-feature)</li>
-                <li>5.Create a new Pull Request</li>
-            </ul>
-        </li>
-    </ul>
-    <h1 id="dev">dev</h1>
-    <pre><code class="language-java"> /**HDFS Config*/
+        <h3>Ports</h3>
+        <ul>
+            <li>Portmap -> 111</li>
+            <li>NFS -> 2049</li>
+            <li>HDFS namenode -> 8020 (hdfs://localhost:8020)</li>
+            <li>HDFS datanode -> 50010</li>
+            <li>HDFS datanode (ipc) -> 50020</li>
+            <li>HDFS Web browser -> 50070</li>
+            <li>HDFS datanode (http) -> 50075</li>
+            <li>HDFS secondary namenode -> 50090</li>
+            <li>SSH -> 22</li>
+        </ul>
+        <h2>Contributing</h2>
+        <ul>
+            <li>All PRs are welcome.</li>
+            <li>1.Fork it ( https://github.com/[my-github-username]/gemsupport/fork )</li>
+            <li>2.Create your feature branch (git checkout -b my-new-feature)</li>
+            <li>3.Commit your changes (git commit -am 'Add some feature')</li>
+            <li>4.Push to the branch (git push origin my-new-feature)</li>
+            <li>5.Create a new Pull Request</li>
+        </ul>
+        <h2>dev</h2>
+        <pre><code class="java"> /**HDFS Config*/
   configuration.set("fs.default.name", "hdfs://localhost:8020");
 </code></pre>
-    <h1 id="docker这个是为了快速测试代码以及快速开发"><code>Docker</code>这个是为了快速测试代码，以及快速开发。</h1>
-    <ul>
-        <li>真的很方便，用后直接销毁。</li>
-        <li>也可以持久化储存数据。</li>
-        <li>详情请查看<code>Docker</code> 官网。</li>
-    </ul>
-    <ul>
-        <li>Owner <code>breakEval13</code></li>
-        <li><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></li>
-        <li><code>Docker</code>  <a href="https://docker.com">https://docker.com</a></li>
-    </ul>
+        <h2><code>Docker</code>这个是为了快速测试代码，以及快速开发。</h2>
+        <ul>
+            <li>真的很方便，用后直接销毁。</li>
+            <li>也可以持久化储存数据。</li>
+            <li>详情请查看<code>Docker</code> 官网。</li>
+        </ul>
+        <ul>
+            <li>Owner <code>breakEval13</code></li>
+            <li>https://github.com/breakEval13</li>
+            <li><code>Docker</code>  https://docker.com</li>
+        </ul>
+    </div>
     <footer>
-        Power By Gemini TextGenerate 2024-09-16
+        Power By Gemini TextGenerate 2024-09-16 21:32:33
     </footer>
-    <script>
-        // 获取当前时间
-        const now = new Date();
-        const hour = now.getHours();
-
-        // 判断白天模式还是夜晚模式
-        if (hour >= 19 || hour < 6) {
-            document.body.classList.add("night-mode");
-        }
-
-        // 初始化 Prism.js 和 Highlight.js
-        const codeElements = document.querySelectorAll('pre code');
-        codeElements.forEach(codeElement => {
-            // 使用 Prism.js 高亮显示代码
-            Prism.highlightElement(codeElement);
-        });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 </body>
 </html>

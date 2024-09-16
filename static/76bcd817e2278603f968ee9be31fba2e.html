@@ -7,57 +7,70 @@
 <meta name="keywords" content="javascript, Script" />
 <style>
 body {
-    background: #f0f0f0;
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    font-family: sans-serif;
-    transition: background-color 0.5s;
+  background-color: #000000;
+  color: #9f9;
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+#box {
+  width: 256px;
+  font: 25px/25px '宋体';
+  background: #000;
+  color: #9f9;
+}
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
 }
 h1 {
-    font-size: 20px;
-    text-align: center;
+  font-size: 20px;
 }
 h2 {
-    font-size: 18px;
-    text-align: center;
+  font-size: 18px;
 }
 h3 {
-    font-size: 16px;
-    text-align: center;
+  font-size: 16px;
 }
 h4 {
-    font-size: 14px;
+  font-size: 14px;
 }
 h5 {
-    font-size: 12px;
+  font-size: 12px;
 }
 h6 {
-    font-size: 11px;
-}
-pre {
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
+  font-size: 11px;
 }
 code {
-    font-size: 14px;
-    white-space: pre-wrap;
+  background-color: #000000;
+  color: #9f9;
+  padding: 2px 4px;
+  border-radius: 4px;
 }
-footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 12px;
+pre {
+  background-color: #000000;
+  color: #9f9;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+.hljs {
+  background-color: #000000;
+  color: #9f9;
+  padding: 2px 4px;
+  border-radius: 4px;
 }
 </style>
 </head>
 <body>
 <h1>javascript 实现的贪吃蛇 29line Code[瞎搞]</h1>
-<h2>摘要: Code(我想装个b)</h2>
+<h2 style="text-align: center;">摘要: Code(我想装个b)</h2>
 <pre><code class="language-html">&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;
-&lt;div id="box" style="width:256px;font:25px/25px 宋体;background:#000;color:#9f9;"&gt;&lt;/div&gt;&lt;script&gt;
+&lt;div id="box" style="width:256px;font:25px/25px 宋体;background:#000;color:#9f9;&gt;&lt;/div&gt;&lt;script&gt;
 var arr=[15];
 var next=10;/**最好判断一下arr[1]!=arr[0]+x*/
 document.onkeydown=function(e){next={'37':-1,'39':1,'38':-10,'40':10}[(e?e:event).keyCode]};
@@ -78,7 +91,7 @@ var run=setInterval(function(){
         arr.pop();
     var s='';
     for(var j=0;j&lt;200;j++){/**这个循环还可以缩短*/
-        if(j%10==0&amp;&amp;j!=0)
+        if(j%10==0&&j!=0)
             s+='&lt;br/&gt;';
         if(arr.indexOf(j)&gt;=0)
             s+='\u25a0';
@@ -92,19 +105,45 @@ var run=setInterval(function(){
 &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
 </code></pre>
 <script>
-  const currentHour = new Date().getHours();
-  const body = document.querySelector('body');
-
-  if (currentHour >= 19 || currentHour < 6) {
-    body.style.backgroundColor = '#222';
-    body.style.color = '#eee';
-  } else {
-    body.style.backgroundColor = '#f0f0f0';
-    body.style.color = '#333';
-  }
+  var arr = [15];
+  var next = 10; /**最好判断一下arr[1]!=arr[0]+x*/
+  document.onkeydown = function(e) {
+    next = {'37': -1, '39': 1, '38': -10, '40': 10}[(e ? e : event).keyCode];
+  };
+  var run = setInterval(function() {
+    var list = ['-1&&arr[0]%10==0', '1&&arr[0]%10==9', '-10&&arr[0]<10', '10&&arr[0]>189'];
+    var temp = arr[0] + next;
+    if (list.some(function(x) {
+        return eval('next==' + x)
+      }) || arr.indexOf(temp) >= 0)
+      return clearInterval(run) || alert('OVER');
+    arr.unshift(temp);
+    if (this.food == null || food == temp) {
+      list = []; /**(list=Array(200)).forEach(function(val,i){list[i]=i});*/
+      for (var i = 0; i < 200; i++)
+        list.push(i);
+      list = list.filter(function(x) {
+        return arr.indexOf(x) < 0
+      });
+      food = list[Math.round(Math.random() * (list.length - 1))]; /**food是全局变量*/
+    } else
+      arr.pop();
+    var s = '';
+    for (var j = 0; j < 200; j++) { /**这个循环还可以缩短*/
+      if (j % 10 == 0 && j != 0)
+        s += '<br/>';
+      if (arr.indexOf(j) >= 0)
+        s += '\u25a0';
+      else if (j == food)
+        s += '\u2605';
+      else
+        s += '&emsp;';
+    }
+    document.getElementById("box").innerHTML = s;
+  }, 200);
 </script>
 <footer>
-  Power By Gemini TextGenerate 2024-09-16
+    Power By Gemini TextGenerate 2024-09-16 21:27:59
 </footer>
 </body>
 </html>

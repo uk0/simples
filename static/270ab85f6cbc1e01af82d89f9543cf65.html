@@ -1,142 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>通过Serverless 获取 hadoop 文件系统的[原创]</title>
-<meta name="description" content="开放文件下载" />
-<meta name="keywords" content="serverless 操作 hdfs" />
-<style>
-body {
-  background-color: #f5f5f5;
-  color: #333;
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通过Serverless 获取 hadoop 文件系统的[原创]</title>
+    <meta name="description" content="开放文件下载" />
+    <meta name="keywords" content="serverless 操作 hdfs" />
+    <style>
+        body {
+            background-color: #282c34;
+            color: #fff;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            max-width: 820px;
+            margin: 0 auto;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-h1, h2, h3, h4, h5, h6 {
-  text-align: center;
-}
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
 
-h1 {
-  font-size: 20px;
-}
+        h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h5 {
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h6 {
+            font-size: 11px;
+            margin-bottom: 1px;
+        }
 
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        code {
+            background-color: #222;
+            color: #fff;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-family: "Courier New", Courier, monospace;
+        }
 
-code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
+        pre {
+            background-color: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
 
-.highlight, .prism-code {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
 
-.highlight pre, .prism-code pre {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
-  border-radius: 0;
-}
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            color: #666;
+            background-color: #222;
+        }
 
-a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 20px;
-}
-
-</style>
-<script>
-  // Set the random seed
-  Math.seedrandom(199602051111);
-
-  // Function to get a random number between min and max
-  function getRandomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  // Function to change the theme
-  function changeTheme() {
-    const hour = new Date().getHours();
-    const body = document.body;
-
-    if (hour >= 18 || hour < 6) {
-      // Night theme
-      body.style.backgroundColor = "#222";
-      body.style.color = "#fff";
-    } else {
-      // Day theme
-      body.style.backgroundColor = "#f5f5f5";
-      body.style.color = "#333";
-    }
-  }
-
-  // Call the changeTheme function on page load
-  changeTheme();
-
-  // Add event listener for highlighting code
-  window.addEventListener('DOMContentLoaded', function() {
-    // Use Highlight.js or Prism.js to highlight code
-    // ... your Highlight.js or Prism.js code here ...
-  });
-</script>
+        .hljs {
+            background-color: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/es/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+    </script>
 </head>
 <body>
-<h1>通过Serverless 获取 hadoop 文件系统的[原创]</h1>
-<p style="text-align:center;">
-  <meta name="description" content="开放文件下载" />
-  <meta name="keywords" content="serverless 操作 hdfs" />
-</p>
-
-<h2>  通过Serverless (Kubeless)  进行操作Hdfs , 实现下载文件.</h2>
-
-<h3>  code</h3>
-
-<h4> Python </h4>
-<pre><code class="language-python">from hdfs import Client
+    <h1>通过Serverless (Kubeless)  进行操作Hdfs , 实现下载文件.</h1>
+    <h2>code</h2>
+    <h3>Python</h3>
+    <pre><code class="python">
+from hdfs import Client
 from bottle import route,HTTPResponse
 client = Client("http://hdfs-web-svc.cloudera:50070", root="/", timeout=100, session=False)
 
@@ -150,10 +113,10 @@ def getfile():
         content = content.decode('utf-8', 'ignore').encode('gbk')
         return HTTPResponse(body=content, status=200, headers=headers)
 
-</code></pre>
-
-<h4>  serverless.yml</h4>
-<pre><code class="language-yaml"># Welcome to Serverless!
+    </code></pre>
+    <h3>serverless.yml</h3>
+    <pre><code class="yaml">
+# Welcome to Serverless!
 #
 # For full config options, check the kubeless plugin docs:
 #    https://github.com/serverless/serverless-kubeless
@@ -182,15 +145,16 @@ functions:
   getfile:
     handler: handler.getfile
 
-</code></pre>
-
-<h4> requirements.txt</h4>
-<pre><code class="language-text">bottle==0.12.13
+    </code></pre>
+    <h3>requirements.txt</h3>
+    <pre><code class="txt">
+bottle==0.12.13
 hdfs==2.1.0
-</code></pre>
 
-<h4> kubernetes Ingress </h4>
-<pre><code class="language-yaml">apiVersion: extensions/v1beta1
+    </code></pre>
+    <h3>kubernetes Ingress</h3>
+    <pre><code class="yaml">
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: getfile-ing
@@ -203,20 +167,28 @@ spec:
       - backend:
           serviceName: getfile
           servicePort: 8080
-</code></pre>
 
-<h3>  相关地址</h3>
+    </code></pre>
+    <h2>相关地址</h2>
+    <p>https://github.com/serverless/</p>
+    <p>更多信息可以 关注</p>
+    <p>https://github.com/kubeless/kubeless/tree/f49533233cd79b116113ea10454cb2ca234dadfd/docker/runtime</p>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 22:02:48
+    </footer>
+    <script>
+        // 获取当前时间
+        const now = new Date();
+        const hour = now.getHours();
 
-> https://github.com/serverless/
-
-> 更多信息可以 关注
-
-> https://github.com/kubeless/kubeless/tree/f49533233cd79b116113ea10454cb2ca234dadfd/docker/runtime
-
-<p style="text-align:center;">转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+        // 判断是白天还是夜晚
+        if (hour >= 6 && hour < 18) {
+            document.body.style.backgroundColor = "#f2f2f2";
+            document.body.style.color = "#333";
+        } else {
+            document.body.style.backgroundColor = "#282c34";
+            document.body.style.color = "#fff";
+        }
+    </script>
 </body>
 </html>

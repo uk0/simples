@@ -1,87 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flink的自定义Source 如何给重写的open方法传递参数.</title>
-<meta name="description" content="笔记" />
-<meta name="keywords" content="flink,rocektmq" />
-<style>
-body {
-  background-color: #f4f4f4;
-  color: #333;
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-weight: normal;
-}
-
-h1 {
-  font-size: 20px;
-}
-
-h2 {
-  font-size: 18px;
-}
-
-h3 {
-  font-size: 16px;
-}
-
-h4 {
-  font-size: 14px;
-}
-
-h5 {
-  font-size: 12px;
-}
-
-h6 {
-  font-size: 11px;
-}
-
-pre {
-  background-color: #f0f0f0;
-  border-radius: 5px;
-  padding: 10px;
-  overflow-x: auto;
-}
-
-code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-
-footer {
-  text-align: center;
-  margin-top: 20px;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flink的自定义Source 如何给重写的open方法传递参数.</title>
+    <meta name="description" content="笔记">
+    <meta name="keywords" content="flink,rocektmq">
+    <style>
+        body {
+            background-color: #222;
+            color: #eee;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 20px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 18px;
+        }
+        h3 {
+            font-size: 16px;
+        }
+        h4 {
+            font-size: 14px;
+        }
+        h5 {
+            font-size: 12px;
+        }
+        h6 {
+            font-size: 11px;
+        }
+        pre {
+            background-color: #282c34;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: "Source Code Pro", monospace;
+            color: #eee;
+        }
+        .hljs {
+            background-color: #282c34;
+            color: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+        .title-box {
+            text-align: center;
+        }
+        .title-box h1 {
+            margin-bottom: 10px;
+        }
+        .title-box h2 {
+            margin-bottom: 20px;
+        }
+        .title-box .description {
+            font-style: italic;
+            color: #aaa;
+        }
+        .title-box .keywords {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-<h1 style="text-align: center;">Flink的自定义Source 如何给重写的open方法传递参数.</h1>
-<p style="text-align: center;">笔记</p>
-<p style="text-align: center;">flink,rocektmq</p>
-<hr>
+    <div class="title-box">
+        <h1>Flink的自定义Source 如何给重写的open方法传递参数.</h1>
+        <h2></h2>
+        <p class="description">笔记</p>
+        <p class="keywords">flink,rocektmq</p>
+    </div>
 
-<p>因工作需求所整合Flink + RocketMQ,中间遇到许多问题本文章将问题解决。</p>
+    <p>因工作需求所整合Flink + RocketMQ,中间遇到许多问题本文章将问题解决。</p>
 
-<h2>部分代码：</h2>
-<ul>
-<li>Flink程序入口</li>
-<li>继承RichSinkFunction，重写<code>open</code> 和 <code>invoke</code>方法，还有<code>close</code>。</li>
-</ul>
+    <h3>部分代码：</h3>
+    <ul>
+        <li>Flink程序入口</li>
+        <li>继承RichSinkFunction，重写<code>open</code> 和 <code>invoke</code>方法，还有<code>close</code>。</li>
+    </ul>
 
-<pre><code class="java">
+    <pre><code class="java">
  final ParameterTool parameterTool = ParameterTool.fromArgs(args);
         if (parameterTool.getNumberOfParameters() < 3) {
                 System.out.println("Missing parameters!");
@@ -108,14 +119,14 @@ footer {
             env.getConfig().setGlobalJobParameters(conf);
             RocketMQSource rocketMQSource = new RocketMQSource();
             DataStream<String> sourceStream = env.addSource(rocketMQSource);
-</code></pre>
+    </code></pre>
 
-<h2>Source [重点]</h2>
-<ul>
-<li>自定义Source的一部分代码</li>
-</ul>
+    <h3>Source [重点]</h3>
+    <ul>
+        <li>自定义Source的一部分代码</li>
+    </ul>
 
-<pre><code class="java">
+    <pre><code class="java">
  @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
@@ -141,14 +152,16 @@ footer {
         System.out.println("RocketMQ Started.");
         LOG.info("consumeBatchSize:{} pullBatchSize:{} consumeThread:{}",consumer.getConsumeMessageBatchMaxSize(),consumer.getPullBatchSize(),consumer.getConsumeThreadMax());
     }
-</code></pre>
+    </code></pre>
 
-<p>以上代码经过验证可以直接拿去修改调用</p>
-<p>Owner <code>breakEval13</code></p>
-<p>https://github.com/breakEval13</p>
+    <p>以上代码经过验证可以直接拿去修改调用</p>
 
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+    <p>Owner <code>breakEval13</code></p>
+    <p>https://github.com/breakEval13</p>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 21:41:54
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>

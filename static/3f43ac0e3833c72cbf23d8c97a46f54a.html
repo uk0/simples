@@ -1,95 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
-body {
-  background-color: #f5f5f5;
-  color: #333;
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  max-width: 820px;
-  margin: 0 auto;
-  text-align: center;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mongodb作为Flink 的 Sink</title>
+    <meta name="description" content="笔记" />
+    <meta name="keywords" content="Mongodb,flink" />
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #000;
+            color: #fff;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-h1 {
-  font-size: 20px;
-  margin-top: 20px;
-}
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+        }
 
-h2 {
-  font-size: 18px;
-  margin-top: 15px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h3 {
-  font-size: 16px;
-  margin-top: 10px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h4 {
-  font-size: 14px;
-  margin-top: 8px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h5 {
-  font-size: 12px;
-  margin-top: 6px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h6 {
-  font-size: 11px;
-  margin-top: 4px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-pre {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 14px;
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
+        pre {
+            background-color: #222;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
 
-.container {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+        code {
+            background-color: #333;
+            color: #eee;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
 
-.footer {
-  text-align: center;
-  padding: 10px;
-  background-color: #eee;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-}
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-.title {
-  text-align: center;
-}
-</style>
-<meta charset="UTF-8">
-<title>Mongodb作为Flink 的 Sink</title>
-<meta name="description" content="笔记">
-<meta name="keywords" content="Mongodb,flink">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<script>hljs.highlightAll();</script>
+        .hljs {
+            background-color: #333;
+            color: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .hljs-comment,
+        .hljs-quote {
+            color: #999;
+        }
+
+        .hljs-keyword {
+            color: #f00;
+        }
+
+        .hljs-string {
+            color: #0f0;
+        }
+
+        .hljs-number {
+            color: #00f;
+        }
+
+        .hljs-title {
+            color: #00f;
+        }
+        
+        .hljs-section, .hljs-name {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .hljs-tag, .hljs-attribute {
+            color: #cfcfcf;
+        }
+        
+        .hljs-doctag {
+            color: #cfcfcf;
+            font-weight: bold;
+        }
+        
+        .hljs-selector-id, .hljs-selector-class {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .hljs-selector-attr, .hljs-selector-pseudo {
+            color: #cfcfcf;
+        }
+        
+        .hljs-literal {
+            color: #fff;
+        }
+        
+        .hljs-params {
+            color: #cfcfcf;
+        }
+        
+        .hljs-variable {
+            color: #fff;
+        }
+        
+        .hljs-built_in {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .hljs-operator {
+            color: #fff;
+        }
+        
+        .hljs-error {
+            color: #f00;
+        }
+        
+        .hljs-subst {
+            color: #fff;
+        }
+        
+        .hljs-template-tag {
+            color: #fff;
+        }
+        
+        .hljs-template-variable {
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<h1 class="title">Mongodb作为Flink 的 Sink</h1>
-<p>因工作需求所整合Flink + Mongodb 作为一个Demo 帮助大家跳坑。 Mongodb 采用集群主从模式。</p>
-<h2>MongoSink.Java</h2>
-<p>继承RichSinkFunction，重写<code>open</code> 和 <code>invoke</code>方法，还有<code>close</code>。</p>
-<pre><code class="java">package com.e.firsh.spb.sink;
+    <h1>Mongodb作为Flink 的 Sink</h1>
+    <p>因工作需求所整合Flink + Mongodb 作为一个Demo 帮助大家跳坑。</p>
+    <p>Mongodb 采用集群主从模式。</p>
+    <h2>MongoSink.Java</h2>
+    <p>* 继承RichSinkFunction，重写`open` 和 `invoke`方法，还有`close`。</p>
+    <pre><code class="java">package com.e.firsh.spb.sink;
 
 import com.alibaba.fastjson.JSON;
 import com.e.firs.spb.utils.Mongo.MongoService;
@@ -124,9 +192,9 @@ public  class MongoSink extends RichSinkFunction&lt;String&gt; {
     }
 };
 </code></pre>
-<h2>MongoService.Java</h2>
-<p>MongoDB Service 处理工具</p>
-<pre><code class="java">package com.e.firsh.spb.utils.Mongo;
+    <h2>MongoService.Java</h2>
+    <p>* MongoDB Service 处理工具</p>
+    <pre><code class="java">package com.e.firsh.spb.utils.Mongo;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -184,9 +252,9 @@ public class MongoService {
 }
 
 </code></pre>
-<h2>MongoManager.Java</h2>
-<p>获得mongodb链接池的工具类，获得某个DB的链接。</p>
-<pre><code class="java">package com.e.firsh.spb.utils.Mongo;
+    <h2>MongoManager.Java</h2>
+    <p>* 获得mongodb链接池的工具类，获得某个DB的链接。</p>
+    <pre><code class="java">package com.e.firsh.spb.utils.Mongo;
 
 /**
  * Created by zhangjianxin on 2017/7/31.
@@ -242,9 +310,9 @@ public class MongoManager {
 }
 
 </code></pre>
-<h2>EntryDao.java</h2>
-<p>用来操作实体的工具类</p>
-<pre><code class="java">package com.e.firsh.spb.utils.Mongo;
+    <h2>EntryDao.java</h2>
+    <p>* 用来操作实体的工具类</p>
+    <pre><code class="java">package com.e.firsh.spb.utils.Mongo;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -319,9 +387,9 @@ public class EntryDao {
 
 }
 </code></pre>
-<h2>JsonUtils.java</h2>
-<p>JSON的小工具类</p>
-<pre><code class="java">package com.tod.spb.utils.Mongo;
+    <h2>JsonUtils.java</h2>
+    <p>* JSON的小工具类</p>
+    <pre><code class="java">package com.tod.spb.utils.Mongo;
 
 import java.io.OutputStream;
 
@@ -433,9 +501,9 @@ public class JsonUtils {
 }
 
 </code></pre>
-<h2>MongoDBHelper.java</h2>
-<p>用来测试MongoDB链接成功</p>
-<pre><code class="bash">package com.tod.spb.utils.Mongo;
+    <h2>MongoDBHelper.java</h2>
+    <p>* 用来测试MongoDB链接成功</p>
+    <pre><code class="bash">package com.tod.spb.utils.Mongo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mongodb.DB;
@@ -480,11 +548,27 @@ public class MongoDBHelper {
 }
 
 </code></pre>
-<p>Owner <code>breakEval13</code><br>
-https://github.com/breakEval13</p>
-</div>
-<footer class="footer">
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+    <footer>Power By Gemini TextGenerate 2024-09-16 21:44:20</footer>
+    <script>
+        // Get the current time
+        var now = new Date();
+        var hour = now.getHours();
+
+        // Determine the background color based on the time
+        var backgroundColor = hour < 18 ? "#fff" : "#222";
+
+        // Set the background color of the body
+        document.body.style.backgroundColor = backgroundColor;
+
+        // Set the color of the code elements based on the background color
+        var codeColor = backgroundColor == "#fff" ? "#333" : "#eee";
+        document.querySelectorAll('code').forEach(function(codeElement) {
+            codeElement.style.color = codeColor;
+        });
+
+        // Highlight the code blocks using DlHighlight.js
+        // (Assuming you have DlHighlight.js loaded)
+        hljs.highlightAll();
+    </script>
 </body>
 </html>

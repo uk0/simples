@@ -3,88 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Install Docker for CentOS6</title>
-    <meta name="description" content="This article provides a comprehensive guide on installing Docker on CentOS 6, including installation of Docker Compose. It also addresses common pitfalls and provides solutions for a smooth installation process.">
-    <meta name="keywords" content="Docker, CentOS, Docker Compose, Installation, CentOS 6, Docker on CentOS 6, Docker Compose Installation, Docker for CentOS 6">
+    <title>Install docker for centos6</title>
+    <meta name="description" content="Install docker for centos6, How To Install Docker on CentOS 6, Docker and docker-compose in CentOS 6">
+    <meta name="keywords" content="docker, docker-compose, centos6, install">
     <style>
         body {
-            font-family: sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* 动漫风格 */
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
-            background-image: linear-gradient(to bottom, #f5f5f5 0%, #eee 100%);
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
         }
-
         h1 {
             font-size: 20px;
         }
-
         h2 {
             font-size: 18px;
         }
-
         h3 {
             font-size: 16px;
         }
-
         h4 {
             font-size: 14px;
         }
-
         h5 {
             font-size: 12px;
         }
-
         h6 {
             font-size: 11px;
         }
-
         pre {
-            background-color: #eee;
+            background-color: #f5f5f5;
             padding: 10px;
-            border-radius: 5px;
             overflow-x: auto;
-            white-space: pre-wrap;
+            border-radius: 4px;
         }
-
         code {
-            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
         }
-
         footer {
             text-align: center;
             margin-top: 20px;
-            font-size: 12px;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Prism.highlightAll();
-            hljs.highlightAll();
-
-            // Set theme based on time
-            const now = new Date();
-            const hour = now.getHours();
-            if (hour >= 19 || hour < 6) {
-                document.body.style.backgroundColor = "#222";
-                document.body.style.color = "#fff";
-            }
-        });
+        hljs.highlightAll();
+        // 随机种子，生成随机数
+        Math.seedrandom(4538978253);
+        // 获取当前时间，判断白天/夜晚模式
+        const hour = new Date().getHours();
+        if (hour >= 18 || hour < 6) {
+            document.body.style.backgroundColor = '#222'; // 夜晚模式
+            document.body.style.color = '#eee';
+            document.querySelectorAll('code').forEach(code => {
+                code.style.backgroundColor = '#333';
+                code.style.color = '#eee';
+            });
+        }
     </script>
 </head>
 <body>
-    <h1>Install Docker for CentOS6</h1>
+    <h1>Install docker for centos6</h1>
     <h2>零、前言</h2>
     <p>本来，对于 CentOS 系列，Docker 官方要求要 CentOS7.0 及以上系统版本，但是有时候迫不得已，还是要在已有的 CentOS6.x 的系统上安装。</p>
     <p>比如我遇到的：要在一台已有的 CentOS6.5 的服务器上部署一个 Java 应用，该 Java 应用基于 Java8 和 Mysql5.6 开发，都用到了相应的特性。但是，已有的 CentOS6.5 上已经在跑着几个 PHP 和 Java 应用了，装的 JDK 是 JDK7，Mysql 装的是 Mysql5.1，第一感觉就是要 GG 了！</p>
@@ -98,33 +87,27 @@
     <p>这一节主要来自于：How To Install Docker on CentOS 6</p>
     <p>以下 命令都是在 root 权限下运行的。</p>
     <p>Docker是Enterprise Linux（EPEL）的额外包的一部分，EPEL是用于RHEL发行版的非标准包的社区库。首先，我们将安装EPEL仓库：</p>
-    <pre><code class="language-bash">
-rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-    </code></pre>
+    <pre><code class="bash">rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+</code></pre>
     <h3>更新 yum 源：</h3>
-    <pre><code class="language-bash">
-yum update -y
-    </code></pre>
+    <pre><code class="bash">yum update -y
+</code></pre>
     <p>* 现在让我们通过安装 docker-io 软件包来安装 Docker：</p>
-    <pre><code class="language-bash">
-yum -y install docker-io
-    </code></pre>
+    <pre><code class="bash">yum -y install docker-io
+</code></pre>
     <p>* 安装完成后，我们需要启动 Docker 守护进程：</p>
-    <pre><code class="language-bash">
-service docker start
-    </code></pre>
+    <pre><code class="bash">service docker start
+</code></pre>
     <p>* 最后，可选地，我们让 Docker 在服务器启动时启动：</p>
-    <pre><code class="language-bash">
-chkconfig docker on
-    </code></pre>
+    <pre><code class="bash">chkconfig docker on
+</code></pre>
     <p>* 经过以上步骤，Docker 就已经安装成功了</p>
     <h2>二、安装 Docker Compose</h2>
     <p>这一节主要来自于：Docker and docker-compose in CentOS 6</p>
     <p>Docker Compose 是 Python 写的一个可以同时管理多个 Docker容器 的工具。因为是 CentOS6.x，所以没办法直接安装该工具，要通过 Python 的 pip 管理器工具来安装。</p>
     <p>一般 CentOS6.5 都自带了 Pyhton2.6，所以要先安装 Python2.7。</p>
     <h3>2.1、安装开发工具和Python2.7</h3>
-    <pre><code class="language-bash">
-# yum groupinstall "Development"
+    <pre><code class="bash"># yum groupinstall "Development"
 # yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel
 # wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tar.xz
 # tar -xvf Python-2.7.8.tar.xz
@@ -134,9 +117,9 @@ chkconfig docker on
 # mv /usr/bin/python /usr/bin/python2.6.6
 # ln -s /usr/local/bin/python2.7 /usr/bin/python
 vi /usr/bin/yum CHANGE to python2.6.6
-    </code></pre>
+</code></pre>
     <p>以上是通过源码方式安装了 Python2.7，倒数第三行的命令，把系统原有的 python 程序重命名成 python2.6.6；倒数第二行命令，把 python2.7 程序链接/替换到原有的 python 程序。倒数第一行并不是一个命令，只是说明要把 /usr/bin/yum yum 程序的第一行声明，改成原有的 python2.6.6。即：</p>
-    <pre><code class="language-bash">
+    <pre><code class="bash">
 
 #!/usr/bin/python
 import sys
@@ -147,33 +130,29 @@ import sys
 #!/usr/bin/python2.6.6
 import sys
 ......
-    </code></pre>
+</code></pre>
     <p>一句话来说就是：升级了 Python 版本，但是 yum 程序还是用回原来的 Python 版本。</p>
     <h3>2.2、安装 pip</h3>
-    <pre><code class="language-bash">
-#原文里的 get-pip.py 这个下文件的下载地址过期了，新地址是https://bootstrap.pypa.io/get-pip.py所以命令改为如下：
+    <pre><code class="bash">#原文里的 get-pip.py 这个下文件的下载地址过期了，新地址是https://bootstrap.pypa.io/get-pip.py所以命令改为如下：
 
 wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py 
-    </code></pre>
+</code></pre>
     <h3>2.3、安装 docker-compose</h3>
-    <pre><code class="language-bash">
- pip install docker-compose
-    </code></pre>
+    <pre><code class="bash"> pip install docker-compose
+</code></pre>
     <p>* 顺利的话，以上步骤走完，就完成了 docker-compose 的安装了，验证一下是否安装成功了，查看版本信息：</p>
-    <pre><code class="language-bash">
-docker-compose version
-    </code></pre>
+    <pre><code class="bash">docker-compose version
+</code></pre>
     <h2>三、我遇到的坑</h2>
     <h3>3.1、pip 版本问题</h3>
     <p>* 执行 2.3节 的 pip install docker-compose 是遇到错误提示：</p>
     <p>pkg_resources.DistributionNotFound: The 'pip==8.1.0' distribution was not found and is required by the application</p>
     <p>经 关于pip安装时提示pkg_resources.DistributionNotFound 错误问题 和CentOS升级Python2.7启发，我运行 whereis pip 命令发现调用的是 /usr/bin/pip，查看其内容：</p>
-    <pre><code class="language-bash">
-cat /usr/bin/pip
-    </code></pre>
+    <pre><code class="bash">cat /usr/bin/pip
+</code></pre>
     <p>打印出如下：</p>
-    <pre><code class="language-python">
+    <pre><code class="python">
 
 #!/usr/bin/python
 # EASY-INSTALL-ENTRY-SCRIPT: 'pip==8.1.0','console_scripts','pip'
@@ -185,41 +164,36 @@ if __name__ == '__main__':
     sys.exit(
         load_entry_point('pip==8.1.0', 'console_scripts', 'pip')()
     )
-    </code></pre>
+</code></pre>
     <p>但是考虑到：</p>
-    <pre><code class="language-bash">
- ll /usr/local/lib/python2.7/site-packages | grep pip
+    <pre><code class="bash"> ll /usr/local/lib/python2.7/site-packages | grep pip
 打印如下：
 
 # drwxr-xr-x 10 root root  4096 Jun 16 13:08 pip
 # drwxr-xr-x  2 root root  4096 Jun 16 13:08 pip-9.0.1.dist-info
-    </code></pre>
+</code></pre>
     <p>就把 /usr/bin/pip 里的所有 8.1.0 改为 9.0.1，然后 pip 就正常了。具体为啥，我也不太清楚了，不懂 Python 的路过。。</p>
     <p>我猜是因为，python get-pip.py 安装了 pip 之后，但是 /usr/bin/pip 里面调用的还是旧版本好的 pip 导致的。</p>
     <h3>3.2、docker-compose 版本问题</h3>
     <p>上面 2.3节 的 pip install docker-compose 执行之后就安装了 docker-compose。</p>
     <p>但是当运行 docker-compose build 的时候，就会提示我们的 Dcoker 版本太低要求升级 Docker！默认安装的 docker-compose 版本太高了！显然我们目前的处境是无法再升级 Docker 的了，只能降 docker-compose 的版本。</p>
     <p>* 先看一下我们已经安装的 Docker 版本：</p>
-    <pre><code class="language-bash">
-docker -v
-    </code></pre>
-    <pre><code class="language-text">
-Docker version 1.7.1, build 786b29d/1.7.1
-    </code></pre>
-    <p>Google 了一下，在 StackOverflow 上找到个降 docker-compose 版本的方法：ERROR: The Docker Engine version is less than the minimum required by Compose</p>
-    <p>经查 Docker Compose Github Docs，发现 docker-compose 1.5.2 版本是兼容 Docker 1.7.1 的：Note that Compose 1.5.2 requires Docker 1.7.1 or later.。</p>
-    <p>好了，开始降级 docker-compose，先卸载：</p>
-    <pre><code class="language-bash">
-pip uninstall docker-compose
-    </code></pre>
+    <pre><code class="bash">docker -v
+</code></pre>
+    <pre><code class="text">Docker version 1.7.1, build 786b29d/1.7.1
+Google 了一下，在 StackOverflow 上找到个降 docker-compose 版本的方法：ERROR: The Docker Engine version is less than the minimum required by Compose
+经查 Docker Compose Github Docs，发现 docker-compose 1.5.2 版本是兼容 Docker 1.7.1 的：Note that Compose 1.5.2 requires Docker 1.7.1 or later.。
+好了，开始降级 docker-compose，先卸载：
+</code></pre>
+    <pre><code class="bash">pip uninstall docker-compose
+</code></pre>
     <p>再安装指定版本：</p>
-    <pre><code class="language-bash">
- pip install docker-compose==1.5.2
-    </code></pre>
+    <pre><code class="bash"> pip install docker-compose==1.5.2
+</code></pre>
     <p>* 至此，docker-compose 降版本成功！</p>
     <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     <footer>
-        Power By Gemini TextGenerate 2024-09-16
+        Power By Gemini TextGenerate 2024-09-16 21:52:57
     </footer>
 </body>
 </html>

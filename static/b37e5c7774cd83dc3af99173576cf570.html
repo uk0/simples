@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Teleport 跳板机部署[转载漠然]</title>
+<meta name="description" content="Teleport 跳板机部署" />
+<meta name="keywords" content="Teleport 跳板机" />
 <style>
 body {
+    background-color: #333;
+    color: #eee;
     font-family: sans-serif;
-    background-color: #f8f8f8;
-    color: #333;
     max-width: 820px;
     margin: 0 auto;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 h1 {
     font-size: 20px;
+    margin-top: 0;
 }
 
 h2 {
@@ -37,16 +43,19 @@ h6 {
 }
 
 code {
-    background-color: #eee;
-    padding: 2px 5px;
+    background-color: #444;
+    color: #eee;
+    padding: 2px 4px;
+    border-radius: 2px;
     font-family: monospace;
 }
 
 pre {
-    background-color: #eee;
+    background-color: #444;
+    color: #eee;
     padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
+    border-radius: 4px;
+    overflow: auto;
 }
 
 img {
@@ -54,54 +63,64 @@ img {
     height: auto;
 }
 
-.title, .keywords, .description {
-    text-align: center;
+a {
+    color: #eee;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 footer {
     text-align: center;
+    font-size: 12px;
+    color: #aaa;
     margin-top: 20px;
 }
 
-.night-mode {
-    background-color: #222;
+.highlight {
+    background-color: #444;
     color: #eee;
+    padding: 2px 4px;
+    border-radius: 2px;
+    font-family: monospace;
 }
 
-.night-mode code {
+.highlight pre {
     background-color: #333;
-}
-
-.night-mode pre {
-    background-color: #333;
+    color: #eee;
+    padding: 10px;
+    border-radius: 4px;
+    overflow: auto;
 }
 </style>
-<title>Teleport 跳板机部署[转载漠然]</title>
-<meta name="description" content="Teleport 跳板机部署">
-<meta name="keywords" content="Teleport 跳板机">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<script>hljs.highlightAll();</script>
 <script>
-    hljs.highlightAll();
-    const time = new Date();
-    if (time.getHours() >= 18 || time.getHours() < 6) {
-        document.body.classList.add('night-mode');
-    }
+const theme = localStorage.getItem('theme') || (new Date().getHours() >= 19 || new Date().getHours() < 6 ? 'dark' : 'light');
+document.body.style.backgroundColor = theme === 'dark' ? '#333' : '#eee';
+document.body.style.color = theme === 'dark' ? '#eee' : '#333';
+document.querySelectorAll('code').forEach(code => {
+  code.style.backgroundColor = theme === 'dark' ? '#444' : '#eee';
+  code.style.color = theme === 'dark' ? '#eee' : '#333';
+});
+document.querySelectorAll('pre').forEach(pre => {
+  pre.style.backgroundColor = theme === 'dark' ? '#444' : '#eee';
+  pre.style.color = theme === 'dark' ? '#eee' : '#333';
+});
 </script>
 </head>
 <body>
-<h1 class="title">Teleport 跳板机部署[转载漠然]</h1>
-<h2 class="keywords">Teleport 跳板机</h2>
-<p class="description">Teleport 跳板机部署</p>
-
+<h1 style="text-align: center;">Teleport 跳板机部署[转载漠然]</h1>
+<p style="text-align: center;">2017-11-09 16:47:51</p>
+<p style="text-align: center;">Teleport 跳板机部署</p>
+<hr />
 <blockquote>
 <p>由于业务需求，以前账号管理混乱，所以很多人有生产服务器的 root 权限；所以目前需要一个能 ssh 登录线上服务器的工具，同时具有简单的审计功能；找了好久找到了这个小工具，以下记录一下搭建教程</p>
 </blockquote>
-
-<h3>一、环境准备</h3>
-
+<h2>一、环境准备</h2>
 <p>目前准备了 3 台虚拟机，两台位于内网 NAT 之后，一台位于公网可以直接链接；使用时客户端通过工具连接到公网跳板机上，然后实现自动跳转到内网任意主机；并且具有相应的操作回放审计，通过宿主机账户限制用户权限</p>
-
 <table>
 <thead>
 <tr>
@@ -124,27 +143,18 @@ footer {
 </tr>
 </tbody>
 </table>
-
-<h3>二、Teleport 工作模式</h3>
-
+<h2>二、Teleport 工作模式</h2>
 <p>Teleport 工作时从宏观上看是以集群为单位，也就是说**公网算作一个集群，内网算作另一个集群，内网集群通过 ssh 隧道保持跟公网的链接状态，同时内网机群允许公网集群用户连接**，大体工作模式如下</p>
-
-<img src="http://112firshme11224.test.upcdn.net/markdown/hsnj8.png" alt="Teleport 工作模式">
-
-<h3>三、搭建公网 Master</h3>
-
-<h4>3.1、配置 Systemd</h4>
-
+<img src="http://112firshme11224.test.upcdn.net/markdown/hsnj8.png" alt="Teleport 工作模式" />
+<h2>三、搭建公网 Master</h2>
+<h3>3.1、配置 Systemd</h3>
 <p>首先下载相关可执行文件并复制到 Path 目录下，然后创建一下配置目录等</p>
-
 <pre><code class="language-sh">wget https://github.com/gravitational/teleport/releases/download/v2.3.5/teleport-v2.3.5-linux-amd64-bin.tar.gz
 tar -zxvf teleport-v2.3.5-linux-amd64-bin.tar.gz
 mv teleport/tctl teleport/teleport teleport/tsh /usr/local/bin
 mkdir -p /etc/teleport /data/teleport
 </code></pre>
-
 <p>然后为了让服务后台运行创建一个 systemd service 配置文件</p>
-
 <pre><code class="language-sh">cat > /etc/systemd/system/teleport.service <<EOF
 [Unit]
 Description=Teleport SSH Service
@@ -159,11 +169,8 @@ ExecStart=/usr/local/bin/teleport start -c /etc/teleport/teleport.yaml
 WantedBy=multi-user.target
 EOF
 </code></pre>
-
-<h4>3.2、配置 Teleport</h4>
-
+<h3>3.2、配置 Teleport</h3>
 <p>Systemd 配置完成后，就需要写一个 Teleport 的配置文件来让 Teleport 启动，具体选项含义可以参考 <a href="https://gravitational.com/teleport/docs/2.3/admin-guide/">官方文档</a>；以下为我的配置样例</p>
-
 <pre><code class="language-yaml"># By default, this file should be stored in /etc/teleport.yaml
 
 # This section of the configuration file applies to all teleport
@@ -329,45 +336,29 @@ proxy_service:
     #https_key_file: /var/lib/teleport/webproxy_key.pem
     #https_cert_file: /var/lib/teleport/webproxy_cert.pem
 </code></pre>
-
 <p>然后启动 Teleport 即可</p>
-
 <pre><code class="language-sh">systemctl enable teleport
 systemctl start teleport
 </code></pre>
-
 <p>如果启动出现如下错误</p>
-
 <pre><code class="language-sh">error: Could not load host key: /etc/ssh/ssh_host_ecdsa_key
 error: Could not load host key: /etc/ssh/ssh_host_ed25519_key
 </code></pre>
-
 <p>请执行 ssh-keygen 命令自行生成相关秘钥</p>
-
 <pre><code class="language-sh">ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
 ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
 </code></pre>
-
-<h4>3.3、添加用户</h4>
-
+<h3>3.3、添加用户</h3>
 <p>公网这台 Teleport 将会作为主要的接入机器，所以在此节点内添加的用户将有权限登录所有集群，包括内网的另一个集群；所以为了方便以后操作先添加一个用户</p>
-
 <pre><code class="language-sh"># 添加一个用户名为 mritd 的用户，该用户在所有集群具有 root 用户权限
 tctl --config /etc/teleport/teleport.yaml users add mritd root
 </code></pre>
-
 <p>添加成功后会返回一个 OTP 认证初始化地址，浏览器访问后可以使用 Google 扫描 OTP 二维码从而在登录时增加一层 OTP 认证</p>
-
-<img src="http://112firshme11224.test.upcdn.net/markdown/chuyf.png" alt="OTP CMD">
-
+<img src="http://112firshme11224.test.upcdn.net/markdown/chuyf.png" alt="OTP CMD" />
 <p>访问该地址后初始化密码及 OTP</p>
-
-<img src="http://112firshme11224.test.upcdn.net/markdown/czwmd.png" alt="init OTP">
-
-<h3>四、搭建内网 Master</h3>
-
-<p>内网搭建 Master 和公网类似，只不过为了安全将所有 `0.0.0.0` 的地址全部换成内网 IP 即可，以下为内网的配置信息</p>
-
+<img src="http://112firshme11224.test.upcdn.net/markdown/czwmd.png" alt="init OTP" />
+<h2>四、搭建内网 Master</h2>
+<p>内网搭建 Master 和公网类似，只不过为了安全将所有 <code>0.0.0.0</code> 的地址全部换成内网 IP 即可，以下为内网的配置信息</p>
 <pre><code class="language-yaml"># By default, this file should be stored in /etc/teleport.yaml
 
 # This section of the configuration file applies to all teleport
@@ -532,36 +523,24 @@ proxy_service:
     #https_key_file: /var/lib/teleport/webproxy_key.pem
     #https_cert_file: /var/lib/teleport/webproxy_cert.pem
 </code></pre>
-
 <p>配置完成后直接启动即可</p>
-
 <pre><code class="language-sh">systemctl enable teleport
 systemctl start teleport
 </code></pre>
-
-<h3>五、将内网集群链接至公网</h3>
-
+<h2>五、将内网集群链接至公网</h2>
 <p>上文已经讲过，Teleport 通过公网链接内网主机的方式是让内网集群向公网打通一条 ssh 隧道，然后再进行通讯；具体配置如下</p>
-
-<h4>5.1、公网 Master 开启授信集群</h4>
-
-<p>在公网 Master 增加 Token 配置，以允许持有该 Token 的其他内网集群连接到此，修改 `/etc/teleport/teleport.yaml` 增加一个 token 即可</p>
-
+<h3>5.1、公网 Master 开启授信集群</h3>
+<p>在公网 Master 增加 Token 配置，以允许持有该 Token 的其他内网集群连接到此，修改 <code>/etc/teleport/teleport.yaml</code> 增加一个 token 即可</p>
 <pre><code class="language-yaml">tokens:
     - "proxy,node:jYektagNTmhjv9Dh"
     - "auth:jYektagNTmhjv9Dh"
     - "trusted_cluster:xiomwWcrKinFw4Vs"
 </code></pre>
-
 <p>然后重启 Teleport</p>
-
 <pre><code class="language-sh">systemctl restart teleport
 </code></pre>
-
-<h4>5.2、内网 Master 链接公网 Master</h4>
-
+<h3>5.2、内网 Master 链接公网 Master</h3>
 <p>当公网集群开启了允许其他集群链接后，内网集群只需要创建配置进行连接即可，创建配置(cluster.yaml)如下</p>
-
 <pre><code class="language-yaml"># cluster.yaml
 kind: trusted_cluster
 version: v2
@@ -581,19 +560,13 @@ spec:
   # "master" proxy server:
   web_proxy_addr: 92.223.67.84:3080
 </code></pre>
-
 <p>执行以下命令使内网集群通过 ssh 隧道连接到公网集群</p>
-
 <pre><code class="language-sh">tctl --config /etc/teleport/teleport.yaml create /etc/teleport/cluster.yaml
 </code></pre>
-
-<p><strong>注意，如果在启动公网和内网集群时没有指定受信的证书( `https_cert_file`、`https_key_file` )，那么默认 Teleport 将会生成一个自签名证书，此时在 create 受信集群时将会产生如下错误:**</p>
-
+<p><strong>注意，如果在启动公网和内网集群时没有指定受信的证书( <code>https_cert_file</code>、<code>https_key_file</code> )，那么默认 Teleport 将会生成一个自签名证书，此时在 create 受信集群时将会产生如下错误:**</p>
 <pre><code class="language-sh">the trusted cluster uses misconfigured HTTP/TLS certificate
 </code></pre>
-
-<p>此时需要在 **待添加集群(内网)** 启动时增加 `--insecure` 参数，即 Systemd 配置修改如下</p>
-
+<p>此时需要在 **待添加集群(内网)** 启动时增加 <code>--insecure</code> 参数，即 Systemd 配置修改如下</p>
 <pre><code class="language-sh">[Unit]
 Description=Teleport SSH Service
 After=network.target
@@ -606,15 +579,10 @@ ExecStart=/usr/local/bin/teleport start --insecure -c /etc/teleport/teleport.yam
 [Install]
 WantedBy=multi-user.target
 </code></pre>
-
 <p>然后再进行 create 就不会报错</p>
-
-<h3>六、添加其他节点</h3>
-
+<h2>六、添加其他节点</h2>
 <p>两台节点打通后，此时如果有其他机器则可以将其加入到对应集群中，以下以另一台内网机器为例</p>
-
-<p>由于在主节点 `auth_service` 中已经预先指定了一个 static Token 用于其他节点加入( `proxy,node:jYektagNTmhjv9Dh` )，所以其他节点只需要使用这个 Token 加入即可，在另一台内网主机上修改 Systemd 配置如下，然后启动即可</p>
-
+<p>由于在主节点 <code>auth_service</code> 中已经预先指定了一个 static Token 用于其他节点加入( <code>proxy,node:jYektagNTmhjv9Dh</code> )，所以其他节点只需要使用这个 Token 加入即可，在另一台内网主机上修改 Systemd 配置如下，然后启动即可</p>
 <pre><code class="language-sh">[Unit]
 Description=Teleport SSH Service
 After=network.target
@@ -629,66 +597,46 @@ ExecStart=/usr/local/bin/teleport start --roles=node,proxy \
 [Install]
 WantedBy=multi-user.target
 </code></pre>
-
 <p>此时在内网的 Master 上可以查看到 Node 已经加入</p>
-
 <pre><code class="language-sh">test1.node ➜ tctl --config /etc/teleport/teleport.yaml nodes ls
 Hostname    UUID                                 Address          Labels
 ----------- ------------------------------------ ---------------- -----------------------
 test2.node  abc786fe-9a60-4480-80f7-8edc20710e58 172.16.0.81:3022
 mritd.test1 be9080fb-bdba-4823-9fb6-294e0b0dcce3 172.16.0.80:3022 arch=x86_64,role=master
 </code></pre>
-
-<h3>七、连接测试</h3>
-
-<h4>7.1、Web 测试</h4>
-
-<p>Teleport 支持 Web 页面访问，直接访问 `https://公网IP:3080`，然后登陆即可，登陆后如下</p>
-
-<img src="http://112firshme11224.test.upcdn.net/markdown/9yf6k.png" alt="Web login">
-
+<h2>七、连接测试</h2>
+<h3>7.1、Web 测试</h3>
+<p>Teleport 支持 Web 页面访问，直接访问 <code>https://公网IP:3080</code>，然后登陆即可，登陆后如下</p>
+<img src="http://112firshme11224.test.upcdn.net/markdown/9yf6k.png" alt="Web login" />
 <p>通过 Cluster 选项可以切换不同集群，点击后面的用户名可以选择不同用户登录到不同主机(用户授权在添加用户时控制)，登陆成功后如下</p>
-
-<img src="http://112firshme11224.test.upcdn.net/markdown/m7hz5.png" alt="Login Success">
-
+<img src="http://112firshme11224.test.upcdn.net/markdown/m7hz5.png" alt="Login Success" />
 <p>通过 Teleport 进行的所有操作可以通过审计菜单进行操作回放</p>
-
-<img src="http://112firshme11224.test.upcdn.net/markdown/c8a74.png" alt="Audit">
-
-<h4>7.2、命令行测试</h4>
-
-<p>类 Uninx 系统下我们还是习惯使用终端登录，终端登录需要借助 Teleport 的命令行工具 `tsh`，`tsh` 在下载的 release 压缩版中已经有了，具体使用文档请自行 help 和参考官方文档，以下为简单的使用示例</p>
-
+<img src="http://112firshme11224.test.upcdn.net/markdown/c8a74.png" alt="Audit" />
+<h3>7.2、命令行测试</h3>
+<p>类 Uninx 系统下我们还是习惯使用终端登录，终端登录需要借助 Teleport 的命令行工具 <code>tsh</code>，<code>tsh</code> 在下载的 release 压缩版中已经有了，具体使用文档请自行 help 和参考官方文档，以下为简单的使用示例</p>
 <ul>
 <li>登录跳板机: 短时间内只需要登录一次即可，登录时需要输入密码及 OTP 口令</li>
 </ul>
-
 <pre><code class="language-sh">export TELEPORT_PROXY=92.223.67.84
 export TELEPORT_USER=mritd
 tsh login --insecure
 </code></pre>
-
 <ul>
 <li>登录主机: 完成上一步 login 后就可以免密码登录任意主机</li>
 </ul>
-
 <pre><code class="language-sh"># cluster 名字是上面设置的，在 web 界面也能看到
 tsh ssh --cluster nat root@test2.node
 </code></pre>
-
 <ul>
 <li>复制文件: **复制文件时不显示进度，并非卡死**</li>
 </ul>
-
 <pre><code class="language-sh">tsh scp --cluster nat teleport-v2.3.5-linux-amd64-bin.tar.gz root@test2.node:/
 
 -> teleport-v2.3.5-linux-amd64-bin.tar.gz (16797035)
 </code></pre>
-
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-
 <footer>
-Power By Gemini TextGenerate 2024-09-16
+Power By Gemini TextGenerate 2024-09-16 21:45:44
 </footer>
 </body>
 </html>

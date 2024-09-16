@@ -9,12 +9,18 @@
     <style>
         body {
             font-family: sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
             max-width: 820px;
             margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+            margin-bottom: 10px;
         }
 
         h1 {
@@ -42,42 +48,58 @@
         }
 
         pre {
-            background-color: #f0f0f0;
+            background-color: #222;
+            color: #eee;
             padding: 10px;
-            border-radius: 4px;
+            border-radius: 5px;
             overflow-x: auto;
         }
 
         code {
-            font-family: monospace;
-        }
-
-        .code-block {
-            margin-bottom: 10px;
+            background-color: #333;
+            color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
         }
 
         footer {
             text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-        }
-
-        .title-container {
-            text-align: center;
+            padding: 10px;
+            background-color: #111;
+            color: #eee;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-    <script>hljs.highlightAll();</script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        document.addEventListener('DOMContentLoaded', function() {
+            var preTags = document.querySelectorAll('pre');
+            for (var i = 0; i < preTags.length; i++) {
+                preTags[i].addEventListener('click', function() {
+                    this.classList.toggle('active');
+                });
+            }
+        });
+
+        // 时间判断，动态改变背景色
+        const now = new Date();
+        const hour = now.getHours();
+        if (hour >= 18 || hour < 6) {
+            document.body.style.backgroundColor = '#111';
+        } else {
+            document.body.style.backgroundColor = '#eee';
+        }
+    </script>
 </head>
 <body>
-    <div class="title-container">
-        <h1>Java RESTfull状态码以及返回码Enum实现[学习]</h1>
-        <p>Java, RESTfull,Enum</p>
-    </div>
-    <hr>
+    <h1>Java RESTfull状态码以及返回码Enum实现[学习]</h1>
+    <h2 style="text-align: center;">Java, RESTfull,Enum</h2>
+    <p>Java RESTfull 开发中利用枚举类来记录错误码和错误码对应的错误信息，效果很棒。</p>
     <h2>1. Java中枚举类可以用于记录错误码和错误码对应的错误信息，其实现的技巧如下：</h2>
-    <pre><code class="language-java">
+    <pre><code class="java">
 package todcloud.utils.Enum;
 
 /**
@@ -111,9 +133,9 @@ public enum ResponseInfo {
     }
 }
 
-    </code></pre>
+</code></pre>
     <h2>2. 调用测试</h2>
-    <pre><code class="language-java">
+    <pre><code class="java">
 package todcloud.utils.Enum;
 
 /**
@@ -128,12 +150,10 @@ public class ResponseInfoTest {
 }
 
 
-    </code></pre>
-    <blockquote>
-        通过复习Java中的Enum来完成这个功能。
-    </blockquote>
+</code></pre>
+    <p>通过复习Java中的Enum来完成这个功能。</p>
     <h2>3.失败案例</h2>
-    <pre><code class="language-java">
+    <pre><code class="java">
 package todcloud.utils.Enum;
 
 /**
@@ -172,8 +192,8 @@ public enum ReturnCode {
         this.CodeIndex = CodeIndex;
     }
 }
-    </code></pre>
-    <pre><code class="language-java">
+</code></pre>
+    <pre><code class="java">
 package todcloud.utils.Enum;
 
 import com.alibaba.fastjson.JSONObject;
@@ -209,8 +229,8 @@ public enum ReturnCode2 implements ReturnCodeIns{
         return null;
     }
 }
-    </code></pre>
-    <pre><code class="language-java">
+</code></pre>
+    <pre><code class="java">
 package todcloud.utils.Enum;
 
 import com.alibaba.fastjson.JSON;
@@ -224,8 +244,8 @@ public interface ReturnCodeIns {
     JSONObject getInfo();
 }
 
-    </code></pre>
-    <pre><code class="language-java">
+</code></pre>
+    <pre><code class="java">
 package todcloud.utils.Enum;
 
 /**
@@ -239,15 +259,7 @@ public class ReturnCodeMain {
     }
 }
 
-    </code></pre>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16
-    </footer>
-    <script>
-        const currentTime = new Date();
-        const isNight = currentTime.getHours() >= 19 || currentTime.getHours() < 6;
-        document.body.style.backgroundColor = isNight ? '#222' : '#f5f5f5';
-        document.body.style.color = isNight ? '#eee' : '#333';
-    </script>
+</code></pre>
+    <footer>Power By Gemini TextGenerate 2024-09-16 21:56:00</footer>
 </body>
 </html>

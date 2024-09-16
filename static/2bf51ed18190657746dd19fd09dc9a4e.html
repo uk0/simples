@@ -1,120 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IntelliJ IDEA使用教程 热部署插件 JRebel 安装激活及使用 [来自项目中的经历]</title>
-    <meta name="description" content="回顾" style="text-align: center;">
-    <meta name="keywords" content="Idea, java" style="text-align: center;">
-    <style>
-        body {
-            font-family: sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f0f0f0; /* 白天模式背景色 */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IntelliJ IDEA使用教程 热部署插件 JRebel 安装激活及使用 [来自项目中的经历]</title>
+<meta name="description" content="回顾">
+<meta name="keywords" content="Idea, java">
+<style>
+    body {
+        background-color: #000000;
+        color: #f0f0f0;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: normal;
+        margin-top: 20px;
+        text-align: left;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    h3 {
+        font-size: 16px;
+    }
+
+    h4 {
+        font-size: 14px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+    h6 {
+        font-size: 11px;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    pre {
+        background-color: #222;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+    }
+
+    code {
+        font-family: monospace;
+        background-color: #333;
+        color: #f0f0f0;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+
+    .hljs {
+        background-color: #222;
+        color: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .hljs-comment {
+        color: #629755;
+    }
+
+    .hljs-string {
+        color: #e6db74;
+    }
+
+    .hljs-keyword {
+        color: #c586c0;
+    }
+
+    .hljs-title {
+        color: #c586c0;
+    }
+
+    .hljs-built_in {
+        color: #b5cea8;
+    }
+
+    .hljs-number {
+        color: #e06c75;
+    }
+
+    .hljs-attr {
+        color: #c586c0;
+    }
+
+    footer {
+        text-align: center;
+        font-size: 12px;
+        margin-top: 20px;
+    }
+
+    .title-center {
+        text-align: center;
+    }
+</style>
+<script>
+    // 初始化随机种子
+    Math.seedrandom(4538978253);
+
+    // 获取当前时间
+    var now = new Date();
+    var hour = now.getHours();
+
+    // 根据时间判断主题模式
+    if (hour >= 6 && hour < 18) {
+        document.body.style.backgroundColor = "#ffffff"; // 白天模式
+        document.body.style.color = "#000000";
+    } else {
+        document.body.style.backgroundColor = "#000000"; // 夜晚模式
+        document.body.style.color = "#f0f0f0";
+    }
+
+    // 代码高亮
+    document.addEventListener('DOMContentLoaded', function() {
+        var preElements = document.querySelectorAll('pre');
+        for (var i = 0; i < preElements.length; i++) {
+            var codeElement = preElements[i].querySelector('code');
+            if (codeElement) {
+                hljs.highlightElement(codeElement);
+            }
         }
-
-        .night-mode {
-            background-color: #282c34; /* 夜间模式背景色 */
-            color: #eee;
-        }
-
-        h1 {
-            font-size: 20px;
-        }
-
-        h2 {
-            font-size: 18px;
-        }
-
-        h3 {
-            font-size: 16px;
-        }
-
-        h4 {
-            font-size: 14px;
-        }
-
-        h5 {
-            font-size: 12px;
-        }
-
-        h6 {
-            font-size: 11px;
-        }
-
-        code {
-            background-color: #eee;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        pre {
-            background-color: #eee;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script>
-        // 使用随机种子生成随机数
-        const seed = 199602051111;
-        Math.seedrandom(seed);
-
-        // 获取当前时间
-        const now = new Date();
-        const hour = now.getHours();
-
-        // 根据时间判断是否为夜间模式
-        if (hour >= 18 || hour < 6) {
-            document.body.classList.add("night-mode");
-        }
-
-        // 高亮代码
-        Prism.highlightAll();
-        hljs.highlightAll();
-    </script>
-</head>
+    });
+</script>
 <body>
-    <h1>IntelliJ IDEA使用教程 热部署插件 JRebel 安装激活及使用 [来自项目中的经历]</h1>
-    <p>回顾</p>
-    <h2>保证自己能扶墙</h2>
-    <pre><code>
-      先上图，毕竟是无图无真相的时代：
-    </code></pre>
-    <h2>注册 twitter</h2>
-    <img src="http://112firshme11224.test.upcdn.net/blog/twitter-reg.png" alt="注册 twitter">
-    <h2>获取 JRebel 激活码</h2>
-    <p>
-        * 进入 <code>https://my.jrebel.com</code>
-        * 通过twitter登录
-    </p>
-    <img src="http://112firshme11224.test.upcdn.net/blog/jerbel-reg.png" alt="获取 JRebel 激活码">
-    <h2>授权</h2>
-    <img src="http://112firshme11224.test.upcdn.net/blog/outh-jrebel.png" alt="授权">
-    <h2>安装Jrebel，输入激活码</h2>
-    <p><code>安装Jrebel</code></p>
-    <img src="http://112firshme11224.test.upcdn.net/blog/Jrebel-plugin.png" alt="安装Jrebel">
-    <p><code>输入激活码</code></p>
-    <img src="http://112firshme11224.test.upcdn.net/blog/jrebel-code.png" alt="输入激活码">
+    <h1 class="title-center">IntelliJ IDEA使用教程 热部署插件 JRebel 安装激活及使用 [来自项目中的经历]</h1>
+    <h2 class="title-center">保证自己能扶墙</h2>
+    <pre><code>  先上图，毕竟是无图无真相的时代：
+</code></pre>
+    <h2 class="title-center">注册 twitter</h2>
+    <img src="http://112firshme11224.test.upcdn.net/blog/twitter-reg.png" alt="twitter 注册">
+    <h2 class="title-center">获取 JRebel 激活码</h2>
+    <pre><code>  * 进入 `https://my.jrebel.com`
+  * 通过twitter登录
+</code></pre>
+    <img src="http://112firshme11224.test.upcdn.net/blog/jerbel-reg.png" alt="JRebel 注册">
+    <h2 class="title-center">授权</h2>
+    <img src="http://112firshme11224.test.upcdn.net/blog/outh-jrebel.png" alt="JRebel 授权">
+    <h2 class="title-center">安装Jrebel，输入激活码</h2>
+    <pre><code>`安装Jrebel`
+</code></pre>
+    <img src="http://112firshme11224.test.upcdn.net/blog/Jrebel-plugin.png" alt="JRebel 插件">
+    <pre><code>`输入激活码`
+</code></pre>
+    <img src="http://112firshme11224.test.upcdn.net/blog/jrebel-code.png" alt="JRebel 激活码">
     <footer>
-        Power By Gemini TextGenerate 2024-09-16
+        Power By Gemini TextGenerate 2024-09-16 21:49:48
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
 </body>
 </html>

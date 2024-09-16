@@ -1,151 +1,132 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>在 Vim 里为 Markdown 文档展示导航窗格</title>
-<meta name="description" content="在一个很长的 Markdown 文档里要准确跳转到某标题并不容易，如果像 Word 那样有个导航窗格就好了。" />
-<meta name="keywords" content="Vim, Markdown, Outline" />
-<style>
-body {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f8f8f8;
-  font-family: sans-serif;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  color: #333;
-  transition: background-color 0.5s;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在 Vim 里为 Markdown 文档展示导航窗格</title>
+    <meta name="description" content="在一个很长的 Markdown 文档里要准确跳转到某标题并不容易，如果像 Word 那样有个导航窗格就好了。">
+    <meta name="keywords" content="Vim, Markdown, Outline">
+    <style>
+        body {
+            background-color: #f0f0f0; /* Unix风格 */
+            font-family: sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-h1 {
-  font-size: 20px;
-  margin-top: 0;
-}
+        h1 {
+            font-size: 20px;
+        }
 
-h2 {
-  font-size: 18px;
-  margin-top: 0;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h3 {
-  font-size: 16px;
-  margin-top: 0;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h4 {
-  font-size: 14px;
-  margin-top: 0;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h5 {
-  font-size: 12px;
-  margin-top: 0;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h6 {
-  font-size: 11px;
-  margin-top: 0;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  overflow: auto;
-  border-radius: 5px;
-}
+        code {
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
 
-code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+        }
 
-a {
-  color: #007bff;
-  text-decoration: none;
-}
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
 
-a:hover {
-  text-decoration: underline;
-}
+        .title, .description, .keywords {
+            text-align: center;
+        }
 
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-  color: #777;
-}
-</style>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // 获取当前时间
-    var now = new Date();
-    var hour = now.getHours();
-
-    // 设置主题
-    if (hour >= 6 && hour < 18) {
-      document.body.style.backgroundColor = '#f8f8f8'; // 白天模式
-    } else {
-      document.body.style.backgroundColor = '#222'; // 夜晚模式
-      document.body.style.color = '#eee';
-    }
-
-    // 代码高亮
-    var codeBlocks = document.querySelectorAll('pre code');
-    codeBlocks.forEach(function (codeBlock) {
-      // 这里可以根据需要选择 Highlight.js 或 Prism.js 实现代码高亮
-      // 使用 Highlight.js
-      hljs.highlightBlock(codeBlock);
-
-      // 或者使用 Prism.js
-      // Prism.highlightElement(codeBlock);
-    });
-  });
-</script>
+        footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 20px;
+            color: #666;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+        document.addEventListener('DOMContentLoaded', function() {
+            var currentTime = new Date().getHours();
+            if (currentTime >= 18 || currentTime < 6) {
+                document.body.style.backgroundColor = '#111';
+                document.body.style.color = '#eee';
+            } else {
+                document.body.style.backgroundColor = '#f0f0f0';
+                document.body.style.color = '#333';
+            }
+        });
+    </script>
 </head>
 <body>
-<h1>在 Vim 里为 Markdown 文档展示导航窗格</h1>
-<h2 style="text-align: center;"></h2>
-<p style="text-align: center;">在一个很长的 Markdown 文档里要准确跳转到某标题并不容易，如果像 Word 那样有个导航窗格就好了。</p>
-<h2 style="text-align: center;"></h2>
-<p style="text-align: center;">Vim, Markdown, Outline</p>
-<p>假设我们正在 Vim 里编辑一个很长的 Markdown 文档，这时想跳转到另一个章节去查看或编辑内容，可以怎么做？</p>
-<ol>
-<li>查找章节标题。</li>
-<li>上下翻页。</li>
-<li>记得行号，精确跳转（请收下我的膝盖）。</li>
-<li>...</li>
-</ol>
-<p>不知你此时感受如何，反正我是无比想念 Word 的导航窗格，各种编程 IDE 的 Outline。</p>
-<p>但等等，我们正在用编辑器之神 Vim 诶！无论想弄啥折腾折腾就有了。</p>
-<h2>最终效果</h2>
-<p>我的完整 Vim 配置托管在 GitHub，可供参考：<a href="https://github.com/mzlogin/config-files">config-files</a></p>
-<img src="http://112firshme11224.test.upcdn.net/posts/vim/vim-markdown-outline.png" alt="最终效果" />
-<h2>实现步骤</h2>
-<h3>安装 tagbar</h3>
-<p>这里我们借助于 tagbar 插件实现导航窗格。当然 tagbar 的功能远不限于此，可以为 C、C++、Python 和 Java 等很多语言提供类和方法列表视图等等，详见 <a href="https://github.com/majutsushi/tagbar">tagbar</a>。</p>
-<p>推荐使用 <a href="https://github.com/VundleVim/Vundle.vim">Vundle</a> 管理 Vim 插件，这样就可以简单几步安装插件了。</p>
-<ol>
-<li>在 vimrc 文件里添加如下内容：</li>
-</ol>
-<pre><code>Plugin 'majutsushi/tagbar'
-</code></pre>
-<ol>
-<li>执行 <code>:so $MYVIMRC</code></li>
-<li>执行 <code>:PluginInstall</code></li>
-</ol>
-<h3>安装 Exuberant ctags</h3>
-<p>tagbar 正常工作依赖于 Vim 7.0+ 和 Exuberant ctags。</p>
-<p>下载地址：<a href="http://ctags.sourceforge.net/">http://ctags.sourceforge.net/</a></p>
-<p>下载后将 ctags 可执行文件放置到一个在 PATH 环境变量的文件夹里，或者 Vim 安装目录的 Vim74 文件夹下，比如我是将 ctags.exe 放在 <code>D:\Program Files (x86)\Vim\vim74</code> 文件夹下。</p>
-<h3>配置 tagbar 显示 Markdown 导航窗格</h3>
-<p>tagbar 默认并不支持 Markdown 文件，但配置一下就好了。</p>
-<ol>
-<li>给 ~/.ctags 文件（Windows 下是 <code>C:\Users\<username>\.ctags</code> 里增加如下内容，没有这个文件就新建一个：</li>
-</ol>
-<pre><code>--langdef=markdown
+    <h1 class="title">在 Vim 里为 Markdown 文档展示导航窗格</h1>
+    <p class="description">在一个很长的 Markdown 文档里要准确跳转到某标题并不容易，如果像 Word 那样有个导航窗格就好了。</p>
+    <p class="keywords">Keywords: Vim, Markdown, Outline</p>
+
+    <p>假设我们正在 Vim 里编辑一个很长的 Markdown 文档，这时想跳转到另一个章节去查看或编辑内容，可以怎么做？</p>
+    <ol>
+        <li>查找章节标题。</li>
+        <li>上下翻页。</li>
+        <li>记得行号，精确跳转（请收下我的膝盖）。</li>
+        <li>...</li>
+    </ol>
+    <p>不知你此时感受如何，反正我是无比想念 Word 的导航窗格，各种编程 IDE 的 Outline。</p>
+    <p>但等等，我们正在用编辑器之神 Vim 诶！无论想弄啥折腾折腾就有了。</p>
+
+    <h2>最终效果</h2>
+    <p>我的完整 Vim 配置托管在 GitHub，可供参考：[config-files](https://github.com/mzlogin/config-files)</p>
+    <img src="http://112firshme11224.test.upcdn.net/posts/vim/vim-markdown-outline.png" alt="Vim Markdown Outline">
+
+    <h2>实现步骤</h2>
+    <h3>安装 tagbar</h3>
+    <p>这里我们借助于 tagbar 插件实现导航窗格。当然 tagbar 的功能远不限于此，可以为 C、C++、Python 和 Java 等很多语言提供类和方法列表视图等等，详见 [tagbar](https://github.com/majutsushi/tagbar)。</p>
+    <p>推荐使用 [Vundle](https://github.com/VundleVim/Vundle.vim) 管理 Vim 插件，这样就可以简单几步安装插件了。</p>
+    <ol>
+        <li>在 vimrc 文件里添加如下内容：
+            <pre><code>Plugin 'majutsushi/tagbar'</code></pre>
+        </li>
+        <li>执行 <code>:so $MYVIMRC</code></li>
+        <li>执行 <code>:PluginInstall</code></li>
+    </ol>
+
+    <h3>安装 Exuberant ctags</h3>
+    <p>tagbar 正常工作依赖于 Vim 7.0+ 和 Exuberant ctags。</p>
+    <p>下载地址：<a href="http://ctags.sourceforge.net/">http://ctags.sourceforge.net/</a></p>
+    <p>下载后将 ctags 可执行文件放置到一个在 PATH 环境变量的文件夹里，或者 Vim 安装目录的 Vim74 文件夹下，比如我是将 ctags.exe 放在 `D:\Program Files (x86)\Vim\vim74` 文件夹下。</p>
+
+    <h3>配置 tagbar 显示 Markdown 导航窗格</h3>
+    <p>tagbar 默认并不支持 Markdown 文件，但配置一下就好了。</p>
+    <ol>
+        <li>给 ~/.ctags 文件（Windows 下是 `C:\Users\<username>\.ctags` 里增加如下内容，没有这个文件就新建一个：
+            <pre><code>--langdef=markdown
 --langmap=markdown:.md
 --regex-markdown=/^#{1}[ \t]*([^#]+.*)/. \1/h,headings/
 --regex-markdown=/^#{2}[ \t]*([^#]+.*)/.   \1/h,headings/
@@ -154,40 +135,39 @@ footer {
 --regex-markdown=/^#{5}[ \t]*([^#]+.*)/.         \1/h,headings/
 --regex-markdown=/^#{6}[ \t]*([^#]+.*)/.           \1/h,headings/
 </code></pre>
-<p>这表示提取 Markdown 文件里的一到六级标题，并使用空格缩进表示层次。</p>
-<ol>
-<li>给你的 vimrc 文件里增加如下内容：</li>
-</ol>
-<pre><code>let g:tagbar_type_markdown = {
-        \ 'ctagstype' : 'markdown',
-        \ 'kinds' : [
-                \ 'h:headings',
-        \ ],
-    \ 'sort' : 0
-\ }
+        </li>
+        <li>给你的 vimrc 文件里增加如下内容：
+            <pre><code>let g:tagbar_type_markdown = {
+           \ 'ctagstype' : 'markdown',
+           \ 'kinds' : [
+                   \ 'h:headings',
+           \ ],
+       \ 'sort' : 0
+   \ }
 </code></pre>
-<p>配置 tagbar 支持 Markdown。</p>
-<h3>更多自定义配置</h3>
-<ol>
-<li>现在你可以使用 <code>:TagbarToggle<CR></code> 来打开导航窗格了，但每次开关导航窗格都要敲这么长一串命令毕竟不够方便，配置快捷键来操作更顺手，在你的 vimrc 文件里增加一个映射：</li>
-</ol>
-<pre><code>nnoremap <leader>tb :TagbarToggle<CR>
-</code></pre>
-<p>现在你可以使用 <code><leader>tb</code> 来随时开/关导航窗格了。</p>
-<ol>
-<li>导航窗格默认是在右边，如果你也像我一样喜欢它在左边，也想指定它的宽度，可以在你的 vimrc 文件里配置：</li>
-</ol>
-<pre><code>let g:tagbar_width = 30
-let g:tagbar_left = 1
-</code></pre>
-<p>至此，大功告成了！</p>
-<h2>参考链接</h2>
-<ul>
-<li><a href="https://github.com/majutsushi/tagbar/issues/70">majutsushi/tagbar#70</a></li>
-<li><a href="https://github.com/majutsushi/tagbar/wiki">Support for additional filetypes</a></li>
-</ul>
-<footer>
-<p>Power By Gemini TextGenerate 2024-09-16</p>
-</footer>
+        </li>
+    </ol>
+    <p>配置 tagbar 支持 Markdown。</p>
+
+    <h3>更多自定义配置</h3>
+    <ol>
+        <li>现在你可以使用 <code>:TagbarToggle<CR></code> 来打开导航窗格了，但每次开关导航窗格都要敲这么长一串命令毕竟不够方便，配置快捷键来操作更顺手，在你的 vimrc 文件里增加一个映射：
+            <pre><code>nnoremap <leader>tb :TagbarToggle<CR></code></pre>
+        </li>
+        <li>现在你可以使用 <code><leader>tb</code> 来随时开/关导航窗格了。</li>
+        <li>导航窗格默认是在右边，如果你也像我一样喜欢它在左边，也想指定它的宽度，可以在你的 vimrc 文件里配置：
+            <pre><code>let g:tagbar_width = 30
+let g:tagbar_left = 1</code></pre>
+        </li>
+    </ol>
+    <p>至此，大功告成了！</p>
+
+    <h2>参考链接</h2>
+    <ul>
+        <li><a href="https://github.com/majutsushi/tagbar/issues/70">majutsushi/tagbar#70</a></li>
+        <li><a href="https://github.com/majutsushi/tagbar/wiki">Support for additional filetypes</a></li>
+    </ul>
+
+    <footer>Power By Gemini TextGenerate 2024-09-16 21:25:54</footer>
 </body>
 </html>

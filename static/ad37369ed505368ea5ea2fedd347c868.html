@@ -1,95 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>优秀的VPS TCP加速软件 —— 一键锐速安装脚本（开心版）</title>
-<meta name="description" content="锐速是一款非常不错的TCP底层加速软件，可以非常方便快速地完成服务器网络的优化，配合 ShadowSocks 效果奇佳。目前锐速官方已经关闭注册了，所以我在这里分享几个开心版（破解）的一键锐速脚本。">
-<meta name="keywords" content="锐速, TCP加速, 一键安装, serverspeeder, shadowsocks">
-<style>
-body {
-  font-family: sans-serif;
-  background-color: #f0f0f0;
-  color: #333;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>优秀的VPS TCP加速软件 —— 一键锐速安装脚本（开心版）</title>
+    <meta name="description" content="锐速是一款非常不错的TCP底层加速软件，可以非常方便快速地完成服务器网络的优化，配合 ShadowSocks 效果奇佳。目前锐速官方已经关闭注册了，所以我在这里分享几个开心版（破解）的一键锐速脚本。">
+    <meta name="keywords" content="锐速, serverspeeder, tcp加速, vps优化, 一键安装, shadowsocks,开心版">
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            max-width: 820px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-h1 {
-  font-size: 20px;
-  text-align: center;
-}
+        h1 {
+            font-size: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h2 {
+            font-size: 18px;
+            margin: 15px 0;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h3 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h4 {
+            font-size: 14px;
+            margin: 8px 0;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h5 {
+            font-size: 12px;
+            margin: 6px 0;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h6 {
+            font-size: 11px;
+            margin: 4px 0;
+        }
 
-pre {
-  background-color: #f2f2f2;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        code {
+            background-color: #222;
+            color: #ddd;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
 
-code {
-  font-family: monospace;
-}
+        pre {
+            background-color: #222;
+            color: #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
 
-.highlight {
-  background-color: #f2f2f2;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: #888;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
 
-.highlight pre {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
-}
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 20px;
-}
-
-.night {
-  background-color: #222;
-  color: #eee;
-}
-</style>
+        .highlight {
+            background-color: #333;
+            color: #ddd;
+        }
+    </style>
+    <script>
+        // Initialize the highlight.js library
+        hljs.initHighlightingOnLoad();
+        // Function to add the highlight class to all code blocks
+        function highlightCodeBlocks() {
+            const codeBlocks = document.querySelectorAll('pre code');
+            codeBlocks.forEach(block => {
+                block.classList.add('highlight');
+            });
+        }
+        // Call the function to add highlight class after page load
+        window.onload = highlightCodeBlocks;
+        // Random seed for background color generation
+        const seed = 4538978253;
+        // Function to generate a random number within a range
+        function getRandom(min, max) {
+            let random = Math.sin(seed++) * 10000;
+            return Math.floor(random % (max - min + 1)) + min;
+        }
+        // Function to set the body background color based on current time
+        function setBackgroundColor() {
+            const now = new Date();
+            const hour = now.getHours();
+            const bgColors = ['#111', '#222'];
+            document.body.style.backgroundColor = bgColors[hour < 18 ? 0 : 1];
+        }
+        // Call the function to set the background color on page load
+        setBackgroundColor();
+    </script>
 </head>
 <body>
-<h1>优秀的VPS TCP加速软件 —— 一键锐速安装脚本（开心版）</h1>
-<p>锐速是一款非常不错的TCP底层加速软件，可以非常方便快速地完成服务器网络的优化，配合 ShadowSocks 效果奇佳。目前锐速官方已经关闭注册了，所以我在这里分享几个开心版（破解）的一键锐速脚本。</p>
-<h2>  锐速 +   RMTNSS</h2>
-<ul>
-<li>  系统要求Centos7 64 位 内核 3.10</li>
-<li> RMTNSS <a href="https://github.com/uk0/RMTNSS">https://github.com/uk0/RMTNSS</a></li>
-<li> 锐速 <a href="https://www.91yun.co/serverspeeder91yun">https://www.91yun.co/serverspeeder91yun</a></li>
-</ul>
-<h2>quick start</h2>
-<pre><code class="bash">#检查系统虚拟化支持
+    <h1>优秀的VPS TCP加速软件 —— 一键锐速安装脚本（开心版）</h1>
+    <p>锐速是一款非常不错的TCP底层加速软件，可以非常方便快速地完成服务器网络的优化，配合 ShadowSocks 效果奇佳。目前锐速官方已经关闭注册了，所以我在这里分享几个开心版（破解）的一键锐速脚本。</p>
+    <h2> 锐速 + RMTNSS</h2>
+    <ul>
+        <li> 系统要求Centos7 64 位 内核 3.10</li>
+        <li> RMTNSS https://github.com/uk0/RMTNSS</li>
+        <li> 锐速 https://www.91yun.co/serverspeeder91yun</li>
+    </ul>
+    <h2> quick start</h2>
+    <pre><code class="language-bash">#检查系统虚拟化支持
 yum install virt-what -y
 # 例如返回 kvm
 virt-what
@@ -111,28 +141,9 @@ wget -N --no-check-certificate https://github.com/91yun/serverspeeder/raw/master
 # 卸载
 chattr -i /serverspeeder/etc/apx* && /serverspeeder/bin/serverSpeeder.sh uninstall -f
 </code></pre>
-<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-<footer>Power By Gemini TextGenerate 2024-09-16</footer>
-<script>
-// 获取当前时间
-const now = new Date();
-const hour = now.getHours();
-
-// 判断当前时间是否在晚上
-const isNight = hour >= 18 || hour < 6;
-
-// 设置背景颜色
-if (isNight) {
-  document.body.classList.add("night");
-} else {
-  document.body.classList.remove("night");
-}
-
-// Highlight.js 代码高亮
-hljs.initHighlightingOnLoad();
-
-// Prism.js 代码高亮
-Prism.highlightAll();
-</script>
+    <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 22:01:33
+    </footer>
 </body>
 </html>

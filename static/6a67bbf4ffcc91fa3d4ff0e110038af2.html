@@ -1,59 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Javascript or nodejs 学习笔记。</title>
     <meta name="description" content="nodejs。">
     <meta name="keywords" content="Javascript, nodejs">
     <style>
         body {
-            background-color: #fff;
-            color: #333;
+            background-color: #111;
+            color: #eee;
             font-family: sans-serif;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
-
+        
         h1 {
             font-size: 20px;
+            margin-bottom: 10px;
         }
 
         h2 {
             font-size: 18px;
+            margin-bottom: 8px;
         }
 
         h3 {
             font-size: 16px;
+            margin-bottom: 6px;
         }
 
         h4 {
             font-size: 14px;
+            margin-bottom: 4px;
         }
 
         h5 {
             font-size: 12px;
+            margin-bottom: 2px;
         }
 
         h6 {
             font-size: 11px;
+            margin-bottom: 1px;
         }
 
         pre {
-            background-color: #f5f5f5;
+            background-color: #222;
             padding: 10px;
-            border-radius: 4px;
             overflow-x: auto;
         }
 
         code {
-            font-family: monospace;
+            background-color: #333;
+            color: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
         }
 
         footer {
@@ -61,37 +65,55 @@
             margin-top: 20px;
             font-size: 12px;
         }
+        
+        .title{
+            text-align: center;
+        }
+        
+        .description{
+            text-align: center;
+        }
+        
+        .keywords{
+            text-align: center;
+        }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Prism.highlightAll();
-            hljs.highlightAll();
-
+        hljs.highlightAll();
+        window.onload = function() {
             // 获取当前时间
-            let now = new Date();
-            let hour = now.getHours();
-            let theme = hour >= 18 || hour < 6 ? 'dark' : 'light';
-
+            var now = new Date();
+            var hour = now.getHours();
+            
             // 设置背景颜色
-            document.body.style.backgroundColor = theme === 'dark' ? '#222' : '#fff';
-            document.body.style.color = theme === 'dark' ? '#ddd' : '#333';
-        });
+            if (hour >= 6 && hour < 18) {
+                document.body.style.backgroundColor = '#eee'; // 白天模式
+                document.body.style.color = '#333';
+            } else {
+                document.body.style.backgroundColor = '#111'; // 夜晚模式
+                document.body.style.color = '#eee';
+            }
+        };
     </script>
 </head>
 <body>
-    <h1>Javascript or nodejs 学习笔记。</h1>
+    <h1 class="title">Javascript or nodejs 学习笔记。</h1>
+    <p class="description">nodejs。</p>
+    <p class="keywords">Javascript, nodejs</p>
+
     <p>这一篇学习笔记，记录了今日所学的一些关于Javascript的高级用法。</p>
+
     <h2>Main</h2>
-    <ul>
-        <li>今天主要学习的是Javascript的原型，闭包，以及this指针。</li>
-        <li>废话不多直接上代码；</li>
-    </ul>
+    
+    <p>今天主要学习的是Javascript的原型，闭包，以及this指针。</p>
+    
+    <p>废话不多直接上代码；</p>
+
     <h2>Javascript闭包</h2>
-    <pre><code class="language-javascript">
+
+    <pre><code class="javascript">
 /**
  * Created by zhangjianxin on 2017/6/21.
  */
@@ -120,9 +142,11 @@ var test = (function(){
 var d = test();     /**var objname = function(){...}和 function objname(){...}定义是一样的效果*/
 d(3)
 
-</code></pre>
+    </code></pre>
+
     <h2>Javascript this指针问题</h2>
-    <pre><code class="language-javascript">
+
+    <pre><code class="javascript">
 /**
  * Created by zhangjianxin on 2017/6/21.
  */
@@ -148,9 +172,11 @@ var fuckthis = {
 
 fuckthis.func3();
 
-</code></pre>
+    </code></pre>
+
     <h2>Javascript原型</h2>
-    <pre><code class="language-javascript">
+
+    <pre><code class="javascript">
 
 /**
  * Created by zhangjianxin on 2017/6/21.
@@ -174,9 +200,10 @@ preson.prototype.fuck2 = function () {
 
 p.fuck2();
 
-</code></pre>
+    </code></pre>
+
     <footer>
-        Power By Gemini TextGenerate 2024-09-16
+        Power By Gemini TextGenerate 2024-09-16 21:24:51
     </footer>
 </body>
 </html>

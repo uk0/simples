@@ -1,137 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redis安装,For Centos6</title>
-    <meta name="description" content="笔记">
-    <meta name="keywords" content="Redis,linxu,centos">
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redis安装,For Centos6</title>
+<meta name="description" content="笔记">
+<meta name="keywords" content="Redis,linxu,centos">
+<style>
+body {
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+  margin-top: 2em;
+}
 
-        h1 {
-            font-size: 20px;
-            margin-top: 0;
-        }
+h1 {
+  font-size: 20px;
+}
 
-        h2 {
-            font-size: 18px;
-        }
+h2 {
+  font-size: 18px;
+}
 
-        h3 {
-            font-size: 16px;
-        }
+h3 {
+  font-size: 16px;
+}
 
-        h4 {
-            font-size: 14px;
-        }
+h4 {
+  font-size: 14px;
+}
 
-        h5 {
-            font-size: 12px;
-        }
+h5 {
+  font-size: 12px;
+}
 
-        h6 {
-            font-size: 11px;
-        }
+h6 {
+  font-size: 11px;
+}
 
-        code {
-            background-color: #f0f0f0;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
+pre {
+  background-color: #f5f5f5;
+  padding: 10px;
+  overflow-x: auto;
+  border-radius: 4px;
+}
 
-        pre {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 3px;
-            overflow-x: auto;
-        }
+code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
 
-        footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
-        }
+.highlight {
+  background-color: #e0e0e0;
+  color: #222;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
 
-        .hljs {
-            background: #f8f8f8;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
+footer {
+  text-align: center;
+  margin-top: 2em;
+  font-size: 12px;
+}
+</style>
+<script>
+// 随机种子
+Math.seedrandom(4538978253);
 
-        .hljs-keyword {
-            color: #008000;
-            font-weight: bold;
-        }
+// 主题模式
+const isNightMode = new Date().getHours() >= 18 || new Date().getHours() < 6;
+document.body.style.backgroundColor = isNightMode ? '#111' : '#f0f0f0';
+document.body.style.color = isNightMode ? '#eee' : '#333';
 
-        .hljs-string {
-            color: #a31515;
-        }
-
-        .hljs-comment {
-            color: #808080;
-            font-style: italic;
-        }
-
-        .hljs-number {
-            color: #0000ff;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script>
-        const now = new Date();
-        const hour = now.getHours();
-
-        if (hour >= 18 || hour < 6) {
-            document.body.style.backgroundColor = '#222';
-            document.body.style.color = '#eee';
-        }
-    </script>
+// 代码高亮
+const codeElements = document.querySelectorAll('pre code');
+codeElements.forEach(code => {
+  const highlightedCode = code.textContent.replace(/`(.*?)`/g, '<span class="highlight">$1</span>');
+  code.innerHTML = highlightedCode;
+});
+</script>
 </head>
 <body>
-    <h1>Redis安装</h1>
-    <p>date：2016-11-15</p>
-    <p>author：YangRaner </p>
-    <h2 id="toc">目录</h2>
-    <ul>
-        <li><a href="#1-检查安装依赖程序">1.检查安装依赖程序</a></li>
-        <li><a href="#2-下载redis">2.下载Redis</a></li>
-        <li><a href="#3-解压redis">3.解压Redis</a></li>
-        <li><a href="#4-编译安装redis">4.编译安装Redis</a></li>
-        <li><a href="#5-配置redis">5.配置Redis</a></li>
-        <li><a href="#6-启动redis">6.启动Redis</a></li>
-        <li><a href="#7-添加开机启动项">7.添加开机启动项</a></li>
-        <li><a href="#8-redis配置参数">8.Redis配置参数</a></li>
-        <li><a href="#9-重启redis">9.重启Redis</a></li>
-    </ul>
-    <h2 id="1-检查安装依赖程序">1.检查安装依赖程序</h2>
-    <pre><code class="bash">yum install -y tcl gcc-c++ wget
+
+<h1>Redis安装</h1>
+<h2 style="text-align:center;">date：2016-11-15</h2>
+<h2 style="text-align:center;">author：YangRaner</h2>
+
+<h2 id="toc">目录</h2>
+<ul>
+<li><a href="#1检查安装依赖程序">1.检查安装依赖程序</a></li>
+<li><a href="#2下载redis">2.下载Redis</a></li>
+<li><a href="#3解压redis">3.解压Redis</a></li>
+<li><a href="#4编译安装redis">4.编译安装Redis</a></li>
+<li><a href="#5配置redis">5.配置Redis</a></li>
+<li><a href="#6启动redis">6.启动Redis</a></li>
+<li><a href="#7添加开机启动项">7.添加开机启动项</a></li>
+<li><a href="#8redis配置参数">8.Redis配置参数</a></li>
+<li><a href="#9重启redis">9.重启Redis</a></li>
+</ul>
+
+<h2 id="1检查安装依赖程序">1.检查安装依赖程序</h2>
+<pre><code>yum install -y tcl gcc-c++ wget
 </code></pre>
-    <h2 id="2-下载redis">2.下载Redis</h2>
-    <pre><code class="bash">mkdir /opt/redis/
+
+<h2 id="2下载redis">2.下载Redis</h2>
+<pre><code>mkdir /opt/redis/
 cd /opt/redis/
 wget http://download.redis.io/releases/redis-3.0.4.tar.gz
 </code></pre>
-    <h2 id="3-解压redis">3.解压Redis</h2>
-    <pre><code class="bash">tar -xzvf redis-3.0.4.tar.gz
+
+<h2 id="3解压redis">3.解压Redis</h2>
+<pre><code>tar -xzvf redis-3.0.4.tar.gz
 </code></pre>
-    <h2 id="4-编译安装redis">4.编译安装Redis</h2>
-    <pre><code class="bash">cd redis-3.0.4
+
+<h2 id="4编译安装redis">4.编译安装Redis</h2>
+<pre><code>cd redis-3.0.4
 make
 make install	
 -------------------------------------------------------------
@@ -142,60 +135,67 @@ redis-benchmark：Redis性能测试工具
 redis-check-aof：数据修复工具
 redis-check-dump：检查导出工具
 </code></pre>
-    <h2 id="5-配置redis">5.配置Redis</h2>
-    <pre><code class="bash">cp redis.conf /etc/   复制配置文件到/etc/目录
+
+<h2 id="5配置redis">5.配置Redis</h2>
+<pre><code>cp redis.conf /etc/   复制配置文件到/etc/目录
 vim /etc/redis.conf    修改redis文件
 ----------------------------------------------
 daemonize yes     修改daemonize配置项为yes，使Redis进程在后台运行
 requirepass Ejtone   # 设置密码，以提供远程登陆
 </code></pre>
-    <h2 id="6-启动redis">6.启动Redis</h2>
-    <pre><code class="bash">cd /usr/local/bin		进入bin目录下
+
+<h2 id="6启动redis">6.启动Redis</h2>
+<pre><code>cd /usr/local/bin		进入bin目录下
 ./redis-server /etc/redis.conf		启动Redis
 ps -ef | grep redis			查看redis进程
 ----------------------------------------------
 root  18443  1  0 13:05 ?    00:00:00 ./redis-server *:6379 
 
 </code></pre>
-    <h2 id="7-添加开机启动项">7.添加开机启动项</h2>
-    <pre><code class="bash"># 让Redis在服务器重启后自动启动，需要将启动命令写入开机启动项
+
+<h2 id="7添加开机启动项">7.添加开机启动项</h2>
+<pre><code># 让Redis在服务器重启后自动启动，需要将启动命令写入开机启动项
 echo "/usr/local/bin/redis-server /etc/redis.conf" >>/etc/rc.local
 </code></pre>
-    <p>**以上完成安装**</p>
-    <h2 id="8-redis配置参数">8.Redis配置参数</h2>
-    <blockquote>
-        <p> * 在前面的操作中，我们用到了使Redis进程在后台运行的参数，下面介绍其它一些常用的Redis启动参数：**</p>
-        <p>`daemonize`：是否以后台daemon方式运行</p>
-        <p>`pidfile`：pid文件位置</p>
-        <p>`port`：监听的端口号</p>
-        <p>`timeout`：请求超时时间</p>
-        <p>`loglevel`：log信息级别</p>
-        <p>`logfile`：log文件位置</p>
-        <p>`databases`：开启数据库的数量</p>
-        <p>`save` * *：保存快照的频率，第一个*表示多长时间，第二个*表示执行多少次写操作。在一定时间内执行一定数量的写操作时，自动保存快照。可设置多个条件。</p>
-        <p>`rdbcompression`：是否使用压缩</p>
-        <p>`dbfilename`：数据快照文件名（只是文件名）</p>
-        <p>`dir`：数据快照的保存目录（仅目录）</p>
-        <p>`appendonly`：是否开启appendonlylog，开启的话每次写操作会记一条log，这会提高数据抗风险能力，但影响效率。</p>
-        <p>`appendfsync`：appendonlylog如何同步到磁盘。三个选项，分别是每次写都强制调用fsync、每秒启用一次fsync、不调用fsync等待系统自己同步</p>
-    </blockquote>
-    <h2 id="9-重启redis">9.重启Redis</h2>
-    <ul>
-        <li>9.1如果Redis已经配置为service服务，可以通过以下方式重启：</li>
-    </ul>
-    <pre><code class="bash">service redis restart
+
+**以上完成安装**
+
+<h2 id="8redis配置参数">8.Redis配置参数</h2>
+> * 在前面的操作中，我们用到了使Redis进程在后台运行的参数，下面介绍其它一些常用的Redis启动参数：**
+`daemonize`：是否以后台daemon方式运行
+`pidfile`：pid文件位置
+`port`：监听的端口号
+`timeout`：请求超时时间
+`loglevel`：log信息级别
+`logfile`：log文件位置
+`databases`：开启数据库的数量
+`save` * *：保存快照的频率，第一个*表示多长时间，第二个*表示执行多少次写操作。在一定时间内执行一定数量的写操作时，自动保存快照。可设置多个条件。
+`rdbcompression`：是否使用压缩
+`dbfilename`：数据快照文件名（只是文件名）
+`dir`：数据快照的保存目录（仅目录）
+`appendonly`：是否开启appendonlylog，开启的话每次写操作会记一条log，这会提高数据抗风险能力，但影响效率。
+`appendfsync`：appendonlylog如何同步到磁盘。三个选项，分别是每次写都强制调用fsync、每秒启用一次fsync、不调用fsync等待系统自己同步
+
+
+<h2 id="9重启redis">9.重启Redis</h2>
+  * 9.1如果Redis已经配置为service服务，可以通过以下方式重启：
+
+<pre><code>service redis restart
 </code></pre>
-    <ul>
-        <li>9.2如果Redis没有配置为service服务，可以通过以下方式重启：</li>
-    </ul>
-    <pre><code class="bash">/usr/local/bin/redis-cli shutdown
+
+  * 9.2如果Redis没有配置为service服务，可以通过以下方式重启：
+<pre><code>/usr/local/bin/redis-cli shutdown
 /usr/local/bin/redis-server /etc/redis.conf
 </code></pre>
-    <p>* 以上代码经过验证可以直接拿去修改调用</p>
-    <p>* Owner `breakEval13`</p>
-    <p>* <a href="https://github.com/breakEval13">https://github.com/breakEval13</a></p>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16
-    </footer>
+
+
+* 以上代码经过验证可以直接拿去修改调用
+* Owner `breakEval13`
+* https://github.com/breakEval13
+
+<footer>
+  Power By Gemini TextGenerate 2024-09-16 21:25:06
+</footer>
+
 </body>
 </html>

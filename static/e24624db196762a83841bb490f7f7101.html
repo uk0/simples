@@ -4,27 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rust 第一个入门程序</title>
-    <meta name="description" content="rust入门介绍，以及第一个程序里面包含了rust多少设计思想">
-    <meta name="keywords" content="rust rust入门程序 rustweb actix">
+    <meta name="description" content="rust入门介绍，以及第一个程序里面包含了rust多少设计思想" />
+    <meta name="keywords" content="rust rust入门程序 rustweb actix" />
     <style>
         body {
-            font-family: sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: #111111; /* Dos复古风格 */
+            color: #ffffff;
+            font-family: monospace;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
             font-size: 20px;
             margin-bottom: 10px;
+            text-align: center;
         }
 
         h2 {
             font-size: 18px;
             margin-bottom: 8px;
+            text-align: center;
         }
 
         h3 {
@@ -47,62 +49,100 @@
             margin-bottom: 1px;
         }
 
-        code {
-            font-family: monospace;
-            background-color: #eee;
-            padding: 2px 4px;
-            border-radius: 2px;
-        }
-
         pre {
-            background-color: #eee;
+            background-color: #222222;
             padding: 10px;
-            border-radius: 4px;
             overflow-x: auto;
         }
 
-        a {
-            color: #007bff;
-            text-decoration: none;
+        code {
+            background-color: #333333;
+            color: #ffffff;
+            padding: 2px 4px;
         }
 
-        a:hover {
-            text-decoration: underline;
+        .hljs {
+            display: block;
+            overflow-x: auto;
+            padding: 1em;
+            background: #222;
+            color: #f8f8f2;
         }
 
-        .night-mode {
-            background-color: #222;
-            color: #ddd;
+        .hljs-comment,
+        .hljs-quote {
+            color: #969896;
         }
 
-        .night-mode code {
-            background-color: #333;
+        .hljs-keyword,
+        .hljs-selector-tag,
+        .hljs-selector-id,
+        .hljs-selector-class {
+            color: #e6db74;
         }
 
-        .night-mode pre {
-            background-color: #333;
+        .hljs-number,
+        .hljs-literal,
+        .hljs-symbol,
+        .hljs-bullet,
+        .hljs-variable,
+        .hljs-template-variable,
+        .hljs-link {
+            color: #6196cc;
+        }
+
+        .hljs-string,
+        .hljs-doctag {
+            color: #b5bd68;
+        }
+
+        .hljs-title,
+        .hljs-section,
+        .hljs-name,
+        .hljs-selector-attr,
+        .hljs-selector-pseudo {
+            color: #f8f8f2;
+        }
+
+        .hljs-addition {
+            background-color: #144214;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .hljs-deletion {
+            background-color: #a40000;
+            display: inline-block;
+            width: 100%;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Rust 第一个入门程序</h1>
-    <p>记录第一个rust 程序，以及对用到的工具rust语言特性的介绍。</p>
-    <h2>Rust 官方文档</h2>
-    <ul>
-        <li><a href="https://doc.rust-lang.org/book/">https://doc.rust-lang.org/book/</a></li>
-    </ul>
-    <h2>安装rust cargo</h2>
-    <h3>安装</h3>
-    <pre><code>## install rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-## 
-</code></pre>
-    <h3>官方安装文档</h3>
-    <ul>
-        <li><a href="https://forge.rust-lang.org/infra/other-installation-methods.html">https://forge.rust-lang.org/infra/other-installation-methods.html</a></li>
-    </ul>
-    <h2>创建一个rust项目</h2>
-    <pre><code>cargo new web_demo  --bin
+    <h2>记录第一个rust 程序，以及对用到的工具rust语言特性的介绍。</h2>
+    <h3>Rust 官方文档</h3>
+    <p>
+        * <a href="https://doc.rust-lang.org/book/">https://doc.rust-lang.org/book/</a>
+    </p>
+    <h3>安装rust cargo</h3>
+    <p>
+        * 安装 
+        ```
+        ## install rust
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+        ## 
+        ```
+        * 官方安装文档
+        > https://forge.rust-lang.org/infra/other-installation-methods.html
+    </p>
+    <h3>创建一个rust项目</h3>
+    <pre><code class="language-bash">cargo new web_demo  --bin
 
 
 > cd web_demo
@@ -116,7 +156,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 </code></pre>
     <p>Let’s take a closer look at <code>Cargo.toml</code>:</p>
-    <pre><code>[package]
+    <pre><code class="language-toml">[package]
 name = "web-demo"
 version = "0.1.0"
 authors = ["张建新 <zhangjianxin@bigsfintech.com>"]
@@ -139,12 +179,12 @@ base64 = "0.12.0"
 </code></pre>
     <p>This is called a manifest, and it contains all of the metadata that Cargo needs to compile your package.</p>
     <p>Here’s what’s in <code>src/main.rs</code>:</p>
-    <pre><code>fn main() {
+    <pre><code class="language-rust">fn main() {
     println!("Hello, world!");
 }
 </code></pre>
-    <h2>开始添砖加瓦</h2>
-    <pre><code>
+    <h3>开始添砖加瓦</h3>
+    <pre><code class="language-rust">
 
 
 use actix_files;
@@ -421,16 +461,15 @@ async fn main() -> std::io::Result<()> {
 }
 
 </code></pre>
-    <h2>写一个简单的web遇到哪些感觉有意思的东西</h2>
+    <h3>写一个简单的web遇到哪些感觉有意思的东西</h3>
     <ul>
-        <li>match 大体功能同等于<code>switch</code> 但是加强了枚举</li>
+        <li>match 大体功能同等于<code>switch </code> 但是加强了枚举</li>
         <li>Some  <code>一个神奇的枚举种类</code> （比较有意思的点）</li>
-        <li><code>||</code> <code>闭包</code></li>
-        <li>? <code>Error propagation	一般会和 Match Some Restlt<Option></code> 打一套组合拳 主要还是用于传播 （比较有意思的点）</li>
+        <li><code>|| </code> <code>闭包</code></li>
+        <li>? <code>Error propagation	一般会和 Match Some Restlt<Option> </code> 打一套组合拳 主要还是用于传播 （比较有意思的点）</li>
         <li>unwrap  和  <code>?</code>   相反的工作 <code>?</code>是传播  <code>unwrap</code> 摊开数据 解包数据返回。</li>
-        <li> async await Rust的异步并发编程</li>
-    </ul>
-    <pre><code>async fn print_async() {
+        <li> async await Rust的异步并发编程
+            <pre><code class="language-rust">async fn print_async() {
      println!("Hello from print_async")
 }
 
@@ -442,43 +481,22 @@ fn main() {
 // 本质上是 延迟运算
 // 在手动 poll future 之前，异步函数内部一行代码也不会执行
 </code></pre>
-    <ul>
+        </li>
         <li>await! <code>是一个编译器内建的 macro ，用来暂停（pause） Future 的执行流程，并且把执行流程交回给调用方 (yield) 和React访问rest接口 一致。</code></li>
     </ul>
-    <h4>今天是学习Rust的第一天 开阔了视野</h4>
-    <p>文章不定时更新，遇到自己觉得有意思的问题 第一时间更新上来。</p>
-    <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16
-    </footer>
+    <h4> 今天是学习Rust的第一天 开阔了视野</h4>
+    <p>
+        * 文章不定时更新，遇到自己觉得有意思的问题 第一时间更新上来。
+    </p>
+    <footer>Power By Gemini TextGenerate 2024-09-16 21:39:21</footer>
     <script>
-        // 随机种子: 199602051111
-        const seed = 199602051111;
-        function getRandomInt(min, max) {
-            let seed = 199602051111;
-            seed = (seed * 9301 + 49297) % 233280;
-            return Math.floor(seed / 233280 * (max - min + 1)) + min;
-        }
-
-        // 获取当前时间
-        const currentTime = new Date();
-        const currentHour = currentTime.getHours();
-
-        // 设置白天或夜晚模式
-        if (currentHour >= 6 && currentHour <= 18) {
-            document.body.classList.remove('night-mode');
-        } else {
-            document.body.classList.add('night-mode');
-        }
-
-        // Highlight.js 与 Prism.js 实现代码高亮
-        const codeBlocks = document.querySelectorAll('pre code');
-        codeBlocks.forEach(block => {
-            // 使用 Highlight.js 或 Prism.js 的 API 对代码进行高亮
-            // 示例：
-            // HighlightJS: hljs.highlightBlock(block);
-            // PrismJS: Prism.highlightElement(block);
+        // 将所有被` `包围的内容高亮显示
+        document.querySelectorAll('`').forEach(function(el) {
+            el.classList.add('hljs');
+            el.innerHTML = el.innerHTML.replace(/`/g, '');
         });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 </body>
 </html>

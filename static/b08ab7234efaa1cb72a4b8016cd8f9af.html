@@ -1,121 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rust Native Spark Sample Install</title>
-    <meta name="description" content="Native Spark for rust fast spark" />
-    <meta name="keywords" content="fast spark native spark" />
-    <style>
-        body {
-            font-family: sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rust Native Spark Sample Install</title>
+<meta name="description" content="Native Spark for rust fast spark">
+<meta name="keywords" content="fast spark native spark">
+<style>
+body {
+    font-family: sans-serif;
+    background-color: #111;
+    color: #eee;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-        h1 {
-            font-size: 20px;
-            text-align: center;
-        }
+h1 {
+    font-size: 20px;
+}
 
-        h2 {
-            font-size: 18px;
-        }
+h2 {
+    font-size: 18px;
+}
 
-        h3 {
-            font-size: 16px;
-        }
+h3 {
+    font-size: 16px;
+}
 
-        h4 {
-            font-size: 14px;
-        }
+h4 {
+    font-size: 14px;
+}
 
-        h5 {
-            font-size: 12px;
-        }
+h5 {
+    font-size: 12px;
+}
 
-        h6 {
-            font-size: 11px;
-        }
+h6 {
+    font-size: 11px;
+}
 
-        pre {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
+pre {
+    background-color: #222;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+}
 
-        code {
-            font-family: monospace;
-        }
+code {
+    background-color: #333;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #eee;
+}
 
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-        }
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+}
 
-        .night-mode {
-            background-color: #282c34;
-            color: #fff;
-        }
+.title {
+    text-align: center;
+}
 
-        .night-mode pre {
-            background-color: #333;
-        }
+.description {
+    text-align: center;
+}
 
-        .night-mode code {
-            color: #fff;
-        }
+.keywords {
+    text-align: center;
+}
 
-        .night-mode a {
-            color: #007bff;
-        }
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+}
 
-        .night-mode a:hover {
-            text-decoration: underline;
-        }
-
-        .night-mode footer {
-            color: #fff;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>
-        // Set random seed
-        Math.seedrandom(199602051111);
-
-        // Check current time for night mode
-        const currentHour = new Date().getHours();
-        if (currentHour >= 19 || currentHour < 6) {
-            document.body.classList.add('night-mode');
-        }
-
-        // Highlight.js initialization
-        hljs.initHighlightingOnLoad();
-
-        // Prism.js initialization
-        Prism.highlightAll();
-    </script>
-</head>
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+<script>
+    const currentTime = new Date();
+    const isDayTime = currentTime.getHours() >= 6 && currentTime.getHours() < 18;
+    if (isDayTime) {
+        document.body.style.backgroundColor = '#eee';
+        document.body.style.color = '#222';
+        document.body.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+        document.querySelectorAll('pre code').forEach(code => {
+            code.style.backgroundColor = '#fff';
+        });
+        document.querySelectorAll('pre').forEach(pre => {
+            pre.style.backgroundColor = '#f2f2f2';
+        });
+    } else {
+        document.body.style.backgroundColor = '#111';
+        document.body.style.color = '#eee';
+        document.body.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+        document.querySelectorAll('pre code').forEach(code => {
+            code.style.backgroundColor = '#222';
+        });
+        document.querySelectorAll('pre').forEach(pre => {
+            pre.style.backgroundColor = '#333';
+        });
+    }
+</script>
 <body>
-    <h1>Rust Native Spark Sample Install</h1>
-    <p>本文简单介绍Rust版本的Spark 安装 以及dev版本的测试。</p>
+<div class="title">
+<h1>Rust Native Spark Sample Install</h1>
+</div>
+<div class="description">
+<p>Native Spark for rust fast spark</p>
+</div>
+<div class="keywords">
+<p>fast spark native spark</p>
+</div>
 
-    <h2>介绍 Native Spark For Rust</h2>
-    <p>
-        * github 地址 ： <a href="https://github.com/rajasekarv/native_spark" target="_blank">https://github.com/rajasekarv/native_spark</a>
-    </p>
+<p>本文简单介绍Rust版本的Spark 安装 以及dev版本的测试。</p>
 
-    <h2>Sample </h2>
-    <pre><code class="language-bash">
-## clone project 
+<h3>介绍 Native Spark For Rust</h3>
+
+<ul>
+<li>github 地址 ： <a href="https://github.com/rajasekarv/native_spark">https://github.com/rajasekarv/native_spark</a></li>
+</ul>
+
+<h3>Sample</h3>
+
+<pre><code class="bash">## clone project 
 git clone https://github.com/rajasekarv/native_spark
 ## Use Ubuntu18.04
 
@@ -152,28 +167,50 @@ cargo run --example make_rdd
 ./build_image.sh
 # 启动测试节点 并且将当前的 target 目录映射到 容器内的 /home/dev
 ./test_cluster.sh
-    </code></pre>
 
-    <h2>图示</h2>
-    <p>看一下代码</p>
-    <img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-46-14.png!100" alt="代码示例">
-    <p>启动测试节点</p>
-    <img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-47-39.png!100" alt="启动测试节点">
-    <p>进入Master</p>
-    <img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-48-47.png!100" alt="进入Master">
-    <p>测试native_spark</p>
-    <img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-50-53.png!100" alt="测试native_spark">
-    <p>在容器内测试native_spark 集群 <code>./file_read --deployment_mode distributed --local_ip=0.0.0.0</code></p>
-    <pre><code class="language-bash">
-RUST_BACKTRACE=full ./file_read --deployment_mode distributed --local_ip=0.0.0.0
-    </code></pre>
-    <img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-11-07-11.png!100" alt="容器内测试">
+</code></pre>
 
-    <h4>未完结</h4>
-    <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC4.0</a> 协议授权</p>
+<h2>图示</h2>
 
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16
-    </footer>
+<ul>
+<li>看一下代码</li>
+</ul>
+
+<img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-46-14.png!100" alt="代码截图">
+
+<ul>
+<li>启动测试节点</li>
+</ul>
+
+<img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-47-39.png!100" alt="启动截图">
+
+<ul>
+<li>进入Master</li>
+</ul>
+
+<img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-48-47.png!100" alt="Master截图">
+
+<ul>
+<li>测试native_spark</li>
+</ul>
+
+<img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-50-53.png!100" alt="测试截图">
+
+<ul>
+<li>在容器内测试native_spark 集群 <code>./file_read --deployment_mode distributed --local_ip=0.0.0.0</code></li>
+</ul>
+
+<pre><code class="bash">RUST_BACKTRACE=full ./file_read --deployment_mode distributed --local_ip=0.0.0.0
+</code></pre>
+
+<img src="http://112firshme11224.test.upcdn.net/blog/2019-12-26-11-07-11.png!100" alt="集群测试截图">
+
+<h4>未完结</h4>
+
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+
+<footer>
+<p>Power By Gemini TextGenerate 2024-09-16 21:44:56</p>
+</footer>
 </body>
 </html>

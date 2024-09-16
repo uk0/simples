@@ -3,105 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrateDB数据目录发生变动启动故障。</title>
+    <title>CrateDB数据目录发生变动启动故障</title>
     <meta name="description" content="CICD。">
     <meta name="keywords" content="Java, GitHub Pages">
     <style>
         body {
             font-family: sans-serif;
+            background-color: #111; /* 选择 Unix 风格背景色 */
+            color: #eee;
+            margin: 0;
+            padding: 0;
             max-width: 820px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #fff; /* 白天模式背景色 */
-            color: #333;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             font-size: 20px;
+            text-align: center;
         }
+
         h2 {
             font-size: 18px;
+            text-align: center;
         }
+
         h3 {
             font-size: 16px;
         }
+
         h4 {
             font-size: 14px;
         }
+
         h5 {
             font-size: 12px;
         }
+
         h6 {
             font-size: 11px;
         }
+
         code {
-            background-color: #eee;
-            padding: 2px 5px;
+            background-color: #222;
+            color: #fff;
+            padding: 2px 4px;
             border-radius: 3px;
-            font-family: monospace;
         }
+
+        pre {
+            background-color: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
         img {
             max-width: 100%;
             height: auto;
         }
+
         footer {
             text-align: center;
+            padding: 10px 0;
             font-size: 12px;
-            margin-top: 20px;
-            color: #666;
         }
-        .night-mode {
-            background-color: #222; /* 夜晚模式背景色 */
-            color: #eee;
+
+        .highlight {
+            background-color: #333; /* 代码高亮背景色 */
+            color: #eee; /* 代码高亮字体颜色 */
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .highlight .token {
+            color: #fff; /* 代码高亮关键字颜色 */
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 获取当前时间
-            const now = new Date();
-            const hour = now.getHours();
-
-            // 判断是否为夜晚模式
-            if (hour >= 18 || hour < 6) {
-                document.body.classList.add('night-mode');
-            }
-
-            // 初始化Highlight.js
-            hljs.highlightAll();
-        });
-    </script>
 </head>
 <body>
-    <h1 style="text-align: center;">CrateDB数据目录发生变动启动故障。</h1>
+    <h1>CrateDB数据目录发生变动启动故障</h1>
     <h2 style="text-align: center;">0x00</h2>
     <p style="text-align: center;">
-        > Crate Version 1.12<br>
-        > Linux Core 4.8<br>
+        > Crate Version 1.12
+        > Linux Core 4.8
         > Node Number 20
     </p>
-    <img src="http://112firshme11224.test.upcdn.net/QQ20170601-114658@2x.png" alt="CrateDB启动失败截图">
-    <p>
+    <img src="http://112firshme11224.test.upcdn.net/QQ20170601-114658@2x.png" alt="图片">
+    <p style="text-align: center;">
         > 今天项目要求重新启动crate数据库，因为用户名称发生了变动，所以导致文件没有权限。
     </p>
     <h3>1.查看了一番发现时文件的所属发生了变动</h3>
-    <pre><code class="language-bash">$xslt
+    <pre><code class="highlight">$xslt
 #用root用户执行
 chown -R admin:admin /home/tod/data
+
 </code></pre>
-    <h3>2.修改完成重新启动。</h3>
-    <pre><code class="language-bash">$xslt
-/crate -d H
+    <h3>2.修改完成重新启动</h3>
+    <pre><code class="highlight">/crate -d H
 </code></pre>
-    <img src="http://112firshme11224.test.upcdn.net/QQ20170601-115231@2x.png" alt="CrateDB启动成功截图">
+    <img src="http://112firshme11224.test.upcdn.net/QQ20170601-115231@2x.png" alt="图片">
     <h3>3.确认启动成功</h3>
-    <pre><code class="language-bash">$xslt
-jps
+    <pre><code class="highlight">jps
 </code></pre>
     <footer>
-        Power By Gemini TextGenerate 2024-09-16
+        Power By Gemini TextGenerate 2024-09-16 21:50:21
     </footer>
+    <script>
+        // JavaScript代码需要与主题色呼应
+        const codeBlocks = document.querySelectorAll('pre code');
+        const highlight = document.querySelector('.highlight');
+
+        codeBlocks.forEach(codeBlock => {
+            codeBlock.classList.add('highlight');
+            // 调整 highlight 的背景色和字体颜色以匹配主题色
+            // 您可以根据主题色调整 highlight 的样式
+            highlight.style.backgroundColor = '#333';
+            highlight.style.color = '#eee';
+        });
+    </script>
 </body>
 </html>

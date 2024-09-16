@@ -1,125 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Linux 操作系统日常巡检[原创]</title>
-<meta name="description" content="运维" />
-<meta name="keywords" content="linux" />
-<style>
-body {
-  font-family: Arial, sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f8f8f8; /* 默认白天背景色 */
-  transition: background-color 0.5s ease;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux 操作系统日常巡检[原创]</title>
+    <meta name="description" content="运维，Linux操作系统日常巡检">
+    <meta name="keywords" content="linux,运维">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-.container {
-  width: 100%;
-  margin: 0 auto;
-}
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
 
-h1 {
-  font-size: 20px;
-  text-align: center;
-}
+        h1 {
+            font-size: 20px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-pre {
-  background-color: #f2f2f2;
-  padding: 10px;
-  border-radius: 5px;
-  overflow: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
 
-code {
-  font-family: monospace;
-  background-color: #f2f2f2;
-  padding: 2px 5px;
-  border-radius: 3px;
-}
+        code {
+            font-family: monospace;
+            color: #007bff;
+        }
 
-footer {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 20px;
-  color: #777;
-}
+        .hljs {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
 
-.night-mode {
-  background-color: #181818;
-  color: #eee;
-}
+        .hljs-keyword {
+            color: #007bff;
+        }
 
-.night-mode pre {
-  background-color: #282828;
-  color: #eee;
-}
+        .hljs-string {
+            color: #dc3545;
+        }
 
-.night-mode code {
-  background-color: #383838;
-  color: #eee;
-}
-</style>
+        .hljs-comment {
+            color: #6c757d;
+        }
+
+        .hljs-number {
+            color: #28a745;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 20px;
+            color: #6c757d;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 <body>
-<script>
-  // 获取当前时间
-  const now = new Date();
-  const hour = now.getHours();
-
-  // 判断当前时间是否为晚上
-  if (hour >= 18 || hour < 6) {
-    // 如果是晚上，应用夜间模式
-    document.body.classList.add('night-mode');
-  }
-
-  // 代码高亮
-  const codeBlocks = document.querySelectorAll('pre code');
-  codeBlocks.forEach(block => {
-    const language = block.className.trim();
-    if (language) {
-      // 使用 Highlight.js 或 Prism.js 来高亮显示代码
-      // 这里省略具体的实现，需要根据实际情况进行调整
-      // 具体用法请参考 Highlight.js 或 Prism.js 的官方文档
-    }
-  });
-</script>
-
-<div class="container">
-<h1>Linux 操作系统日常巡检[原创]</h1>
-<p>date：2017-10-06</p>
-<p>author：杨然儿</p>
-
-<h2>操作系统日常巡检</h2>
-
-<h2>0.查询是否被攻击</h2>
-
-<pre><code>
-    统计登录成功的IP
+    <h1>Linux 操作系统日常巡检[原创]</h1>
+    <p>date：2017-10-06</p>
+    <p>author：杨然儿</p>
+    <h2>操作系统日常巡检</h2>
+    <h3>0.查询是否被攻击</h3>
+    <pre><code>统计登录成功的IP
             last | awk '{ print $3}' | sort | uniq -c | sort -n
     登录失败的IP
             lastb | awk '{ print $3}' | sort | uniq -c | sort -n
@@ -130,74 +107,38 @@ footer {
             grep "Accept" /var/log/secure*|awk '{print $9 '=' $11}'|sort|uniq -c
         登录失败的
             grep "Failed" /var/log/secure*|awk '{print $9 '=' $11}'|sort|uniq -c
-
 </code></pre>
-
-<h2>1.查操作系统日志是否存在错误:</h2>
-
-<pre><code>
-    more /var/log/messages|grep -E '[Ee]erro|fail|[Ww]arning'
-
+    <h3>1.查操作系统日志是否存在错误:</h3>
+    <pre><code>more /var/log/messages|grep -E '[Ee]erro|fail|[Ww]arning'
 </code></pre>
-
-<h2>2.查主机是否存在硬件错误</h2>
-
-<pre><code>
-    dmesg|more
-
+    <h3>2.查主机是否存在硬件错误</h3>
+    <pre><code>dmesg|more
 </code></pre>
-
-<h2>3.文件使用率</h2>
-
-<pre><code>
-    df -h
-
+    <h3>3.文件使用率</h3>
+    <pre><code>df -h
 </code></pre>
-
-<h2>4.检查是否存在僵尸进程</h2>
-
-<pre><code>
-    ps -ef|grep defunct
-
+    <h3>4.检查是否存在僵尸进程</h3>
+    <pre><code>ps -ef|grep defunct
 </code></pre>
-
-<h2>5.检查网关是否正确</h2>
-
-<pre><code>
-    netstat -nr
+    <h3>5.检查网关是否正确</h3>
+    <pre><code>netstat -nr
     ping  网关
-
 </code></pre>
-
-<h2>6.检查网络通信是否正常</h2>
-
-<pre><code>
-    netstat -ni
+    <h3>6.检查网络通信是否正常</h3>
+    <pre><code>netstat -ni
     RX-DRP 值为0或者保持稳定
-
 </code></pre>
-
-<h2>7.查网络连接状态</h2>
-
-<pre><code>
-    netstat -an|egrep 'ESTABLISHED|FIN_WAIT_1|FIN_WAIT_2|TIME_WAIT|CLOSING|CLOSE_WAIT|LAST_ACK'
+    <h3>7.查网络连接状态</h3>
+    <pre><code>netstat -an|egrep 'ESTABLISHED|FIN_WAIT_1|FIN_WAIT_2|TIME_WAIT|CLOSING|CLOSE_WAIT|LAST_ACK'
 
     netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'
-
 </code></pre>
-
-<h2>8.查看是否丢包</h2>
-
-<pre><code>
-    cat /proc/net/dev
+    <h3>8.查看是否丢包</h3>
+    <pre><code>cat /proc/net/dev
     注意：dropped:0==> 如果这个值不为 0 , 则说明有丢包现象
-
 </code></pre>
-
-<h2>9.网卡的工作状态</h2>
-
-<pre><code>
-    ifconfig -a
+    <h3>9.网卡的工作状态</h3>
+    <pre><code>ifconfig -a
     如果网卡中状态无为down状态
 
     ethtool eth1
@@ -205,13 +146,9 @@ footer {
     iftop -B -n  -N -p
     fftop -i eth1 -B -n  -N -p
     查看网卡速度
-
 </code></pre>
-
-<h2>10.CPU是否存在瓶颈</h2>
-
-<pre><code>
-    .CPU IDel大于90％则OK
+    <h3>10.CPU是否存在瓶颈</h3>
+    <pre><code>.CPU IDel大于90％则OK
             top -i -n 1|grep id|awk '{print $8}'
 
     .CPU load average 正常值：< CPU个数 * 核数 *0.7
@@ -220,26 +157,18 @@ footer {
             一般来说只要每个CPU的当前活动进程数不大于3那么系统的性能就是良好的，
             如果每个CPU的任务数大于5，那么就表示这台机器的性能有严重问题。
             实际上这个进程数就是每个CPU的负载.
-
 </code></pre>
-
-<h2>11.检查内存是否充足</h2>
-
-<pre><code>
-    内存有足够空间
+    <h3>11.检查内存是否充足</h3>
+    <pre><code>内存有足够空间
     free -m
 
     没有发生换页
     vmstat 1 6
             如果 si 和so 的值总是不为零，则说明，swap 有很高的换页率
             如果 bi 和 bo 的值很高说明系统在进行大量的IO读些操作
-
 </code></pre>
-
-<h2>12.检查IO</h2>
-
-<pre><code>
-    查看读写速度
+    <h3>12.检查IO</h3>
+    <pre><code>查看读写速度
             iostat -d -x -k 1 5
 
             Device:         rrqm/s   wrqm/s     r/s     w/s    rkB/s    wkB/s avgrq-sz avgqu-sz   await  svctm  %util
@@ -310,17 +239,10 @@ footer {
 
         第11个域：输入/输出操作花费的加权毫秒数 -----  加权， 花在I/O操作上的毫秒数，在每次I/O开始，I/O结束，I/O合并时这个域都会增加。这可以给I/O完成时间和存储那些可以累积的提供一个便利的测量标准。
         （number of milliseconds spent doing I/Os. This field is incremented at each I/O start, I/O completion, I/O merge, or read of these stats by the number of I/Os in progress (field 9) times the number of milliseconds spent doing I/O since the last update of this field. This can provide an easy measure of both I/O completion time and the backlog that may be accumulating.）
-
-
-
-* 以上操作经过验证可以直接拿去。
-* auther `breakEval13`
-* https://github.com/breakEval13
-
-</div>
-
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+</code></pre>
+    <p>* 以上操作经过验证可以直接拿去。</p>
+    <p>* auther <code>breakEval13</code></p>
+    <p>* <a href="https://github.com/breakEval13">https://github.com/breakEval13</a></p>
+    <footer>Power By Gemini TextGenerate 2024-09-16 21:29:12</footer>
 </body>
 </html>

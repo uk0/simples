@@ -1,96 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>ArangoDB安装,For Centos7[原创]</title>
-<meta name="description" content="笔记">
-<meta name="keywords" content="ArangoDB,linxu,centos">
-<style>
-body {
-  font-family: sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  max-width: 820px;
-  margin: 0 auto;
-}
-.content {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-h1 {
-  font-size: 20px;
-  margin-top: 0;
-}
-h2 {
-  font-size: 18px;
-}
-h3 {
-  font-size: 16px;
-}
-h4 {
-  font-size: 14px;
-}
-h5 {
-  font-size: 12px;
-}
-h6 {
-  font-size: 11px;
-}
-pre {
-  background-color: #f2f2f2;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-.footer {
-  text-align: center;
-  padding: 10px;
-  background-color: #eee;
-  border-top: 1px solid #ddd;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<script>
-hljs.highlightAll();
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArangoDB安装,For Centos7[原创]</title>
+    <meta name="description" content="笔记">
+    <meta name="keywords" content="ArangoDB,linxu,centos">
+    <style>
+        body {
+            background-color: #141414;
+            color: #eee;
+            font-family: sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #282c34;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        code {
+            color: #d4d4d4;
+        }
+
+        .hljs {
+            background-color: #282c34;
+        }
+
+        .hljs-keyword {
+            color: #c678dd;
+        }
+
+        .hljs-string {
+            color: #a6e22e;
+        }
+
+        .hljs-number {
+            color: #a6e22e;
+        }
+
+        .hljs-comment {
+            color: #6f7071;
+        }
+
+        .hljs-title {
+            color: #e06c75;
+        }
+
+        .hljs-tag {
+            color: #e06c75;
+        }
+
+        .hljs-attribute {
+            color: #a6e22e;
+        }
+
+        .hljs-selector {
+            color: #a6e22e;
+        }
+
+        .hljs-built_in {
+            color: #e06c75;
+        }
+
+        .hljs-attr {
+            color: #e06c75;
+        }
+
+        .hljs-variable {
+            color: #a6e22e;
+        }
+
+        .hljs-operator {
+            color: #e06c75;
+        }
+
+        .hljs-meta {
+            color: #e06c75;
+        }
+
+        .hljs-meta-string {
+            color: #a6e22e;
+        }
+
+        .hljs-literal {
+            color: #a6e22e;
+        }
+
+        .hljs-regexp {
+            color: #a6e22e;
+        }
+
+        .hljs-link {
+            color: #a6e22e;
+        }
+
+        .hljs-doctag {
+            color: #e06c75;
+        }
+
+        .hljs-keyword {
+            color: #c678dd;
+        }
+
+        .hljs-name {
+            color: #e06c75;
+        }
+
+        .hljs-type {
+            color: #a6e22e;
+        }
+
+        .hljs-symbol {
+            color: #e06c75;
+        }
+
+        .hljs-bullet {
+            color: #e06c75;
+        }
+
+        .hljs-code {
+            color: #a6e22e;
+        }
+
+        .hljs-strong {
+            font-weight: bold;
+        }
+
+        .hljs-emphasis {
+            font-style: italic;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            color: #6f7071;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+        document.addEventListener('DOMContentLoaded', function () {
+            var now = new Date();
+            var hour = now.getHours();
+            var body = document.body;
+            if (hour >= 6 && hour < 18) {
+                body.style.backgroundColor = '#f5f5f5';
+                body.style.color = '#222';
+            } else {
+                body.style.backgroundColor = '#141414';
+                body.style.color = '#eee';
+            }
+        });
+    </script>
 </head>
 <body>
-<div class="content">
-<h1 style="text-align: center;">ArangoDB安装,For Centos7[原创]</h1>
-<p style="text-align: center;">笔记</p>
-<p style="text-align: center;">关键词: ArangoDB,linxu,centos</p>
-<p>ArangoDB安装，以及访问出现无权限，导致无法连接arangosh，的解决方法。</p>
-<h1 id="arango-db"> ArangoDB安装</h1>
-<p>date：2017-08-17</p>
-<p>author：zhangjianxin</p>
-<h2 id="toc">  1.下载ArangoDB rpm</h2>
-<pre><code class="bash">wget http://112firshme11224.test.upcdn.net/blog/arangodb3-3.2.0-1.x86_64.rpm
+    <h1>ArangoDB安装,For Centos7[原创]</h1>
+    <p>笔记</p>
+    <h2> 1.下载ArangoDB rpm</h2>
+    <pre><code class="bash">wget http://112firshme11224.test.upcdn.net/blog/arangodb3-3.2.0-1.x86_64.rpm
 </code></pre>
-<h2 id="toc">  2.Install ArangoDB</h2>
-<pre><code class="bash">rpm -ivh arangodb3-3.2.0-1.x86_64.rpm
+    <h2> 2.Install ArangoDB</h2>
+    <pre><code class="bash">rpm -ivh arangodb3-3.2.0-1.x86_64.rpm
 </code></pre>
-<h2 id="toc">  3.start</h2>
-<pre><code class="bash">systemctl start arangodb3
+    <h2> 3.start</h2>
+    <pre><code class="bash">systemctl start arangodb3
 </code></pre>
-<h2 id="toc">  4.status</h2>
-<pre><code class="bash">
+    <h2> 4.status</h2>
+    <pre><code class="bash">
 
 systemctl status arangodb3
 </code></pre>
-<h2 id="toc">  5.配置arangosh</h2>
-<pre><code class="bash">/etc/arangodb3/arangosh.conf
+    <h2> 5.配置arangosh</h2>
+    <pre><code class="bash">/etc/arangodb3/arangosh.conf
 ----------------------------------------------
 [console]
 pretty-print = true
@@ -108,8 +226,8 @@ file = -
 startup-directory = /usr/share/arangodb3/js
 
 </code></pre>
-<h2 id="toc">  6.配置arangod</h2>
-<pre><code class="bash"># ArangoDB configuration file
+    <h2> 6.配置arangod</h2>
+    <pre><code class="bash"># ArangoDB configuration file
 #
 # Documentation:
 # https://docs.arangodb.com/Manual/Administration/Configuration/
@@ -188,45 +306,34 @@ file = /var/log/arangodb3/arangod.log
 [rocksdb]
 # encryption-keyfile=/your-encryption-file
 </code></pre>
-<p>**以上完成安装**</p>
-<h1 id="toc"> 7.访问测试</h1>
-<pre><code class="bash">arangosh
+    <h3>以上完成安装</h3>
+    <h2> 7.访问测试</h2>
+    <pre><code class="bash">arangosh
 # 进入arangodb bash
 </code></pre>
-<p><img src="http://112firshme11224.test.upcdn.net/blog/20E4E40601E232AFEB557A2260F5BA20.png" alt="图"></p>
-<h1 id="toc"> 8.解决没有权限问题</h1>
-<pre><code class="bash"> # 停止 `systemctl stop arangodb3`
+    <img src="http://112firshme11224.test.upcdn.net/blog/20E4E40601E232AFEB557A2260F5BA20.png" alt="访问测试">
+    <h2> 8.解决没有权限问题</h2>
+    <pre><code class="bash"> # 停止 `systemctl stop arangodb3`
  # 不启用授权启动arangodb
 /usr/sbin/arangod --server.authentication false
 
  </code></pre>
-<p><img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231202@2x.png" alt="图"></p>
-<ul>
-<li>注意启动以后开启另一个`shell`窗口,当前的不要结束，图上面是已经`Control + C `了，这一步在什么时候做下面会说。</li>
-<li>接下来执行`arangosh` 它会让你输入密码，直接会车即可。</li>
-</ul>
-<p><img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231311@2x.png" alt="图"></p>
-<ul>
-<li>在出现的arangodb shell 里面执行如下命令。</li>
-</ul>
-<pre><code class="bash">require("@arangodb/users").replace("root", "new-password");
+    <img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231202@2x.png" alt="解决没有权限问题">
+    <p> * 注意启动以后开启另一个`shell`窗口,当前的不要结束，图上面是已经`Control + C `了，这一步在什么时候做下面会说。
+     * 接下来执行`arangosh` 它会让你输入密码，直接会车即可。</p>
+    <img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231311@2x.png" alt="解决没有权限问题">
+    <p> * 在出现的arangodb shell 里面执行如下命令。</p>
+    <pre><code class="bash">require("@arangodb/users").replace("root", "new-password");
 #通过他的客户端进行直接修改`root`密码
 </code></pre>
-<ul>
-<li>输入完密码，进行退出`exit`</li>
-<li>退出后去第一个shell窗口执行 `Control + C `。</li>
-<li>然后在任意shell窗口进行访问`arangosh`,并且输入修改后的密码,即可成功登录arangodb。</li>
-</ul>
-<p><img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231323@2x.png" alt="图"></p>
-<h2 id="toc"> 不推荐使用` arango-secure-installation`进行修改root密码。</h2>
-<ul>
-<li>以上操作经过验证可以直接拿去。</li>
-<li>Owner `breakEval13`</li>
-<li>https://github.com/breakEval13</li>
-</ul>
-<footer class="footer">
-<p>Power By Gemini TextGenerate 2024-09-16</p>
-</footer>
-</div>
+    <p> * 输入完密码，进行退出`exit`
+     * 退出后去第一个shell窗口执行 `Control + C `。
+     * 然后在任意shell窗口进行访问`arangosh`,并且输入修改后的密码,即可成功登录arangodb。</p>
+    <img src="http://112firshme11224.test.upcdn.net/blog/WX20170817-231323@2x.png" alt="解决没有权限问题">
+    <h3>不推荐使用` arango-secure-installation`进行修改root密码。</h3>
+    <p>* 以上操作经过验证可以直接拿去。
+     * Owner `breakEval13`
+     * https://github.com/breakEval13</p>
+    <footer>Power By Gemini TextGenerate 2024-09-16 21:31:10</footer>
 </body>
 </html>

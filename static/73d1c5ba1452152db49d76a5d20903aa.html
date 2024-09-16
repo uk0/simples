@@ -1,103 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Python流量加速</title>
-<meta name="description" content="Python流量加速">
-<meta name="keywords" content="linux,python">
-<style>
-body {
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f2f2f2;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python流量加速</title>
+    <meta name="description" content="Python流量加速" style="text-align: center;">
+    <meta name="keywords" content="linux,python" style="text-align: center;">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #000000; /* Dos复古风格 */
+            color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 820px;
+            margin: 0 auto;
+        }
 
-h1 {
-  font-size: 20px;
-}
+        h1 {
+            font-size: 20px;
+            margin-top: 20px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-}
+        pre {
+            background-color: #222;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
 
-code {
-  font-family: monospace;
-  background-color: #f0f0f0;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
+        code {
+            background-color: #111;
+            color: #fff;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
 
-.title-container {
-  text-align: center;
-}
+        .highlight {
+            background-color: #111;
+            color: #fff;
+        }
 
-.title-container h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
+        a {
+            color: #00f;
+            text-decoration: none;
+        }
 
-.title-container p {
-  font-size: 16px;
-  color: #555;
-}
+        a:hover {
+            text-decoration: underline;
+        }
 
-.code-block {
-  overflow-x: auto;
-}
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px 0;
+            background-color: #333;
+            color: #fff;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+        document.addEventListener('DOMContentLoaded', function() {
+            var codeElements = document.querySelectorAll('pre code');
+            codeElements.forEach(function(codeElement) {
+                codeElement.classList.add('highlight');
+            });
+        });
 
-footer {
-  text-align: center;
-  padding: 10px 0;
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
-  font-size: 14px;
-  color: #777;
-}
-</style>
+        // 随机种子生成随机数
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max);
+        }
+        var randomSeed = 4538978253;
+        Math.seedrandom(randomSeed);
+    </script>
 </head>
 <body>
-<div class="title-container">
-  <h1>Python流量加速</h1>
-  <p>Python流量加速</p>
-</div>
-
-<h2>一个用Python做网卡流量加速</h2>
-<p>date：2017-10-11</p>
-<p>author：zhangjianxin</p>
-
-<h3 id="toc">目录</h3>
-<ul>
-<li><a href="#先看代码">先看代码</a></li>
-</ul>
-
-<h3 id="先看代码">先看代码</h3>
-<pre class="code-block"><code class="language-python">#!/usr/bin/env py262
+    <h1>Python流量加速</h1>
+    <h2>先看代码</h2>
+    <p>date：2017-10-11</p>
+    <p>author：zhangjianxin</p>
+    <h3></h3>
+    <pre><code class="python">
+#!/usr/bin/env py262
 
 #导入方法模块
 import os
@@ -460,22 +469,9 @@ def main():
 if __name__ == '__main__':
    main()
 </code></pre>
-
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var codeBlocks = document.querySelectorAll('pre code');
-    codeBlocks.forEach(function (codeBlock) {
-      // Highlight.js
-      hljs.highlightElement(codeBlock);
-      // Prism.js
-      Prism.highlightElement(codeBlock);
-    });
-  });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <p>以上操作经过验证可以直接拿去。</p>
+    <p>Owner `breakEval13`</p>
+    <p><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></p>
+    <footer>Power By Gemini TextGenerate 2024-09-16 21:43:09</footer>
 </body>
 </html>

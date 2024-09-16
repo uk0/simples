@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,185 +8,125 @@
 <meta name="keywords" content="nodejs,npm" />
 <style>
 body {
-  background-color: #fff; /* 白天背景色 */
-  color: #333;
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
-  transition: background-color 0.5s; /* 添加过渡效果 */
+    background-color: #333; /* Dos复古风格 */
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+}
 h1 {
-  font-size: 20px;
-  margin-top: 0;
+    font-size: 20px;
+    margin-bottom: 10px;
 }
-
 h2 {
-  font-size: 18px;
+    font-size: 18px;
+    margin-bottom: 8px;
 }
-
 h3 {
-  font-size: 16px;
+    font-size: 16px;
+    margin-bottom: 6px;
 }
-
 h4 {
-  font-size: 14px;
+    font-size: 14px;
+    margin-bottom: 4px;
 }
-
 h5 {
-  font-size: 12px;
+    font-size: 12px;
+    margin-bottom: 2px;
 }
-
 h6 {
-  font-size: 11px;
+    font-size: 11px;
 }
-
-pre {
-  background-color: #f2f2f2;
-  padding: 10px;
-  border-radius: 4px;
-  overflow-x: auto;
-}
-
 code {
-  font-family: Consolas, Monaco, 'Courier New', monospace;
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 4px;
+    background-color: #222;
+    color: #eee;
+    padding: 2px 4px;
+    border-radius: 2px;
 }
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 20px;
-}
-
-/* 响应式设计 */
-@media (max-width: 600px) {
-  body {
+pre {
+    background-color: #222;
+    color: #eee;
     padding: 10px;
-  }
+    border-radius: 4px;
+    overflow-x: auto;
 }
-
-/* 夜间模式 */
-body.dark {
-  background-color: #222;
-  color: #ddd;
+pre code {
+    background-color: transparent;
+    color: #eee;
+    padding: 0;
+    border-radius: 0;
 }
-
-body.dark pre {
-  background-color: #333;
+.highlight {
+    background-color: #444;
 }
-
-body.dark code {
-  background-color: #444;
+.highlight code {
+    background-color: transparent;
+    color: #eee;
+    padding: 0;
+    border-radius: 0;
 }
-
-/* 居中 */
-.center {
-  text-align: center;
+footer {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 20px;
 }
 </style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const codeElements = document.querySelectorAll('code');
+    codeElements.forEach(code => {
+      code.classList.add('highlight');
+    });
+  });
+</script>
 </head>
 <body>
-<script>
-// 随机种子
-const seed = 199602051111;
-
-// 生成随机数
-function getRandomInt(max) {
-  let random = Math.sin(seed++) * 10000;
-  return Math.floor(random % max);
-}
-
-// 根据时间切换主题
-function changeTheme() {
-  const now = new Date();
-  const hour = now.getHours();
-  if (hour >= 18 || hour < 6) {
-    document.body.classList.add("dark");
-  } else {
-    document.body.classList.remove("dark");
-  }
-}
-
-// 初始化主题
-changeTheme();
-
-// 代码高亮
-const codeElements = document.querySelectorAll('pre code');
-codeElements.forEach(element => {
-  // 使用 Highlight.js 或 Prism.js 实现代码高亮
-  // 这里示例使用 Prism.js
-  Prism.highlightElement(element);
-});
-
-// 随机颜色
-const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
-const randomColor = colors[getRandomInt(colors.length)];
-const title = document.querySelector('h1');
-title.style.color = randomColor;
-
-// 交互效果
-const codeBlocks = document.querySelectorAll('pre');
-codeBlocks.forEach(block => {
-  block.addEventListener('mouseover', () => {
-    block.style.backgroundColor = '#eee';
-  });
-  block.addEventListener('mouseout', () => {
-    block.style.backgroundColor = '#f2f2f2';
-  });
-});
-</script>
-<h1 class="center">nodejs package ocr</h1>
-<h2 class="center">Ng-ocr</h2>
-<div class="center">
-  <a href="https://travis-ci.org/zmatsh/OCR-NODEJS"><img src="https://travis-ci.org/zmatsh/OCR-NODEJS.svg?branch=master" alt="Build Status"></a>
-</div>
-
+<h1>nodejs package ocr</h1>
+<h2 id="ng-ocr">ng-ocr</h2>
+<p><img src="https://travis-ci.org/zmatsh/OCR-NODEJS.svg?branch=master" alt="Build Status" /></p>
 <p>Ngocr is an OCR library pure JavaScript for node.js.</p>
 <p>We use <a href="https://github.com/antimatter15/ocrad.js/">ocrad.js</a>.</p>
-
-<h2>Install</h2>
-<pre><code>$ npm install ng-ocr -S</code></pre>
-
-<h2>How to use</h2>
-<img src="test/fixture/hello_world.png" alt="image">
-
-<h3>Simple:</h3>
-<pre><code>var Ngocr = require("Ngocr");
+<h2 id="install">Install</h2>
+<pre><code class="highlight">$ npm install ng-ocr -S
+</code></pre>
+<h2 id="how-to-use">How to use</h2>
+<p><img src="test/fixture/hello_world.png" alt="image" /></p>
+<h3 id="simple">Simple :</h3>
+<pre><code class="highlight">var Ngocr = require("Ngocr");
 Ngocr.decodeFile("test/fixture/hello_world.png", function(error, data){
   console.log(data); // Hello World!
-});</code></pre>
-
-<h3>From Buffer:</h3>
-<pre><code>var Ngocr = require("Ngocr");
+});
+</code></pre>
+<h3 id="from-buffer">From Buffer:</h3>
+<pre><code class="highlight">var Ngocr = require("Ngocr");
 var fs = require("fs");
 var buffer = fs.readFileSync("test/fixture/hello_world.png");
 Ngocr.decodeBuffer(buffer, function(error, data){
   console.log(data); // Hello World!
-});</code></pre>
-
-<h3>From Stream:</h3>
-<pre><code>var Ngocr = require("Ngocr");
+});
+</code></pre>
+<h3 id="from-stream">From Stream:</h3>
+<pre><code class="highlight">var Ngocr = require("Ngocr");
 var fs = require("fs");
 var stream = fs.createReadStream("test/fixture/hello_world.png");
 Ngocr.decodeStream(stream, function(error, data){
   console.log(data); // Hello World!
-});</code></pre>
-
-<h2>Todo</h2>
+});
+</code></pre>
+<h2 id="todo">Todo</h2>
 <ul>
 <li>JPG support</li>
 <li>gif support</li>
 <li>stream interface (i love pipe)</li>
 <li><a href="https://www.npmjs.com/package/n-ocr">https://www.npmjs.com/package/n-ocr</a></li>
 </ul>
-
 <footer>
-<p>Power By Gemini TextGenerate 2024-09-16</p>
+    Power By Gemini TextGenerate 2024-09-16 21:51:16
 </footer>
 </body>
 </html>

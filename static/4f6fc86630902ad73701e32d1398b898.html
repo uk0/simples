@@ -1,120 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Jekyll-emoji-表情大全。</title>
-<meta name="description" content="linux">
-<meta name="keywords" content="Jekyll, emoji">
-<style>
-body {
-  background-color: #f0f0f0;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  font-family: sans-serif;
-  transition: background-color 0.5s;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jekyll-emoji-表情大全。</title>
+    <meta name="description" content="linux">
+    <meta name="keywords" content="Jekyll, emoji">
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-.title-container {
-  text-align: center;
-}
+        h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
 
-h1 {
-  font-size: 20px;
-}
+        h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h5 {
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h6 {
+            font-size: 11px;
+            margin-bottom: 1px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        pre {
+            background-color: #222;
+            color: #ddd;
+            padding: 10px;
+            overflow-x: auto;
+        }
 
-pre {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        code {
+            background-color: #333;
+            color: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
 
-code {
-  font-family: Consolas, monospace;
-  color: #333;
-}
-
-footer {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.night-mode {
-  background-color: #222;
-  color: #fff;
-}
-
-.night-mode code {
-  color: #fff;
-}
-
-.night-mode pre {
-  background-color: #333;
-}
-</style>
-<script>
-  // Function to generate random numbers
-  function getRandomNumber(seed) {
-    let x = Math.sin(seed) * 10000;
-    return x - Math.floor(x);
-  }
-
-  // Set up the random seed
-  const seed = 199602051111;
-
-  // Generate a random number to decide the theme
-  const themeRandomizer = getRandomNumber(seed);
-  const isNightMode = themeRandomizer > 0.5;
-
-  // Apply the appropriate theme
-  if (isNightMode) {
-    document.body.classList.add('night-mode');
-  }
-
-  // Highlight.js setup
-  document.addEventListener('DOMContentLoaded', (event) => {
-    const codeBlocks = document.querySelectorAll('pre code');
-    codeBlocks.forEach(block => {
-      hljs.highlightElement(block);
-    });
-  });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+        footer {
+            text-align: center;
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-<div class="title-container">
-  <h1>Jekyll-emoji-表情大全。</h1>
-  <p>linux</p>
-</div>
+    <h1 style="text-align: center;">Jekyll-emoji-表情大全。</h1>
+    <h2 style="text-align: center;"></h2>
+    <p style="text-align: center;">发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
 
-<p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
-
-<h1>People</h1>
-
-<p>:bowtie:
+    <h2 id="people">People</h2>
+    <pre><code>:bowtie:
 :smile:
 :simple_smile:
 :laughing:
@@ -307,11 +269,11 @@ footer {
 :rage3:
 :rage4:
 :suspect:
-:trollface:</p>
+:trollface:
+</code></pre>
 
-<h1>Nature</h1>
-
-<p>:sunny:
+    <h2 id="nature">Nature</h2>
+    <pre><code>:sunny:
 :umbrella:
 :cloud:
 :snowflake:
@@ -425,11 +387,11 @@ footer {
 :milky_way:
 :partly_sunny:
 :octocat:
-:squirrel:</p>
+:squirrel:
+</code></pre>
 
-<h1>Objects</h1>
-
-<p>:bamboo:
+    <h2 id="objects">Objects</h2>
+    <pre><code>:bamboo:
 :gift_heart:
 :dolls:
 :school_satchel:
@@ -688,11 +650,11 @@ footer {
 :sweet_potato:
 :eggplant:
 :tomato:
-:corn:</p>
+:corn:
+</code></pre>
 
-<h1>Places</h1>
-
-<p>:house:
+    <h2 id="places">Places</h2>
+    <pre><code>:house:
 :house_with_garden:
 :school:
 :office:
@@ -797,11 +759,11 @@ footer {
 :ru:
 :gb:
 :uk:
-:de:</p>
+:de:
+</code></pre>
 
-<h1>Symbols</h1>
-
-<p>:one:
+    <h2 id="symbols">Symbols</h2>
+    <pre><code>:one:
 :two:
 :three:
 :four:
@@ -1001,12 +963,34 @@ footer {
 :small_blue_diamond:
 :small_orange_diamond:
 :small_red_triangle:
-:small_red_triangle_down:</p>
+:small_red_triangle_down:
+</code></pre>
 
-<blockquote>lalallalalalalalalalallalalalalalallalala～</blockquote>
+    <blockquote>lalallalalalalalalalallalalalalalallalala～</blockquote>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 21:31:32
+    </footer>
+    <script>
+        // Apply a dark theme if the current hour is between 6 PM and 6 AM.
+        const currentHour = new Date().getHours();
+        if (currentHour >= 18 || currentHour < 6) {
+            document.body.style.backgroundColor = "#111";
+            document.body.style.color = "#eee";
+            document.querySelectorAll('pre code').forEach(code => {
+                code.style.backgroundColor = "#222";
+                code.style.color = "#ddd";
+            });
+        } else {
+            document.body.style.backgroundColor = "#eee";
+            document.body.style.color = "#333";
+            document.querySelectorAll('pre code').forEach(code => {
+                code.style.backgroundColor = "#ddd";
+                code.style.color = "#333";
+            });
+        }
 
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+        // Highlight code with DlHighlight.js (you'll need to include DlHighlight.js in your HTML)
+        // ... (replace with your DlHighlight.js integration code)
+    </script>
 </body>
 </html>

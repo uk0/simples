@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,98 +8,131 @@
     <meta name="keywords" content="C++, Java">
     <style>
         body {
+            background-color: #f0f0f0; /* Unix风格 */
+            font-family: sans-serif;
             max-width: 820px;
             margin: 0 auto;
-            font-family: sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        h1 {
-            font-size: 20px;
+        
+        h1, h2, h3, h4, h5, h6 {
             text-align: center;
         }
-
+        
+        h1 {
+            font-size: 20px;
+        }
+        
         h2 {
             font-size: 18px;
-            margin-top: 20px;
         }
-
+        
         h3 {
             font-size: 16px;
         }
-
+        
         h4 {
             font-size: 14px;
         }
-
+        
         h5 {
             font-size: 12px;
         }
-
+        
         h6 {
             font-size: 11px;
         }
-
+        
         code {
             background-color: #f2f2f2;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
+            padding: 2px 4px;
+            border-radius: 2px;
         }
-
-        pre {
-            background-color: #f0f0f0;
+        
+        pre code {
+            background-color: #eee;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 4px;
+            display: block;
             overflow-x: auto;
         }
-
+        
         a {
             color: #007bff;
             text-decoration: none;
         }
-
+        
         a:hover {
             text-decoration: underline;
         }
-
+        
         footer {
             text-align: center;
             margin-top: 20px;
-            font-size: 12px;
-            color: #666;
+        }
+        
+        /* DlHighlight.js 主题色 */
+        .dl-highlight {
+            background-color: #eee;
+            color: #333;
+        }
+        
+        .dl-highlight .dl-token.dl-keyword {
+            color: #007bff;
+        }
+        
+        .dl-highlight .dl-token.dl-string {
+            color: #ff6600;
+        }
+        
+        .dl-highlight .dl-token.dl-number {
+            color: #009900;
+        }
+        
+        .dl-highlight .dl-token.dl-comment {
+            color: #888;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/dlhighlight.js@latest/dlhighlight.min.js"></script>
     <script>
-        hljs.highlightAll();
-
-        // 获取当前时间
-        const now = new Date();
-        const hour = now.getHours();
-        // 判断是否为夜间模式
-        if (hour >= 18 || hour < 6) {
-            document.body.style.backgroundColor = '#222';
-            document.body.style.color = '#ddd';
+        // 主题色切换
+        function setTheme() {
+            const currentHour = new Date().getHours();
+            const body = document.body;
+            if (currentHour >= 19 || currentHour < 6) {
+                body.style.backgroundColor = "#222";
+                body.style.color = "#ddd";
+                // Night mode theme for DlHighlight.js
+                document.querySelectorAll('code, pre code').forEach(element => {
+                    element.style.backgroundColor = '#333';
+                    element.style.color = '#ddd';
+                });
+            } else {
+                body.style.backgroundColor = "#f0f0f0";
+                body.style.color = "#333";
+                // Day mode theme for DlHighlight.js
+                document.querySelectorAll('code, pre code').forEach(element => {
+                    element.style.backgroundColor = '#eee';
+                    element.style.color = '#333';
+                });
+            }
         }
+        
+        // 初始化 DlHighlight.js
+        document.addEventListener('DOMContentLoaded', () => {
+            dlHighlight.highlightAll();
+            setTheme();
+        });
     </script>
 </head>
 <body>
     <h1>C++ 程序员的 Java 指南</h1>
-    <p style="text-align: center;">一个 C++ 程序员自己总结的 Java 学习中应该注意的点。</p>
-
-    <h2>缘起</h2>
+    <h2 style="text-align:center;">缘起</h2>
     <p>因工作原因从 Windows 客户端开发转为 Android 客户端开发，所以主要的开发语言也由 C++ 变为了 Java，在学习 Java 的过程中，即享受到 Java 的自带程序库的丰富带来的便捷，也遇到一些与 C++ 里的习惯不符需要注意的地方。</p>
-
     <p>初学时的计划是看完一本 Java 教材，过程中整理 C++ 程序员学习 Java 需要注意的点，然后对照写一篇《C++ 程序员的 Java 指南》，但最后懒癌犯了，只整理了一部分不同点，要形成一份「指南」还有很长的路要走，暂且把这个坑挖在这里，如果哪天心血来潮就填上。</p>
-
-    <p>一个知乎问答下有我的答案，与本篇文章内容同步：[习惯写C++的人突然转去写Java，会有什么样的坑？](https://www.zhihu.com/question/49770330/answer/118395115?from=profile_answer_card)</p>
-
-    <h2>注意点</h2>
+    <p>一个知乎问答下有我的答案，与本篇文章内容同步：<a href="https://www.zhihu.com/question/49770330/answer/118395115?from=profile_answer_card">习惯写C++的人突然转去写Java，会有什么样的坑？</a></p>
+    <h2 style="text-align:center;">注意点</h2>
     <ul>
         <li><code>char</code> 是两个字节（字符及字符串默认都是 utf-16）。</li>
         <li>浮点数默认是 <code>double</code>，所以要写成 <code>float f = (float)5.0</code> 或 <code>5.0f</code>，不然会报错。</li>
@@ -108,14 +141,14 @@
         <li><code>boolean</code> 值只能是 <code>true</code> 和 <code>false</code>，不能从整形等其它值转换而来。用于字符串连接的时候会自动转换成「true」和「false」。</li>
         <li><code>if</code> 里只能接受 <code>boolean</code> 值，所以 C++ 里的好习惯 <code>if (5 == var)</code> 在 Java 里不再必要，少写了一个 = 的时候 IDE 和编译器都会提示你。</li>
         <li><code>new Person();</code> 必须有 ()，否则编译不过。</li>
-        <li>数组的声明方式推荐 <code>int[] nArray = new int[4];</code> 或者 <code>int[] nArray = {1,2,3};</code>，第一种称为动态初始化，第二种称为静态初始化。动态初始化时，系统按如下规则分配初始值：整形为 0，浮点型为 0.0，字符型为 <code>'\u0000'</code>，布尔型为 <code>false</code>，引用类型为 <code>null</code>。</li>
+        <li>数组的声明方式推荐 <code>int[] nArray = new int[4];</code> 或者 <code>int[] nArray = {1,2,3};</code>，第一种称为动态初始化，第二种称为静态初始化。动态初始化时，系统按如下规则分配初始值：整形为 0，浮点型为 0.0，字符型为'\u0000'，布尔型为 false，引用类型为 null。</li>
         <li>当系统加载类或创建该类的实例时，系统自动为成员变量分配内存空间，并在分配内存空间后，自动为成员变量指定初始值。</li>
         <li>局部变量定义后，必须经过显式初始化后才能使用，系统不会为局部变量执行初始化。</li>
         <li>访问控制符有 <code>private</code>、<code>default</code>、<code>protected</code>、<code>public</code>。<code>private</code> 只能在同一个类中访问，<code>default</code> 能在同一个类、同一个包中访问，<code>protected</code> 能在同一个类、同一个包、子类中访问，<code>public</code> 能在全局范围内访问。</li>
         <li>在构造器中可以使用 <code>this(params)</code> 来调用本类的其它构造器，使用 <code>super(params)</code> 来调用父类构造器，只能书写在本构造器第一行，所以它们不能同时出现。</li>
         <li>使用 <code>super</code> 调用父类中的实例方法，使用父类类名调用父类中的类方法。</li>
         <li>如果父类方法具有 <code>private</code> 访问权限，则该方法对其子类是隐藏的，因此其子类无法访问和重写该方法。</li>
-        <li>java 中有 <code>instanceof</code> 运算符，c++ 中对应的 RTTI 方式是 <code>(typeid)</code>？<code>instanceof</code> 运算符的前一个操作数通常是一个引用类型的变量，后一个操作数通常是一个类（也可以是接口，可以把接口理解成一种特殊的类），它用于判断前面的对象是否是后面的类，或者其子类、实现类的实例。如果是，则返回 <code>true</code>，否则返回 <code>false</code>。判断是否是同一个类的实例时应使用 <code>obj1.getClass()==obj2.getClass()</code>。</li>
+        <li>java 中有 <code>instanceof</code> 运算符，c++ 中对应的 RTTI 方式是（typeid）？<code>instanceof</code> 运算符的前一个操作数通常是一个引用类型的变量，后一个操作数通常是一个类（也可以是接口，可以把接口理解成一种特殊的类），它用于判断前面的对象是否是后面的类，或者其子类、实现类的实例。如果是，则返回 true，否则返回 false。判断是否是同一个类的实例时应使用 <code>obj1.getClass()==obj2.getClass()</code>。</li>
         <li>初始化块和声明属性时指定初始值，这些按源程序中排列顺序执行。</li>
         <li>java 中只有值传递。</li>
         <li>对 <code>private</code> 方法，即使它使用 <code>final</code> 修饰，在子类中也可以定义一个相同的，因为这是子类定义了一个新方法，并非重写。</li>
@@ -126,18 +159,17 @@
         <li>非静态内部类里不能有静态成员。</li>
         <li>内部类可以使用 <code>static</code> 修饰，外部类不行。</li>
         <li>从外部类外创建内部非静态类的语法：<code>OuterClass.InnerClass varName = OuterInstance.new InnerConstructor();</code>
-            从外部类外创建内部静态类的语法：<code>OuterClass.InnerClass varName = new OuterClass.InnerConstructor();</code></li>
+        从外部类外创建内部静态类的语法：<code>OuterClass.InnerClass varName = new OuterClass.InnerConstructor();</code></li>
         <li>内部类不可能被外部类的子类中重写，因为命名空间不同。</li>
-        <li>纠误一处：《疯狂 Java 讲义》P214 讲道「如果匿名内部类需要访问外部类的局部变量，则必须使用 <code>final</code> 修饰符来修饰外部类的局部变量，否则系统将报错。经验证，只要这个局部变量在后续不改变其值，即使它不以 <code>final</code> 修饰，但实际表现是有效的 <code>final</code> 时，在 Java 8 环境下编译后会自动为它加上 <code>final</code>，不报错。</li>
+        <li>纠误一处：《疯狂 Java 讲义》P214 讲道「如果匿名内部类需要访问外部类的局部变量，则必须使用 final 修饰符来修饰外部类的局部变量，否则系统将报错。经验证，只要这个局部变量在后续不改变其值，即使它不以 final 修饰，但实际表现是有效的 final 时，在 Java 8 环境下编译后会自动为它加上 final，不报错。</li>
         <li><code>switch</code> 表达式可以使用整形或者枚举类实例（从 Java 7 开始，可以使用 String 对象了，参考：[Strings in switch Statements](http://docs.oracle.com/javase/7/docs/technotes/guides/language/strings-switch.html)）。</li>
         <li><code>Set</code> 判断两个对象是否相同不是使用 <code>==</code> 运算符，而是根据 <code>equals</code> 方法。</li>
         <li><code>HashSet</code> 判断两个元素相等的标准是两个对象通过 <code>equals</code> 方法比较相等，并且两个对象的 <code>hashCode()</code> 方法返回值也相等。</li>
         <li><code>foreach</code> 循环仅适用于实现了 <code>Iterable</code> 接口的 Java array 和 Collection 类。</li>
         <li>遍历任何 Collection（例如 Map、Set 或 List）时要删除元素只能使用 Iterator 的 <code>remove</code> 方法。</li>
     </ul>
-
     <footer>
-        Power By Gemini TextGenerate 2024-09-16
+        Power By Gemini TextGenerate 2024-09-16 21:57:38
     </footer>
 </body>
 </html>

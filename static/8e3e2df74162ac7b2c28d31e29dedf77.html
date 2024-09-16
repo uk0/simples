@@ -1,117 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-<style>
-    body {
-        background-color: #f0f0f0; /* 白天模式背景色 */
-        font-family: sans-serif;
-        max-width: 820px;
-        margin: 0 auto;
-        padding: 20px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
-    }
-    
-    h1 {
-        font-size: 20px;
-    }
-    
-    h2 {
-        font-size: 18px;
-    }
-    
-    h3 {
-        font-size: 16px;
-    }
-    
-    h4 {
-        font-size: 14px;
-    }
-    
-    h5 {
-        font-size: 12px;
-    }
-    
-    h6 {
-        font-size: 11px;
-    }
-    
-    pre {
-        background-color: #f8f8f8;
-        padding: 10px;
-        overflow-x: auto;
-    }
-    
-    code {
-        font-family: monospace;
-        background-color: #f2f2f2;
-        padding: 2px;
-        border-radius: 2px;
-    }
-    
-    footer {
-        text-align: center;
-        margin-top: 20px;
-    }
-    
-    .title, .description, .keywords {
-        text-align: center;
-    }
-    
-    @media (prefers-color-scheme: dark) {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CentOS6 下升级默认的OpenSSH操作记录（升级到OpenSSH_8.1p1)</title>
+    <meta name="description" content="CentOS6.9下升级默认的OpenSSH">
+    <meta name="keywords" content="升级 openssh">
+    <style>
         body {
-            background-color: #222; /* 夜晚模式背景色 */
-            color: #eee;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+        h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+        h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        h5 {
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+        h6 {
+            font-size: 11px;
+            margin-bottom: 1px;
+        }
         pre {
-            background-color: #333;
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
         }
-        
         code {
-            background-color: #444;
+            background-color: #fff;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-family: "Courier New", Courier, monospace;
         }
-    }
-</style>
-<meta charset="UTF-8">
-<title>CentOS6 下升级默认的OpenSSH操作记录（升级到OpenSSH_8.1p1)</title>
-<meta name="description" content="CentOS6.9下升级默认的OpenSSH">
-<meta name="keywords" content="升级 openssh">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<script>hljs.highlightAll();</script>
-<script>
-    // 随机种子
-    Math.seedrandom(199602051111);
-
-    // 获取当前时间
-    const now = new Date();
-    const hour = now.getHours();
-
-    // 判断白天还是黑夜
-    if (hour >= 6 && hour < 18) {
-        document.body.style.backgroundColor = '#f0f0f0';
-    } else {
-        document.body.style.backgroundColor = '#222';
-        document.body.style.color = '#eee';
-    }
-</script>
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        hljs.highlightAll();
+        const now = new Date();
+        const hour = now.getHours();
+        if (hour >= 18 || hour < 6) {
+            document.body.style.backgroundColor = "#222";
+            document.body.style.color = "#fff";
+            document.querySelectorAll("pre code").forEach(code => {
+                code.style.backgroundColor = "#333";
+            });
+        } else {
+            document.body.style.backgroundColor = "#f0f0f0";
+            document.body.style.color = "#333";
+            document.querySelectorAll("pre code").forEach(code => {
+                code.style.backgroundColor = "#fff";
+            });
+        }
+    </script>
 </head>
 <body>
-<h1 class="title">CentOS6 下升级默认的OpenSSH操作记录（升级到OpenSSH_8.1p1)</h1>
-<p class="description">CentOS6.9下升级默认的OpenSSH</p>
-<p class="keywords">升级 openssh</p>
-
-<p>升级当前机器的openssh 到最新版本来规避漏洞导致服务器收到攻击。</p>
-
-<h3>  准备和检查</h3>
-
-<ul>
-<li>检查系统版本</li>
-<li>检查openssh 版本</li>
-<li>下载openssh 源码包</li>
-</ul>
-
-<pre><code class="language-bash">查看操作系统版本
+    <h1>CentOS6 下升级默认的OpenSSH操作记录（升级到OpenSSH_8.1p1)</h1>
+    <h2>升级当前机器的openssh 到最新版本来规避漏洞导致服务器收到攻击。</h2>
+    <h3>准备和检查</h3>
+    <ul>
+        <li>检查系统版本</li>
+        <li>检查openssh 版本</li>
+        <li>下载openssh 源码包</li>
+    </ul>
+    <pre><code class="bash">
+查看操作系统版本
 [root@Centos6 ~]# cat /etc/redhat-release       #或者执行"cat /etc/issue"
 CentOS release 6.9 (Final)
 
@@ -154,11 +133,11 @@ telnet默认用于远程登录的端口是23（21是默认的ftp端口、22是�
 [root@Centos6 ~]# lsof -i:23
 COMMAND    PID USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
 xinetd    2489 root    5u  IPv6 22131982      0t0  TCP *:telnet (LISTEN)
-</code></pre>
 
-<h4>默认情况下，linux不允许root用户以telnet方式登录linux主机，若要允许root用户登录，可采取以下两种方法中的任何一种方法：</h4>
-
-<pre><code class="language-bash">1）第一种方法：修改securetty文件
+    </code></pre>
+    <h4>默认情况下，linux不允许root用户以telnet方式登录linux主机，若要允许root用户登录，可采取以下两种方法中的任何一种方法：</h4>
+    <pre><code class="bash">
+1）第一种方法：修改securetty文件
 增加pts配置。如果登录用户较多，需要更多的pts/*。
 [root@Centos6 ~]# vim /etc/securetty
 ......
@@ -171,11 +150,11 @@ pts/2
 [root@Centos6 ~]# rm -rf /etc/securetty
 
 以上两种方法中的任意一种设置后，在客户端使用telnet远程登录目标服务器(使用root用户)都是可以的！
-</code></pre>
 
-<h3> 升级组件</h3>
-
-<pre><code class="language-bash">[root@Centos6 ~]# yum install -y gcc openssl-devel pam-devel rpm-build tcp_wrappers-devel
+    </code></pre>
+    <h3>升级组件</h3>
+    <pre><code class="bash">
+[root@Centos6 ~]# yum install -y gcc openssl-devel pam-devel rpm-build tcp_wrappers-devel
 
 # downlaod 
 wget http://openbsd.hk/pub/OpenBSD/OpenSSH/portable/openssh-8.1p1.tar.gz
@@ -222,12 +201,9 @@ Starting sshd:                                             [  OK  ]
 # 升级后版本
 [root@Centos6 openssh-7.6p1]# ssh -V
 OpenSSH_7.6p1, OpenSSL 1.0.1e-fips 11 Feb 2013
-</code></pre>
-
-<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+    </code></pre>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 21:44:42
+    </footer>
 </body>
 </html>

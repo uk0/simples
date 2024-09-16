@@ -1,185 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Serverless for Java development</title>
-<meta name="description" content="我的第一个ServerLess 程序">
-<meta name="keywords" content="Serverless kubeless">
-<style>
-body {
-  background-color: #f2f2f2;
-  color: #333;
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s;
-}
-
-h1 {
-  font-size: 20px;
-  margin-top: 0;
-}
-
-h2 {
-  font-size: 18px;
-}
-
-h3 {
-  font-size: 16px;
-}
-
-h4 {
-  font-size: 14px;
-}
-
-h5 {
-  font-size: 12px;
-}
-
-h6 {
-  font-size: 11px;
-}
-
-pre {
-  background-color: #f2f2f2;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-code {
-  background-color: #f2f2f2;
-  padding: 2px 5px;
-  border-radius: 3px;
-}
-
-a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-  color: #777;
-}
-
-.title-meta {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.title-meta h1 {
-  margin-top: 0;
-}
-
-.title-meta h1, .title-meta p {
-  margin-bottom: 5px;
-}
-
-.title-meta p {
-  font-size: 14px;
-}
-
-.night-mode {
-  background-color: #222;
-  color: #eee;
-}
-
-.night-mode a {
-  color: #eee;
-}
-
-.night-mode code {
-  background-color: #333;
-  color: #eee;
-}
-
-.night-mode pre {
-  background-color: #333;
-}
-</style>
-<script>
-  // 获取当前时间
-  const now = new Date();
-  const hour = now.getHours();
-
-  // 判断是否为夜间模式
-  if (hour >= 18 || hour < 6) {
-    document.body.classList.add('night-mode');
-  }
-
-  // 代码高亮
-  const codeBlocks = document.querySelectorAll('pre code');
-  codeBlocks.forEach(block => {
-    hljs.highlightBlock(block);
-  });
-
-  // 随机种子
-  const randomSeed = 199602051111;
-  Math.seedrandom(randomSeed);
-
-  // 添加随机交互效果（示例）
-  const randomInteractiveElement = document.querySelector('h1'); // 选择一个元素
-  randomInteractiveElement.addEventListener('mouseover', () => {
-    randomInteractiveElement.style.color = `hsl(${Math.random() * 360}, 50%, 50%)`;
-  });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serverless for Java development</title>
+    <meta name="description" content="我的第一个ServerLess 程序" />
+    <meta name="keywords" content="Serverless, kubeless" />
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #1E1E1E; /* Dos复古风格 */
+            color: #eee;
+            margin: 0;
+            padding: 0;
+            max-width: 820px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .content {
+            padding: 20px;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+        h1 {
+            font-size: 20px;
+        }
+        h2 {
+            font-size: 18px;
+        }
+        h3 {
+            font-size: 16px;
+        }
+        h4 {
+            font-size: 14px;
+        }
+        h5 {
+            font-size: 12px;
+        }
+        h6 {
+            font-size: 11px;
+        }
+        pre {
+            background-color: #282a36;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            background-color: #282a36;
+            color: #eee;
+        }
+        .hljs {
+            background-color: #282a36;
+            color: #eee;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #eee;
+        }
+        .highlight {
+            background-color: #333;
+            color: #eee;
+            padding: 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
 <body>
-<div class="title-meta">
-<h1>Serverless for Java development</h1>
-<p>我的第一个ServerLess 程序</p>
-<p>Serverless kubeless</p>
-</div>
-<p>Server Less 我的第一个简单的实例。</p>
-<h1>前言</h1>
-<p>Serverless 适用场景：</p>
-<ul>
-<li>1 运算密集 —— 如图片压缩、数据分析。因为使用 Serverless 方案同一秒里可以运行千上万个 Lambda，能轻易实现传统架构无法实现的超强处理能力，并且只在使用时收费。</li>
-<li>2  为其它服务提供编程支持 —— 例如，当 AWS DynamoDB 数据发生变化时，调用 AWS Lambda 生成 PDF 报表。再如，为 AWS API Gateway 提供自定义权限验证脚本。</li>
-<li>3  定时任务 —— 以往使用 cron 编写的定时任务可以改用 AWS Lambda 实现，很明显的好处是任务不执行的时候完全不收费。</li>
-<li>4  瘦容器 —— 因为 AWS Lambda 本身基于 Docker 容器实现，Lambda 方法跑在 Amazon Linux AMI 中，虽然官方支持的编程语言只有 NodeJS、Java、Python，但其实可以用 NodeJS 的 shim 运行大部分能在 Linux 下运行的程序。以至于有人用这个特性做了 LambCI 这种脑洞大开的 Serverless CI 服务。</li>
-<li>5   无人运维 —— Serverless 的核心优势就是不需要管理服务器，自伸缩的特性如果用传统方案解决会相对复杂很多。如果你需要一个服务为你跑好几年，期间完全不需要担心它的服务器运行情况，Serverless 会是最好的选择。</li>
-</ul>
-<h1>quick start [  fnproject]</h1>
-<ul>
-<li>   Docker ，fn cli ， nodejs</li>
-<li>   用到以下两个 工具
-<a href="https://github.com/fnproject/fn">https://github.com/fnproject/fn</a>
-<a href="https://github.com/fnproject/ui">https://github.com/fnproject/ui</a></li>
-<li>   brew install fn #  安装fn command命令行</li>
-<li> 执行fn start 启动 FN_Server
-<img src="http://112firshme11224.test.upcdn.net/demos/574abd7a-5de7-4de3-ba11-84517eb23074.png" alt="启动">
-</li>
-<li>  请求
-<img src="http://112firshme11224.test.upcdn.net/demos/9b1eb8af-ccb5-415e-bc77-89e72c2dc05d.png" alt="请求">
-</li>
-<li>  请求实例
-<img src="http://112firshme11224.test.upcdn.net/demos/b8491fa5-4bd1-48ff-ac51-2151a096406a.png" alt="请求实例">
-</li>
-<li> coder
-<img src="http://112firshme11224.test.upcdn.net/demos/25648265-1603-4516-bab5-21e95b3c47d2.png" alt="coder">
-</li>
-<li> yaml 配置
-<img src="http://112firshme11224.test.upcdn.net/demos/54eae79d-7c0b-422c-966f-3701f1dc40f2.png" alt="yaml 配置">
-</li>
-<li> deploy  hello
-<img src="http://112firshme11224.test.upcdn.net/demos/f4c7ebb2-3674-49b5-9848-9f16d4390a73.png" alt="deploy hello">
-</li>
-</ul>
-<h1>kubeless [ 整理中]</h1>
-<ul>
-<li> kubeless function1.yaml
-<pre><code class="yaml">
+    <div class="content">
+        <h1>Serverless for Java development</h1>
+        <p>我的第一个ServerLess 程序</p>
+        <h2>前言</h2>
+        <p>Server Less 适用场景：</p>
+        <ul>
+            <li>1 运算密集 —— 如图片压缩、数据分析。因为使用 Serverless 方案同一秒里可以运行千上万个 Lambda，能轻易实现传统架构无法实现的超强处理能力，并且只在使用时收费。</li>
+            <li>2  为其它服务提供编程支持 —— 例如，当 AWS DynamoDB 数据发生变化时，调用 AWS Lambda 生成 PDF 报表。再如，为 AWS API Gateway 提供自定义权限验证脚本。</li>
+            <li>3  定时任务 —— 以往使用 cron 编写的定时任务可以改用 AWS Lambda 实现，很明显的好处是任务不执行的时候完全不收费。</li>
+            <li>4  瘦容器 —— 因为 AWS Lambda 本身基于 Docker 容器实现，Lambda 方法跑在 Amazon Linux AMI 中，虽然官方支持的编程语言只有 NodeJS、Java、Python，但其实可以用 NodeJS 的 shim 运行大部分能在 Linux 下运行的程序。以至于有人用这个特性做了 LambCI 这种脑洞大开的 Serverless CI 服务。</li>
+            <li>5   无人运维 —— Serverless 的核心优势就是不需要管理服务器，自伸缩的特性如果用传统方案解决会相对复杂很多。如果你需要一个服务为你跑好几年，期间完全不需要担心它的服务器运行情况，Serverless 会是最好的选择。</li>
+        </ul>
+        <h2>quick start [  fnproject]</h2>
+        <ul>
+            <li>Docker ，fn cli ， nodejs</li>
+            <li>用到以下两个 工具</li>
+            <ul>
+                <li>https://github.com/fnproject/fn</li>
+                <li>https://github.com/fnproject/ui</li>
+            </ul>
+            <li>brew install fn #  安装fn command命令行</li>
+            <li>执行fn start 启动 FN_Server</li>
+            <img src="http://112firshme11224.test.upcdn.net/demos/574abd7a-5de7-4de3-ba11-84517eb23074.png" alt="FN_Server启动">
+            <li>请求</li>
+            <img src="http://112firshme11224.test.upcdn.net/demos/9b1eb8af-ccb5-415e-bc77-89e72c2dc05d.png" alt="请求">
+            <li>请求实例</li>
+            <img src="http://112firshme11224.test.upcdn.net/demos/b8491fa5-4bd1-48ff-ac51-2151a096406a.png" alt="请求实例">
+            <li>coder</li>
+            <img src="http://112firshme11224.test.upcdn.net/demos/25648265-1603-4516-bab5-21e95b3c47d2.png" alt="coder">
+            <li>yaml 配置</li>
+            <img src="http://112firshme11224.test.upcdn.net/demos/54eae79d-7c0b-422c-966f-3701f1dc40f2.png" alt="yaml配置">
+            <li>deploy  hello</li>
+            <img src="http://112firshme11224.test.upcdn.net/demos/f4c7ebb2-3674-49b5-9848-9f16d4390a73.png" alt="deploy hello">
+        </ul>
+        <h2>kubeless [ 整理中]</h2>
+        <h3>kubeless function1.yaml</h3>
+        <pre><code class="language-yaml">
 ---
 apiVersion: k8s.io/v1
 kind: Function
@@ -203,29 +134,24 @@ spec:
         msg = "hello world - with a %0.2fs artificial delay" % delay
         c = cow.get_cow()
         return c().milk(msg)
-</code></pre>
-</li>
-<li> 启动
-<pre><code class="bash">
+        </code></pre>
+        <h3>启动</h3>
+        <pre><code class="language-bash">
 ➜ python git:(master) ✗ kubectl create -f function1.yaml
-
-</code></pre>
-</li>
-<li> 检查启动
-<pre><code class="bash">
+        </code></pre>
+        <h3>检查启动</h3>
+        <pre><code class="language-bash">
  # 检查启动
  ➜  python git:(master) ✗ kubeless function ls
 NAME     	NAMESPACE	HANDLER     	RUNTIME  	TYPE	TOPIC	DEPENDENCIES	STATUS
 function1	default  	hello.foobar	python2.7	    	     	cowpy       	1/1 READY
-</code></pre>
-</li>
-<li> 测试调用
-<pre><code class="bash">
+        </code></pre>
+        <h3>测试调用</h3>
+        <pre><code class="language-bash">
     kubeless function call  function1 
-</code></pre>
-</li>
-<li> 结果
-<pre><code class="bash">
+        </code></pre>
+        <h3>结果</h3>
+        <pre><code class="language-bash">
 
 ➜  python git:(master) ✗ kubeless function call  function1
  _____________________________________________
@@ -237,10 +163,21 @@ function1	default  	hello.foobar	python2.7	    	     	cowpy       	1/1 READY
            ||----w |
            ||     ||
 
-</code></pre>
-</li>
-</ul>
-<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-<footer>Power By Gemini TextGenerate 2024-09-16</footer>
+        </code></pre>
+        <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+    </div>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 21:53:19
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script>
+        // 动态调整背景颜色
+        const now = new Date();
+        const hour = now.getHours();
+        if (hour >= 18 || hour < 6) {
+            document.body.style.backgroundColor = '#282a36'; // 夜晚模式
+        }
+    </script>
 </body>
 </html>

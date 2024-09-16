@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java metrics</title>
     <meta name="description" content="关于Java web 监控系统。">
     <meta name="keywords" content="Java, GitHub Pages">
     <style>
         body {
-            background-color: #f5f5f5; /* 白天模式背景色 */
-            font-family: Arial, sans-serif;
+            background-color: #000000; /*  像素风格 */
+            color: #ffffff;
+            font-family: sans-serif;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
@@ -43,79 +41,74 @@
             font-size: 11px;
         }
 
-        pre {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-        }
-
         code {
-            background-color: #f8f8f8;
-            padding: 2px 5px;
-            border-radius: 3px;
+            background-color: #222222;
+            color: #ffffff;
+            padding: 2px 4px;
+            border-radius: 2px;
         }
 
-        .night-mode {
-            background-color: #222; /* 夜晚模式背景色 */
-            color: #eee;
+        pre {
+            background-color: #222222;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
         }
 
-        .night-mode code {
-            background-color: #333;
-        }
-
-        .night-mode pre {
-            background-color: #333;
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
         }
 
         footer {
             text-align: center;
             font-size: 12px;
             margin-top: 20px;
+            color: #888888;
+        }
+
+        .title-center {
+            text-align: center;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
 </head>
 <body>
-    <script>
-        // 获取当前时间并判断使用白天或夜晚模式
-        const currentTime = new Date();
-        const hour = currentTime.getHours();
-        if (hour >= 18 || hour < 6) {
-            document.body.classList.add("night-mode");
-        }
-    </script>
-    <h1>Java metrics</h1>
-    <p>关于Java web 监控系统。</p>
-    <p>项目中有对程序的一个健康检查，以及TPS,QPS等。</p>
+    <h1 class="title-center">Java metrics</h1>
+    <p class="title-center">关于Java web 监控系统。</p>
+
     <h2>文档</h2>
     <h3>Maven</h3>
-    <pre><code class="language-xml">
-     <!--  metrics * -->
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-servlets</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.codahale.metrics</groupId>
-            <artifactId>metrics-healthchecks</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.davidb</groupId>
-            <artifactId>metrics-influxdb</artifactId>
-            <version>0.8.2</version>
-        </dependency>
+    <pre><code class="xml">
+    &lt;!--  metrics * --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;io.dropwizard.metrics&lt;/groupId&gt;
+        &lt;artifactId&gt;metrics-core&lt;/artifactId&gt;
+        &lt;version&gt;3.1.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;io.dropwizard.metrics&lt;/groupId&gt;
+        &lt;artifactId&gt;metrics-servlets&lt;/artifactId&gt;
+        &lt;version&gt;3.1.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.codahale.metrics&lt;/groupId&gt;
+        &lt;artifactId&gt;metrics-healthchecks&lt;/artifactId&gt;
+        &lt;version&gt;3.0.1&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.davidb&lt;/groupId&gt;
+        &lt;artifactId&gt;metrics-influxdb&lt;/artifactId&gt;
+        &lt;version&gt;0.8.2&lt;/version&gt;
+    &lt;/dependency&gt;
     </code></pre>
     <h3>核心工具类</h3>
-    <pre><code class="language-java">
+    <pre><code class="java">
 import com.codahale.metrics.*;
 import com.ktyh.think.filter.prometheus.DropwizardExportSetUp;
 import io.prometheus.client.CollectorRegistry;
@@ -144,8 +137,8 @@ public class MetricsCore {
     /**
      * @author 内存使用程度MB
      */
-    Gauge<Long> getFreeMemory = () -> toMb(Runtime.getRuntime().freeMemory());
-    Gauge<Long> getTotalMemory = () -> toMb(Runtime.getRuntime().totalMemory());
+    Gauge&lt;Long&gt; getFreeMemory = () -&gt; toMb(Runtime.getRuntime().freeMemory());
+    Gauge&lt;Long&gt; getTotalMemory = () -&gt; toMb(Runtime.getRuntime().totalMemory());
 
     public static synchronized MetricRegistry getInstance() {
         return METRIC_REGISTRY;
@@ -164,7 +157,7 @@ public class MetricsCore {
 
 
     public static void freeMemoryForJvm(MetricRegistry metrics) {
-        metrics.register(MetricRegistry.name("memory_free_mb_size"), new Gauge<Long>() {
+        metrics.register(MetricRegistry.name("memory_free_mb_size"), new Gauge&lt;Long&gt;() {
             @Override
             public Long getValue() {
                 return toMb(Runtime.getRuntime().freeMemory());
@@ -173,7 +166,7 @@ public class MetricsCore {
     }
 
     public static void totalMemoryForJvm(MetricRegistry metrics) {
-        metrics.register(MetricRegistry.name("memory_total_mb_size"), new Gauge<Long>() {
+        metrics.register(MetricRegistry.name("memory_total_mb_size"), new Gauge&lt;Long&gt;() {
             @Override
             public Long getValue() {
                 return toMb(Runtime.getRuntime().totalMemory());
@@ -290,15 +283,13 @@ public class MetricsCore {
 
     </code></pre>
     <h2>目前这种方式只是将数据推送到influxdb ，以及prometheus 。</h2>
-    <ol>
+    <ul>
         <li>数据采集</li>
         <li>采集点(Filter,Controller,Service)</li>
         <li>数据推送(influxdb,primetheus,jmx,console,cvs等。)</li>
-    </ol>
+    </ul>
     <footer>
-        Power By Gemini TextGenerate 2024-09-16
+        Power By Gemini TextGenerate 2024-09-16 21:50:36
     </footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
 </body>
 </html>

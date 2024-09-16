@@ -4,23 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flink 高可用集群搭建 HA</title>
-    <meta name="description" content="搭建 一个高可用的 Flink">
+    <meta name="description" content="搭建 一个高可用的 Flink 集群HA 用于项目测试">
     <meta name="keywords" content="flink">
     <style>
         body {
+            background-color: #000000; /* 像素风格背景色 */
+            color: #ffffff;
             font-family: sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            margin: 0;
+            padding: 0;
             max-width: 820px;
             margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
             font-size: 20px;
-            margin-top: 0;
         }
 
         h2 {
@@ -43,154 +42,155 @@
             font-size: 11px;
         }
 
-        pre {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
 
         code {
-            font-family: monospace;
-        }
-
-        .night-mode {
             background-color: #222;
-            color: #eee;
+            color: #fff;
+            padding: 2px 4px;
+            font-family: monospace;
+            border-radius: 3px;
         }
 
-        .night-mode pre {
-            background-color: #333;
+        pre {
+            background-color: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap; /* 保持换行 */
         }
 
-        .night-mode code {
-            color: #eee;
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
         }
 
-        .night-mode a {
-            color: #eee;
+        .container {
+            padding: 20px;
         }
 
         footer {
             text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
         }
     </style>
-</head>
-<body>
-    <h1 style="text-align: center;">Flink 高可用集群搭建 HA</h1>
-    <p style="text-align: center;">搭建 一个高可用的 Flink</p>
-    <p style="text-align: center;">用于项目测试</p>
-
-    <h2>quick start</h2>
-
-    <h3>flink-conf.yaml</h3>
-
-    <pre><code class="yaml">
-
-jobmanager.rpc.port: 6123
-
-
-jobmanager.heap.mb: 512
-
-
-taskmanager.heap.mb: 512
-
-taskmanager.numberOfTaskSlots: 2
-
-taskmanager.memory.preallocate: false
-
-
-parallelism.default: 1
-
-
-jobmanager.web.address: 0.0.0.0
-
-jobmanager.web.port: 8081
-
-
-jobmanager.archive.fs.dir: hdfs://ns/flink/completed_jobs/
-
-historyserver.web.address: 0.0.0.0
-
-
-historyserver.web.port: 8082
-
-
-historyserver.archive.fs.dir: hdfs://ns/flink/completed_jobs/
-
-
-historyserver.archive.fs.refresh-interval: 10000
-
-
-
-state.backend: filesystem
-
-
-state.backend.fs.checkpointdir: hdfs://ns/flink/checkpoints_backend
-state.backend.fs.savepointdir: hdfs://ns/flink/savepoints_backend
-state.checkpoints.dir: hdfs://ns/flink/checkpoints_data
-state.savepoints.dir: hdfs://ns/flink/savepoints_data
-
-
-taskmanager.tmp.dirs: /home/aom/data/flink/tmp
-env.log.dir: /home/aom/data/logs/flink
-
-
-
-
-fs.hdfs.hadoopconf: /home/aom/hadoop/etc/hadoop
-
-
-high-availability: zookeeper
-high-availability.zookeeper.quorum: dscn1:2181,dscn2:2181,dscn3:2181
-high-availability.zookeeper.storageDir: hdfs://ns/flink/recovery
-high-availability.zookeeper.path.root: /flink
-    </code></pre>
-
-    <h3>masters</h3>
-
-    <pre><code class="bash">
-tod1:8081
-tod2:8081
-    </code></pre>
-
-    <h3>slaves</h3>
-
-    <pre><code class="bash">
-tod1
-tod2
-tod3
-    </code></pre>
-
-    <h3>scp 到其他节点</h3>
-
-    <h3>启动集群</h3>
-
-    <pre><code class="bash">
-start-cluster.sh
-    </code></pre>
-
-    <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-
-    <footer>Power By Gemini TextGenerate 2024-09-16</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script>
-        // 获取当前时间
-        const now = new Date();
-        const hour = now.getHours();
-
-        // 判断当前时间是否为白天
-        const isDaytime = hour >= 6 && hour < 18;
-
-        // 设置背景颜色
-        document.body.classList.add(isDaytime ? 'day-mode' : 'night-mode');
-
-        // Highlight.js 代码高亮
         hljs.initHighlightingOnLoad();
 
-        // Prism.js 代码高亮
-        Prism.highlightAll();
+        // 随机种子
+        const seed = 4538978253;
+        Math.seedrandom(seed);
+
+        // 获取当前时间，判断白天或夜晚
+        const now = new Date();
+        const hour = now.getHours();
+        const isDay = hour >= 6 && hour < 18;
+
+        // 设置背景色
+        document.body.style.backgroundColor = isDay ? "#f0f0f0" : "#222";
+
+        // 随机生成颜色
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // 代码高亮颜色随机生成
+        const codeElements = document.querySelectorAll('code');
+        codeElements.forEach(code => {
+            code.style.backgroundColor = getRandomColor();
+        });
     </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Flink 高可用集群搭建 HA</h1>
+        <h2>搭建 一个高可用的 Flink 集群HA</h2>
+        <p>用于项目测试</p>
+
+        <h2>quick start</h2>
+        <h3>flink-conf.yaml</h3>
+        <pre><code>
+        jobmanager.rpc.port: 6123
+
+        jobmanager.heap.mb: 512
+
+        taskmanager.heap.mb: 512
+
+        taskmanager.numberOfTaskSlots: 2
+
+        taskmanager.memory.preallocate: false
+
+        parallelism.default: 1
+
+        jobmanager.web.address: 0.0.0.0
+
+        jobmanager.web.port: 8081
+
+        jobmanager.archive.fs.dir: hdfs://ns/flink/completed_jobs/
+
+        historyserver.web.address: 0.0.0.0
+
+        historyserver.web.port: 8082
+
+        historyserver.archive.fs.dir: hdfs://ns/flink/completed_jobs/
+
+        historyserver.archive.fs.refresh-interval: 10000
+
+        state.backend: filesystem
+
+        state.backend.fs.checkpointdir: hdfs://ns/flink/checkpoints_backend
+        state.backend.fs.savepointdir: hdfs://ns/flink/savepoints_backend
+        state.checkpoints.dir: hdfs://ns/flink/checkpoints_data
+        state.savepoints.dir: hdfs://ns/flink/savepoints_data
+
+        taskmanager.tmp.dirs: /home/aom/data/flink/tmp
+        env.log.dir: /home/aom/data/logs/flink
+
+        fs.hdfs.hadoopconf: /home/aom/hadoop/etc/hadoop
+
+        high-availability: zookeeper
+        high-availability.zookeeper.quorum: dscn1:2181,dscn2:2181,dscn3:2181
+        high-availability.zookeeper.storageDir: hdfs://ns/flink/recovery
+        high-availability.zookeeper.path.root: /flink
+        </code></pre>
+        <h3>masters</h3>
+        <pre><code>
+        tod1:8081
+        tod2:8081
+        </code></pre>
+        <h3>slaves</h3>
+        <pre><code>
+        tod1
+        tod2
+        tod3
+        </code></pre>
+        <p>scp 到其他节点</p>
+        <h3>启动集群</h3>
+        <pre><code>
+        start-cluster.sh
+        </code></pre>
+        <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+    </div>
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16 21:46:39
+    </footer>
 </body>
 </html>

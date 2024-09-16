@@ -400,7 +400,7 @@
             if (currentCharIndex < title.length) {
                 link.textContent += title[currentCharIndex];
                 currentCharIndex++;
-                setTimeout(typeNextChar, Math.random() * 5 + 2);
+                setTimeout(typeNextChar, Math.random() * 3 + 4);
             } else {
                 link.innerHTML += '<span class="cursor"></span>';
                 currentItemIndex++;
