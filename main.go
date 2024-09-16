@@ -125,9 +125,13 @@ func generateIndexHTML(articles []Article, avatarURL string) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>打怪兽升级咯～</title>
+	<!-- Cloudflare Web Analytics -->
+	<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "38ef94cda57d43a1a9de524646e66805"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-        
+        	
         body {
             font-family: 'VT323', monospace;
             line-height: 1.6;
@@ -206,6 +210,16 @@ func generateIndexHTML(articles []Article, avatarURL string) {
             }
         }
     </style>
+	<script>
+	window.onloadTurnstileCallback = function () {
+    turnstile.render('body', {
+        sitekey: '0x4AAAAAAAkDvnJ2XJn6mQqA',
+        callback: function(token) {
+			console.log(token);
+			},
+		});
+	};
+	</script>
 </head>
 <body>
     <header>
@@ -242,12 +256,12 @@ func generateIndexHTML(articles []Article, avatarURL string) {
             if (currentCharIndex < title.length) {
                 link.textContent += title[currentCharIndex];
                 currentCharIndex++;
-                setTimeout(typeNextChar, Math.random() * 5 + 2);
+                setTimeout(typeNextChar, Math.random() * 3 + 1);
             } else {
                 link.innerHTML += '<span class="cursor"></span>';
                 currentItemIndex++;
                 currentCharIndex = 0;
-                setTimeout(typeNextChar, 3);
+                setTimeout(typeNextChar, 2);
             }
         }
 
