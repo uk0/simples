@@ -1,119 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>arangodb/linux下搭建，可以搭建集群模式。</title>
-<meta name="description" content="linux">
-<meta name="keywords" content="arangodb, linux,kubernetes">
-<style>
-body {
-  font-family: sans-serif;
-  background-color: #f0f0f0;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>arangodb/linux下搭建，可以搭建集群模式。</title>
+    <meta name="description" content="linux">
+    <meta name="keywords" content="arangodb, linux,kubernetes">
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
 
-h1 {
-  font-size: 20px;
-}
+        h1 {
+            font-size: 20px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-code {
-  background-color: #eee;
-  padding: 2px 5px;
-  border-radius: 3px;
-}
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
 
-pre {
-  background-color: #eee;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        code {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
 
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 20px;
-}
-
-.title {
-  text-align: center;
-}
-
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-}
-
-.code-block {
-  background-color: #eee;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-.code-block code {
-  background-color: transparent;
-  padding: 0;
-  border-radius: 0;
-}
-</style>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const currentHour = new Date().getHours();
-    const body = document.body;
-    if (currentHour >= 18 || currentHour < 6) {
-      body.style.backgroundColor = '#333';
-      body.style.color = '#fff';
-    } else {
-      body.style.backgroundColor = '#f0f0f0';
-      body.style.color = '#333';
-    }
-  });
-</script>
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        hljs.initHighlightingOnLoad();
+        const time = new Date();
+        const hour = time.getHours();
+        if (hour >= 18 || hour < 6) {
+            document.body.style.backgroundColor = "#333";
+            document.body.style.color = "#fff";
+            document.body.style.boxShadow = "0px 0px 10px rgba(255, 255, 255, 0.1)";
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeBlocks = document.querySelectorAll('pre code');
+            codeBlocks.forEach(block => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
 </head>
 <body>
-<div class="container">
-  <div class="content">
-    <h1 class="title">arangodb/linux下搭建，可以搭建集群模式。</h1>
+    <h1>arangodb/linux下搭建，可以搭建集群模式。</h1>
+    <h2 style="text-align: center;">标题</h2>
+    <p style="text-align: center;">关键字描述</p>
     <p>发这个贴的原因，是因为 圈叉三角方块 ，圈叉三角方块 。</p>
     <h2>arangodb安装以及集群部署(集群采用kubernetes，Docker)</h2>
     <p>Arangodb</p>
@@ -121,28 +91,26 @@ footer {
     <p>现在版本：3.1.23</p>
     <p>:smile:</p>
     <h2>1. 安装部署</h2>
-    <img src="http://112firshme11224.test.upcdn.net/posts/arangodb/WX20170703-180430@2x.png" alt="arangodb">
+    <p><img src="http://112firshme11224.test.upcdn.net/posts/arangodb/WX20170703-180430@2x.png" alt="arangodb"></p>
     <h2>2.使用介绍 （Building your own ArangoDB image）</h2>
     <p><a href="https://registry.hub.docker.com/_/arangodb/"><img src="http://dockeri.co/image/_/arangodb" alt="dockeri.co"></a></p>
     <p>We are auto generating docker images via our build system so the Dockerfile is a template. To build your own ArangoDB image:</p>
-    <pre class="code-block"><code>cp Dockerfile.templ Dockerfile
+    <pre><code>cp Dockerfile.templ Dockerfile
 
 </code></pre>
     <p>Adjust @VERSION@ in the Dockerfile to the version of arangodb you want to have and issue:</p>
-    <pre class="code-block"><code>docker build -t arangodb .
+    <pre><code>docker build -t arangodb .
 </code></pre>
     <p>This will create an image named `arangodb`.</p>
     <h2>Reference documentation</h2>
     <p>For user documentation please refer to our official docker hub documentation:</p>
     <p><a href="https://hub.docker.com/_/arangodb/">https://hub.docker.com/_/arangodb/</a></p>
-    <h3>3.docker-compose mini 集群启动方式</h3>
-    <p><code> 各位稍等，稍后整理一并奉上。</code></p>
+    <h2>3.docker-compose mini 集群启动方式</h2>
+    <p> ` 各位稍等，稍后整理一并奉上。`</p>
     <p>- 大体思路,Docker-Compose 通过link进行docker容器的内部链接，来实现集群模式。</p>
-    <p>Over</p>
-  </div>
-</div>
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+    <p>>Over</p>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
 </body>
 </html>

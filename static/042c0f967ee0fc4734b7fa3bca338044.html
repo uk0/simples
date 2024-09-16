@@ -1,93 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>日常总结[我的时间线]@</title>
-<meta name="description" content="日常总结，长文">
-<meta name="keywords" content="Java, Golang, Python, Shell, C#">
-<style>
-  body {
-    font-family: sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
-    text-align: center;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日常总结[我的时间线]@</title>
+    <meta name="description" content="日常总结，长文" />
+    <meta name="keywords" content="Java,Golang,Python,Shell,C#" />
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
 
-  .container {
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  }
+        h1 {
+            font-size: 20px;
+        }
+        h2 {
+            font-size: 18px;
+        }
+        h3 {
+            font-size: 16px;
+        }
+        h4 {
+            font-size: 14px;
+        }
+        h5 {
+            font-size: 12px;
+        }
+        h6 {
+            font-size: 11px;
+        }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: normal;
-  }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
 
-  h1 {
-    font-size: 20px;
-  }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
 
-  h2 {
-    font-size: 18px;
-  }
-
-  h3 {
-    font-size: 16px;
-  }
-
-  h4 {
-    font-size: 14px;
-  }
-
-  h5 {
-    font-size: 12px;
-  }
-
-  h6 {
-    font-size: 11px;
-  }
-
-  code {
-    font-family: monospace;
-    background-color: #eee;
-    padding: 2px 4px;
-    border-radius: 3px;
-  }
-
-  pre {
-    background-color: #eee;
-    padding: 10px;
-    overflow: auto;
-    border-radius: 3px;
-  }
-
-  footer {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 12px;
-    color: #999;
-  }
-</style>
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
+    <script>
+        // 随机种子
+        const seed = 199602051111;
+        Math.seedrandom(seed);
+
+        // 获取当前时间，决定主题模式
+        const now = new Date();
+        const hour = now.getHours();
+        const isDayMode = hour >= 6 && hour < 18;
+        if (isDayMode) {
+            document.body.style.backgroundColor = '#fff';
+        } else {
+            document.body.style.backgroundColor = '#222';
+            document.body.style.color = '#eee';
+        }
+
+        // Highlight.js 代码高亮
+        hljs.highlightAll();
+
+        // Prism.js 代码高亮
+        Prism.highlightAll();
+    </script>
     <h1>总结日常遇到的问题，以及解决办法，总结每天遇到的问题。</h1>
 
     <h2>2017-12-22  [shell]</h2>
-
     <p>登陆服务器每次都输入密码很不舒服，所以总结了一个小脚本。</p>
-
-    <pre><code class="language-bash">#!/bin/bash
+    <pre><code class="language-bash">
+#!/bin/bash
 USER=activemq
 current_node=192.168.1.45
 PASSWD=activemq
-/usr/bin/expect &lt;&lt;EOF
+/usr/bin/expect <<EOF
     spawn ssh $USER@$current_node
     expect "*(yes/no)?*" {
         send -- "yes\r"
@@ -98,13 +103,12 @@ PASSWD=activemq
         expect "*# "
     send -- "exit \r"
 EOF
-</code></pre>
+    </code></pre>
 
     <h2>2017-12-21  [shell]</h2>
-
     <p>用`,`劈分数据。</p>
-
-    <pre><code class="language-bash">HBASE_REGION=dscn1,dscn2,dscn3
+    <pre><code class="language-bash">
+HBASE_REGION=dscn1,dscn2,dscn3
 
 #用 `,` split
 OLD_IFS="$IFS"
@@ -115,38 +119,10 @@ for s in ${arr[@]}
 do
    ssh "$s" ls
 done
-</code></pre>
-  </div>
+    </code></pre>
 
-  <footer>
-    Power By Gemini TextGenerate 2024-09-16
-  </footer>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-  <script>
-    // 使用随机种子生成随机数
-    const seed = 199602051111;
-    let randomNumber = new Math.seedrandom(seed)();
-
-    // 获取当前时间
-    const now = new Date();
-    const hour = now.getHours();
-
-    // 根据时间设置背景颜色
-    const body = document.querySelector('body');
-    if (hour >= 6 && hour < 18) {
-      // 白天
-      body.style.backgroundColor = '#f4f4f4';
-      body.style.color = '#333';
-    } else {
-      // 夜晚
-      body.style.backgroundColor = '#333';
-      body.style.color = '#fff';
-    }
-
-    hljs.highlightAll();
-    Prism.highlightAll();
-  </script>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
 </body>
 </html>

@@ -1,157 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ngrok做内网穿透。</title>
-<meta name="description" content="Ngrok。">
-<meta name="keywords" content="Docker, Ngrok">
-<style>
-body {
-  background-color: #f5f5f5;
-  color: #333;
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngrok做内网穿透。</title>
+    <meta name="description" content="Ngrok。">
+    <meta name="keywords" content="Docker, Ngrok">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #fff;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-h1, h2, h3, h4, h5, h6 {
-  text-align: center;
-}
+        h1 {
+            font-size: 20px;
+        }
 
-h1 {
-  font-size: 20px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
 
-code {
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-family: monospace;
-}
+        code {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
 
-pre {
-  background-color: #eee;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
-<script>
-  const theme = (new Date().getHours() < 18) ? 'light' : 'dark';
-  document.body.style.backgroundColor = theme === 'light' ? '#f5f5f5' : '#222';
-  document.body.style.color = theme === 'light' ? '#333' : '#eee';
-</script>
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script>hljs.highlightAll();</script>
 </head>
 <body>
-<h1>Ngrok做内网穿透。</h1>
-<p>Ngrok。</p>
-<p>
-<a href="http://microbadger.com/images/wernight/ngrok" target="_blank">
-  <img src="https://images.microbadger.com/badges/image/wernight/ngrok.svg" alt="Get your own image badge on microbadger.com" />
-</a>
-<a href="http://beta.codenvy.com/f?url=https://github.com/wernight/docker-ngrok" target="_blank">
-  <img src="http://beta.codenvy.com/factory/resources/codenvy-contribute.svg" alt="Start development on Codenvy" />
-</a>
-</p>
-<p>A <a href="https://www.docker.io/" target="_blank">Docker</a> image for <a href="https://ngrok.com/" target="_blank">ngrok</a> v2, introspected tunnels to localhost.</p>
-<p>It's based on the excellent work of <a href="https://registry.hub.docker.com/u/wizardapps/ngrok/" target="_blank">wizardapps/ngrok</a> and <a href="https://registry.hub.docker.com/u/fnichol/ngrok/" target="_blank">fnichol/ngrok</a>.</p>
-<h2>Features</h2>
-<ul>
-<li><strong>Small</strong>: Built using <a href="https://registry.hub.docker.com/_/busybox" target="_blank">busybox</a>.</li>
-<li><strong>Simple</strong>: Just link as <code>http</code> or <code>https</code> in most cases, see below; exposes ngrok server <code>4040</code> port.</li>
-<li><strong>Secure</strong>: Runs as non-root user with a random UID <code>6737</code> (to avoid mapping to an existing UID).</li>
-</ul>
-<h2>Configuration</h2>
-<p>To see command-line options, run <code>docker run --rm wernight/ngrok ngrok --help</code>.</p>
-<h2>Usage</h2>
-<p>Supposing you've an Apache or Nginx Docker container named <code>web_service_container</code> listening on port 80:</p>
-<pre><code>$ docker run --rm -it --link web_service_container wernight/ngrok ngrok http web_service_container:80
-</code></pre>
-<h3>Environment variables</h3>
-<p><em>Please consider using directly the command-line arguments of Ngrok.</em></p>
-<p>If you use the default <code>CMD</code> (i.e. don't specify the ngrok command-line but only <code>wernight/ngrok</code>), then you can use instead envrionment variables magic below.</p>
-<p>You simply have to link the Ngrok container to the application under the <code>app</code> or <code>http</code> or <code>https</code> aliases, and all of the configuration will be done for you by default.</p>
-<p>Additionally, you can specify one of several environment variable (via <code>-e</code>) to configure your Ngrok tunnel:</p>
-<ul>
-<li><code>NGROK_AUTH</code> - Authentication key for your Ngrok account. This is needed for custom subdomains, custom domains, and HTTP authentication.</li>
-<li><code>NGROK_SUBDOMAIN</code> - Name of the custom subdomain to use for your tunnel. You must also provide the authentication token.</li>
-<li><code>NGROK_HOSTNAME</code> - Paying Ngrok customers can specify a custom domain. Only one subdomain or domain can be specified, with the domain taking priority.</li>
-<li><code>NGROK_USERNAME</code> - Username to use for HTTP authentication on the tunnel. You must also specify an authentication token.</li>
-<li><code>NGROK_PASSWORD</code> - Password to use for HTTP authentication on the tunnel. You must also specify an authentication token.</li>
-<li><code>NGROK_PROTOCOL</code> - Can either be <code>HTTP</code> or <code>TCP</code>, and it defaults to <code>HTTP</code> if not specified. If set to <code>TCP</code>, Ngrok will allocate a port instead of a subdomain and proxy TCP requests directly to your application.</li>
-<li><code>NGROK_PORT</code> - Port to expose (defaults to <code>80</code> for <code>HTTP</code> protocol).</li>
-<li></li>
-</ul>
-<h4>Full example</h4>
-<ol>
-<li>We'll set up a simple example HTTP server in a docker container named <code>www</code>:</li>
-<pre><code>$ docker run -v /usr/share/nginx/html --name www_data busybox true
+    <script>
+        const now = new Date();
+        const hour = now.getHours();
+        if (hour >= 18 || hour < 6) {
+            document.body.style.backgroundColor = "#222";
+            document.body.style.color = "#eee";
+        }
+    </script>
+    <h1>Ngrok做内网穿透。</h1>
+    <p style="text-align: center;">Ngrok。</p>
+    <p style="text-align: center;">
+        <a href="http://microbadger.com/images/wernight/ngrok" target="_blank">
+            <img src="https://images.microbadger.com/badges/image/wernight/ngrok.svg" alt="microbadger.com"/>
+        </a>
+        <a href="http://beta.codenvy.com/f?url=https://github.com/wernight/docker-ngrok" target="_blank">
+            <img src="http://beta.codenvy.com/factory/resources/codenvy-contribute.svg" alt="Codenvy badge"/>
+        </a>
+    </p>
+    <p>A <a href="https://www.docker.io/" target="_blank">Docker</a> image for <a href="https://ngrok.com/" target="_blank">ngrok</a> v2, introspected tunnels to localhost. It's based on the excellent work of <a href="https://registry.hub.docker.com/u/wizardapps/ngrok/" target="_blank">wizardapps/ngrok</a> and <a href="https://registry.hub.docker.com/u/fnichol/ngrok/" target="_blank">fnichol/ngrok</a>.</p>
+    <h2>Features</h2>
+    <ul>
+        <li>**Small**: Built using <a href="https://registry.hub.docker.com/_/busybox" target="_blank">busybox</a>.</li>
+        <li>**Simple**: Just link as `http` or `https` in most cases, see below; exposes ngrok server `4040` port.</li>
+        <li>**Secure**: Runs as non-root user with a random UID `6737` (to avoid mapping to an existing UID).</li>
+    </ul>
+    <h2>Configuration</h2>
+    <p>To see command-line options, run `docker run --rm wernight/ngrok ngrok --help`.</p>
+    <h2>Usage</h2>
+    <p>Supposing you've an Apache or Nginx Docker container named `web_service_container` listening on port 80:</p>
+    <pre><code class="bash">$ docker run --rm -it --link web_service_container wernight/ngrok ngrok http web_service_container:80</code></pre>
+    <h3>Environment variables</h3>
+    <p><em>Please consider using directly the command-line arguments of Ngrok.</em></p>
+    <p>If you use the default `CMD` (i.e. don't specify the ngrok command-line but only `wernight/ngrok`), then you can use instead envrionment variables magic below.</p>
+    <p>You simply have to link the Ngrok container to the application under the `app` or `http` or `https` aliases, and all of the configuration will be done for you by default.</p>
+    <p>Additionally, you can specify one of several environment variable (via `-e`) to configure your Ngrok tunnel:</p>
+    <ul>
+        <li>`NGROK_AUTH` - Authentication key for your Ngrok account. This is needed for custom subdomains, custom domains, and HTTP authentication.</li>
+        <li>`NGROK_SUBDOMAIN` - Name of the custom subdomain to use for your tunnel. You must also provide the authentication token.</li>
+        <li>`NGROK_HOSTNAME` - Paying Ngrok customers can specify a custom domain. Only one subdomain or domain can be specified, with the domain taking priority.</li>
+        <li>`NGROK_USERNAME` - Username to use for HTTP authentication on the tunnel. You must also specify an authentication token.</li>
+        <li>`NGROK_PASSWORD` - Password to use for HTTP authentication on the tunnel. You must also specify an authentication token.</li>
+        <li>`NGROK_PROTOCOL` - Can either be `HTTP` or `TCP`, and it defaults to `HTTP` if not specified. If set to `TCP`, Ngrok will allocate a port instead of a subdomain and proxy TCP requests directly to your application.</li>
+        <li>`NGROK_PORT` - Port to expose (defaults to `80` for `HTTP` protocol).</li>
+    </ul>
+    <h4>Full example</h4>
+    <ol>
+        <li>We'll set up a simple example HTTP server in a docker container named `www`:</li>
+        <pre><code class="bash">$ docker run -v /usr/share/nginx/html --name www_data busybox true
 $ docker run --rm --volumes-from www_data busybox /bin/sh -c 'echo "<h1>Yo</h1>" > /usr/share/nginx/html/index.html'
 $ docker run -d -p 80 --volumes-from www_data --name www nginx
 $ curl $(docker port www 80)
-<h1>Yo</h1>
-</code></pre>
-<li>Now we'll link that HTTP server into an ngrok container to expose it on the internet:</li>
-<pre><code>$ docker run -d -p 4040 --link www:http --name www_ngrok wernight/ngrok
-</code></pre>
-<li>You can now access the <a href="https://ngrok.com/docs#client-api" target="_blank">API</a> to find the assigned domain:</li>
-<pre><code>$ curl $(docker port www_ngrok 4040)/api/tunnels
-</code></pre>
-<p>or access the web UI to see requests and responses:</p>
-<pre><code>$ xdg-open http://$(docker port www_ngrok 4040)
-</code></pre>
-</ol>
-<h3>Helper</h3>
-<p>For common cases you may want to create an alias in your <code>~/.profile</code> (or <code>~/.bashrc</code>, <code>~/.zshrc</code>, or equivalent):</p>
-<pre><code>function docker-ngrok() {
+<h1>Yo</h1></code></pre>
+        <li>Now we'll link that HTTP server into an ngrok container to expose it on the internet:</li>
+        <pre><code class="bash">$ docker run -d -p 4040 --link www:http --name www_ngrok wernight/ngrok</code></pre>
+        <li>You can now access the <a href="https://ngrok.com/docs#client-api" target="_blank">API</a> to find the assigned domain:</li>
+        <pre><code class="bash">$ curl $(docker port www_ngrok 4040)/api/tunnels</code></pre>
+        <p>or access the web UI to see requests and responses:</p>
+        <pre><code class="bash">$ xdg-open http://$(docker port www_ngrok 4040)</code></pre>
+    </ol>
+    <h3>Helper</h3>
+    <p>For common cases you may want to create an alias in your `~/.profile` (or `~/.bashrc`, `~/.zshrc`, or equivalent):</p>
+    <pre><code class="bash">function docker-ngrok() {
   docker run --rm -it --link "$1":http wernight/ngrok ngrok http http:80
 }
 # For ZSH with Oh-My-Zsh! and 'docker' plugin enabled, you can also enable auto-completion:
-#compdef __docker_containers docker-ngrok
-
-Then to the simple example just do `docker-ngrok web_service_container`.
-</code></pre>
-<h2>Feedbacks</h2>
-<p>Report issues/questions/feature requests on <a href="https://github.com/wernight/docker-ngrok/issues" target="_blank">GitHub Issues</a>.</p>
-<p>Pull requests are very welcome!</p>
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+#compdef __docker_containers docker-ngrok</code></pre>
+    <p>Then to the simple example just do `docker-ngrok web_service_container`.</p>
+    <h2>Feedbacks</h2>
+    <p>Report issues/questions/feature requests on <a href="https://github.com/wernight/docker-ngrok/issues" target="_blank">GitHub Issues</a>.</p>
+    <p>Pull requests are very welcome!</p>
+    <footer>Power By Gemini TextGenerate 2024-09-16</footer>
 </body>
 </html>

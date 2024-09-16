@@ -1,362 +1,384 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Linux 丛裸机进行安全加固[原创]</title>
-<meta name="description" content="运维">
-<meta name="keywords" content="linux">
-<style>
-body {
-    max-width: 820px;
-    margin: 0 auto;
-    font-family: sans-serif;
-    background-color: #f5f5f5;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    transition: background-color 0.3s ease;
-}
-
-h1 {
-    font-size: 20px;
-    text-align: center;
-}
-
-h2 {
-    font-size: 18px;
-}
-
-h3 {
-    font-size: 16px;
-}
-
-h4 {
-    font-size: 14px;
-}
-
-h5 {
-    font-size: 12px;
-}
-
-h6 {
-    font-size: 11px;
-}
-
-pre {
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-}
-
-code {
-    font-family: monospace;
-    background-color: #eee;
-    padding: 2px 4px;
-    border-radius: 3px;
-}
-
-footer {
-    text-align: center;
-    font-size: 12px;
-    margin-top: 20px;
-    color: #888;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<script>
-hljs.highlightAll();
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 获取当前时间
-        const now = new Date();
-        const hour = now.getHours();
-
-        // 判断白天或夜晚模式
-        if (hour >= 6 && hour < 18) {
-            document.body.style.backgroundColor = '#f5f5f5';
-        } else {
-            document.body.style.backgroundColor = '#222';
-            document.body.style.color = '#ddd';
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux 丛裸机进行安全加固[原创]</title>
+    <meta name="description" content="运维">
+    <meta name="keywords" content="linux">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4; /* 白天阅读模式 */
+            color: #333;
+            transition: background-color 0.3s ease;
+            max-width: 820px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-    });
-</script>
+
+        .container {
+            padding: 20px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        hljs.highlightAll();
+        const seed = 199602051111;
+        const random = () => {
+            const x = Math.sin(seed++) * 10000;
+            return Math.floor(x);
+        }
+
+        const currentHour = new Date().getHours();
+        if (currentHour >= 19 || currentHour < 6) {
+            document.body.style.backgroundColor = '#222';
+            document.body.style.color = '#eee';
+        }
+    </script>
 </head>
 <body>
-<h1>Linux 丛裸机进行安全加固[原创]</h1>
-<p>date：2017-10-06</p>
-<p>author：杨然儿</p>
-<h2>创建用户</h2>
-<pre><code>useradd abs
+<div class="container">
+    <h1>Linux 丛裸机进行安全加固[原创]</h1>
+    <p>date：2017-10-06</p>
+    <p>author：杨然儿</p>
+    <h2>创建用户</h2>
+    <pre><code>useradd abs
 password abs</code></pre>
-<h2>一、ssh加固</h2>
-<pre><code>vi /etc/ssh/sshd_config
-	####################
-	Port 35791
-	Protocol 2
-	MaxAuthTries 3
-	MaxSessions 3
-	RSAAuthentication yes
-	PubkeyAuthentication yes
-	UsePAM yes
-	X11Forwarding yes
-	Banner none
-	UseDNS no
-	PermitRootLogin no
-	PasswordAuthentication yes
-	#####################
-service sshd reload</code></pre>
-<h2>二、环境变量加固profile</h2>
-<pre><code>vi /etc/profile
-	#######################################
-	##记录历史命令时间
-	export HISTTIMEFORMAT="`whoami`  %F   %T  "
-	##修改帐户TMOUT值，600秒无操作自动退出
-	export PS1='$LOGNAME@'`hostname`:'$PWD''$ '
-	umask 022
-	TMOUT=600
-	#######################################
-source /etc/profile</code></pre>
-<h2>三、屏蔽banner信息</h2>
-<p>备份方法：</p>
-<pre><code>#cp -p /etc/ssh/sshd_config /etc/ssh/sshd_config_bak
-#cp -p /etc/motd /etc/motd_bak</code></pre>
-<p>加固方法：</p>
-<pre><code>#vi /etc/ssh/sshd_config
-banner NONE
+    <h2>一、ssh加固</h2>
+    <pre><code>vi /etc/ssh/sshd_config
+            ####################
+            Port 35791
+            Protocol 2
+            MaxAuthTries 3
+            MaxSessions 3
+            RSAAuthentication yes
+            PubkeyAuthentication yes
+            UsePAM yes
+            X11Forwarding yes
+            Banner none
+            UseDNS no
+            PermitRootLogin no
+            PasswordAuthentication yes
+            #####################
+        service sshd reload</code></pre>
+    <h2>二、环境变量加固profile</h2>
+    <pre><code>vi /etc/profile
+            #######################################
+            ##记录历史命令时间
+            export HISTTIMEFORMAT="`whoami`  %F   %T  "
+            ##修改帐户TMOUT值，600秒无操作自动退出
+            export PS1='$LOGNAME@'`hostname`:'$PWD''$ '
+            umask 022
+            TMOUT=600
+            #######################################
+        source /etc/profile</code></pre>
+    <h2>三、屏蔽banner信息</h2>
+    <pre><code>备份方法：
+                #cp -p /etc/ssh/sshd_config /etc/ssh/sshd_config_bak
+                #cp -p /etc/motd /etc/motd_bak
 
-#vi /etc/motd
-删除全部内容或更新成自己想要添加的内容</code></pre>
-<h2>四、禁用x_windows服务</h2>
-<pre><code>vi /etc/inittab
-	################################################################
-	id:5:initdefault:                   --5改成3
-	#######################################################################</code></pre>
-<h2>五、打开审计</h2>
-<pre><code>chkconfig auditd on
-service auditd restart</code></pre>
-<h2>六、清理不必要的信任主机</h2>
-<pre><code>--删除其中不必要的主机
-	#vi /etc/hosts.equiv
-	#vi /$HOME/.rhosts</code></pre>
-<h2>七、安装基础包</h2>
-<h3>1、安装rz sz和 screen</h3>
-<p>1).安装</p>
-<pre><code>yum install -y lrzsz
-yum install -y screen</code></pre>
-<p>2).查看</p>
-<pre><code>rz      ##会弹出一个框</code></pre>
-<h3>2、安装iftop</h3>
-<p>1).安装</p>
-<pre><code>yum -y install flex byacc  libpcap ncurses ncurses-devel libpcap-devel
-wget http://www.ex-parrot.com/pdw/iftop/download/iftop-1.0pre2.tar.gz
-tar zxvf iftop-1.0pre2.tar.gz
-cd iftop-1.0pre2
-./configure
-make && make install</code></pre>
-<p>2).查看带宽</p>
-<pre><code>iftop -B -n  -N -p</code></pre>
-<h3>3、安装jdk （1.6.0   1.7.0   1.8.0）这三个版本的jdk包 默认为1.8.0版本</h3>
-<p>1).下载安装包到某个路径</p>
-<pre><code>mkdir /opt/jdk/
- jdk-8u65-linux-x64.gz
- jdk-7u80-linux-x64.gz</code></pre>
-<p>2).解压</p>
-<pre><code>tar xf jdk-7u80-linux-x64.gz
-tar xf jdk-8u65-linux-x64.gz</code></pre>
-<p>3).修改环境变量</p>
-<pre><code>vim /etc/profile
-	##################################################################################################
-		export JAVA_HOME=/opt/jdk/jdk1.8.0_65
-		export JRE_HOME=/opt/jdk/jdk1.8.0_65/jre
-		export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
-		export PATH=$PATH:$JAVA_HOME/bin/
-	###################################################################################################
-source /etc/profile</code></pre>
-<p>4).查看java版本</p>
-<pre><code>java -version
-	----------------------------------------------------------------------
-	 java version "1.8.0_65"
-	 Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
-	 Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)
+        加固方法：
+                #vi /etc/ssh/sshd_config
+                banner NONE
 
-	------------------------------------------------------------------------</code></pre>
-<p>5).安装jdk1.6.0版本</p>
-<pre><code>cd /opt/jdk/
-chmod 755 jdk-6u45-linux-x64.bin
-./jdk-6u45-linux-x64.bin （注意，这个步骤一定要在jdk-6u45-linux-x64.bin所在目录下）
-会生成一个jdk1.6.0_45目录</code></pre>
-<p>6).查看1.6.0或1.7.0的版本</p>
-<pre><code>./jdk1.6.0_45/bin/java -version
-	-----------------------------------------------------------------------------
-	java version "1.6.0_45"
-	Java(TM) SE Runtime Environment (build 1.6.0_45-b06)
-	Java HotSpot(TM) 64-Bit Server VM (build 20.45-b01, mixed mode)
+                #vi /etc/motd
+                删除全部内容或更新成自己想要添加的内容</code></pre>
+    <h2>四、禁用x_windows服务</h2>
+    <pre><code>vi /etc/inittab
+            ################################################################
+            id:5:initdefault:                   --5改成3
+            #######################################################################</code></pre>
+    <h2>五、打开审计</h2>
+    <pre><code>chkconfig auditd on
+            service auditd restart</code></pre>
+    <h2>六、清理不必要的信任主机</h2>
+    <pre><code>--删除其中不必要的主机
+            #vi /etc/hosts.equiv
+            #vi /$HOME/.rhosts</code></pre>
+    <h2>七、安装基础包</h2>
+    <h3>1、安装rz sz和 screen</h3>
+    <pre><code>1).安装
+        yum install -y lrzsz
+        yum install -y screen
+        2).查看
+        rz      ##会弹出一个框</code></pre>
+    <h3>2、安装iftop</h3>
+    <pre><code>1).安装
+            yum -y install flex byacc  libpcap ncurses ncurses-devel libpcap-devel
+            wget http://www.ex-parrot.com/pdw/iftop/download/iftop-1.0pre2.tar.gz
+            tar zxvf iftop-1.0pre2.tar.gz
+            cd iftop-1.0pre2
+            ./configure
+            make && make install
+        2).查看带宽
+            iftop -B -n  -N -p</code></pre>
+    <h3>3、安装jdk （1.6.0   1.7.0   1.8.0）这三个版本的jdk包 默认为1.8.0版本</h3>
+    <pre><code>1).下载安装包到某个路径
+            mkdir /opt/jdk/
+             jdk-8u65-linux-x64.gz
+             jdk-7u80-linux-x64.gz
 
-	------------------------------------------------------------------------------
-	或
-	./jdk1.7.0_80/bin/java -version
-	-------------------------------------------------------------------------------
-	java version "1.7.0_80"
-	Java(TM) SE Runtime Environment (build 1.7.0_80-b15)
-	Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)
+        2).解压
+            tar xf jdk-7u80-linux-x64.gz
+            tar xf jdk-8u65-linux-x64.gz
 
-	--------------------------------------------------------------------------------</code></pre>
-<h3>4、安装Python</h3>
-<p>1).安装 sqlite-devel(因为 Flask 应用程序可能使用能 Sqlite 数据库，所以这个得装上（之前因为没装这个，导致 Python 无法导入 sqlite3 库）)</p>
-<pre><code>yum install sqlite-devel -y</code></pre>
-<p>2).安装Python2.7</p>
-<pre><code>wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
-tar xf Python-2.7.8.tgz
-cd Python-2.7.8
-./configure --prefix=/usr/local
-make && make install</code></pre>
-<p>安装成功之后，你可以在 /usr/local/bin/python2.7 找到 Python 2.7。</p>
-<h3>5、安装aide</h3>
-<p>1. 安装mhash</p>
-<pre><code>yum -y install mhash-devel.x86_64 mhash.x86_64</code></pre>
-<p>2.安装aide</p>
-<pre><code>yum -y install aide.x86_64</code></pre>
-<p>3. 配置(默认即可)</p>
-<pre><code>vim /etc/aide.conf
-	--可以不改,按默认就可以了</code></pre>
-<p>4.生成初始化数据库</p>
-<pre><code># aide --init
-# mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz</code></pre>
-<p>5. 开始检测</p>
-<pre><code># aide --check</code></pre>
-<h3>6、Lynis安全检查工具</h3>
-<p>1).介绍</p>
-<p>https://cisofy.com/</p>
-<p>Lynis是一个为系统管理员提供的 Linux和Unix的审计工具 。 Lynis扫描系统的配置，并创建概述系统信息与安全问题所使用的专业审计。 当用户启动该软件后，Lynis会会逐次扫描系统的内核、用户目录、软件信息等，并最后生成一个全面的报告。 需要说明的是，该工具只能生成一个扫描检测后的报告，对用户起到提醒作用，本身并不能提高系统的安全性。 但是该工具却可以成为其他安全软件、系统测评软件的模块。</p>
-<p>2).安装</p>
-<pre><code>yum -y install lynis
-或
-wget https://cisofy.com/files/lynis-2.1.1.tar.gz</code></pre>
-<p>3).全面检查</p>
-<pre><code>lynis --check-all -Q</code></pre>
-<p>4).自动检查</p>
-<pre><code>lynis -c --auditor "automated" --cronjob > /var/log/lynis/report.txt</code></pre>
-<p>5).检查某项目</p>
-<pre><code>lynis --tests FILE-6354 --quick</code></pre>
-<p>6).查看警告</p>
-<pre><code>grep Warning /var/log/lynis.log</code></pre>
-<p>7).查看建议</p>
-<pre><code>grep Suggestion /var/log/lynis.log</code></pre>
-<h2>八、建立主机间的信任</h2>
-<p>1、生成密钥(默认的是rsa)</p>
-<pre><code>ssh-keygen -t rsa</code></pre>
-<p>2、将生成的密钥（公钥）拷贝给另一台主机</p>
-<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub "-p 35791 root@192.168.1.4"
-指定端口时记得使用双引号，以免报错</code></pre>
-<p>3、测试</p>
-<pre><code>ssh -p 35791 root@192.168.1.4
-这样直接连接到192.168.1.4这一台主机上，不用输入密码就是添加信任成功</code></pre>
-<h2>九、修改主机名</h2>
-<p>1.临时修改主机名</p>
-<pre><code>查看当前主机名：
-spark@localhost:~$ hostname
-localhost
+        3).修改环境变量
+            vim /etc/profile
+            ##################################################################################################
+                export JAVA_HOME=/opt/jdk/jdk1.8.0_65
+                export JRE_HOME=/opt/jdk/jdk1.8.0_65/jre
+                export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
+                export PATH=$PATH:$JAVA_HOME/bin/
+            ###################################################################################################
+            source /etc/profile
+        4).查看java版本
+            java -version
+            ----------------------------------------------------------------------
+             java version "1.8.0_65"
+             Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
+             Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)
 
-修改主机名并查看当前主机名：
-spark@localhost:~$ sudo hostname hadoop
-spark@localhost:~$ hostname
-hadoop
-PS:以上的修改只是临时修改，重启后就恢复原样了。</code></pre>
-<p>2.永久修改主机名</p>
-<p>步骤1：</p>
-<pre><code>修改/etc/sysconfig/network中的hostname
+            ------------------------------------------------------------------------
+        5).安装jdk1.6.0版本
+            cd /opt/jdk/
+            chmod 755 jdk-6u45-linux-x64.bin
+            ./jdk-6u45-linux-x64.bin （注意，这个步骤一定要在jdk-6u45-linux-x64.bin所在目录下）
+            会生成一个jdk1.6.0_45目录
+        6).查看1.6.0或1.7.0的版本
+            ./jdk1.6.0_45/bin/java -version
+            -----------------------------------------------------------------------------
+            java version "1.6.0_45"
+            Java(TM) SE Runtime Environment (build 1.6.0_45-b06)
+            Java HotSpot(TM) 64-Bit Server VM (build 20.45-b01, mixed mode)
 
-vi /etc/sysconfig/network
-HOSTNAME=localhost.localdomain  #修改localhost.localdomain为orcl1
-修改network的HOSTNAME项。点前面是主机名，点后面是域名。没有点就是主机名。
+            ------------------------------------------------------------------------------
+            或
+            ./jdk1.7.0_80/bin/java -version
+            -------------------------------------------------------------------------------
+            java version "1.7.0_80"
+            Java(TM) SE Runtime Environment (build 1.7.0_80-b15)
+            Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)
 
-这个是永久修改，重启后生效。目前不知道怎么立即生效。
+            --------------------------------------------------------------------------------</code></pre>
+    <h3>4、安装Python</h3>
+    <pre><code>1).安装 sqlite-devel(因为 Flask 应用程序可能使用能 Sqlite 数据库，所以这个得装上（之前因为没装这个，导致 Python 无法导入 sqlite3 库）)
+            yum install sqlite-devel -y
+        2).安装Python2.7
+            wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
+            tar xf Python-2.7.8.tgz
+            cd Python-2.7.8
+            ./configure --prefix=/usr/local
+            make && make install
+        安装成功之后，你可以在 /usr/local/bin/python2.7 找到 Python 2.7。</code></pre>
+    <h3>5、安装aide</h3>
+    <pre><code>1. 安装mhash
+            yum -y install mhash-devel.x86_64 mhash.x86_64
+        2.安装aide
+            yum -y install aide.x86_64
+        3. 配置(默认即可)
+            vim /etc/aide.conf
+            --可以不改,按默认就可以了
+        4.生成初始化数据库
+            # aide --init
+            # mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+        5. 开始检测
+            # aide --check</code></pre>
+    <h3>6、Lynis安全检查工具</h3>
+    <pre><code>1).介绍
+            https://cisofy.com/
+            Lynis是一个为系统管理员提供的 Linux和Unix的审计工具 。 Lynis扫描系统的配置，并创建概述系统信息与安全问题所使用的专业审计。
+            当用户启动该软件后，Lynis会会逐次扫描系统的内核、用户目录、软件信息等，并最后生成一个全面的报告。
+            需要说明的是，该工具只能生成一个扫描检测后的报告，对用户起到提醒作用，本身并不能提高系统的安全性。
+            但是该工具却可以成为其他安全软件、系统测评软件的模块。
 
-想立即生效，可以同时采用第一种方法。
+        2).安装
+            yum -y install lynis
+            或
+            wget https://cisofy.com/files/lynis-2.1.1.tar.gz
 
-步骤2：
-修改/etc/hosts文件
+        3).全面检查
+            lynis --check-all -Q
 
-vi /etc/hosts
-127.0.0.1    localhost.localdomain  #修改localhost.localdomain为orcl1
-shutdown -r now    #最后，重启服务器即可。</code></pre>
-<h2> 十、配置防火墙</h2>
-<p>1、进入配置文件</p>
-<pre><code>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	vim /etc/sysconfig/iptables
-		########################################################
-		*filter
-		################ NULL Accept Hosts ######################
-		###允许保垒机
-		-A INPUT -s 221.41.47.213/32 -p tcp   --dport 35791 -j ACCEPT
-		-A INPUT -s 10.168.189.37/32 -p tcp   --dport 35791 -j ACCEPT
-		###允许本机
-		-A INPUT -s 221.43.178.5/32 -p tcp    --dport 35791 -j ACCEPT
-		-A INPUT -s 10.0.0.10/32 -p tcp       --dport 35791 -j ACCEPT
-		###允许内网
-		-A INPUT -s 10.0.0.0/8 -p tcp         --dport 35791 -j ACCEPT
-		###允许腾讯众创空间
-		-A INPUT -s 221.69.10.134/32 -p tcp   --dport 35791 -j ACCEPT
+        4).自动检查
+            lynis -c --auditor "automated" --cronjob > /var/log/lynis/report.txt
 
+        5).检查某项目
+            lynis --tests FILE-6354 --quick
 
-		#### MMSS 249
-		-A INPUT -s 100.41.85.249/32 -p tcp  -j ACCEPT
-		-A INPUT -d 100.41.85.249/32 -p tcp  -j ACCEPT
+        6).查看警告
+            grep Warning /var/log/lynis.log
 
+        7).查看建议
+            grep Suggestion /var/log/lynis.log</code></pre>
+    <h2>八、建立主机间的信任</h2>
+    <pre><code>1、生成密钥(默认的是rsa)
+        ssh-keygen -t rsa
+    2、将生成的密钥（公钥）拷贝给另一台主机
+        ssh-copy-id -i ~/.ssh/id_rsa.pub "-p 35791 root@192.168.1.4"
+        指定端口时记得使用双引号，以免报错
+    3、测试
+        ssh -p 35791 root@192.168.1.4
+        这样直接连接到192.168.1.4这一台主机上，不用输入密码就是添加信任成功</code></pre>
+    <h2>九、修改主机名</h2>
+    <pre><code>1.临时修改主机名
+        查看当前主机名：
+        spark@localhost:~$ hostname
+        localhost
 
-		###限制连接数
-		-A INPUT -p tcp --dport 8080 -m connlimit --connlimit-above 3000 -j DROP
-		-A INPUT -p tcp --dport 8888 -m connlimit --connlimit-above 3000 -j DROP
-		-A INPUT -p tcp --dport 28080 -m connlimit --connlimit-above 3000 -j DROP
+        修改主机名并查看当前主机名：
+        spark@localhost:~$ sudo hostname hadoop
+        spark@localhost:~$ hostname
+        hadoop
+    PS:以上的修改只是临时修改，重启后就恢复原样了。
 
+    2.永久修改主机名
+        步骤1：
 
-		###允许除35791之外所有端口
-		-A INPUT -p tcp --dport 35791 -j DROP
-		-A INPUT -p tcp ! --dport 35791 -j ACCEPT
+        修改/etc/sysconfig/network中的hostname
+
+        vi /etc/sysconfig/network
+        HOSTNAME=localhost.localdomain  #修改localhost.localdomain为orcl1
+        修改network的HOSTNAME项。点前面是主机名，点后面是域名。没有点就是主机名。
+
+        这个是永久修改，重启后生效。目前不知道怎么立即生效。
+
+        想立即生效，可以同时采用第一种方法。
+
+        步骤2：
+        修改/etc/hosts文件
+
+        vi /etc/hosts
+        127.0.0.1    localhost.localdomain  #修改localhost.localdomain为orcl1
+        shutdown -r now    #最后，重启服务器即可。</code></pre>
+    <h2> 十、配置防火墙</h2>
+    <pre><code>1、进入配置文件
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        vim /etc/sysconfig/iptables
+            ########################################################
+            *filter
+            ################ NULL Accept Hosts ######################
+            ###允许保垒机
+            -A INPUT -s 221.41.47.213/32 -p tcp   --dport 35791 -j ACCEPT
+            -A INPUT -s 10.168.189.37/32 -p tcp   --dport 35791 -j ACCEPT
+            ###允许本机
+            -A INPUT -s 221.43.178.5/32 -p tcp    --dport 35791 -j ACCEPT
+            -A INPUT -s 10.0.0.10/32 -p tcp       --dport 35791 -j ACCEPT
+            ###允许内网
+            -A INPUT -s 10.0.0.0/8 -p tcp         --dport 35791 -j ACCEPT
+            ###允许腾讯众创空间
+            -A INPUT -s 221.69.10.134/32 -p tcp   --dport 35791 -j ACCEPT
 
 
-		################ Black List  ############################
-		#-A INPUT -s 106.187.53.56/32 -p tcp --dport 35791 -j DROP
+            #### MMSS 249
+            -A INPUT -s 100.41.85.249/32 -p tcp  -j ACCEPT
+            -A INPUT -d 100.41.85.249/32 -p tcp  -j ACCEPT
 
 
-		########### DNS Resolved ##############################
-		-A INPUT -p udp -m udp --sport 53 -j ACCEPT
-		-A INPUT -p udp -m udp --dport 53 -j ACCEPT
+            ###限制连接数
+            -A INPUT -p tcp --dport 8080 -m connlimit --connlimit-above 3000 -j DROP
+            -A INPUT -p tcp --dport 8888 -m connlimit --connlimit-above 3000 -j DROP
+            -A INPUT -p tcp --dport 28080 -m connlimit --connlimit-above 3000 -j DROP
 
 
-		################# ALLOW Local  ########################
-		-A INPUT -i lo -j ACCEPT
+            ###允许除35791之外所有端口
+            -A INPUT -p tcp --dport 35791 -j DROP
+            -A INPUT -p tcp ! --dport 35791 -j ACCEPT
 
 
-		################# Forbidden Ping #######################
-		-A INPUT -i eth0 -p icmp -s 0/0 -d 0/0 -j DROP
+            ################ Black List  ############################
+            #-A INPUT -s 106.187.53.56/32 -p tcp --dport 35791 -j DROP
 
 
-		################# NFS Backup Server ####################
-		-A INPUT -s 10.168.189.37/32 -p all -j ACCEPT
-		-A INPUT -s 121.41.47.213/32 -p all -j ACCEPT
+            ########### DNS Resolved ##############################
+            -A INPUT -p udp -m udp --sport 53 -j ACCEPT
+            -A INPUT -p udp -m udp --dport 53 -j ACCEPT
 
 
-		################# Forbidden ALL ########################
-		-P INPUT DROP
+            ################# ALLOW Local  ########################
+            -A INPUT -i lo -j ACCEPT
 
-		################# OUTPUT Settings ####################
-		-P OUTPUT ACCEPT
-		COMMIT
-		#####################################################
+
+            ################# Forbidden Ping #######################
+            -A INPUT -i eth0 -p icmp -s 0/0 -d 0/0 -j DROP
+
+
+            ################# NFS Backup Server ####################
+            -A INPUT -s 10.168.189.37/32 -p all -j ACCEPT
+            -A INPUT -s 121.41.47.213/32 -p all -j ACCEPT
+
+
+            ################# Forbidden ALL ########################
+            -P INPUT DROP
+
+            ################# OUTPUT Settings ####################
+            -P OUTPUT ACCEPT
+            COMMIT
+            #####################################################
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</code></pre>
-<h2>十一、阿里云服务器安装安骑士</h2>
-<p>1、安装64位的执行命令</p>
-<pre><code>wget 'http://update.aegis.aliyun.com/download/AliAqsInstall_64.sh' && sh AliAqsInstall_64.sh i24iJ7</code></pre>
-<p>2、安装32位的执行命令</p>
-<pre><code>wget 'http://update.aegis.aliyun.com/download/AliAqsInstall_32.sh' && sh AliAqsInstall_32.sh i24iJ7</code></pre>
-<p>* 以上操作经过验证可以直接拿去。</p>
-<p>* auther `breakEval13`</p>
-<p>* https://github.com/breakEval13</p>
+    <h2>十一、阿里云服务器安装安骑士</h2>
+    <pre><code>1、安装64位的执行命令
+        wget 'http://update.aegis.aliyun.com/download/AliAqsInstall_64.sh' && sh AliAqsInstall_64.sh i24iJ7
+
+    2、安装32位的执行命令
+        wget 'http://update.aegis.aliyun.com/download/AliAqsInstall_32.sh' && sh AliAqsInstall_32.sh i24iJ7</code></pre>
+    <p>* 以上操作经过验证可以直接拿去。</p>
+    <p>* auther <code>breakEval13</code></p>
+    <p>* https://github.com/breakEval13</p>
+</div>
 <footer>
-Power By Gemini TextGenerate 2024-09-16
+    Power By Gemini TextGenerate 2024-09-16
 </footer>
 </body>
 </html>

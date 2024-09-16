@@ -8,9 +8,12 @@
     <meta name="keywords" content="hdfs, flink">
     <style>
         body {
-            font-family: sans-serif;
             background-color: #f5f5f5;
             color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+            'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+            sans-serif;
+            line-height: 1.5;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
@@ -19,6 +22,7 @@
 
         h1 {
             font-size: 20px;
+            margin-top: 0;
         }
 
         h2 {
@@ -42,54 +46,53 @@
         }
 
         pre {
-            background-color: #f0f0f0;
+            background-color: #eee;
             padding: 10px;
-            border-radius: 4px;
+            border-radius: 5px;
             overflow-x: auto;
         }
 
         code {
-            font-family: monospace;
             background-color: #eee;
             padding: 2px 4px;
-            border-radius: 2px;
+            border-radius: 3px;
         }
 
         footer {
             text-align: center;
             margin-top: 20px;
             font-size: 12px;
-            color: #777;
-        }
-
-        .title-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .title-container h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .title-container p {
-            font-size: 16px;
-            color: #777;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        hljs.highlightAll();
+        const randomSeed = 199602051111;
+        const now = new Date();
+        const isNightMode = now.getHours() >= 19 || now.getHours() < 6;
+        const body = document.querySelector('body');
+        if (isNightMode) {
+            body.style.backgroundColor = '#222';
+            body.style.color = '#ddd';
+        }
+    </script>
 </head>
 <body>
-    <div class="title-container">
-        <h1>Hadoop HDFS 作为 Flink 的 Sink</h1>
-        <p>笔记</p>
-    </div>
+    <h1 style="text-align: center;">Hadoop HDFS 作为 Flink 的 Sink</h1>
+    <p style="text-align: center;">笔记</p>
+    <p style="text-align: center;">
+        <span style="font-weight: bold;">关键字:</span>
+        hdfs, flink
+    </p>
+
     <p>因工作需求，学习了 Hdfs 分布式文件存储系统，所整合 Flink + HDFS 作为一个 Demo 帮助大家跳坑。</p>
     <p>HDFS 采用 NS 高可用模式。</p>
-    <h2>HDFSManager.Java</h2>
-    <p>* 初始化 HDFS 链接。</p>
-    <pre><code class="java">package com.e.firsh.spb.utils.hdfs;
+
+    <h2 style="text-align: center;">HDFSManager.Java</h2>
+    <p>初始化 HDFS 链接。</p>
+    <pre><code class="java">
+package com.e.firsh.spb.utils.hdfs;
 
 import com.alibaba.fastjson.JSONObject;
 import com.e.firsh.base.esb.BO;
@@ -199,11 +202,12 @@ public class HDFSManager {
         }
     }
 }
+    </code></pre>
 
-</code></pre>
-    <h2>HDFSSink.Java</h2>
-    <p>* 继承`RichSinkFunction`，重写`open` 和 `invoke`方法，还有`close`。</p>
-    <pre><code class="java">package com.e.firsh.spb.sink;
+    <h2 style="text-align: center;">HDFSSink.Java</h2>
+    <p>继承 RichSinkFunction，重写 open 和 invoke 方法，还有 close。</p>
+    <pre><code class="java">
+package com.e.firsh.spb.sink;
 
 import com.e.firsh.spb.utils.hdfs.HDFSManager;
 import org.apache.flink.configuration.Configuration;
@@ -224,22 +228,12 @@ public class HDFSSink extends RichSinkFunction<String> {
         hdfsManager = new HDFSManager();
     }
 }
+    </code></pre>
+    <p>以上代码为简易版经过修改，思路清晰，（Flink 自带一种 HDFS 的链接方式详情见链接：）</p>
+    <p>https://ci.apache.org/projects/flink/flink-docs-release-1.4/dev/connectors/filesystem_sink.html</p>
 
-</code></pre>
-    <h2>以上代码为简易版经过修改，思路清晰，（Flink自带一种HDFS的链接方式详情见链接：）</h2>
-    <p>* https://ci.apache.org/projects/flink/flink-docs-release-1.4/dev/connectors/filesystem_sink.html</p>
     <footer>
         Power By Gemini TextGenerate 2024-09-16
     </footer>
-    <script>
-        // 获取当前时间，判断白天或夜晚
-        const now = new Date();
-        const hour = now.getHours();
-        const isDaytime = hour >= 6 && hour < 18;
-
-        // 设置背景颜色
-        document.body.style.backgroundColor = isDaytime ? '#f5f5f5' : '#333';
-        document.body.style.color = isDaytime ? '#333' : '#fff';
-    </script>
 </body>
 </html>

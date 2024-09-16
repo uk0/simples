@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>xgboost on yarn (cdh,cloudera)</title>
-    <meta name="description" content="xgboost install on yarn">
-    <meta name="keywords" content="xgboost">
+    <meta name="description" content="xgboost install on yarn " style="text-align: center;">
+    <meta name="keywords" content="xgboost" style="text-align: center;">
     <style>
         body {
             font-family: sans-serif;
+            margin: 0;
+            padding: 0;
             background-color: #f0f0f0;
             color: #333;
             max-width: 820px;
             margin: 0 auto;
-            padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.5s ease;
         }
 
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
+        .container {
+            padding: 20px;
         }
 
         h1 {
@@ -48,36 +50,51 @@
         pre {
             background-color: #f5f5f5;
             padding: 10px;
+            border-radius: 5px;
             overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         code {
-            font-family: monospace;
-            background-color: #eee;
-            padding: 2px 4px;
-            border-radius: 3px;
+            font-family: Consolas, monospace;
         }
 
         footer {
             text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
+            padding: 10px 0;
+            background-color: #eee;
+            border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .night-mode {
+            background-color: #222;
+            color: #eee;
+        }
+
+        .night-mode pre {
+            background-color: #333;
+        }
+
+        .night-mode code {
+            color: #eee;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-    <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
-    <h1>xgboost on yarn (cdh,cloudera)</h1>
-    <p>xgboost install on yarn</p>
+    <div class="container">
+        <h1>xgboost on yarn (cdh,cloudera)</h1>
+        <p>xgboost install on yarn </p>
 
-    <h2>yum  安装基础的依赖</h2>
-    <pre><code class="bash">yum install gcc-c++ fuse-devel git  hadoop-libhdfs-devel
+        <h2>yum  安装基础的依赖</h2>
+        <pre><code class="language-bash">yum install gcc-c++ fuse-devel git  hadoop-libhdfs-devel
 </code></pre>
 
-    <h2>  配置环境变量</h2>
-    <pre><code class="bash">export MVN_HOME=/opt/soft/apache-maven-3.6.0
+        <h2>  配置环境变量</h2>
+        <pre><code class="language-bash">export MVN_HOME=/opt/soft/apache-maven-3.6.0
 export PATH=$MVN_HOME/bin:$PATH
 export XGB_HOME=/home/download
 export PATH=$XGB_HOME:$PATH
@@ -91,8 +108,8 @@ export HADOOP_YARN_HOME=$HADOOP_MAPRED_HOME
 export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 </code></pre>
 
-    <h2>xgboost git clone  and install </h2>
-    <pre><code class="bash">mkdir -p xgboost-packages/lib64
+        <h2>xgboost git clone  and install </h2>
+        <pre><code class="language-bash">mkdir -p xgboost-packages/lib64
 
 cd xgboost-packages
 
@@ -110,31 +127,41 @@ make -j4
 
 </code></pre>
 
-    <h2>install python package on env</h2>
-    <pre><code class="bash">
+        <h2>install python package on env</h2>
+        <pre><code class="language-bash">
 
 cd python-package/ && python setup.py install 
 </code></pre>
 
-    <h2>install jvm-package on env</h2>
-    <pre><code class="bash">
-cd jvm-packages/ && mvn install:install-file -Dfile=xgboost4j-spark-0.83-jar-with-dependencies.jar -DgroupId=ml.dmlc -DartifactId=xgboost4j-spark -Dversion=0.7 -Dpackaging=jar
+        <h2>install jvm-package on env</h2>
+        <pre><code class="language-bash">cd jvm-packages/ && mvn install:install-file -Dfile=xgboost4j-spark-0.83-jar-with-dependencies.jar -DgroupId=ml.dmlc -DartifactId=xgboost4j-spark -Dversion=0.7 -Dpackaging=jar
 </code></pre>
+
+        <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+    </div>
 
     <footer>
         Power By Gemini TextGenerate 2024-09-16
     </footer>
+
     <script>
-        const currentTime = new Date();
-        const isDayTime = currentTime.getHours() >= 6 && currentTime.getHours() < 18;
-        const body = document.body;
-        if (isDayTime) {
-            body.style.backgroundColor = '#f0f0f0';
-            body.style.color = '#333';
-        } else {
-            body.style.backgroundColor = '#222';
-            body.style.color = '#eee';
+        // 获取当前时间
+        const now = new Date();
+        const hour = now.getHours();
+
+        // 根据时间判断是否开启夜间模式
+        if (hour >= 18 || hour < 6) {
+            document.body.classList.add('night-mode');
         }
+
+        // 使用 Highlight.js 或 Prism.js 对代码进行高亮
+        // 此处需要根据你使用的库进行相应的配置
+        // 例如：
+        // Highlight.js:
+        hljs.highlightAll();
+
+        // Prism.js:
+        Prism.highlightAll();
     </script>
 </body>
 </html>

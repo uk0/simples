@@ -1,193 +1,378 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hadoop HDFS常用文件操作命令</title>
-    <meta name="description" content="笔记">
-    <meta name="keywords" content="shell,hdfs">
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+<style>
+body {
+  background: #f8f8f8;
+  font-family: sans-serif;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  line-height: 1.5;
+}
 
-        h1 {
-            font-size: 20px;
-        }
+h1 {
+  font-size: 20px;
+}
 
-        h2 {
-            font-size: 18px;
-        }
+h2 {
+  font-size: 18px;
+}
 
-        h3 {
-            font-size: 16px;
-        }
+h3 {
+  font-size: 16px;
+}
 
-        h4 {
-            font-size: 14px;
-        }
+h4 {
+  font-size: 14px;
+}
 
-        h5 {
-            font-size: 12px;
-        }
+h5 {
+  font-size: 12px;
+}
 
-        h6 {
-            font-size: 11px;
-        }
+h6 {
+  font-size: 11px;
+}
 
-        pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
+code {
+  background: #f2f2f2;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
 
-        code {
-            font-family: monospace;
-        }
+pre {
+  background: #f2f2f2;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
 
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-    <script>
-        hljs.initHighlightingOnLoad();
-        const now = new Date();
-        const hour = now.getHours();
-        const isNightMode = hour >= 18 || hour < 6;
-        document.body.style.backgroundColor = isNightMode ? '#222' : '#f0f0f0';
-        document.body.style.color = isNightMode ? '#ddd' : '#333';
-    </script>
+pre code {
+  background: none;
+  padding: 0;
+}
+
+.highlight, .prism-code {
+  background: #f2f2f2;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.highlight pre, .prism-code pre {
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: #888;
+}
+
+</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hadoop HDFS常用文件操作命令</title>
+<meta name="description" content="笔记" />
+<meta name="keywords" content="shell,hdfs" />
+<script>
+  // 随机种子 199602051111
+  Math.seedrandom(199602051111);
+
+  // 获取当前时间，判断是白天还是晚上
+  const now = new Date();
+  const hour = now.getHours();
+  const isDay = hour >= 6 && hour < 18;
+
+  // 设置背景颜色
+  document.body.style.backgroundColor = isDay ? '#f8f8f8' : '#222';
+
+  // 代码高亮
+  const codeBlocks = document.querySelectorAll('pre code');
+  codeBlocks.forEach(codeBlock => {
+    const code = codeBlock.textContent;
+    const highlightedCode = Prism.highlight(code, Prism.languages.bash, 'bash');
+    codeBlock.innerHTML = highlightedCode;
+  });
+
+  // 随机显示一些交互效果
+  const random = Math.random();
+
+  if (random < 0.33) {
+    // 随机改变部分文字颜色
+    const textElements = document.querySelectorAll('p, li');
+    textElements.forEach(element => {
+      element.style.color = isDay ? '#333' : '#ddd';
+    });
+  } else if (random < 0.66) {
+    // 随机添加一些动画
+    const headings = document.querySelectorAll('h1, h2, h3, h4');
+    headings.forEach(heading => {
+      heading.style.animation = 'shake 0.5s ease-in-out infinite';
+    });
+  } else {
+    // 随机显示一些提示信息
+    const message = document.createElement('div');
+    message.style.position = 'fixed';
+    message.style.bottom = '10px';
+    message.style.right = '10px';
+    message.style.padding = '10px';
+    message.style.backgroundColor = '#fff';
+    message.style.borderRadius = '4px';
+    message.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+    message.textContent = '你正在浏览一个动态页面，试试点击一些文字或代码块吧！';
+    document.body.appendChild(message);
+
+    setTimeout(() => {
+      message.remove();
+    }, 3000);
+  }
+
+  // ... (其他JavaScript代码，例如使用 Highlight.js) ...
+
+</script>
 </head>
 <body>
-    <h1>hadoop HDFS常用文件操作命令</h1>
-    <h2>命令基本格式:</h2>
-    <pre><code class="bash">hadoop fs -cmd < args ></code></pre>
-    <h2>1.ls</h2>
-    <ul>
-        <li>列出hdfs文件系统根目录下的目录和文件</li>
-        <pre><code class="bash">hadoop fs -ls  /</code></pre>
-        <li>列出hdfs文件系统所有的目录和文件</li>
-        <pre><code class="bash">hadoop fs -ls -R /</code></pre>
-    </ul>
-    <h2>2.put</h2>
-    <ul>
-        <li>hdfs file的父目录一定要存在，否则命令不会执行</li>
-        <pre><code class="bash">hadoop fs -put < local file > < hdfs file ></code></pre>
-        <li>hdfs dir 一定要存在，否则命令不会执行</li>
-        <pre><code class="bash">hadoop fs -put  < local file or dir >...< hdfs dir ></code></pre>
-        <li>从键盘读取输入到hdfs file中，按Ctrl+D结束输入，hdfs file不能存在，否则命令不会执行</li>
-        <pre><code class="bash">hadoop fs -put - < hdsf  file></code></pre>
-    </ul>
-    <h2>2.1.moveFromLocal</h2>
-    <ul>
-        <li>与put相类似，命令执行后源文件 local src 被删除，也可以从从键盘读取输入到hdfs file中</li>
-        <pre><code class="bash">hadoop fs -moveFromLocal  < local src > ... < hdfs dst ></code></pre>
-    </ul>
-    <h2>2.2.copyFromLocal</h2>
-    <ul>
-        <li>与put相类似，也可以从从键盘读取输入到hdfs file中</li>
-        <pre><code class="bash">hadoop fs -copyFromLocal  < local src > ... < hdfs dst ></code></pre>
-    </ul>
-    <h2>3.get</h2>
-    <ul>
-        <li>local file不能和 hdfs file名字不能相同，否则会提示文件已存在，没有重名的文件会复制到本地</li>
-        <pre><code class="bash">hadoop fs -get < hdfs file > < local file or dir></code></pre>
-        <li>拷贝多个文件或目录到本地时，本地要为文件夹路径</li>
-        <li>注意：如果用户不是root， local 路径要为用户文件夹下的路径，否则会出现权限问题</li>
-        <pre><code class="bash">hadoop fs -get < hdfs file or dir > ... < local  dir ></code></pre>
-    </ul>
-    <h2>3.1.copyToLocal</h2>
-    <pre><code class="bash">hadoop fs -copyToLocal < local src > ... < hdfs dst ></code></pre>
-    <h2>4.rm</h2>
-    <ul>
-        <li>每次可以删除多个文件或目录</li>
-        <pre><code class="bash">hadoop fs -rm < hdfs file > ...
-hadoop fs -rm -r < hdfs dir>...</code></pre>
-    </ul>
-    <h2>5.mkdir</h2>
-    <ul>
-        <li>只能一级一级的建目录，父目录不存在的话使用这个命令会报错</li>
-        <pre><code class="bash">hadoop fs -mkdir < hdfs path></code></pre>
-        <li>所创建的目录如果父目录不存在就创建该父目录</li>
-        <pre><code class="bash">hadoop fs -mkdir -p < hdfs path></code></pre>
-    </ul>
-    <h2>6.getmerge</h2>
-    <pre><code class="bash"># 将hdfs指定目录下所有文件排序后合并到local指定的文件中，文件不存在时会自动创建，文件存在时会覆盖里面的内容
+<center>
+  <h1>hadoop HDFS常用文件操作命令</h1>
+  <p>笔记</p>
+</center>
+
+<h2>命令基本格式:</h2>
+
+<pre><code class="language-bash">hadoop fs -cmd < args >
+</code></pre>
+
+<h1>1.ls</h1>
+
+<ul>
+<li>列出hdfs文件系统根目录下的目录和文件</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -ls  /
+</code></pre>
+
+<ul>
+<li>列出hdfs文件系统所有的目录和文件</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -ls -R /
+</code></pre>
+
+<h1>2.put</h1>
+
+<ul>
+<li>hdfs file的父目录一定要存在，否则命令不会执行</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -put < local file > < hdfs file >
+</code></pre>
+
+<ul>
+<li>hdfs dir 一定要存在，否则命令不会执行</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -put  < local file or dir >...< hdfs dir >
+</code></pre>
+
+<ul>
+<li>从键盘读取输入到hdfs file中，按Ctrl+D结束输入，hdfs file不能存在，否则命令不会执行</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -put - < hdsf  file>
+</code></pre>
+
+<h1>2.1.moveFromLocal</h1>
+
+<ul>
+<li>与put相类似，命令执行后源文件 local src 被删除，也可以从从键盘读取输入到hdfs file中</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -moveFromLocal  < local src > ... < hdfs dst >
+</code></pre>
+
+<h1>2.2.copyFromLocal</h1>
+
+<ul>
+<li>与put相类似，也可以从从键盘读取输入到hdfs file中</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -copyFromLocal  < local src > ... < hdfs dst >
+</code></pre>
+
+<h1>3.get</h1>
+
+<ul>
+<li>local file不能和 hdfs file名字不能相同，否则会提示文件已存在，没有重名的文件会复制到本地</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -get < hdfs file > < local file or dir>
+</code></pre>
+
+<ul>
+<li>拷贝多个文件或目录到本地时，本地要为文件夹路径
+注意：如果用户不是root， local 路径要为用户文件夹下的路径，否则会出现权限问题</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -get < hdfs file or dir > ... < local  dir >
+</code></pre>
+
+<h1>3.1.copyToLocal</h1>
+
+<pre><code class="language-bash">hadoop fs -copyToLocal < local src > ... < hdfs dst >
+</code></pre>
+
+<h1>4.rm</h1>
+
+<ul>
+<li>每次可以删除多个文件或目录</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -rm < hdfs file > ...
+hadoop fs -rm -r < hdfs dir>...
+</code></pre>
+
+<h1>5.mkdir</h1>
+
+<pre><code class="language-bash"># 只能一级一级的建目录，父目录不存在的话使用这个命令会报错
+hadoop fs -mkdir < hdfs path>
+# 所创建的目录如果父目录不存在就创建该父目录
+hadoop fs -mkdir -p < hdfs path>
+</code></pre>
+
+<h1>6.getmerge</h1>
+
+<pre><code class="language-bash"># 将hdfs指定目录下所有文件排序后合并到local指定的文件中，文件不存在时会自动创建，文件存在时会覆盖里面的内容
 hadoop fs -getmerge < hdfs dir >  < local file >
 
 # 加上nl后，合并到local file中的hdfs文件之间会空出一行
 
-hadoop fs -getmerge -nl  < hdfs dir >  < local file ></code></pre>
-    <h2>7.cp</h2>
-    <pre><code class="bash"> hadoop fs -cp  < hdfs file >  < hdfs file >
+hadoop fs -getmerge -nl  < hdfs dir >  < local file >
+</code></pre>
+
+<h1>7.cp</h1>
+
+<pre><code class="language-bash"> hadoop fs -cp  < hdfs file >  < hdfs file >
 # 目标文件不能存在，否则命令不能执行，相当于给文件重命名并保存，源文件还存在
  hadoop fs -cp < hdfs file or dir >... < hdfs dir >
-# 目标文件夹要存在，否则命令不能执行</code></pre>
-    <h2>8.mv</h2>
-    <pre><code class="bash">hadoop fs -mv < hdfs file >  < hdfs file >
+# 目标文件夹要存在，否则命令不能执行
+</code></pre>
+
+<h1>8.mv</h1>
+
+<pre><code class="language-bash">hadoop fs -mv < hdfs file >  < hdfs file >
 # 目标文件不能存在，否则命令不能执行，相当于给文件重命名并保存，源文件不存在
 hadoop fs -mv  < hdfs file or dir >...  < hdfs dir >
 
 # 源路径有多个时，目标路径必须为目录，且必须存在。
-#  `注意`：跨文件系统的移动（local到hdfs或者反过来）都是不允许的</code></pre>
-    <h2>9.count</h2>
-    <pre><code class="bash"># 统计hdfs对应路径下的目录个数，文件个数，文件总计大小
+#  `注意`：跨文件系统的移动（local到hdfs或者反过来）都是不允许的
+</code></pre>
+
+<h1>9.count</h1>
+
+<pre><code class="language-bash"># 统计hdfs对应路径下的目录个数，文件个数，文件总计大小
 # 显示为目录个数，文件个数，文件总计大小，输入路径
-hadoop fs -count < hdfs path ></code></pre>
-    <h2>10.du</h2>
-    <ul>
-        <li>显示hdfs对应路径下每个文件夹和文件的大小</li>
-        <pre><code class="bash">hadoop fs -du < hdsf path></code></pre>
-        <li>显示hdfs对应路径下所有文件和的大小</li>
-        <pre><code class="bash">hadoop fs -du -s < hdsf path></code></pre>
-        <li>显示hdfs对应路径下每个文件夹和文件的大小,文件的大小用方便阅读的形式表示，例如用64M代替67108864</li>
-        <pre><code class="bash">hadoop fs -du - h < hdsf path></code></pre>
-    </ul>
-    <h2>11.text</h2>
-    <pre><code class="bash"># 将文本文件或某些格式的非文本文件通过文本格式输出
-hadoop fs -text < hdsf file></code></pre>
-    <h2>12.setrep</h2>
-    <pre><code class="bash"># 改变一个文件在hdfs中的副本个数，上述命令中数字3为所设置的副本个数，-R选项可以对一个人目录下的所有目录+文件递归执行改变副本个数的操作
+hadoop fs -count < hdfs path >
+</code></pre>
 
-hadoop fs -setrep -R 3 < hdfs path ></code></pre>
-    <h2>13.stat</h2>
-    <pre><code class="bash"># 返回对应路径的状态信息
-  `[format]`可选参数有：`%b`（文件大小），`%o`（Block大小），`%n`（文件名），`%r`（副本个数），`%y`（最后一次修改日期和时间）
-  可以这样书写`hadoop fs -stat` %b%o%n < hdfs path >，不过不建议，这样每个字符输出的结果不是太容易分清楚
+<h1>10.du</h1>
 
-hadoop fs -stat [format] < hdfs path ></code></pre>
-    <h2>14.tail</h2>
-    <pre><code class="bash"># 在标准输出中显示文件末尾的`1KB`数据
-hadoop fs -tail < hdfs file ></code></pre>
-    <h2>15.archive</h2>
-    <pre><code class="bash">hadoop archive -archiveName name.har -p < hdfs parent dir > < src >* < hdfs dst ></code></pre>
-    <ul>
-        <li>命令中参数name：压缩文件名，自己任意取；< hdfs parent dir > ：压缩文件所在的父目录；`< src >`：要压缩的文件名；`< hdfs dst >`：压缩文件存放路径</li>
-        <li>示例：`hadoop archive` -archiveName hadoop.har -p /user 1.txt 2.txt /des</li>
-        <li>示例中将hdfs中/user目录下的文件`1.txt`，`2.txt`压缩成一个名叫`hadoop.har`的文件存放在`hdfs`中/des目录下，如果1.txt，2.txt不写就是将/user目录下所有的目录和文件压缩成一个名叫hadoop.har的文件存放在hdfs中/des目录下</li>
-        <li>显示har的内容可以用如下命令：</li>
-        <pre><code class="bash">hadoop fs -ls /des/flink-des.jar</code></pre>
-        <li>显示har压缩的是那些文件可以用如下命令</li>
-        <pre><code class="bash">hadoop fs -ls -R har:///des/hadoop.har</code></pre>
-        <li>注意：`har`文件不能进行二次压缩。如果想给.har加文件，只能找到原来的文件，重新创建一个。har文件中原来文件的数据并没有变化，har文件真正的作用是减少`NameNode`和`DataNode`过多的空间浪费。</li>
-    </ul>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16
-    </footer>
+<ul>
+<li>显示hdfs对应路径下每个文件夹和文件的大小</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -du < hdsf path>
+</code></pre>
+
+<ul>
+<li>显示hdfs对应路径下所有文件和的大小</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -du -s < hdsf path>
+</code></pre>
+
+<ul>
+<li>显示hdfs对应路径下每个文件夹和文件的大小,文件的大小用方便阅读的形式表示，例如用64M代替67108864</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -du - h < hdsf path>
+</code></pre>
+
+<h1>11.text</h1>
+
+<ul>
+<li>将文本文件或某些格式的非文本文件通过文本格式输出</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -text < hdsf file>
+</code></pre>
+
+<h1>12.setrep</h1>
+
+<ul>
+<li>改变一个文件在hdfs中的副本个数，上述命令中数字3为所设置的副本个数，-R选项可以对一个人目录下的所有目录+文件递归执行改变副本个数的操作</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -setrep -R 3 < hdfs path >
+</code></pre>
+
+<h1>13.stat</h1>
+
+<ul>
+<li>返回对应路径的状态信息
+[format]可选参数有：%b（文件大小），%o（Block大小），%n（文件名），%r（副本个数），%y（最后一次修改日期和时间）
+可以这样书写hadoop fs -stat %b%o%n < hdfs path >，不过不建议，这样每个字符输出的结果不是太容易分清楚</li>
+</ul>
+
+<pre><code class="language-bash">hdoop fs -stat [format] < hdfs path >
+</code></pre>
+
+<h1>14.tail</h1>
+
+<ul>
+<li>在标准输出中显示文件末尾的1KB数据</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -tail < hdfs file >
+</code></pre>
+
+<h1>15.archive</h1>
+
+<pre><code class="language-bash">hadoop archive -archiveName name.har -p < hdfs parent dir > < src >* < hdfs dst >
+</code></pre>
+
+<ul>
+<li>命令中参数name：压缩文件名，自己任意取；< hdfs parent dir > ：压缩文件所在的父目录；< src >：要压缩的文件名；< hdfs dst >：压缩文件存放路径
+示例：hadoop archive -archiveName hadoop.har -p /user 1.txt 2.txt /des
+示例中将hdfs中/user目录下的文件1.txt，2.txt压缩成一个名叫hadoop.har的文件存放在hdfs中/des目录下，如果1.txt，2.txt不写就是将/user目录下所有的目录和文件压缩成一个名叫hadoop.har的文件存放在hdfs中/des目录下
+显示har的内容可以用如下命令：</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -ls /des/flink-des.jar
+</code></pre>
+
+<ul>
+<li>显示har压缩的是那些文件可以用如下命令</li>
+</ul>
+
+<pre><code class="language-bash">hadoop fs -ls -R har:///des/hadoop.har
+</code></pre>
+
+<ul>
+<li>注意：har文件不能进行二次压缩。如果想给.har加文件，只能找到原来的文件，重新创建一个。har文件中原来文件的数据并没有变化，har文件真正的作用是减少NameNode和DataNode过多的空间浪费。</li>
+</ul>
+
+<footer>
+  Power By Gemini TextGenerate 2024-09-16
+</footer>
 </body>
 </html>

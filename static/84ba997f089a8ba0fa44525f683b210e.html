@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java metrics</title>
     <meta name="description" content="关于Java web 监控系统。">
     <meta name="keywords" content="Java, GitHub Pages">
     <style>
         body {
-            font-family: sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: #f5f5f5; /* 白天模式背景色 */
+            font-family: Arial, sans-serif;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
         }
 
         h1 {
@@ -41,65 +43,77 @@
             font-size: 11px;
         }
 
-        code {
-            background-color: #f0f0f0;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-
         pre {
             background-color: #f0f0f0;
             padding: 10px;
             border-radius: 5px;
             overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .night-mode {
+            background-color: #222; /* 夜晚模式背景色 */
+            color: #eee;
+        }
+
+        .night-mode code {
+            background-color: #333;
+        }
+
+        .night-mode pre {
+            background-color: #333;
         }
 
         footer {
             text-align: center;
-            margin-top: 20px;
             font-size: 12px;
-            color: #666;
-        }
-
-        .title-container {
-            text-align: center;
+            margin-top: 20px;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-    <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
-    <div class="title-container">
-        <h1>Java metrics</h1>
-        <p>关于Java web 监控系统。</p>
-    </div>
+    <script>
+        // 获取当前时间并判断使用白天或夜晚模式
+        const currentTime = new Date();
+        const hour = currentTime.getHours();
+        if (hour >= 18 || hour < 6) {
+            document.body.classList.add("night-mode");
+        }
+    </script>
+    <h1>Java metrics</h1>
+    <p>关于Java web 监控系统。</p>
+    <p>项目中有对程序的一个健康检查，以及TPS,QPS等。</p>
     <h2>文档</h2>
     <h3>Maven</h3>
     <pre><code class="language-xml">
- <!--  metrics * -->
-    <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-core</artifactId>
-        <version>3.1.0</version>
-    </dependency>
-    <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-servlets</artifactId>
-        <version>3.1.0</version>
-    </dependency>
-    <dependency>
-        <groupId>com.codahale.metrics</groupId>
-        <artifactId>metrics-healthchecks</artifactId>
-        <version>3.0.1</version>
-    </dependency>
-    <dependency>
-        <groupId>com.github.davidb</groupId>
-        <artifactId>metrics-influxdb</artifactId>
-        <version>0.8.2</version>
-    </dependency>
-</code></pre>
+     <!--  metrics * -->
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-servlets</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.codahale.metrics</groupId>
+            <artifactId>metrics-healthchecks</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.davidb</groupId>
+            <artifactId>metrics-influxdb</artifactId>
+            <version>0.8.2</version>
+        </dependency>
+    </code></pre>
     <h3>核心工具类</h3>
     <pre><code class="language-java">
 import com.codahale.metrics.*;
@@ -274,23 +288,17 @@ public class MetricsCore {
     }
 }
 
-</code></pre>
+    </code></pre>
     <h2>目前这种方式只是将数据推送到influxdb ，以及prometheus 。</h2>
-    <p>1 数据采集</p>
-    <p>2 采集点(Filter,Controller,Service)</p>
-    <p>3 数据推送(influxdb,primetheus,jmx,console,cvs等。)</p>
-    <footer>Power By Gemini TextGenerate 2024-09-16</footer>
-    <script>
-        // JavaScript to change background color based on time
-        const currentHour = new Date().getHours();
-        const body = document.body;
-        if (currentHour >= 18 || currentHour < 6) {
-            body.style.backgroundColor = '#222';
-            body.style.color = '#eee';
-        } else {
-            body.style.backgroundColor = '#f5f5f5';
-            body.style.color = '#333';
-        }
-    </script>
+    <ol>
+        <li>数据采集</li>
+        <li>采集点(Filter,Controller,Service)</li>
+        <li>数据推送(influxdb,primetheus,jmx,console,cvs等。)</li>
+    </ol>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>

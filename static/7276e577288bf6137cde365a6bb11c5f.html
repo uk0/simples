@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>将“yyyyMMdd”格式的时间字符串转换为“yyyy-MM-dd HH:mm:ss”格式（Java）[原创]</title>
 <meta name="description" content="crate.io">
 <meta name="keywords" content="crate.io,databases">
@@ -11,14 +12,13 @@ body {
   max-width: 820px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f2f2f2;
+  background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
+  transition: background-color 0.5s ease;
 }
 
 h1 {
   font-size: 20px;
-  text-align: center;
 }
 
 h2 {
@@ -41,188 +41,72 @@ h6 {
   font-size: 11px;
 }
 
-pre {
-  background-color: #f2f2f2;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-  white-space: pre-wrap;
-}
-
 code {
-  font-family: monospace;
-  background-color: #f2f2f2;
+  background-color: #eee;
   padding: 2px 4px;
   border-radius: 3px;
 }
 
-.highlight {
-  background-color: #f8f8f8;
+pre {
+  background-color: #f0f0f0;
   padding: 10px;
   border-radius: 5px;
   overflow-x: auto;
-  white-space: pre-wrap;
 }
 
-.highlight pre {
-  background-color: #f8f8f8;
-  padding: 0;
-  border-radius: 0;
-  overflow-x: auto;
-  white-space: pre-wrap;
-}
-
-.highlight code {
-  font-family: monospace;
-  background-color: transparent;
-  padding: 0;
-  border-radius: 0;
-}
-
-.highlight .token.comment {
-  color: #999;
-}
-
-.highlight .token.keyword {
-  color: #007020;
-}
-
-.highlight .token.string {
-  color: #a31515;
-}
-
-.highlight .token.number {
-  color: #009999;
-}
-
-.highlight .token.operator {
-  color: #000;
-}
-
-.highlight .token.punctuation {
-  color: #000;
-}
-
-.highlight .token.tag {
-  color: #795da3;
-}
-
-.highlight .token.attr-name {
-  color: #000;
-}
-
-.highlight .token.attr-value {
-  color: #a31515;
-}
-
-.highlight .token.selector {
-  color: #000;
-}
-
-.highlight .token.doctype {
-  color: #795da3;
-}
-
-.highlight .token.cdata {
-  color: #000;
+.title, .description, .keywords {
+  text-align: center;
 }
 
 footer {
   text-align: center;
-  padding: 10px;
-  font-size: 12px;
-}
-
-.night-mode {
-  background-color: #222;
-  color: #eee;
-}
-
-.night-mode .highlight {
-  background-color: #333;
-}
-
-.night-mode .highlight code {
-  color: #eee;
-}
-
-.night-mode .highlight .token.comment {
-  color: #666;
-}
-
-.night-mode .highlight .token.keyword {
-  color: #00b050;
-}
-
-.night-mode .highlight .token.string {
-  color: #d14;
-}
-
-.night-mode .highlight .token.number {
-  color: #00b0b0;
-}
-
-.night-mode .highlight .token.operator {
-  color: #eee;
-}
-
-.night-mode .highlight .token.punctuation {
-  color: #eee;
-}
-
-.night-mode .highlight .token.tag {
-  color: #c0a0ff;
-}
-
-.night-mode .highlight .token.attr-name {
-  color: #eee;
-}
-
-.night-mode .highlight .token.attr-value {
-  color: #d14;
-}
-
-.night-mode .highlight .token.selector {
-  color: #eee;
-}
-
-.night-mode .highlight .token.doctype {
-  color: #c0a0ff;
-}
-
-.night-mode .highlight .token.cdata {
-  color: #eee;
+  margin-top: 20px;
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<script>
+  // 设置随机种子
+  Math.seedrandom(199602051111);
+
+  // 获取当前时间并判断是否为夜间模式
+  var currentHour = new Date().getHours();
+  if (currentHour >= 19 || currentHour < 6) {
+    document.body.style.backgroundColor = '#222';
+    document.body.style.color = '#eee';
+  } else {
+    document.body.style.backgroundColor = '#fff';
+    document.body.style.color = '#333';
+  }
+
+  // 代码高亮
+  hljs.initHighlightingOnLoad();
+  Prism.highlightAll();
+</script>
 </head>
 <body>
-<h1>将“yyyyMMdd”格式的时间字符串转换为“yyyy-MM-dd HH:mm:ss”格式（Java）[原创]</h1>
+<h1 class="title">将“yyyyMMdd”格式的时间字符串转换为“yyyy-MM-dd HH:mm:ss”格式（Java）[原创]</h1>
+<p class="description">crate.io</p>
+<p class="keywords">crate.io,databases</p>
+
 <p>date：2017-10-31</p>
 <p>author：zhangjianxin</p>
+
 <h2>[*] 解决方案</h2>
-<pre><code>date = DateUtils.parseDate(value, new String[]{"yyyyMMdd"});
+<ul>
+<li>start</li>
+<pre><code class="language-java">date = DateUtils.parseDate(value, new String[]{"yyyyMMdd"});
 value = DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss");
 </code></pre>
+</ul>
+
 <p>以上操作经过验证可以直接拿去。</p>
 <p>auther <code>breakEval13</code></p>
-<p><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></p>
+<p>https://github.com/breakEval13</p>
+
 <footer>
   Power By Gemini TextGenerate 2024-09-16
 </footer>
-<script>
-  // 获取当前时间
-  const now = new Date();
-  const hour = now.getHours();
-
-  // 判断白天或黑夜
-  if (hour >= 6 && hour < 18) {
-    document.body.classList.remove('night-mode');
-  } else {
-    document.body.classList.add('night-mode');
-  }
-
-  // 使用 Highlight.js 或 Prism.js 高亮代码
-  // ...
-</script>
 </body>
 </html>

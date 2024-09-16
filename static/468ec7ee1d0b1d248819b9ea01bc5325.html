@@ -1,130 +1,141 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>vultr VPS运营商，删除信用卡，以及账户。</title>
 <meta name="description" content="linode，vultr">
 <meta name="keywords" content="Java, GitHub Pages">
 <style>
-body {
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
+    body {
+        font-family: sans-serif;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+    }
 
-h1 {
-  font-size: 20px;
-  margin-top: 0;
-}
+    h1, h2, h3, h4, h5, h6 {
+        text-align: center;
+    }
 
-h2 {
-  font-size: 18px;
-}
+    h1 {
+        font-size: 20px;
+    }
 
-h3 {
-  font-size: 16px;
-}
+    h2 {
+        font-size: 18px;
+    }
 
-h4 {
-  font-size: 14px;
-}
+    h3 {
+        font-size: 16px;
+    }
 
-h5 {
-  font-size: 12px;
-}
+    h4 {
+        font-size: 14px;
+    }
 
-h6 {
-  font-size: 11px;
-}
+    h5 {
+        font-size: 12px;
+    }
 
-code {
-  background-color: #f0f0f0;
-  padding: 2px 5px;
-  border-radius: 3px;
-}
+    h6 {
+        font-size: 11px;
+    }
 
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+    pre {
+        background-color: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+    }
 
-.night-mode {
-  background-color: #222;
-  color: #fff;
-}
+    code {
+        background-color: #f0f0f0;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
 
-.night-mode code {
-  background-color: #333;
-  color: #fff;
-}
+    a {
+        color: #007bff;
+        text-decoration: none;
+    }
 
-.night-mode pre {
-  background-color: #333;
-  color: #fff;
-}
+    a:hover {
+        text-decoration: underline;
+    }
 
-.center {
-  text-align: center;
-}
+    footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #6c757d;
+    }
 
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-}
+    .night-mode {
+        background-color: #212529;
+        color: #fff;
+    }
+
+    .night-mode a {
+        color: #fff;
+    }
+
+    .night-mode code {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .night-mode pre {
+        background-color: #212529;
+        color: #fff;
+    }
 </style>
 <script>
-  // 随机种子
-  const seed = 199602051111;
-  Math.seedrandom(seed);
+    // Set random seed
+    Math.seedrandom(199602051111);
 
-  // 获取当前时间
-  const now = new Date();
-  const hour = now.getHours();
+    // Get current time
+    const now = new Date();
+    const isNight = now.getHours() >= 19 || now.getHours() < 6;
 
-  // 判断白天或夜晚模式
-  if (hour >= 6 && hour < 18) {
-    document.body.classList.remove('night-mode');
-  } else {
-    document.body.classList.add('night-mode');
-  }
+    // Apply night mode if necessary
+    if (isNight) {
+        document.body.classList.add('night-mode');
+    }
 
-  // Highlight.js 或 Prism.js 代码高亮
-  // 这里需要你根据实际情况编写代码高亮逻辑
-  // 例如：
-  // if (typeof hljs !== 'undefined') {
-  //   hljs.highlightAll();
-  // } else if (typeof Prism !== 'undefined') {
-  //   Prism.highlightAll();
-  // }
+    // Highlight.js setup
+    // ... (Add Highlight.js library here)
+
+    // Prism.js setup
+    // ... (Add Prism.js library here)
+
+    // Add JavaScript interaction effects
+    // ... (Add your JavaScript code here)
 </script>
 </head>
 <body>
-<h1 class="center">vultr VPS运营商，删除信用卡，以及账户。</h1>
-<p class="center">linode，vultr</p>
+    <h1>vultr VPS运营商，删除信用卡，以及账户。</h1>
+    <p>今天大脑错乱了，买了个Vultr的VPS，速度很慢，远远不比Linode的VPS速度。</p>
 
-<h2>文章</h2>
+    <h2>文章</h2>
 
-<p>今天大脑错乱了，买了个Vultr的VPS，速度很慢，远远不比Linode的VPS速度。</p>
+    <p>今天大脑错乱了，买了个Vultr的VPS，速度很慢，远远不比Linode的VPS速度。</p>
 
-<h1>下面的链接是删除账户的链接。</h1>
+    <h3>下面的链接是删除账户的链接。</h3>
 
-<p>用了一会发现速度实在太慢，还不稳定带宽比较低，所以想解绑信用卡，发现解决不了索性直接删除账户。</p>
+    <p>用了一会发现速度实在太慢，还不稳定带宽比较低，所以想解绑信用卡，发现解决不了索性直接删除账户。</p>
 
-<p>hostus，linode的主机都不错，都稳定服务态度也好，推荐大家使用。</p>
+    <p>hostus，linode的主机都不错，都稳定服务态度也好，推荐大家使用。</p>
 
-<p>下面是删除用户的链接地址。</p>
+    <p>下面是删除用户的链接地址。</p>
 
-<p><code>https://my.vultr.com/billing/cancel/</code></p>
+    <p><a href="https://my.vultr.com/billing/cancel/">https://my.vultr.com/billing/cancel/</a></p>
 
-<footer>
-  <p>Power By Gemini TextGenerate 2024-09-16</p>
-</footer>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
 </body>
 </html>

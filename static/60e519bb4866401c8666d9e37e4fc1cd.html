@@ -1,106 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>git丢弃本地修改的所有文件（新增、删除、修改）</title>
-<meta name="description" content="git丢弃本地修改的所有文件（新增、删除、修改）">
-<meta name="keywords" content="git 丢弃本地修改">
-<style>
-body {
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
-
-h1 {
-  font-size: 20px;
-  text-align: center;
-}
-
-h2 {
-  font-size: 18px;
-  text-align: center;
-}
-
-h3 {
-  font-size: 16px;
-}
-
-h4 {
-  font-size: 14px;
-}
-
-h5 {
-  font-size: 12px;
-}
-
-h6 {
-  font-size: 11px;
-}
-
-pre {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-  color: #888;
-}
-
-.night-mode {
-  background-color: #222;
-  color: #eee;
-}
-
-.night-mode code {
-  background-color: #333;
-}
-
-.night-mode pre {
-  background-color: #333;
-}
-</style>
-<script>
-  // 获取当前时间
-  const now = new Date();
-  const hour = now.getHours();
-
-  // 根据时间设置主题
-  if (hour >= 19 || hour < 7) {
-    document.body.classList.add('night-mode');
-  }
-
-  // Highlight.js 初始化
-  hljs.initHighlightingOnLoad();
-
-  // Prism.js 初始化
-  Prism.highlightAll();
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>git丢弃本地修改的所有文件（新增、删除、修改）</title>
+    <meta name="description" content="git丢弃本地修改的所有文件（新增、删除、修改）">
+    <meta name="keywords" content="git, 丢弃本地修改">
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.5s;
+        }
+        h1 {
+            font-size: 20px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 18px;
+        }
+        h3 {
+            font-size: 16px;
+        }
+        h4 {
+            font-size: 14px;
+        }
+        h5 {
+            font-size: 12px;
+        }
+        h6 {
+            font-size: 11px;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: monospace;
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        hljs.initHighlightingOnLoad();
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const hour = now.getHours();
+            if (hour >= 19 || hour < 6) {
+                document.body.style.backgroundColor = '#222';
+                document.body.style.color = '#eee';
+            }
+        });
+    </script>
 </head>
 <body>
-<h1>git丢弃本地修改的所有文件（新增、删除、修改）</h1>
-
-<p>本文介绍了如何使用git命令丢弃本地修改的所有文件，包括新增、删除和修改。</p>
-
-<h2>命令</h2>
-
-<pre><code>git checkout . #本地所有修改的。没有的提交的，都返回到原来的状态
+    <h1>git丢弃本地修改的所有文件（新增、删除、修改）</h1>
+    <p>
+        <p style="text-align: center;">git丢弃本地修改的所有文件（新增、删除、修改）</p>
+    </p>
+    <pre><code>git checkout . #本地所有修改的。没有的提交的，都返回到原来的状态
 git stash #把所有没有提交的修改暂存到stash里面。可用git stash pop回复。
 git reset --hard HASH #返回到某个节点，不保留修改。
 git reset --soft HASH #返回到某个节点。保留修改
@@ -113,13 +85,10 @@ git clean #参数
 
 git checkout . && git clean -xdf # 清除本地
 </code></pre>
-
-<p>原文：<a href="https://blog.csdn.net/leedaning/article/details/51304690">https://blog.csdn.net/leedaning/article/details/51304690</a></p>
-
-<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+    <p>原文：https://blog.csdn.net/leedaning/article/details/51304690 </p>
+    <p>转载请注明出处，本文采用 [CC4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/) 协议授权</p>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
 </body>
 </html>

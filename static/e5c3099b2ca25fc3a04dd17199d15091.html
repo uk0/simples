@@ -1,108 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kubernetes命名空间资源限制[学习]</title>
-  <meta name="description" content="Java, Scala,Hadoop,Flink">
-  <meta name="keywords" content="Java, Scala,Hadoop,Flink">
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kubernetes命名空间资源限制[学习]</title>
+<meta name="description" content="Java, Scala,Hadoop,Flink">
+<meta name="keywords" content="Java, Scala,Hadoop,Flink">
+<style>
     body {
-      font-family: sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      transition: background-color 0.3s ease;
+        background-color: #f5f5f5; /* 白天背景色 */
+        color: #333;
+        font-family: sans-serif;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.5s;
     }
-
     h1 {
-      font-size: 20px;
-      margin-top: 0;
+        font-size: 20px;
+        text-align: center;
     }
-
     h2 {
-      font-size: 18px;
+        font-size: 18px;
     }
-
     h3 {
-      font-size: 16px;
+        font-size: 16px;
     }
-
     h4 {
-      font-size: 14px;
+        font-size: 14px;
     }
-
     h5 {
-      font-size: 12px;
+        font-size: 12px;
     }
-
     h6 {
-      font-size: 11px;
+        font-size: 11px;
     }
-
     pre {
-      background-color: #f0f0f0;
-      padding: 10px;
-      overflow-x: auto;
-      border-radius: 4px;
+        background-color: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+        white-space: pre-wrap;
     }
-
     code {
-      font-family: monospace;
-      background-color: #eee;
-      padding: 2px 4px;
-      border-radius: 4px;
+        font-family: monospace;
+        background-color: #eee;
+        padding: 2px 4px;
+        border-radius: 3px;
     }
-
     footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 12px;
     }
+    .highlight {
+        background-color: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+    }
+    .highlight pre {
+        margin: 0;
+    }
+    .highlight code {
+        font-family: monospace;
+        background-color: transparent;
+        padding: 0;
+        border-radius: 0;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
 
-    .title-center {
-      text-align: center;
-    }
+    // 获取当前时间
+    const currentHour = new Date().getHours();
 
-    .code-highlight {
-      background-color: #f0f0f0;
-      padding: 10px;
-      overflow-x: auto;
-      border-radius: 4px;
+    // 判断是白天还是夜晚
+    if (currentHour >= 6 && currentHour < 18) {
+        document.body.style.backgroundColor = '#f5f5f5'; // 白天模式
+    } else {
+        document.body.style.backgroundColor = '#333'; // 夜晚模式
+        document.body.style.color = '#fff';
     }
-
-    .dark-mode {
-      background-color: #222;
-      color: #eee;
-    }
-
-    .dark-mode pre {
-      background-color: #333;
-    }
-
-    .dark-mode code {
-      background-color: #444;
-    }
-  </style>
+</script>
 </head>
 <body>
-  <script>
-    const randomSeed = 199602051111;
-    const currentHour = new Date().getHours();
-    const isNightMode = currentHour >= 18 || currentHour < 6;
-    if (isNightMode) {
-      document.body.classList.add('dark-mode');
-    }
-  </script>
-  <h1 class="title-center">Kubernetes命名空间资源限制[学习]</h1>
-  <p class="title-center">Java, Scala,Hadoop,Flink</p>
-  <p>Kubernetes命名空间资源限制主要是为了多个团队一起开发来区分资源使用情况。</p>
+<h1>Kubernetes命名空间资源限制[学习]</h1>
+<p>Kubernetes命名空间资源限制主要是为了多个团队一起开发来区分资源使用情况。</p>
 
-  <h2>1. ResourceQuota</h2>
-  <pre class="code-highlight"><code class="yaml">
+<h2>1. ResourceQuota</h2>
+<pre><code class="yaml">
 
 apiVersion: v1
 kind: ResourceQuota
@@ -118,8 +108,8 @@ spec:
 
 </code></pre>
 
-  <h2>2. LimitRange</h2>
-  <pre class="code-highlight"><code class="yaml">
+<h2>2. LimitRange</h2>
+<pre><code class="yaml">
 
 apiVersion: v1
 kind: LimitRange
@@ -157,8 +147,8 @@ spec:
 
 </code></pre>
 
-  <h2>3.映射方案Ceph RBD</h2>
-  <pre class="code-highlight"><code class="yaml">
+<h2>3.映射方案Ceph RBD</h2>
+<pre><code class="yaml">
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -214,14 +204,10 @@ spec:
      app: demo-app-server
 </code></pre>
 
-  <p>感谢企业服务部牛总提供的解决方案</p>
-  <footer>
+<p>感谢企业服务部牛总提供的解决方案</p>
+
+<footer>
     Power By Gemini TextGenerate 2024-09-16
-  </footer>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
-  <script>
-    Prism.highlightAll();
-  </script>
+</footer>
 </body>
 </html>

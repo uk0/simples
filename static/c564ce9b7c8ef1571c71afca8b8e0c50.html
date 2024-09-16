@@ -9,10 +9,11 @@
 <style>
 body {
   font-family: sans-serif;
+  background-color: #fff;
+  color: #333;
   max-width: 820px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f5f5f5;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -23,6 +24,7 @@ h1 {
 
 h2 {
   font-size: 18px;
+  text-align: center;
 }
 
 h3 {
@@ -42,7 +44,7 @@ h6 {
 }
 
 pre {
-  background-color: #f0f0f0;
+  background-color: #f5f5f5;
   padding: 10px;
   border-radius: 5px;
   overflow-x: auto;
@@ -50,15 +52,16 @@ pre {
 
 code {
   font-family: monospace;
-  background-color: #eee;
-  padding: 2px 5px;
+  background-color: #f5f5f5;
+  padding: 2px 4px;
   border-radius: 3px;
 }
 
 footer {
   text-align: center;
-  margin-top: 20px;
+  padding: 10px 0;
   font-size: 12px;
+  color: #666;
 }
 
 .night-mode {
@@ -74,30 +77,37 @@ footer {
   background-color: #444;
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
 <script>
-  hljs.highlightAll();
-
   const seed = 199602051111;
-  const random = (min, max) => {
-    const randomNum = Math.random();
-    return Math.floor(randomNum * (max - min + 1)) + min;
-  };
-
-  const currentTime = new Date();
-  const isNight = currentTime.getHours() >= 18 || currentTime.getHours() < 6;
+  Math.seedrandom(seed);
+  const random = () => Math.random();
+  
+  const now = new Date();
+  const isNight = now.getHours() >= 18 || now.getHours() < 6;
+  
   if (isNight) {
-    document.body.classList.add('night-mode');
+    document.body.classList.add("night-mode");
   }
+  
+  Prism.highlightAll();
+  hljs.highlightAll();
+  
+  const codeBlocks = document.querySelectorAll("pre code");
+  codeBlocks.forEach(block => {
+    block.addEventListener("click", () => {
+      block.classList.toggle("show-line-numbers");
+    });
+  });
 </script>
 </head>
 <body>
 <h1>Mongodb search aggregate SUM</h1>
-
 <p> * find aggregate and where</p>
-
-<pre><code class="bash">
+<pre><code class="language-bash">
 
 db.cabinet.aggregate(
    [
@@ -128,7 +138,6 @@ db.cabinet.aggregate(
 )
 
 </code></pre>
-
 <footer>
   Power By Gemini TextGenerate 2024-09-16
 </footer>

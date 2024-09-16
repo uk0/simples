@@ -1,155 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mavne jar包去重以及升级,[来自项目中的经历]</title>
-<meta name="description" content="回顾">
-<meta name="keywords" content="Mavne, java">
-<style>
-body {
-    font-family: sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    text-align: center;
-}
-
-h1 {
-    font-size: 20px;
-}
-
-h2 {
-    font-size: 18px;
-}
-
-h3 {
-    font-size: 16px;
-}
-
-h4 {
-    font-size: 14px;
-}
-
-h5 {
-    font-size: 12px;
-}
-
-h6 {
-    font-size: 11px;
-}
-
-pre {
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-}
-
-code {
-    font-family: monospace;
-    background-color: #f0f0f0;
-    padding: 2px 5px;
-    border-radius: 3px;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-}
-
-footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 12px;
-}
-
-.night-mode {
-    background-color: #222;
-    color: #eee;
-}
-
-.night-mode pre {
-    background-color: #333;
-}
-
-.night-mode code {
-    background-color: #333;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const currentHour = new Date().getHours();
-        if (currentHour >= 18 || currentHour < 6) {
-            document.body.classList.add('night-mode');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mavne jar包去重以及升级,[来自项目中的经历]</title>
+    <meta name="description" content="回顾" />
+    <meta name="keywords" content="Mavne, java" />
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
-        Prism.highlightAll();
-    });
-</script>
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+        h1 {
+            font-size: 20px;
+        }
+        h2 {
+            font-size: 18px;
+        }
+        h3 {
+            font-size: 16px;
+        }
+        h4 {
+            font-size: 14px;
+        }
+        h5 {
+            font-size: 12px;
+        }
+        h6 {
+            font-size: 11px;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: monospace;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        hljs.highlightAll();
+        const seed = 199602051111;
+        const random = (max) => {
+            let i = seed;
+            i = (i * 16807) % 2147483647;
+            return i % max;
+        }
+        const currentHour = new Date().getHours();
+        const isNightMode = currentHour >= 19 || currentHour < 6;
+        if (isNightMode) {
+            document.body.style.backgroundColor = '#222';
+            document.body.style.color = '#eee';
+        }
+    </script>
 </head>
 <body>
-<h1>Mavne jar包去重以及升级,[来自项目中的经历]</h1>
-<h2 style="text-align: center;">错误描述</h2>
-<pre><code>  因为项目中用到ActorDB所以有了以下的故事，当maven中引入多个jar包，那么避免不了会发生重复的包存在。
- 
+    <h1>Mavne jar包去重以及升级,[来自项目中的经历]</h1>
+    <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
+    <h2>错误描述</h2>
+    <pre><code>因为项目中用到ActorDB所以有了以下的故事，当maven中引入多个jar包，那么避免不了会发生重复的包存在。
 </code></pre>
-<ul>
-<li>如图所示，成功的倒入了·<code>org.apache.thrift</code>
-  但是工具里面没有找到 <code>clearBit</code>，<code>setBit</code>等方法。</li>
-</ul>
-<img src="http://112firshme11224.test.upcdn.net/blog/QQ20170708-002142@2x.png" alt="图片描述">
-<ul>
-<li>经过查证，的确没有，那么为什么会发生这个事情。</li>
-</ul>
-<img src="http://112firshme11224.test.upcdn.net/blog/error.png" alt="图片描述">
-<ul>
-<li>揭开迷雾
-    
- <img src="http://112firshme11224.test.upcdn.net/blog/success-geterror.png" alt="图片描述">
- 
- * 发现了存在的包竟然是MSF4J的包。
-   于是找到了解决方案代码如下：
-   
-  ```xml
-   <dependency>
-      <groupId>org.wso2.msf4j</groupId>
-      <artifactId>msf4j-all</artifactId>
-      <version>2.1.0</version>
-      <exclusions>
-          <exclusion>
-              <artifactId>libthrift</artifactId>
-              <groupId>org.apache.thrift</groupId>
-          </exclusion>
-      </exclusions>
-  </dependency>
-  ```
-  
- * 通过这种方式进行包的摘除，(结果还不是很理想，还是有问题。)
-   * 于是仔细查看pom.xml文件的内容，发现了问题，怀疑Maven加载包的顺序是有优先级的(从上到下)
-   * 于是将 <code>org.apache.thrift</code> 放到了MSF4J包的上面。
-   * 成功解决问题：
-   <img src="http://112firshme11224.test.upcdn.net/blog/th3.png" alt="图片描述">
-   </li>
-</ul>
-<h2 style="text-align: center;">总结</h2>
-   学习了Mavne的加载顺序，以及排错方式：
-<pre><code class="language-bash">#查找依赖所在的地方
+    <ul>
+        <li>如图所示，成功的倒入了·`org.apache.thrift`
+            <br>
+            但是工具里面没有找到 `clearBit`，`setBit`等方法。
+            <br>
+            <img src="http://112firshme11224.test.upcdn.net/blog/QQ20170708-002142@2x.png" alt="图片描述">
+        </li>
+        <li>经过查证，的确没有，那么为什么会发生这个事情。
+            <br>
+            <img src="http://112firshme11224.test.upcdn.net/blog/error.png" alt="图片描述">
+        </li>
+        <li>揭开迷雾
+            <br>
+            <img src="http://112firshme11224.test.upcdn.net/blog/success-geterror.png" alt="图片描述">
+            <br>
+            发现了存在的包竟然是MSF4J的包。
+            <br>
+            于是找到了解决方案代码如下：
+            <br>
+            <pre><code>&lt;dependency&gt;
+      &lt;groupId&gt;org.wso2.msf4j&lt;/groupId&gt;
+      &lt;artifactId&gt;msf4j-all&lt;/artifactId&gt;
+      &lt;version&gt;2.1.0&lt;/version&gt;
+      &lt;exclusions&gt;
+          &lt;exclusion&gt;
+              &lt;artifactId&gt;libthrift&lt;/artifactId&gt;
+              &lt;groupId&gt;org.apache.thrift&lt;/groupId&gt;
+          &lt;/exclusion&gt;
+      &lt;/exclusions&gt;
+  &lt;/dependency&gt;
+  </code></pre>
+            <br>
+            通过这种方式进行包的摘除，(结果还不是很理想，还是有问题。)
+            <br>
+            于是仔细查看pom.xml文件的内容，发现了问题，怀疑Maven加载包的顺序是有优先级的(从上到下)
+            <br>
+            于是将 `org.apache.thrift` 放到了MSF4J包的上面。
+            <br>
+            成功解决问题：
+            <br>
+            <img src="http://112firshme11224.test.upcdn.net/blog/th3.png" alt="图片描述">
+        </li>
+    </ul>
+    <h2>总结</h2>
+    <p>学习了Mavne的加载顺序，以及排错方式：</p>
+    <pre><code>#查找依赖所在的地方
  mvn dependency:tree -Dverbose -Dincludes=org.apache.thrift:libthrift
 </code></pre>
-<pre><code class="language-xml">&lt;!--去除依赖，在外部加载--&gt;
+    <pre><code>&lt;!--去除依赖，在外部加载--&gt;
 &lt;exclusions&gt;
       &lt;exclusion&gt;
           &lt;artifactId&gt;libthrift&lt;/artifactId&gt;
@@ -157,8 +132,8 @@ footer {
       &lt;/exclusion&gt;
   &lt;/exclusions&gt;
 </code></pre>
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
 </body>
 </html>

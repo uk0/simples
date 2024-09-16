@@ -1,114 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>CPS 王垠 大佬的代码[测试过]</title>
-<meta name="description" content="转载">
-<meta name="keywords" content="lisp, Script">
-<style>
-body {
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f0f0f0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPS 王垠 大佬的代码[测试过]</title>
+    <meta name="description" content="转载" />
+    <meta name="keywords" content="lisp, Script" />
+    <style>
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: sans-serif;
+            background-color: #fff; /* 白天模式 */
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-h1 {
-  font-size: 20px;
-  text-align: center;
-}
+        h1 {
+            font-size: 20px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-pre {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        code {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
 
-code {
-  font-family: monospace;
-}
+        pre {
+            overflow-x: auto;
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+        }
 
-.night-mode {
-  background-color: #222;
-  color: #eee;
-}
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
 
-.night-mode pre {
-  background-color: #333;
-}
-
-.night-mode code {
-  color: #eee;
-}
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 20px;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-scheme.min.js"></script>
-<script>
-  // 获取当前时间
-  const now = new Date();
-  const hour = now.getHours();
-
-  // 判断白天或夜晚模式
-  if (hour >= 18 || hour < 6) {
-    document.body.classList.add('night-mode');
-  }
-
-  // Highlight.js 初始化
-  Prism.highlightAll();
-
-  // 添加交互效果
-  const codeBlocks = document.querySelectorAll('pre code');
-  codeBlocks.forEach(codeBlock => {
-    codeBlock.addEventListener('click', () => {
-      codeBlock.classList.toggle('highlight');
-    });
-  });
-</script>
+        .title-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-<h1>CPS 王垠 大佬的代码[测试过]</h1>
-<p style="text-align: center;">转载</p>
-<p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
-<h2>摘要: `CPS.scm` ,`pmatch.scm`</h2>
-<ul>
-<li>`scheme`代码。</li>
-</ul>
-<h2> Stat</h2>
-<ul>
-<li>`CPS.scm` Code</li>
-<li>`pmatch.scm` Code</li>
-</ul>
-<h3> CPS</h3>
-<pre><code class="language-scheme">;; A simple CPS transformer which does proper tail-call and does not
+    <div class="title-info">
+        <h1>CPS 王垠 大佬的代码[测试过]</h1>
+        <p>转载</p>
+        <p>lisp, Script</p>
+    </div>
+    
+    <h2>摘要: <code>CPS.scm</code> ,<code>pmatch.scm</code></h2>
+    <ul>
+        <li><code>scheme</code>代码。</li>
+    </ul>
+
+    <h2>Stat</h2>
+    <ul>
+        <li><code>CPS.scm</code> Code</li>
+        <li><code>pmatch.scm</code> Code</li>
+    </ul>
+
+    <h3>CPS</h3>
+    <pre><code class="language-scheme">
+;; A simple CPS transformer which does proper tail-call and does not
 ;; duplicate contexts for if-expressions.
 
 ;; author: Yin Wang (yw21@cs.indiana.edu)
@@ -160,8 +139,10 @@ footer {
 `(,r ,d (lambda (,u) ,(ctx u))))])))))]))])
 (cps1 exp id))))%
 </code></pre>
-<h3> pmatch</h3>
-<pre><code class="language-scheme">(define-syntax pmatch
+
+    <h3>pmatch</h3>
+    <pre><code class="language-scheme">
+(define-syntax pmatch
   (syntax-rules (else guard)
     ((_ (rator rand ...) cs ...)
      (let ((v (rator rand ...)))
@@ -187,10 +168,11 @@ footer {
 	 (ppat vx x (ppat vy y kt kf) kf))
        kf))
     ((_ v lit kt kf) (if (equal? v (quote lit)) kt kf))))
-
 </code></pre>
-<h3> test</h3>
-<pre><code class="language-scheme">;;; tests
+
+    <h3>test</h3>
+    <pre><code class="language-scheme">
+;;; tests
 
 ;; var
 (cps 'x)
@@ -267,11 +249,43 @@ footer {
 ((eval fact-cps) 5 (lambda (v) v))
 ;; => 120
 </code></pre>
-<h2> 大佬的代码解析</h2>
-<img src="http://112firshme11224.test.upcdn.net/blog/tmp/cps.jpg" alt="CPS 解析图">
-<img src="http://112firshme11224.test.upcdn.net/blog/tmp/cps-1.png" alt="CPS 解析图">
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+
+    <h2>大佬的代码解析</h2>
+    <img src="http://112firshme11224.test.upcdn.net/blog/tmp/cps.jpg" alt="CPS解析图">
+    <img src="http://112firshme11224.test.upcdn.net/blog/tmp/cps-1.png" alt="CPS解析图2">
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+
+    <script>
+        // 随机数种子
+        const seed = 199602051111;
+        let randomValue = seed;
+
+        // 随机数生成函数
+        function getRandomInt(max) {
+            randomValue = (randomValue * 9301 + 49297) % 233280;
+            return Math.floor((randomValue / 233280) * max);
+        }
+
+        // 获取当前时间
+        const now = new Date();
+        const hour = now.getHours();
+
+        // 切换主题颜色
+        if (hour >= 18 || hour < 6) {
+            document.body.style.backgroundColor = '#222';
+            document.body.style.color = '#eee';
+        }
+
+        // Highlight.js 代码高亮
+        // 在这里添加 Highlight.js 的代码
+        // ...
+
+        // Prism.js 代码高亮
+        // 在这里添加 Prism.js 的代码
+        // ...
+    </script>
 </body>
 </html>

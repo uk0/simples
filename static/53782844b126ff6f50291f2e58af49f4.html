@@ -1,141 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Time Machine Backup Fix ERROR</title>
-<meta name="description" content="macos catinlina 10.15.4 修复Time Machine 备份错误问题">
-<meta name="keywords" content="time machine">
-<style>
-body {
-  background-color: #f0f0f0;
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Machine Backup Fix ERROR</title>
+    <meta name="description" content="macos catinlina 10.15.4 修复Time Machine 备份错误问题">
+    <meta name="keywords" content="time machine">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-h1 {
-  font-size: 20px;
-}
+        h1 {
+            font-size: 20px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-code {
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 2px;
-}
+        img {
+            max-width: 100%;
+            height: auto;
+        }
 
-pre {
-  background-color: #eee;
-  padding: 10px;
-  border-radius: 4px;
-  overflow-x: auto;
-}
+        pre {
+            background-color: #eee;
+            padding: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            border-radius: 5px;
+        }
 
-img {
-  max-width: 100%;
-  height: auto;
-}
+        code {
+            font-family: monospace;
+        }
 
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-}
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
 
-.title-container {
-  text-align: center;
-}
+        .title-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.title-container h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
 
-.title-container p {
-  font-size: 16px;
-  color: #666;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<script>
-  hljs.highlightAll();
-  
-  // 获取当前时间
-  const now = new Date();
-  const hour = now.getHours();
+        .description {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
 
-  // 判断白天或夜晚
-  const isNight = hour >= 18 || hour < 6;
+        .keywords {
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
 
-  // 设置背景颜色
-  document.body.style.backgroundColor = isNight ? '#222' : '#f0f0f0';
-  document.body.style.color = isNight ? '#fff' : '#333';
-</script>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .content {
+            max-width: 820px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+    </style>
 </head>
 <body>
-<div class="title-container">
-  <h1>Time Machine Backup Fix ERROR</h1>
-  <p>macos catinlina 10.15.4 修复Time Machine 备份错误问题</p>
-</div>
+    <script>
+        // 获取当前时间
+        const now = new Date();
+        const hour = now.getHours();
 
-<h3>介绍背景</h3>
+        // 设置白天/夜晚模式
+        if (hour >= 6 && hour < 18) {
+            document.body.style.backgroundColor = '#f0f0f0';
+        } else {
+            document.body.style.backgroundColor = '#333';
+            document.body.style.color = '#fff';
+        }
+    </script>
 
-<ul>
-  <li>系统配置</li>
-  <img src="http://112firshme11224.test.upcdn.net/blog/2020-05-08-17-50-43.png!/watermark/text/Zmlyc2gubWU=/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5" alt="系统配置">
-  <li>Script  <a href="https://github.com/uk0/TimeMachine-sparsebundle">https://github.com/uk0/TimeMachine-sparsebundle</a></li>
-</ul>
+    <div class="container">
+        <div class="content">
+            <div class="title-wrapper">
+                <h1 class="title">Time Machine Backup Fix ERROR</h1>
+            </div>
+            <div class="description">
+                macos catinlina 10.15.4 修复Time Machine 备份错误问题
+            </div>
+            <div class="keywords">
+                time machine
+            </div>
 
-<h4>问题介绍</h4>
+            <h3>介绍背景</h3>
 
-<ul>
-  <li>usb 外接硬盘 无法备份 （或者第二备份失败） 长时间插入硬盘 不会自动备份等问题。</li>
-  <li>将数据备份到 AWS </li>
-  <li>工具 goofys test-macos ./test</li>
-</ul>
+            <ul>
+                <li>系统配置</li>
+                <img src="http://112firshme11224.test.upcdn.net/blog/2020-05-08-17-50-43.png!/watermark/text/Zmlyc2gubWU=/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5" alt="系统配置">
+            </ul>
 
-<h4>测试 </h4>
+            <ul>
+                <li>Script  `https://github.com/uk0/TimeMachine-sparsebundle`</li>
+            </ul>
 
-<ul>
-  <li>Mount s3 </li>
-  <pre><code class="bash">goofys test-macos ./test</code></pre>
-  <li>运行makeImage.sh 脚本创建Image</li>
-  <pre><code class="bash">sh  ./makeImage.sh  600 /Volumes/tm</code></pre>
-  <img src="http://112firshme11224.test.upcdn.net/blog/2020-05-08-18-06-14.png!/watermark/text/Zmlyc2gubWU=/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5" alt="makeImage.sh 脚本创建Image">
-  <li>在/Volumes/tm生成类似上图所示的文件（设备名字可能不同）</li>
-  <li>双击这个文件会发现多了一个磁盘</li>
-  <img src="http://112firshme11224.test.upcdn.net/blog/2020-05-08-18-08-06.png!/watermark/text/Zmlyc2gubWU=/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5" alt="双击文件">
-  <li>最后告诉系统要使用这个硬盘来进行备份</li>
-  <pre><code class="bash">sudo tmutil setdestination /Volumes/Time\ Machine\ Backups</code></pre>
-  <li>成功备份截图。</li>
-  <img src="http://112firshme11224.test.upcdn.net/blog/2020-05-08-18-25-20.png!/watermark/text/Zmlyc2gubWU=/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5" alt="成功备份截图">
-  <li>以上的方法 适用与移动硬盘直接格式化后TimeMachine 无法备份，可以 用这个办法试试，将移动硬盘当作S3即可。</li>
-</ul>
+            <h4>问题介绍</h4>
 
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+            <ul>
+                <li>usb 外接硬盘 无法备份 （或者第二备份失败） 长时间插入硬盘 不会自动备份等问题。</li>
+                <li>将数据备份到 AWS </li>
+                <li>工具 goofys test-macos ./test</li>
+            </ul>
+
+            <h4>测试 </h4>
+
+            <ul>
+                <li>Mount s3 </li>
+                <pre><code>goofys test-macos ./test</code></pre>
+            </ul>
+
+            <ul>
+                <li>运行makeImage.sh 脚本创建Image</li>
+                <pre><code>sh  ./makeImage.sh  600 /Volumes/tm</code></pre>
+            </ul>
+
+            <img src="http://112firshme11224.test.upcdn.net/blog/2020-05-08-18-06-14.png!/watermark/text/Zmlyc2gubWU=/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5" alt="生成文件">
+
+            <ul>
+                <li>在/Volumes/tm生成类似上图所示的文件（设备名字可能不同）</li>
+                <li>双击这个文件会发现多了一个磁盘</li>
+            </ul>
+
+            <img src="http://112firshme11224.test.upcdn.net/blog/2020-05-08-18-08-06.png!/watermark/text/Zmlyc2gubWU=/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5" alt="双击文件">
+
+            <ul>
+                <li>最后告诉系统要使用这个硬盘来进行备份</li>
+                <pre><code>sudo tmutil setdestination /Volumes/Time\ Machine\ Backups</code></pre>
+            </ul>
+
+            <ul>
+                <li>成功备份截图。</li>
+                <img src="http://112firshme11224.test.upcdn.net/blog/2020-05-08-18-25-20.png!/watermark/text/Zmlyc2gubWU=/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5" alt="成功备份截图">
+            </ul>
+
+            <ul>
+                <li>以上的方法 适用与移动硬盘直接格式化后TimeMachine 无法备份，可以 用这个办法试试，将移动硬盘当作S3即可。</li>
+            </ul>
+
+            <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+        </div>
+    </div>
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>

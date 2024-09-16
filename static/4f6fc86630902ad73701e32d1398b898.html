@@ -7,103 +7,114 @@
 <meta name="keywords" content="Jekyll, emoji">
 <style>
 body {
-    font-family: sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f0f0f0;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+  transition: background-color 0.5s;
+}
+
+.title-container {
+  text-align: center;
 }
 
 h1 {
-    font-size: 20px;
-    margin-bottom: 10px;
-    text-align: center;
+  font-size: 20px;
 }
 
 h2 {
-    font-size: 18px;
-    margin-bottom: 8px;
-    text-align: center;
+  font-size: 18px;
 }
 
 h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
-    text-align: center;
+  font-size: 16px;
 }
 
 h4 {
-    font-size: 14px;
-    margin-bottom: 4px;
-    text-align: center;
+  font-size: 14px;
 }
 
 h5 {
-    font-size: 12px;
-    margin-bottom: 2px;
-    text-align: center;
+  font-size: 12px;
 }
 
 h6 {
-    font-size: 11px;
-    margin-bottom: 1px;
-    text-align: center;
+  font-size: 11px;
 }
 
 pre {
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
 }
 
 code {
-    font-family: monospace;
-    background-color: #f0f0f0;
-    padding: 2px 4px;
-    border-radius: 3px;
-}
-
-.hljs {
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-}
-
-.night-mode {
-    background-color: #222;
-    color: #fff;
-}
-
-.night-mode pre {
-    background-color: #333;
-}
-
-.night-mode code {
-    background-color: #333;
-    color: #fff;
-}
-
-.night-mode .hljs {
-    background-color: #333;
+  font-family: Consolas, monospace;
+  color: #333;
 }
 
 footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 12px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.night-mode {
+  background-color: #222;
+  color: #fff;
+}
+
+.night-mode code {
+  color: #fff;
+}
+
+.night-mode pre {
+  background-color: #333;
 }
 </style>
+<script>
+  // Function to generate random numbers
+  function getRandomNumber(seed) {
+    let x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  }
+
+  // Set up the random seed
+  const seed = 199602051111;
+
+  // Generate a random number to decide the theme
+  const themeRandomizer = getRandomNumber(seed);
+  const isNightMode = themeRandomizer > 0.5;
+
+  // Apply the appropriate theme
+  if (isNightMode) {
+    document.body.classList.add('night-mode');
+  }
+
+  // Highlight.js setup
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const codeBlocks = document.querySelectorAll('pre code');
+    codeBlocks.forEach(block => {
+      hljs.highlightElement(block);
+    });
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
 </head>
 <body>
-<h1>Jekyll-emoji-表情大全。</h1>
+<div class="title-container">
+  <h1>Jekyll-emoji-表情大全。</h1>
+  <p>linux</p>
+</div>
+
 <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
-<h2>People</h2>
-<pre>
-:bowtie:
+
+<h1>People</h1>
+
+<p>:bowtie:
 :smile:
 :simple_smile:
 :laughing:
@@ -296,11 +307,11 @@ footer {
 :rage3:
 :rage4:
 :suspect:
-:trollface:
-</pre>
-<h2>Nature</h2>
-<pre>
-:sunny:
+:trollface:</p>
+
+<h1>Nature</h1>
+
+<p>:sunny:
 :umbrella:
 :cloud:
 :snowflake:
@@ -414,11 +425,11 @@ footer {
 :milky_way:
 :partly_sunny:
 :octocat:
-:squirrel:
-</pre>
-<h2>Objects</h2>
-<pre>
-:bamboo:
+:squirrel:</p>
+
+<h1>Objects</h1>
+
+<p>:bamboo:
 :gift_heart:
 :dolls:
 :school_satchel:
@@ -677,11 +688,11 @@ footer {
 :sweet_potato:
 :eggplant:
 :tomato:
-:corn:
-</pre>
-<h2>Places</h2>
-<pre>
-:house:
+:corn:</p>
+
+<h1>Places</h1>
+
+<p>:house:
 :house_with_garden:
 :school:
 :office:
@@ -786,11 +797,11 @@ footer {
 :ru:
 :gb:
 :uk:
-:de:
-</pre>
-<h2>Symbols</h2>
-<pre>
-:one:
+:de:</p>
+
+<h1>Symbols</h1>
+
+<p>:one:
 :two:
 :three:
 :four:
@@ -990,33 +1001,12 @@ footer {
 :small_blue_diamond:
 :small_orange_diamond:
 :small_red_triangle:
-:small_red_triangle_down:
-</pre>
+:small_red_triangle_down:</p>
+
 <blockquote>lalallalalalalalalalallalalalalalallalala～</blockquote>
+
 <footer>
-Power By Gemini TextGenerate 2024-09-16
+  Power By Gemini TextGenerate 2024-09-16
 </footer>
-<script>
-// 随机种子
-Math.seedrandom(199602051111);
-
-// 获取当前时间
-const now = new Date();
-const hour = now.getHours();
-
-// 判断白天或夜晚
-if (hour >= 6 && hour < 18) {
-    document.body.classList.remove('night-mode');
-} else {
-    document.body.classList.add('night-mode');
-}
-
-// 代码高亮
-const codeBlocks = document.querySelectorAll('pre code');
-codeBlocks.forEach(codeBlock => {
-    // 使用 Highlight.js 或 Prism.js 进行代码高亮
-    // ...
-});
-</script>
 </body>
 </html>

@@ -1,131 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>python 远程启动mapreduce作业</title>
-<meta name="description" content="本文基于Python2.7  进行测试">
-<meta name="keywords" content="python">
-<style>
-body {
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
-
-h1 {
-  font-size: 20px;
-  margin-top: 0;
-}
-
-h2 {
-  font-size: 18px;
-}
-
-h3 {
-  font-size: 16px;
-}
-
-h4 {
-  font-size: 14px;
-}
-
-h5 {
-  font-size: 12px;
-}
-
-h6 {
-  font-size: 11px;
-}
-
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-code {
-  font-family: monospace;
-  background-color: #f0f0f0;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 20px;
-}
-
-.title-center {
-  text-align: center;
-}
-
-.highlight, .prism-code {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-.highlight pre, .prism-code pre {
-  margin: 0;
-  padding: 0;
-}
-
-.highlight code, .prism-code code {
-  font-family: monospace;
-  background-color: transparent;
-  padding: 0;
-  border-radius: 0;
-}
-
-.highlight .token.keyword, .prism-code .token.keyword {
-  color: #007020;
-}
-
-.highlight .token.operator, .prism-code .token.operator {
-  color: #a020f0;
-}
-
-.highlight .token.string, .prism-code .token.string {
-  color: #2070a0;
-}
-
-.highlight .token.comment, .prism-code .token.comment {
-  color: #808080;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>python 远程启动mapreduce作业</title>
+    <meta name="description" content="python 模拟实现tail -f">
+    <meta name="keywords" content="python">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        
+        h1 {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        h5 {
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        
+        h6 {
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+        
+        pre {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        
+        code {
+            font-family: Consolas, Monaco, monospace;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .night-mode {
+            background-color: #222;
+            color: #eee;
+        }
+        
+        .night-mode code {
+            background-color: #333;
+            color: #eee;
+        }
+    </style>
 </head>
 <body>
-<script>
-  function toggleTheme() {
-    const body = document.body;
-    const isDarkMode = body.classList.contains('dark-mode');
-    if (isDarkMode) {
-      body.classList.remove('dark-mode');
-      body.style.backgroundColor = '#fff';
-    } else {
-      body.classList.add('dark-mode');
-      body.style.backgroundColor = '#222';
-    }
-  }
-
-  const currentHour = new Date().getHours();
-  if (currentHour >= 18 || currentHour < 6) {
-    toggleTheme();
-  }
-</script>
-<h1 class="title-center">python 远程启动mapreduce作业</h1>
-<p class="title-center">本文基于Python2.7  进行测试</p>
-
-<h3>源码</h3>
-<pre><code class="language-python"># -*- coding:utf-8 -*-
+    <h1>python 远程启动mapreduce作业</h1>
+    <p style="text-align: center;">本文基于Python2.7  进行测试</p>
+    <h2>源码</h2>
+    <pre><code class="language-python">
+# -*- coding:utf-8 -*-
 import BaseHTTPServer
 import threading
 import logging
@@ -187,18 +147,17 @@ if __name__ == '__main__':
     server.serve_forever()
 
 </code></pre>
-
-<h3>python 远程执行作业，（作业通过serverless 上传到hdfs）</h3>
-<ul>
-<li>  用的http服务是python2.7 自带的 （简单）</li>
-<li>   实现比较简单就是利用了 subprocess 的PIPE 通过管道将结果输出，实现一个watch on 的效果（ 大佬勿喷）</li>
-</ul>
-
-<h3>补充 serverless 上传jar的代码</h3>
-<ul>
-<li>注意 kubeless 1.0.0版本 Python 的runtime是基于`bottle`还是可以 做点手脚的。</li>
-</ul>
-<pre><code class="language-python"># /usr/bin/env python
+    <h2>python 远程执行作业，（作业通过serverless 上传到hdfs）</h2>
+    <ul>
+        <li>用的http服务是python2.7 自带的 （简单）</li>
+        <li>实现比较简单就是利用了 subprocess 的PIPE 通过管道将结果输出，实现一个watch on 的效果（ 大佬勿喷）</li>
+    </ul>
+    <h2>补充 serverless 上传jar的代码</h2>
+    <ul>
+        <li>注意 kubeless 1.0.0版本 Python 的runtime是基于`bottle`还是可以 做点手脚的。</li>
+    </ul>
+    <pre><code class="language-python">
+# /usr/bin/env python
 # coding=utf-8
 
 import paramiko
@@ -241,8 +200,23 @@ def doupload():
     return 'ok'
 
 </code></pre>
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+    <script>
+        // 获取当前时间
+        var now = new Date();
+        var hour = now.getHours();
+        
+        // 判断是否为夜间模式
+        if (hour >= 18 || hour < 6) {
+            document.body.classList.add('night-mode');
+        }
+
+        // 初始化 Highlight.js 或 Prism.js
+        hljs.initHighlightingOnLoad(); // 假设你已经包含了 Highlight.js 库
+        // 或者使用 Prism.js
+        // Prism.highlightAll();
+    </script>
 </body>
 </html>

@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ehcache集群配置terracotta</title>
-    <meta name="description" content="ehcache集群配置terracotta" style="text-align: center;">
-    <meta name="keywords" content="ehcache, terracotta" style="text-align: center;">
+    <meta name="description" content="ehcache集群配置terracotta">
+    <meta name="keywords" content="ehcache, terracotta">
     <style>
         body {
             font-family: sans-serif;
-            background-color: #f5f5f5;
+            background-color: #f0f0f0;
             color: #333;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
         }
 
         h1 {
@@ -45,60 +47,49 @@
         pre {
             background-color: #f0f0f0;
             padding: 10px;
+            border: 1px solid #ddd;
             overflow-x: auto;
-            border-radius: 5px;
         }
 
         code {
             font-family: monospace;
-            background-color: #eee;
-            padding: 2px 5px;
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border: 1px solid #ddd;
             border-radius: 3px;
         }
 
         footer {
             text-align: center;
-            margin-top: 20px;
             font-size: 12px;
-        }
-
-        .night-mode {
-            background-color: #222;
-            color: #eee;
-        }
-
-        .night-mode code {
-            background-color: #333;
-        }
-
-        .night-mode pre {
-            background-color: #333;
+            margin-top: 20px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        hljs.highlightAll();
+        document.addEventListener('DOMContentLoaded', function () {
+            const now = new Date();
+            const hour = now.getHours();
+            const body = document.body;
+
+            if (hour >= 18 || hour < 6) {
+                body.style.backgroundColor = '#222';
+                body.style.color = '#eee';
+            } else {
+                body.style.backgroundColor = '#f0f0f0';
+                body.style.color = '#333';
+            }
+        });
+    </script>
 </head>
 <body>
-    <script>
-        // 随机种子
-        const seed = 199602051111;
-        // 获取当前时间
-        const now = new Date();
-        // 使用随机种子和当前时间生成随机数
-        const randomNumber = (seed + now.getTime()) % 2;
-        // 根据随机数决定主题
-        if (randomNumber === 0) {
-            document.body.classList.add('night-mode');
-        }
-
-        // Highlight.js 或 Prism.js 初始化
-        // ...
-
-        // 添加交互效果
-        // ...
-    </script>
     <h1>ehcache集群配置terracotta</h1>
     <p>
-        * ehcache for maven conf
+        ehcache集群配置terracotta
     </p>
+    <h2>ehcache for maven conf</h2>
     <pre><code class="xml">&lt;dependency&gt;
     &lt;groupId&gt;org.ehcache&lt;/groupId&gt;
     &lt;artifactId&gt;ehcache&lt;/artifactId&gt;
@@ -110,9 +101,7 @@
     &lt;version&gt;${ehcache.version}&lt;/version&gt;
 &lt;/dependency&gt;
 </code></pre>
-    <p>
-        * tc-config.xml (ehcache3.4.0)版本已经被合并了里面包含`terracotta`
-    </p>
+    <h2>tc-config.xml (ehcache3.4.0)版本已经被合并了里面包含<code>terracotta</code></h2>
     <pre><code class="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;tc-config xmlns="http://www.terracotta.org/config"
            xmlns:ohr="http://www.terracotta.org/config/offheap-resource"&gt;
@@ -178,10 +167,10 @@
       Servers know how to communicate between each others because each version of the config file on each host
       will list all servers in it.
     --&gt;
-    &lt;!--&lt;server host="otherhost" name="other-server"&gt;--&gt;
-      &lt;!--&lt;logs&gt;logs&lt;/logs&gt;--&gt;
-      &lt;!--&lt;tsa-port&gt;9410&lt;/tsa-port&gt;--&gt;
-    &lt;!--&lt;/server&gt;--&gt;
+    &lt;!--&lt;server host="otherhost" name="other-server"&gt;
+      &lt;!--&lt;logs&gt;logs&lt;/logs&gt;
+      &lt;!--&lt;tsa-port&gt;9410&lt;/tsa-port&gt;
+    &lt;!--&lt;/server&gt;
 
     &lt;!--
       Indicates how much time a server taking over after a failure in an active will wait
@@ -191,26 +180,16 @@
   &lt;/servers&gt;
 &lt;/tc-config&gt;
 </code></pre>
-    <p>
-        * 以上的配置文件为两个节点
-    </p>
-    <p>
-        * 分别在两个节点上运行相应命令。
-    </p>
+    <h3>以上的配置文件为两个节点</h3>
+    <h3>分别在两个节点上运行相应命令。</h3>
     <pre><code class="bash"># 1
 nohup ./bin/start-tc-server.sh  -f conf/tc-config.xml  -n s1 &
 # 2
 nohup ./bin/start-tc-server.sh  -f conf/tc-config.xml  -n s2 &
 </code></pre>
-    <p>
-        * 这样两台基本的Ehcache 服务集群就搭建成功了。
-    </p>
-    <p>
-        * 文章写的比较着急，不忙了在继续整理，望理解。
-    </p>
-    <p>
-        * 测试代码
-    </p>
+    <h3>这样两台基本的Ehcache 服务集群就搭建成功了。</h3>
+    <h3>文章写的比较着急，不忙了在继续整理，望理解。</h3>
+    <h3>测试代码</h3>
     <pre><code class="java">package todcloud.utils.ehcache;
 
 /**

@@ -1,135 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ant-design-pro 初级问题以及解答</title>
-<meta name="description" content="ant-design-pro 的基本问题解析" />
-<meta name="keywords" content="React" />
+<meta name="description" content="ant-design-pro 的基本问题解析">
+<meta name="keywords" content="React">
 <style>
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #fff;
-  color: #333;
-  line-height: 1.5;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  max-width: 820px;
-  margin: 0 auto;
-  position: relative;
+    font-family: sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 h1 {
-  font-size: 20px;
+    font-size: 20px;
 }
 
 h2 {
-  font-size: 18px;
+    font-size: 18px;
 }
 
 h3 {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 h4 {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 h5 {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 h6 {
-  font-size: 11px;
+    font-size: 11px;
+}
+
+.title, .keywords, .description {
+    text-align: center;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    background-color: #f0f0f0;
+    padding: 2px 5px;
+    border-radius: 3px;
 }
 
 pre {
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  padding: 16px;
-  overflow-x: auto;
+    background-color: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
 }
 
-.title {
-  text-align: center;
-}
-
-.content {
-  padding: 20px;
-}
-
-.footer {
-  text-align: center;
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #f5f5f5;
-}
-
-.shadow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
-  z-index: -1;
-  border-radius: 10px;
-}
-
-.night-mode {
-  background-color: #222;
-  color: #fff;
-}
-
-.night-mode pre {
-  background-color: #333;
-  border: 1px solid #555;
-}
-
-.night-mode .shadow {
-  background-color: rgba(0, 0, 0, 0.3);
+footer {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 20px;
 }
 </style>
 </head>
 <body>
-<div class="shadow"></div>
-<div class="title">
-<h1>ant-design-pro 初级问题以及解答</h1>
-</div>
-<div class="content">
-<h2>本章介绍的是ant-design-pro 使用中遇到的一些问题 以及个人的解决方式，大牛勿喷。</h2>
-<br>
+<h1 class="title">ant-design-pro 初级问题以及解答</h1>
+<h2 class="keywords">React</h2>
+<h3 class="description">ant-design-pro 的基本问题解析</h3>
+<p>## 本章介绍的是ant-design-pro 使用中遇到的一些问题 以及个人的解决方式，大牛勿喷。</p>
 <h2>React 与 Ant-Design-Pro</h2>
-<p>
-* 下载工程：
-</p>
-<pre><code class="language-bash">https://github.com/ant-design/ant-design-pro
+<p>* 下载工程：</p>
+<pre><code class="bash">https://github.com/ant-design/ant-design-pro
 </code></pre>
-<p>
-* 安装依赖包
-</p>
-<pre><code class="language-bash"> npm i -dd  # 等待的时间很长。【 可以代理出去速度更快】
+<p>* 安装依赖包</p>
+<pre><code class="bash"> npm i -dd  # 等待的时间很长。【 可以代理出去速度更快】
 
  npm start # 启动
 
  npm run build:aot:prod # 编译
 
 </code></pre>
-<p>
-* 修改配置文件 `.eslintrc.js`  WebStorm 最新版2018 可能会报错，所以需要修改`.eslintrc.js`
-</p>
-<pre><code class="language-javascript">module.exports = {
+<p>* 修改配置文件 `.eslintrc.js`  WebStorm 最新版2018 可能会报错，所以需要修改`.eslintrc.js`</p>
+<pre><code class="javascript">module.exports = {
   parser: 'babel-eslint',
   extends: ['airbnb', 'prettier'],
   env: {
@@ -390,13 +344,9 @@ pre {
   },
 };
 </code></pre>
-<p>
-* 修改默认的 `request.js > request2.js`
-</p>
-<p>
-* `npm i axios --save -dd `
-</p>
-<pre><code class="language-javascript">
+<p>* 修改默认的 `request.js > request2.js`</p>
+<p>* `npm i axios --save -dd `</p>
+<pre><code class="javascript">
 
 import axios from 'axios';
 import { notification } from 'antd';
@@ -479,11 +429,8 @@ export default function request(url, options) {
     });
 }
 </code></pre>
-<p>
-* `.roadhogrc.mock.js` 修改如下内容。
-</p>
-<pre><code class="language-javascript">
-import mockjs from 'mockjs';
+<p>* `.roadhogrc.mock.js` 修改如下内容。</p>
+<pre><code class="javascript">import mockjs from 'mockjs';
 import { getRule, postRule } from './mock/rule';
 import { getActivities, getNotice, getFakeList } from './mock/api';
 import { getFakeChartData } from './mock/chart';
@@ -505,35 +452,26 @@ const noProxy = process.env.NO_PROXY === 'true';
 export default noProxy ? {} : delay(proxy, 1000);
 </code></pre>
 <h2>写一个模块。</h2>
-<p>
-* 经过上面的配置，现在已经可以开始写模块了。
-* 写一个模块需要配置如下几项。
-</p>
-<pre><code class="language-bash">
-ant-design-pro/src/common/menu.js #  页面菜单，可以配置权限。
+<p>* 经过上面的配置，现在已经可以开始写模块了。</p>
+<p>* 写一个模块需要配置如下几项。</p>
+<pre><code class="bash">ant-design-pro/src/common/menu.js #  页面菜单，可以配置权限。
 ant-design-pro/src/common/router.js  #  该文件内配置全局的 route路径，可以分配访问[models]的权限
 ant-design-pro/src/routes  # 每一个单独的 route 功能的实现（ 同等于Page）
 ant-design-pro/src/models #  effects 用来注册请求，访问请求。
 ant-design-pro/src/services #  封装 request请求 供给 ‘ effects’
-
-```
-</pre>
-<p>
-* 现在需要在 `route` 内加一个路径，也就是我们自己的route
-</p>
-<pre><code class="language-javascript">
-// park 服务所支持的 route------start
-'/payList/agent-list': {
-  component: dynamicWrapper(app, ['parkingPayManager'], () => import('../routes/PayManager/PayAgent')),
-},
-//  1. 其中 parkingPayManager   是一个models我们要将这个models注册进来，给这个route使用。
-// 2. /payList/agent-list  是`menu` 的菜单路径。
-</code></pre>
-<p>
-* 现在需要在 `menu` 内加一个菜单。
-</p>
-<pre><code class="language-javascript">
-{
+    
+    </code></pre>
+<p>* 现在需要在 `route` 内加一个路径，也就是我们自己的route</p>
+<pre><code class="js">
+    // park 服务所支持的 route------start
+    '/payList/agent-list': {
+      component: dynamicWrapper(app, ['parkingPayManager'], () => import('../routes/PayManager/PayAgent')),
+    },
+    //  1. 其中 parkingPayManager   是一个models我们要将这个models注册进来，给这个route使用。
+    // 2. /payList/agent-list  是`menu` 的菜单路径。
+   </code></pre>
+<p>* 现在需要在 `menu` 内加一个菜单。</p>
+<pre><code class="js">{
     name: '支付商户管理',
     icon: 'table',
     path: 'payList',
@@ -544,12 +482,9 @@ ant-design-pro/src/services #  封装 request请求 供给 ‘ effects’
       }
     ],
   },
-</code></pre>
-<p>
-* 添加一个model
-</p>
-<pre><code class="language-javascript">
-import {
+   </code></pre>
+<p>* 添加一个model</p>
+<pre><code class="js">import {
   queryParkManagerAgents,
 } from '../services/parkingServices';
 
@@ -582,11 +517,9 @@ export default {
   },
 }
 
-</code></pre>
-<p>
-* 定义一个 `Service`
-</p>
-<pre><code class="language-javascript">
+  </code></pre>
+<p>* 定义一个 `Service`</p>
+<pre><code class="js">
 
 import request from '../utils/request2';
 
@@ -596,12 +529,9 @@ export async function queryParkManagerAgents() {
   })
 }
 
-</code></pre>
-<p>
-* 最后编写一个 route （page）
-</p>
-<pre><code class="language-bash">
-import React, {PureComponent} from 'react';
+  </code></pre>
+<p>* 最后编写一个 route （page）</p>
+<pre><code class="bash">import React, {PureComponent} from 'react';
 import {connect} from 'dva';
 import {
   Card,
@@ -820,124 +750,25 @@ export default class PayAgent extends PureComponent {
   }
 }
 
-</code></pre>
-<p>
-* 最终完成这个页面，进行访问查看。
-</p>
-<img src="http://112firshme11224.test.upcdn.net/demos/104d4e32-f0f8-4a54-8f87-a839fce15176.png" alt="页面截图">
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br
+ </code></pre>
+<p>* 最终完成这个页面，进行访问查看。</p>
+<p><img src="http://112firshme11224.test.upcdn.net/demos/104d4e32-f0f8-4a54-8f87-a839fce15176.png" alt="页面截图"></p>
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+<footer>
+Power By Gemini TextGenerate 2024-09-16
+</footer>
+<script>
+  // Highlight.js initialization
+  hljs.initHighlightingOnLoad();
+  // Prism.js initialization
+  Prism.highlightAll();
+
+  // Theme toggle based on time
+  const currentHour = new Date().getHours();
+  if (currentHour >= 18 || currentHour < 6) {
+    document.body.style.backgroundColor = '#222';
+    document.body.style.color = '#eee';
+  }
+</script>
+</body>
+</html>

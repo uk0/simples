@@ -1,113 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>用Tensorflow基于Deep Q Learning DQN 玩Flappy Bird</title>
-<meta name="description" content="TensorFlow, Machine Learning, Deep Learning, Artificial Intelligence">
-<meta name="keywords" content="TensorFlow, python,opencv">
 <style>
 body {
-  font-family: sans-serif;
-  background-color: #f0f0f0;
-  color: #333;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f5f5f5;
+    font-family: sans-serif;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  font-size: 20px;
-  text-align: center;
+    font-size: 20px;
+    text-align: center;
 }
 
 h2 {
-  font-size: 18px;
-  text-align: center;
+    font-size: 18px;
 }
 
 h3 {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 h4 {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 h5 {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 h6 {
-  font-size: 11px;
+    font-size: 11px;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 pre {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
 }
 
 code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
+    font-family: monospace;
+    background-color: #f9f9f9;
+    padding: 2px 4px;
+    border-radius: 3px;
 }
 
 footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-}
-
-.highlight {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-.highlight pre {
-  margin: 0;
-}
-
-.highlight code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
 }
 </style>
+<meta charset="UTF-8">
+<title>用Tensorflow基于Deep Q Learning DQN 玩Flappy Bird</title>
+<meta name="description" content="TensorFlow, Machine Learning, Deep Learning, Artificial Intelligence">
+<meta name="keywords" content="TensorFlow, python,opencv">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
 <script>hljs.highlightAll();</script>
 </head>
 <body>
 <h1>用Tensorflow基于Deep Q Learning DQN 玩Flappy Bird</h1>
-<p style="text-align: center;">
-  <a href="https://firsh.me/2017/07/04/tensorflow-node-2">上篇博文</a>主要是TensorFlow的一个简单入门.
-</p>
-<h2>前言 TensorFlow 通过深度学习自己去玩游戏，</h2>
-<p>
-  游戏图:
-  <img src="http://112firshme11224.test.upcdn.net/tensorflow/tensorflow-game-bird.gif" alt="游戏图">
-</p>
-<p>
-  整体思路：
-  <img src="http://112firshme11224.test.upcdn.net/tensorflow/network.png" alt="整体思路">
-</p>
-<p>
-  处理图：
-  <img src="http://112firshme11224.test.upcdn.net/tensorflow/preprocess.png" alt="处理图">
-</p>
+<h2 style="text-align: center;">前言 TensorFlow 通过深度学习自己去玩游戏，</h2>
+<p>游戏图:</p>
+<img src="http://112firshme11224.test.upcdn.net/tensorflow/tensorflow-game-bird.gif">
+<p>整体思路:</p>
+<img src="http://112firshme11224.test.upcdn.net/tensorflow/network.png">
+<p>处理图:</p>
+<img src="http://112firshme11224.test.upcdn.net/tensorflow/preprocess.png">
 <h2>后语</h2>
-<p>
-  能否使用DQN来实现通过屏幕学习玩Flappy Bird是一个有意思的挑战。（话说本人和朋友在前段时间也考虑了这个idea，但当时由于不知道如何截取游戏屏幕只能使用具体位置来学习，不过其实也成功了）
-</p>
+<p>能否使用DQN来实现通过屏幕学习玩Flappy Bird是一个有意思的挑战。（话说本人和朋友在前段时间也考虑了这个idea，但当时由于不知道如何截取游戏屏幕只能使用具体位置来学习，不过其实也成功了）</p>
 <h2>部分代码</h2>
-<pre><code class="python">#!/usr/bin/env python
+<pre><code class="language-python">#!/usr/bin/env python
 from __future__ import print_function
 
 import tensorflow as tf
@@ -323,11 +301,7 @@ def trainNetwork(s, readout, h_fc1, sess):
  if __name__ == "__main__":
      main()
  </code></pre>
-<p>
-  >一切的学习都是为了以前吹过的牛皮啊～
-</p>
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+<p>一切的学习都是为了以前吹过的牛皮啊～</p>
+<footer>Power By Gemini TextGenerate 2024-09-16</footer>
 </body>
 </html>

@@ -1,108 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Flink 消费RocketMQ 如何定义Source[原创精品]</title>
-<meta name="description" content="笔记">
-<meta name="keywords" content="RocketMQ">
-<style>
-body {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: sans-serif;
-  background-color: #f5f5f5;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  text-align: center;
-  margin-top: 20px;
-}
-
-h1 {
-  font-size: 20px;
-}
-
-h2 {
-  font-size: 18px;
-}
-
-h3 {
-  font-size: 16px;
-}
-
-h4 {
-  font-size: 14px;
-}
-
-h5 {
-  font-size: 12px;
-}
-
-h6 {
-  font-size: 11px;
-}
-
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-code {
-  font-family: monospace;
-}
-
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-}
-
-.night-mode {
-  background-color: #222;
-  color: #eee;
-}
-
-.night-mode pre {
-  background-color: #333;
-}
-
-.night-mode code {
-  color: #eee;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    Prism.highlightAll();
-    hljs.highlightAll();
-
-    const now = new Date();
-    const hour = now.getHours();
-    if (hour >= 18 || hour < 6) {
-      document.body.classList.add('night-mode');
-    }
-  });
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flink 消费RocketMQ 如何定义Source[原创精品]</title>
+    <meta name="description" content="笔记">
+    <meta name="keywords" content="RocketMQ">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: background-color 0.5s;
+            max-width: 820px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+        h1 {
+            font-size: 20px;
+        }
+        h2 {
+            font-size: 18px;
+        }
+        h3 {
+            font-size: 16px;
+        }
+        h4 {
+            font-size: 14px;
+        }
+        h5 {
+            font-size: 12px;
+        }
+        h6 {
+            font-size: 11px;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .night-mode {
+            background-color: #222;
+            color: #ddd;
+        }
+        .night-mode pre {
+            background-color: #333;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #eee;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            hljs.highlightAll();
+            let isNightMode = false;
+            const currentHour = new Date().getHours();
+            if (currentHour >= 18 || currentHour < 6) {
+                isNightMode = true;
+                document.body.classList.add('night-mode');
+            }
+            document.querySelector('pre').addEventListener('click', function() {
+                isNightMode = !isNightMode;
+                if (isNightMode) {
+                    document.body.classList.add('night-mode');
+                } else {
+                    document.body.classList.remove('night-mode');
+                }
+            });
+        });
+    </script>
 </head>
 <body>
-<h1>Flink 消费RocketMQ 如何定义Source[原创精品]</h1>
-<p>笔记</p>
-<h2>摘要: RocketMQ-->Flink-->CrateDB</h2>
-<ul>
-<li>本文不涉及Sink的定义</li>
-<li>详情关注 <code>Github</code> <a href="https://github.com/zmatsh">https://github.com/zmatsh</a></li>
-<li>稍后会整理成插件放到GitHub ：<a href="https://github.com/zmatsh/rocketmq-flink-source-plugin">https://github.com/zmatsh/rocketmq-flink-source-plugin</a></li>
-</ul>
-<h2># Flink Source定义</h2>
-<pre><code class="java">package com.flink.source;
+    <h1>Flink 消费RocketMQ 如何定义Source[原创精品]</h1>
+    <h2>摘要: RocketMQ-->Flink-->CrateDB</h2>
+    <p>本文不涉及Sink的定义</p>
+    <p>详情关注 `Github` <a href="https://github.com/zmatsh">https://github.com/zmatsh</a></p>
+    <p>稍后会整理成插件放到GitHub ：<a href="https://github.com/zmatsh/rocketmq-flink-source-plugin">https://github.com/zmatsh/rocketmq-flink-source-plugin</a></p>
+    <h2>Flink Source定义</h2>
+    <pre><code class="java">
+package com.flink.source;
 import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -204,9 +192,10 @@ public class RocketMQSource extends RichSourceFunction&lt;String&gt; implements 
     }
 }
 
-</code></pre>
-<h2>## Main方法调用Flink启动JobManager</h2>
-<pre><code class="java">  final ParameterTool parameterTool = ParameterTool.fromArgs(args);
+    </code></pre>
+    <h2>Main方法调用Flink启动JobManager</h2>
+    <pre><code class="java">
+  final ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
         if (parameterTool.getNumberOfParameters() &lt; 5) {
             System.out.println("Missing parameters!");
@@ -225,10 +214,10 @@ public class RocketMQSource extends RichSourceFunction&lt;String&gt; implements 
                   ,parameterTool.getInt("qsize",1000)
                   ,parameterTool.getInt("consumer",1)
           );
-</code></pre>
-<h2>## 禁止转载，盗版必究。`倒贴必须DDOS你！`</h2>
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+    </code></pre>
+    <h2>禁止转载，盗版必究。`倒贴必须DDOS你！`</h2>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
 </body>
 </html>

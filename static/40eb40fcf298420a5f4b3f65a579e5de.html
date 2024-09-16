@@ -1,173 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
-body {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: sans-serif;
-  background-color: #f5f5f5;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>oracle for docker dev ENV</title>
+    <meta name="description" content="oracle 链解决方案。">
+    <meta name="keywords" content="oracle docker">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #333;
+            transition: background-color 0.5s ease;
+            max-width: 820px;
+            margin: 0 auto;
+        }
 
-h1 {
-  font-size: 20px;
-}
+        .dark-mode {
+            background-color: #222;
+            color: #eee;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-code {
-  background-color: #eee;
-  padding: 2px 5px;
-  border-radius: 3px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-pre {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
 
-.highlight,
-.prism-code {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        code {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
 
-footer {
-  text-align: center;
-  padding: 10px 0;
-  font-size: 12px;
-}
+        .highlight {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
 
-.title,
-.description,
-.keywords {
-  text-align: center;
-}
-</style>
-<meta charset="UTF-8">
-<title>oracle for docker dev ENV</title>
-<meta name="description" content="oracle 链解决方案。">
-<meta name="keywords" content="oracle docker">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<script>
-  hljs.highlightAll();
-  document.addEventListener('DOMContentLoaded', function() {
-    const currentTime = new Date();
-    const hour = currentTime.getHours();
-    if (hour >= 19 || hour < 7) {
-      document.body.style.backgroundColor = '#222';
-    }
-  });
-</script>
+        .highlight pre {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .highlight code {
+            font-family: monospace;
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .container {
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title-container h1, .title-container h2 {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-<h1 class="title">oracle for docker dev ENV</h1>
-<p class="description">oracle 链解决方案。</p>
-<p class="keywords">oracle docker</p>
+    <script>
+        // Use the provided random seed to generate a random number
+        const randomSeed = 199602051111;
+        Math.seedrandom(randomSeed);
 
-<p>oracle 服务采用 Docker 搭建，用的镜像为`wnameless/oracle-xe-11g` 这里负责整理用来测试时候的问题。</p>
+        // Get the current time to determine the theme
+        const currentHour = new Date().getHours();
+        const isNight = currentHour >= 18 || currentHour < 6;
 
-<h2> 下载镜像(pull)</h2>
+        // Apply the theme to the body
+        if (isNight) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
 
-<pre><code class="bash">docker pull wnameless/oracle-xe-11g
-</code></pre>
+        // Highlight.js and Prism.js setup (if you have them)
+        // ... your Highlight.js and Prism.js setup here ...
 
-<pre><code class="bash">docker run -d -p 49160:22 -p 49161:1521 -e ORACLE_ALLOW_REMOTE=true wnameless/oracle-xe-11g
-</code></pre>
+        // Add the following functionality:
+        // 1. Replace all occurrences of '```' with `<pre>` and `</pre>` tags
+        // 2. Apply Highlight.js or Prism.js to code blocks within `<pre>` tags
+        // 3. Add a "Copy Code" button to each code block
+        // 4. Allow the user to toggle between light and dark themes
+    </script>
 
-<p>By default, the password verification is disable(password never expired). If you want it back, run this:</p>
+    <div class="title-container">
+        <h1>oracle for docker dev ENV</h1>
+        <h2>oracle 链解决方案。</h2>
+    </div>
 
-<pre><code class="bash">docker run -d -p 49160:22 -p 49161:1521 -e ORACLE_PASSWORD_VERIFY=true wnameless/oracle-xe-11g
-</code></pre>
+    <div class="container">
+        <h2>下载镜像(pull)</h2>
+        <pre><code>docker pull wnameless/oracle-xe-11g</code></pre>
 
-<p>For performance concern, you may want to disable the disk asynch IO:</p>
+        <pre><code>docker run -d -p 49160:22 -p 49161:1521 -e ORACLE_ALLOW_REMOTE=true wnameless/oracle-xe-11g</code></pre>
+        By default, the password verification is disable(password never expired). If you want it back, run this:
 
-<pre><code class="bash">docker run -d -p 49160:22 -p 49161:1521 -e ORACLE_DISABLE_ASYNCH_IO=true wnameless/oracle-xe-11g
-</code></pre>
+        <pre><code>docker run -d -p 49160:22 -p 49161:1521 -e ORACLE_PASSWORD_VERIFY=true wnameless/oracle-xe-11g</code></pre>
 
-<p>For XDB user, run this:</p>
+        For performance concern, you may want to disable the disk asynch IO:
 
-<pre><code class="bash">docker run -d -p 49160:22 -p 49161:1521 -p 8080:8080 -e ORACLE_ENABLE_XDB=true wnameless/oracle-xe-11g
-</code></pre>
+        <pre><code>docker run -d -p 49160:22 -p 49161:1521 -e ORACLE_DISABLE_ASYNCH_IO=true wnameless/oracle-xe-11g</code></pre>
+        For XDB user, run this:
 
-<p>Check if localhost:8080 work</p>
+        <pre><code>docker run -d -p 49160:22 -p 49161:1521 -p 8080:8080 -e ORACLE_ENABLE_XDB=true wnameless/oracle-xe-11g</code></pre>
+        Check if localhost:8080 work
 
-<pre><code class="bash">curl -XGET "http://localhost:8080"
-</code></pre>
+        <pre><code>curl -XGET "http://localhost:8080"</code></pre>
+        You will show
 
-<p>You will show</p>
-
-<pre><code class="html">
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+        <pre><code><!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <HTML><HEAD>
 <TITLE>401 Unauthorized</TITLE>
 </HEAD><BODY><H1>Unauthorized</H1>
-</BODY></HTML>
+</BODY></HTML></code></pre>
 
-</code></pre>
+        <h2>Login http://localhost:8080 with following credential:</h2>
+        username: XDB
+        password: xdb
+        Connect database with following setting:
 
-<h2> Login http://localhost:8080 with following credential:</h2>
+        hostname: localhost
+        port: 49161
+        sid: xe
+        username: system
+        password: oracle
+        Password for SYS & SYSTEM
 
-<p>username: XDB</p>
-<p>password: xdb</p>
+        oracle
+        Login by SSH
 
-<p>Connect database with following setting:</p>
+        <pre><code>ssh root@localhost -p 49160</code></pre>
+        password: admin
+        Support custom DB Initialization
 
-<p>hostname: localhost</p>
-<p>port: 49161</p>
-<p>sid: xe</p>
-<p>username: system</p>
-<p>password: oracle</p>
+        <h2>Dockerfile</h2>
+        <pre><code>FROM wnameless/oracle-xe-11g
 
-<p>Password for SYS &amp; SYSTEM</p>
+ADD init.sql /docker-entrypoint-initdb.d/</code></pre>
 
-<p>oracle</p>
+        <h2>SQLDeveloper</h2>
 
-<h2> Login by SSH</h2>
-
-<pre><code class="bash">ssh root@localhost -p 49160
-</code></pre>
-
-<p>password: admin</p>
-
-<h2> Support custom DB Initialization</h2>
-
-<h2> Dockerfile</h2>
-
-<pre><code class="dockerfile">FROM wnameless/oracle-xe-11g
-
-ADD init.sql /docker-entrypoint-initdb.d/
-</code></pre>
-
-<h2> SQLDeveloper</h2>
-
-<pre><code class="sql">--- 遇到的问题 ora-01045
+        <pre><code>--- 遇到的问题 ora-01045
 
 ---ORA-01045: user ... lacks CREATE SESSION privilege; logon denied
 --- This error is thrown if a user wants to log on a database but lacks the create session system privilege.
@@ -225,11 +241,12 @@ grant connect, resource,dba to aom;
 ---回收用户unlimited tablespace权限，这样就可以导入到用户缺省表空间：
 revoke unlimited tablespace from aom;
 alter user aom quota 0 on aom_space;
-alter user aom quota unlimited on aom_space;
-</code></pre>
+alter user aom quota unlimited on aom_space;</code></pre>
 
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+    </div>
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
 </body>
 </html>

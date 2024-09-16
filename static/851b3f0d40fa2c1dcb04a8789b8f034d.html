@@ -1,105 +1,92 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Linux awk less tail grep 使用</title>
-<meta name="description" content="学习使用linux小工具">
-<meta name="keywords" content="awk sed grep 日志">
 <style>
 body {
-  max-width: 820px;
-  margin: 0 auto;
-  font-family: sans-serif;
-  background-color: #f0f0f0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  transition: background-color 0.3s ease;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s ease;
 }
 
 h1 {
-  font-size: 20px;
-  text-align: center;
+    font-size: 20px;
 }
 
 h2 {
-  font-size: 18px;
+    font-size: 18px;
 }
 
 h3 {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 h4 {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 h5 {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 h6 {
-  font-size: 11px;
+    font-size: 11px;
 }
 
 pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    white-space: pre-wrap;
 }
 
 code {
-  font-family: monospace;
-  color: #333;
-  background-color: #f0f0f0;
+    font-family: monospace;
 }
 
-.night-mode {
-  background-color: #181818;
-  color: #fff;
-}
-
-.night-mode code {
-  color: #eee;
-  background-color: #282828;
-}
-
-.night-mode pre {
-  background-color: #282828;
+.highlight {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
 }
 
 footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.title, .keywords, .description {
+    text-align: center;
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<meta charset="UTF-8">
+<title>Linux awk less tail grep 使用</title>
+<meta name="description" content="学习使用linux小工具">
+<meta name="keywords" content="awk sed grep 日志">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // 获取当前时间
-    const now = new Date();
-    const hour = now.getHours();
+hljs.initHighlightingOnLoad();
+const randomSeed = 199602051111;
+const currentHour = new Date().getHours();
+const isNightMode = currentHour >= 19 || currentHour <= 6;
 
-    // 判断白天/夜晚模式
-    if (hour >= 6 && hour < 18) {
-      document.body.classList.remove('night-mode');
-    } else {
-      document.body.classList.add('night-mode');
-    }
-
-    // 代码高亮
-    Prism.highlightAll();
-  });
+if (isNightMode) {
+    document.body.style.backgroundColor = '#222';
+    document.body.style.color = '#fff';
+}
 </script>
 </head>
 <body>
-<h1>Linux awk less tail grep 使用</h1>
-<p>学习使用linux小工具</p>
+<h1 class="title">Linux awk less tail grep sed 等命令使用</h1>
+<h2 class="keywords">关键字: awk sed grep 日志</h2>
+<p class="description">学习使用linux小工具</p>
 
-<h2>Linux awk less grep sed 等命令使用</h2>
 <pre><code>set time = 12:34:56
 set hr = `echo $time | awk '{split($0,a,":" ); print a[1]}'` # = 12
 
@@ -142,6 +129,7 @@ sed -n '/^2011-08-23.*ERROR/p' demolog.log
 #指定执行的sed文件
 sed -f demo.sed2 demo.log
 </code></pre>
+
 <h3>demo.sed2</h3>
 <pre><code>#n   #这一行用法和命令中的-n一样意思，就是默认不输出
 #demo.sed2
@@ -156,10 +144,12 @@ sed -f test.sed demolog.log | sort -t@ -k2,2n -k3,3r -k1,1  #n为按数字排序
 awk 'BEGIN{FS="@"} {print $2,$3}' demo.log_after_sort   #BEGIN中预处理的是，把@号作为行的列分割符,把分割后的行的第2，3列输出
 
 </code></pre>
+
 <h3>对指定时间范围内的日志进行统计，包括输出INFO，ERROR总数，记录总数，每个订单记录分类统计</h3>
 <pre><code>sed -f demo.sed demolog.log | sort -t@ -k2,2n -k3,3r -k1,1 | awk -f demo.awk
 
 </code></pre>
+
 <h3>demo.awk</h3>
 <pre><code>#下面的例子是作为命令行输入的，利用单引号作为换行标记，这样就不用另外把脚本写进文件调用了
 awk '
@@ -179,6 +169,7 @@ printf("INFO count:%d ERROR count:%d\n",info_count,error_count)
 } ' demo.log_after_sort
 
 </code></pre>
+
 <pre><code>ll -lrth #:按照更改时间倒序排列，最新文件在下边
 
 ll -lrSh #:按照文件大小倒序排列，最大文件在下边
@@ -215,6 +206,7 @@ jackuser
 vboxusers
 aln
 </code></pre>
+
 <h3>清除 Javascript 脚本里面的所有console(包含即删除整行)</h3>
 <pre><code> sed -i "" "/console/d" app.txt # Mac （ Mac默认会要求你操作源文件的时候备份）
 
@@ -231,8 +223,9 @@ git checkout . && git clean -xdf
 
 
 </code></pre>
+
 <footer>
-Power By Gemini TextGenerate 2024-09-16
+    Power By Gemini TextGenerate 2024-09-16
 </footer>
 </body>
 </html>

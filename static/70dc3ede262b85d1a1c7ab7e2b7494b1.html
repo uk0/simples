@@ -1,112 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Traefik 负载均衡</title>
-  <meta name="description" content="Traefik 是一款开源的反向代理与负载均衡工具。它最大的优点是能够与常见的微服务系统直接整合，可以实现自动化动态配置。目前支持Docker, Swarm, Mesos/Marathon, Mesos, Kubernetes, Consul, Etcd, Zookeeper, BoltDB, Rest API等等后端模型">
-  <meta name="keywords" content="docker, traefik, kubernetes, 负载均衡, 反向代理">
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f0f0f0;
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      transition: background-color 0.5s;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traefik 负载均衡</title>
+<meta name="description" content="Traefik 是一款开源的反向代理与负载均衡工具。它最大的优点是能够与常见的微服务系统直接整合，可以实现自动化动态配置。目前支持Docker, Swarm, Mesos/Marathon, Mesos, Kubernetes, Consul, Etcd, Zookeeper, BoltDB, Rest API等等后端模型" />
+<meta name="keywords" content="docker" />
+<style>
+body {
+  font-family: sans-serif;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-    h1, h2, h3, h4, h5, h6 {
-      text-align: center;
-    }
+h1 {
+  font-size: 20px;
+  text-align: center;
+}
 
-    h1 {
-      font-size: 20px;
-    }
+h2 {
+  font-size: 18px;
+}
 
-    h2 {
-      font-size: 18px;
-    }
+h3 {
+  font-size: 16px;
+}
 
-    h3 {
-      font-size: 16px;
-    }
+h4 {
+  font-size: 14px;
+}
 
-    h4 {
-      font-size: 14px;
-    }
+h5 {
+  font-size: 12px;
+}
 
-    h5 {
-      font-size: 12px;
-    }
+h6 {
+  font-size: 11px;
+}
 
-    h6 {
-      font-size: 11px;
-    }
+pre {
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
 
-    pre {
-      background-color: #f0f0f0;
-      padding: 10px;
-      overflow-x: auto;
-      border-radius: 5px;
-    }
+code {
+  font-family: Consolas, monospace;
+  font-size: 14px;
+}
 
-    code {
-      font-family: monospace;
-      background-color: #f0f0f0;
-      padding: 2px 4px;
-      border-radius: 3px;
-    }
+footer {
+  text-align: center;
+  margin-top: 20px;
+}
 
-    footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-    }
+.night-mode {
+  background: #222;
+  color: #eee;
+}
 
-    .highlight, .prism-code {
-      background-color: #f0f0f0;
-      padding: 10px;
-      overflow-x: auto;
-      border-radius: 5px;
-      font-family: monospace;
-    }
-  </style>
-</head>
-<body>
-  <script>
-    // 获取当前时间
+.night-mode code {
+  color: #eee;
+}
+
+.night-mode pre {
+  background-color: #333;
+}
+
+.night-mode h1, .night-mode h2, .night-mode h3, .night-mode h4, .night-mode h5, .night-mode h6 {
+  color: #eee;
+}
+
+.night-mode a {
+  color: #eee;
+}
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
     const now = new Date();
     const hour = now.getHours();
-
-    // 判断白天或夜晚模式
-    if (hour >= 6 && hour < 18) {
-      document.body.style.backgroundColor = "#f0f0f0";
-    } else {
-      document.body.style.backgroundColor = "#222";
-      document.body.style.color = "#fff";
+    if (hour >= 18 || hour <= 6) {
+      document.body.classList.add("night-mode");
     }
-  </script>
-  <h1>Traefik 负载均衡</h1>
-  <p>Traefik 是一款开源的反向代理与负载均衡工具。它最大的优点是能够与常见的微服务系统直接整合，可以实现自动化动态配置。目前支持Docker, Swarm, Mesos/Marathon, Mesos, Kubernetes, Consul, Etcd, Zookeeper, BoltDB, Rest API等等后端模型</p>
+  });
+</script>
+</head>
+<body>
+<h1>Traefik 负载均衡</h1>
+<p>Traefik 是一款开源的反向代理与负载均衡工具。它最大的优点是能够与常见的微服务系统直接整合，可以实现自动化动态配置。目前支持Docker, Swarm, Mesos/Marathon, Mesos, Kubernetes, Consul, Etcd, Zookeeper, BoltDB, Rest API等等后端模型</p>
 
-  <h2>Traefik 简介</h2>
-  <p>traefik 官网 <a href="https://docs.traefik.io/">https://docs.traefik.io/</a></p>
-  <p>github   <a href="https://github.com/containous/traefik">https://github.com/containous/traefik</a></p>
+<h2>Traefik 简介</h2>
+<p>traefik 官网 <a href="https://docs.traefik.io/">https://docs.traefik.io/</a>  </p>
+<p>github   <a href="https://github.com/containous/traefik">https://github.com/containous/traefik</a></p>
 
-  <h2>traefik 与 kubernetes</h2>
-
-  <h3>1.1 kubernetes 环境</h3>
-  <pre><code>[root@k8s-node-1 ~]#kubectl get nodes
+<h2>traefik 与 kubernetes</h2>
+<h3>1.1 kubernetes 环境</h3>
+<pre><code>[root@k8s-node-1 ~]#kubectl get nodes
 NAME         STATUS         AGE
 k8s-node-1   Ready,master   5d
 k8s-node-2   Ready          5d
 k8s-node-3   Ready          5d
+
 </code></pre>
 
-  <h3>1.2 下载 traefik-dm</h3>
-  <pre><code># 定义 node-2 node-3 标签。
+<h3>1.2 下载 traefik-dm</h3>
+<pre><code># 定义 node-2 node-3 标签。
 
 kubectl label nodes k8s-node-2 role=traefik-lb
 kubectl label nodes k8s-node-3 role=traefik-lb
@@ -195,8 +197,8 @@ kube-system   traefik-ingress-controller   1         1         1            1   
 
 </code></pre>
 
-  <h3>1.3 部署一个 nginx 应用</h3>
-  <pre><code># 创建一个 nginx yaml 文件
+<h3>1.3 部署一个 nginx 应用</h3>
+<pre><code># 创建一个 nginx yaml 文件
 
 apiVersion: extensions/v1beta1 
 kind: Deployment 
@@ -248,8 +250,8 @@ nginx-dm   2         2         2            2           35m
 	
 </code></pre>
 
-  <h3>1.4 创建 traefik ingress</h3>
-  <pre><code># 创建 traefik-ingress yaml 文件
+<h3>1.4 创建 traefik ingress</h3>
+<pre><code># 创建 traefik-ingress yaml 文件
 
 
 apiVersion: extensions/v1beta1
@@ -279,8 +281,8 @@ traefik-ingress   traefik.test.jicki.me             80        32m
 	
 </code></pre>
 
-  <h3>1.5 创建 traefik web ui </h3>
-  <pre><code># 下载 web ui yaml 文件
+<h3>1.5 创建 traefik web ui </h3>
+<pre><code># 下载 web ui yaml 文件
 
 curl -O https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/ui.yaml
 
@@ -288,8 +290,8 @@ curl -O https://raw.githubusercontent.com/containous/traefik/master/examples/k8s
 
 </code></pre>
 
-  <h3>1.6 访问 nginx 应用</h3>
-  <pre><code>[root@k8s-node-1 ~]#curl -I traefik.test.jicki.me
+<h3>1.6 访问 nginx 应用</h3>
+<pre><code>[root@k8s-node-1 ~]#curl -I traefik.test.jicki.me
 HTTP/1.1 200 OK
 Accept-Ranges: bytes
 Content-Length: 612
@@ -301,15 +303,15 @@ Server: nginx/1.11.7
 
 </code></pre>
 
-  <h3>1.7 访问 traefik web ui</h3>
-  <p>http://10.6.0.187:8888</p>
-  <p>http://10.6.0.188:8888</p>
+<h3>1.7 访问 traefik web ui</h3>
+<pre><code>http://10.6.0.187:8888
+http://10.6.0.188:8888
+</code></pre>
 
-  <h3>1.8 心跳检测</h3>
-  <p>Null</p>
-
-  <footer>
-    Power By Gemini TextGenerate 2024-09-16
-  </footer>
+<h3>1.8 心跳检测</h3>
+<p>Null</p>
+<footer>
+  Power By Gemini TextGenerate 2024-09-16
+</footer>
 </body>
 </html>

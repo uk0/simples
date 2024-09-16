@@ -1,137 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>通过Serverless 获取 hadoop 文件系统的[原创]</title>
-<meta name="description" content="开放文件下载">
-<meta name="keywords" content="serverless 操作 hdfs">
+<meta name="description" content="开放文件下载" />
+<meta name="keywords" content="serverless 操作 hdfs" />
 <style>
 body {
-  font-family: sans-serif;
   background-color: #f5f5f5;
   color: #333;
+  font-family: sans-serif;
   max-width: 820px;
   margin: 0 auto;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+}
+
 h1 {
   font-size: 20px;
-  margin-bottom: 10px;
-  text-align: center;
 }
 
 h2 {
   font-size: 18px;
-  margin-bottom: 10px;
 }
 
 h3 {
   font-size: 16px;
-  margin-bottom: 10px;
 }
 
 h4 {
   font-size: 14px;
-  margin-bottom: 10px;
 }
 
 h5 {
   font-size: 12px;
-  margin-bottom: 10px;
 }
 
 h6 {
   font-size: 11px;
-  margin-bottom: 10px;
 }
 
 pre {
-  background-color: #eee;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-code {
-  background-color: #eee;
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-family: monospace;
-}
-
-.highlight {
   background-color: #f0f0f0;
   padding: 10px;
   border-radius: 5px;
   overflow-x: auto;
 }
 
-.highlight pre {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
+code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 2px 4px;
+  border-radius: 3px;
 }
 
-.highlight code {
+.highlight, .prism-code {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.highlight pre, .prism-code pre {
   background-color: transparent;
   padding: 0;
   margin: 0;
+  border-radius: 0;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 footer {
   text-align: center;
-  margin-top: 20px;
   font-size: 12px;
+  margin-top: 20px;
 }
 
-.night-mode {
-  background-color: #222;
-  color: #eee;
-}
-
-.night-mode pre {
-  background-color: #333;
-}
-
-.night-mode code {
-  background-color: #333;
-}
 </style>
 <script>
-  // 获取当前时间，判断是否为夜间模式
-  const now = new Date();
-  const hour = now.getHours();
-  const isNight = hour >= 19 || hour < 6;
+  // Set the random seed
+  Math.seedrandom(199602051111);
 
-  // 设置主题
-  if (isNight) {
-    document.body.classList.add('night-mode');
+  // Function to get a random number between min and max
+  function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  // 初始化 Highlight.js 或 Prism.js
-  // ... (根据你使用的代码高亮库进行初始化)
+  // Function to change the theme
+  function changeTheme() {
+    const hour = new Date().getHours();
+    const body = document.body;
 
-  // 获取所有代码块
-  const codeBlocks = document.querySelectorAll('pre code');
+    if (hour >= 18 || hour < 6) {
+      // Night theme
+      body.style.backgroundColor = "#222";
+      body.style.color = "#fff";
+    } else {
+      // Day theme
+      body.style.backgroundColor = "#f5f5f5";
+      body.style.color = "#333";
+    }
+  }
 
-  // 循环遍历代码块，添加高亮效果
-  codeBlocks.forEach(codeBlock => {
-    // 使用 Highlight.js 或 Prism.js 对代码块进行高亮
-    // ... (根据你使用的代码高亮库进行高亮)
+  // Call the changeTheme function on page load
+  changeTheme();
+
+  // Add event listener for highlighting code
+  window.addEventListener('DOMContentLoaded', function() {
+    // Use Highlight.js or Prism.js to highlight code
+    // ... your Highlight.js or Prism.js code here ...
   });
 </script>
 </head>
 <body>
-<h1>通过Serverless (Kubeless)  进行操作Hdfs , 实现下载文件.</h1>
+<h1>通过Serverless 获取 hadoop 文件系统的[原创]</h1>
+<p style="text-align:center;">
+  <meta name="description" content="开放文件下载" />
+  <meta name="keywords" content="serverless 操作 hdfs" />
+</p>
 
-<h2>code</h2>
+<h2>  通过Serverless (Kubeless)  进行操作Hdfs , 实现下载文件.</h2>
 
-<h3>Python </h3>
+<h3>  code</h3>
 
-<pre><code>from hdfs import Client
+<h4> Python </h4>
+<pre><code class="language-python">from hdfs import Client
 from bottle import route,HTTPResponse
 client = Client("http://hdfs-web-svc.cloudera:50070", root="/", timeout=100, session=False)
 
@@ -147,9 +152,8 @@ def getfile():
 
 </code></pre>
 
-<h3>serverless.yml</h3>
-
-<pre><code># Welcome to Serverless!
+<h4>  serverless.yml</h4>
+<pre><code class="language-yaml"># Welcome to Serverless!
 #
 # For full config options, check the kubeless plugin docs:
 #    https://github.com/serverless/serverless-kubeless
@@ -180,15 +184,13 @@ functions:
 
 </code></pre>
 
-<h3>requirements.txt</h3>
-
-<pre><code>bottle==0.12.13
+<h4> requirements.txt</h4>
+<pre><code class="language-text">bottle==0.12.13
 hdfs==2.1.0
 </code></pre>
 
-<h3>kubernetes Ingress </h3>
-
-<pre><code>apiVersion: extensions/v1beta1
+<h4> kubernetes Ingress </h4>
+<pre><code class="language-yaml">apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: getfile-ing
@@ -203,7 +205,7 @@ spec:
           servicePort: 8080
 </code></pre>
 
-<h2>相关地址</h2>
+<h3>  相关地址</h3>
 
 > https://github.com/serverless/
 
@@ -211,8 +213,10 @@ spec:
 
 > https://github.com/kubeless/kubeless/tree/f49533233cd79b116113ea10454cb2ca234dadfd/docker/runtime
 
+<p style="text-align:center;">转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+
 <footer>
-Power By Gemini TextGenerate 2024-09-16
+  Power By Gemini TextGenerate 2024-09-16
 </footer>
 </body>
 </html>

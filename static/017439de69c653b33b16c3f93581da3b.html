@@ -1,135 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
-body {
-  font-family: sans-serif;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f5f5f5;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java RESTfull状态码以及返回码Enum实现[学习]</title>
+    <meta name="description" content="Java, RESTfull,Enum">
+    <meta name="keywords" content="Java,Enum">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-h1 {
-  font-size: 20px;
-}
+        h1 {
+            font-size: 20px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  overflow-x: auto;
-  border-radius: 5px;
-}
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
 
-code {
-  font-family: monospace;
-}
+        code {
+            font-family: monospace;
+        }
 
-.container {
-  text-align: center;
-}
+        .code-block {
+            margin-bottom: 10px;
+        }
 
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
 
-.description {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-.keywords {
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-}
-
-.highlight {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-.highlight pre {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
-}
-
-.highlight code {
-  font-family: monospace;
-}
-
-.code-block {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-.code-block pre {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
-}
-
-.code-block code {
-  font-family: monospace;
-}
-</style>
-<meta charset="UTF-8">
-<title>Java RESTfull状态码以及返回码Enum实现[学习]</title>
-<meta name="description" content="Java, RESTfull,Enum">
-<meta name="keywords" content="Java,Enum">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<script>
-  hljs.initHighlightingOnLoad();
-  const time = new Date();
-  const hour = time.getHours();
-  if (hour >= 18 || hour < 6) {
-    document.body.style.backgroundColor = '#222';
-    document.body.style.color = '#eee';
-  }
-</script>
+        .title-container {
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>hljs.highlightAll();</script>
 </head>
 <body>
-<div class="container">
-  <h1 class="title">Java RESTfull状态码以及返回码Enum实现[学习]</h1>
-  <p class="description">Java, RESTfull,Enum</p>
-  <p class="keywords">Java,Enum</p>
-</div>
-
-<h2>1. Java中枚举类可以用于记录错误码和错误码对应的错误信息，其实现的技巧如下：</h2>
-<pre><code class="language-java">package todcloud.utils.Enum;
+    <div class="title-container">
+        <h1>Java RESTfull状态码以及返回码Enum实现[学习]</h1>
+        <p>Java, RESTfull,Enum</p>
+    </div>
+    <hr>
+    <h2>1. Java中枚举类可以用于记录错误码和错误码对应的错误信息，其实现的技巧如下：</h2>
+    <pre><code class="language-java">
+package todcloud.utils.Enum;
 
 /**
  * Created by zhangjianxin on 2017/6/29.
@@ -161,10 +110,11 @@ public enum ResponseInfo {
         return SERVER_ERROR.getReturnMsg();
     }
 }
-</code></pre>
 
-<h2>2. 调用测试</h2>
-<pre><code class="language-java">package todcloud.utils.Enum;
+    </code></pre>
+    <h2>2. 调用测试</h2>
+    <pre><code class="language-java">
+package todcloud.utils.Enum;
 
 /**
  * Created by zhangjianxin on 2017/6/29.
@@ -176,12 +126,15 @@ public class ResponseInfoTest {
         System.out.println(ResponseInfo.getResponseMsg(code));
     }
 }
-</code></pre>
 
-> 通过复习Java中的Enum来完成这个功能。
 
-<h2>3.失败案例</h2>
-<pre><code class="language-java">package todcloud.utils.Enum;
+    </code></pre>
+    <blockquote>
+        通过复习Java中的Enum来完成这个功能。
+    </blockquote>
+    <h2>3.失败案例</h2>
+    <pre><code class="language-java">
+package todcloud.utils.Enum;
 
 /**
  * Created by zhangjianxin on 2017/6/29.
@@ -219,9 +172,9 @@ public enum ReturnCode {
         this.CodeIndex = CodeIndex;
     }
 }
-</code></pre>
-
-<pre><code class="language-java">package todcloud.utils.Enum;
+    </code></pre>
+    <pre><code class="language-java">
+package todcloud.utils.Enum;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -256,9 +209,9 @@ public enum ReturnCode2 implements ReturnCodeIns{
         return null;
     }
 }
-</code></pre>
-
-<pre><code class="language-java">package todcloud.utils.Enum;
+    </code></pre>
+    <pre><code class="language-java">
+package todcloud.utils.Enum;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -270,9 +223,10 @@ public interface ReturnCodeIns {
     void print();
     JSONObject getInfo();
 }
-</code></pre>
 
-<pre><code class="language-java">package todcloud.utils.Enum;
+    </code></pre>
+    <pre><code class="language-java">
+package todcloud.utils.Enum;
 
 /**
  * Created by zhangjianxin on 2017/6/29.
@@ -284,10 +238,16 @@ public class ReturnCodeMain {
 
     }
 }
-</code></pre>
 
-<footer>
-  Power By Gemini TextGenerate 2024-09-16
-</footer>
+    </code></pre>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+    <script>
+        const currentTime = new Date();
+        const isNight = currentTime.getHours() >= 19 || currentTime.getHours() < 6;
+        document.body.style.backgroundColor = isNight ? '#222' : '#f5f5f5';
+        document.body.style.color = isNight ? '#eee' : '#333';
+    </script>
 </body>
 </html>

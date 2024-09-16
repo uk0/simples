@@ -8,13 +8,12 @@
 <meta name="keywords" content="hdfs">
 <style>
 body {
-  font-family: sans-serif;
-  background-color: #f0f0f0;
-  color: #333;
   max-width: 820px;
   margin: 0 auto;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
 }
 
@@ -46,56 +45,61 @@ h6 {
   font-size: 11px;
 }
 
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-code {
-  font-family: monospace;
-  background-color: #f0f0f0;
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-size: 14px;
+pre code {
+  white-space: pre-wrap;
 }
 
 .night-mode {
-  background-color: #222;
+  background-color: #181818;
+  color: #ddd;
+}
+
+.night-mode h1,
+.night-mode h2,
+.night-mode h3,
+.night-mode h4,
+.night-mode h5,
+.night-mode h6 {
   color: #eee;
 }
 
 .night-mode pre {
-  background-color: #333;
-}
-
-.night-mode code {
-  background-color: #333;
-  color: #eee;
+  background-color: #282828;
 }
 
 footer {
   text-align: center;
-  margin-top: 20px;
+  padding: 10px 0;
   font-size: 12px;
 }
 </style>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var now = new Date();
-    var hour = now.getHours();
-    if (hour >= 18 || hour < 6) {
-      document.body.classList.add('night-mode');
-    }
+// Apply night mode based on current time
+const currentTime = new Date();
+const hour = currentTime.getHours();
+
+if (hour >= 18 || hour < 6) {
+  document.body.classList.add('night-mode');
+}
+
+// Initialize Highlight.js or Prism.js for code highlighting
+document.addEventListener('DOMContentLoaded', () => {
+  const codeBlocks = document.querySelectorAll('pre code');
+  codeBlocks.forEach(codeBlock => {
+    // Use Highlight.js or Prism.js here
+    // Example using Highlight.js:
+    hljs.highlightElement(codeBlock);
   });
+});
 </script>
 </head>
 <body>
 <h1>seerverless操作hdfs上传数据。</h1>
 <p>这只是一次尝试。。。。</p>
 <h2> kubernetes serverless 操作 Hadoop Hdfs </h2>
-<p>serverless Python 操作hdfs</p>
+<ul>
+<li>serverless Python 操作hdfs</li>
+</ul>
 <pre><code class="language-bash"># /usr/bin/env python
 # coding=utf-8
 
@@ -141,7 +145,9 @@ def doupload():
 
     return 'ok'
 </code></pre>
-<p>serverless.yml</p>
+<ul>
+<li>serverless.yml</li>
+</ul>
 <pre><code class="language-yaml"># Welcome to Serverless!
 #
 # For full config options, check the kubeless plugin docs:
@@ -172,7 +178,10 @@ functions:
     handler: task.upload
 
 </code></pre>
-<p>具体信息看 第一条关于 serverless 的文章。</p>
+<ul>
+<li>具体信息看 第一条关于 serverless 的文章。</li>
+</ul>
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
 <footer>
 Power By Gemini TextGenerate 2024-09-16
 </footer>

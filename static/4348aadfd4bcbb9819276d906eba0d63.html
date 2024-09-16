@@ -8,95 +8,86 @@
     <meta name="keywords" content="Java, GitHub Pages">
     <style>
         body {
-            background-color: #f5f5f5;
-            color: #333;
             font-family: sans-serif;
+            background-color: #f0f0f0;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+
         h1 {
             font-size: 20px;
-            margin-top: 0;
         }
+
         h2 {
             font-size: 18px;
         }
+
         h3 {
             font-size: 16px;
         }
+
         h4 {
             font-size: 14px;
         }
+
         h5 {
             font-size: 12px;
         }
+
         h6 {
             font-size: 11px;
         }
+
         pre {
             background-color: #f5f5f5;
-            border: 1px solid #ccc;
             padding: 10px;
+            border-radius: 5px;
             overflow-x: auto;
         }
+
         code {
             font-family: monospace;
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
         }
+
         footer {
             text-align: center;
-            margin-top: 20px;
             font-size: 12px;
-        }
-        .night-mode {
-            background-color: #222;
-            color: #eee;
-        }
-        .night-mode code {
-            background-color: #222;
-            color: #eee;
-        }
-        .night-mode pre {
-            background-color: #222;
-            border: 1px solid #eee;
+            margin-top: 20px;
         }
     </style>
-</head>
-<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>hljs.highlightAll();</script>
     <script>
-        // 获取当前时间
-        const now = new Date();
-        const hour = now.getHours();
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
 
-        // 判断是白天还是夜晚
-        if (hour >= 18 || hour < 6) {
-            document.body.classList.add('night-mode');
+        if (new Date().getHours() >= 18 || new Date().getHours() < 6) {
+            body.classList.add('night-mode');
+        } else {
+            body.classList.add('day-mode');
         }
 
-        // 随机种子
-        const seed = 199602051111;
-        Math.seedrandom(seed);
-
-        // 获取所有代码块
-        const codeBlocks = document.querySelectorAll('pre code');
-
-        // 使用 Highlight.js 或 Prism.js 高亮代码
-        codeBlocks.forEach(codeBlock => {
-            // 使用 Highlight.js 或 Prism.js 高亮代码
-            // ...
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('night-mode');
+            body.classList.toggle('day-mode');
         });
     </script>
+</head>
+<body>
     <h1>使用travis-ci 来持续集成jekyll静态博客.</h1>
     <h2>简介</h2>
-    <p>Travis CI提供一个在线的持续集成服务，用来构建托管在github上的代码。
-    许多知名的开源项目使用它来自动构建测试代码,它支持hexo的运行环境node.js。
-    原理很简单，Travis会在你每一次在github上提交代码后，生成一个Linux虚拟机来运行你配置好的任务,
-    生成和部署hexo只需要一个命令 hexo gd ，但是Travis CI需要有我们的github项目上传代码的权限，
-    所以我们需要使用SSH key来使Travis CI拥有权限。还有一些其他的问题也都参开hexo作者的博文解决了，
-    用Travis CI自动部署网站到Github。</p>
+    <p>Travis CI提供一个在线的持续集成服务，用来构建托管在github上的代码。许多知名的开源项目使用它来自动构建测试代码,它支持hexo的运行环境node.js。原理很简单，Travis会在你每一次在github上提交代码后，生成一个Linux虚拟机来运行你配置好的任务,生成和部署hexo只需要一个命令 hexo gd ，但是Travis CI需要有我们的github项目上传代码的权限，所以我们需要使用SSH key来使Travis CI拥有权限。还有一些其他的问题也都参开hexo作者的博文解决了，用Travis CI自动部署网站到Github。</p>
     <pre><code class="bash">#安装travis-ci的命令行工具
 
 gem install travis
@@ -141,7 +132,7 @@ script:
 - hexo g
 - hexo deploy
 </code></pre>
-    <p>* 转载请注明出处：https://firsh.me/2017/06/13/travis-ci-myblog/</p>
+    <p>转载请注明出处：<a href="https://firsh.me/2017/06/13/travis-ci-myblog/">https://firsh.me/2017/06/13/travis-ci-myblog/</a></p>
     <footer>
         Power By Gemini TextGenerate 2024-09-16
     </footer>

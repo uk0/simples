@@ -1,103 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>为 Docker for Mac 配置 HTTP 代理</title>
-<meta name="description" content="为 Docker for Mac 配置 HTTP 代理 方便Pull 镜像，提高速度。">
-<meta name="keywords" content="dockerproxy bash">
-<style>
-body {
-  font-family: sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>为 Docker for Mac 配置 HTTP 代理</title>
+    <meta name="description" content="为 Docker for Mac 配置 HTTP 代理 方便Pull 镜像，提高速度。">
+    <meta name="keywords" content="dockerproxy bash">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
 
-h1, h2, h3, h4, h5, h6 {
-  text-align: center;
-}
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+        }
 
-h1 {
-  font-size: 20px;
-}
+        h2 {
+            font-size: 18px;
+        }
 
-h2 {
-  font-size: 18px;
-}
+        h3 {
+            font-size: 16px;
+        }
 
-h3 {
-  font-size: 16px;
-}
+        h4 {
+            font-size: 14px;
+        }
 
-h4 {
-  font-size: 14px;
-}
+        h5 {
+            font-size: 12px;
+        }
 
-h5 {
-  font-size: 12px;
-}
+        h6 {
+            font-size: 11px;
+        }
 
-h6 {
-  font-size: 11px;
-}
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
 
-pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, 'Courier New', monospace;
+        }
 
-code {
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取当前时间，判断白天/夜晚模式
+            const now = new Date();
+            const hour = now.getHours();
+            if (hour >= 18 || hour < 6) {
+                document.body.style.backgroundColor = '#222';
+                document.body.style.color = '#fff';
+            }
 
-img {
-  max-width: 100%;
-  height: auto;
-}
+            // 初始化代码高亮
+            Prism.highlightAll();
 
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-<script>hljs.highlightAll();</script>
+            // 添加交互效果
+            const codeBlocks = document.querySelectorAll('pre code');
+            codeBlocks.forEach(codeBlock => {
+                codeBlock.addEventListener('click', function() {
+                    const pre = codeBlock.parentElement;
+                    if (pre.classList.contains('active')) {
+                        pre.classList.remove('active');
+                    } else {
+                        pre.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-<h1>为 Docker for Mac 配置 HTTP 代理</h1>
-<h2>需求</h2>
-<p>使用 Docker for Mac 时，让 docker pull/push 走本地的代理端口。</p>
-<h2>简介</h2>
-<p>Docker 是一种虚拟容器，可以提高开发过程中环境的一致性，便于维护，并且大大促进了知识以及经验的分享和积累。Docker for Mac 是 Docker 专门为 macOS 开发的图形客户端，使用起来相当方便，不过如果从 docker 仓库拉取镜像，那速度真是感人，2.0G 的镜像，估计一天一夜都下载不完，中途中断更是让人崩溃。更悲剧的是，docker 的网络流量无法走设置好的代理，比如本地的 http://127.0.0.1:8118，无论是在 Docker for Mac 图形界面里设置，或者在环境变量里设置 http_proxy/https_proxy 。另外，DaoCloud 的 Docker 加速器以及阿里云的 Docker 国内镜像服务，都有一定的效果，但速度不甚理想，而且新的 docker 镜像可能还没来得及缓存。</p>
-<h2>解决方案</h2>
-<ol>
-<li>
-<p>把本地代理监听地址调整到 0.0.0.0</p>
-<p>在本地设置代理时，把监听地址从 127.0.0.1 调整到 0.0.0.0。不同的软件设置方法不太相同，我用的privoxy。</p>
-<ul>
-<li>Mac 安装 <code>privoxy</code></li>
-</ul>
-<pre><code class="bash">brew install privoxy
+    <h1>为 Docker for Mac 配置 HTTP 代理</h1>
+    <p>使用 Docker for Mac 时，让 docker pull/push 走本地的代理端口。</p>
+
+    <h2>需求</h2>
+    <p>使用 Docker for Mac 时，让 docker pull/push 走本地的代理端口。</p>
+
+    <h2>简介</h2>
+    <p>Docker 是一种虚拟容器，可以提高开发过程中环境的一致性，便于维护，并且大大促进了知识以及经验的分享和积累。Docker for Mac 是 Docker 专门为 macOS 开发的图形客户端，使用起来相当方便，不过如果从 docker 仓库拉取镜像，那速度真是感人，2.0G 的镜像，估计一天一夜都下载不完，中途中断更是让人崩溃。更悲剧的是，docker 的网络流量无法走设置好的代理，比如本地的 http://127.0.0.1:8118，无论是在 Docker for Mac 图形界面里设置，或者在环境变量里设置 http_proxy/https_proxy 。另外，DaoCloud 的 Docker 加速器以及阿里云的 Docker 国内镜像服务，都有一定的效果，但速度不甚理想，而且新的 docker 镜像可能还没来得及缓存。</p>
+
+    <h2>解决方案</h2>
+
+    <h3>1. 把本地代理监听地址调整到 0.0.0.0</h3>
+    <p>在本地设置代理时，把监听地址从 127.0.0.1 调整到 0.0.0.0。不同的软件设置方法不太相同，我用的privoxy。</p>
+
+    <h4>Mac 安装 `privoxy`</h4>
+    <pre><code class="language-bash">brew install privoxy
 # brew
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Addr: https://brew.sh
-
 </code></pre>
-<ul>
-<li>privoxy  配置文件</li>
-</ul>
-<pre><code class="bash">    cat /usr/local/etc/privoxy/config
+
+    <h4>privoxy  配置文件</h4>
+    <pre><code class="language-bash">    cat /usr/local/etc/privoxy/config
     # 转发地址
     forward-socks5   /               localhost:1083 .
     # 监听地址
@@ -107,29 +127,27 @@ footer {
     forward            10.*.*.*/     .
     forward           127.*.*.*/     .
 </code></pre>
-</li>
-<li>
-<p>将本机的 lo0 网络接口设置成任意 IP</p>
-<p>lo0 接口被称作 loopback，默认是 127.0.0.1，这里可以设置任意可用 IP 地址：</p>
-<pre><code class="bash">sudo ifconfig lo0 alias 10.200.10.1/24    # 24是掩码
+
+    <h3>2. 将本机的 lo0 网络接口设置成任意 IP</h3>
+    <p>lo0 接口被称作 loopback，默认是 127.0.0.1，这里可以设置任意可用 IP 地址：</p>
+    <pre><code class="language-bash">sudo ifconfig lo0 alias 10.200.10.1/24    # 24是掩码
 </code></pre>
-</li>
-<li>
-<p>在 Docker for Mac 里设置代理 你可以看看自己的本地代理是在监听哪个端 <code>privoxy</code></p>
-<pre><code class="bash"> # 监听地址
+
+    <h3>3. 在 Docker for Mac 里设置代理</h3>
+    <p>你可以看看自己的本地代理是在监听哪个端 `privoxy`</p>
+    <pre><code class="language-bash"> # 监听地址
     listen-address  0.0.0.0:8118
 </code></pre>
-<p>不同的软件使用的端口可能不一样，根据情况设置，最后的代理地址就是上面第二部分的 IP 加上这个端口，如下图：</p>
-<img src="http://112firshme11224.test.upcdn.net/demos/f6838f96-60db-4123-a907-450351efda7a.png" alt="Docker for Mac 代理设置">
-</li>
-<li>
-<p>结果测试图</p>
-<img src="http://112firshme11224.test.upcdn.net/demos/d9600bf0-ce6a-41f6-a50b-ce569ea6bfb8.png" alt="Docker for Mac 代理测试">
-</li>
-</ol>
-<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-<footer>
-Power By Gemini TextGenerate 2024-09-16
-</footer>
+    <p>不同的软件使用的端口可能不一样，根据情况设置，最后的代理地址就是上面第二部分的 IP 加上这个端口，如下图：</p>
+    <img src="http://112firshme11224.test.upcdn.net/demos/f6838f96-60db-4123-a907-450351efda7a.png" alt="Docker for Mac 代理设置">
+
+    <h3>4.  结果测试图</h3>
+    <img src="http://112firshme11224.test.upcdn.net/demos/d9600bf0-ce6a-41f6-a50b-ce569ea6bfb8.png" alt="Docker pull 速度测试">
+
+    <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
 </body>
 </html>

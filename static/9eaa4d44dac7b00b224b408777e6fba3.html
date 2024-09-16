@@ -1,115 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>使用Sqoop将mysql数据导入到Hbase[整表,部分数据]</title>
 <meta name="description" content="sqoop 迁移数据">
 <meta name="keywords" content="sqoop">
 <style>
-body {
-    font-family: sans-serif;
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-}
-
-h1 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-h2 {
-    font-size: 18px;
-    margin-bottom: 8px;
-}
-
-h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
-}
-
-h4 {
-    font-size: 14px;
-    margin-bottom: 4px;
-}
-
-h5 {
-    font-size: 12px;
-    margin-bottom: 2px;
-}
-
-h6 {
-    font-size: 11px;
-    margin-bottom: 1px;
-}
-
-pre {
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-}
-
-code {
-    font-family: monospace;
-}
-
-.highlight {
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-}
-
-.highlight pre {
-    background-color: transparent;
-    padding: 0;
-    border-radius: 0;
-}
-
-.highlight pre code {
-    font-family: monospace;
-}
-
-footer {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.night {
-    background-color: #222;
-    color: #eee;
-}
-
-.night code {
-    color: #eee;
-}
-
-.night pre {
-    background-color: #333;
-}
-
-.night .highlight {
-    background-color: #333;
-}
-
-.night .highlight pre {
-    background-color: transparent;
-}
-
-.night .highlight pre code {
-    color: #eee;
-}
+    body {
+        background-color: #f0f0f0; /* 白天阅读模式 */
+        transition: background-color 0.5s ease;
+        font-family: sans-serif;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        font-size: 20px;
+        text-align: center;
+    }
+    h2 {
+        font-size: 18px;
+        text-align: center;
+    }
+    h3 {
+        font-size: 16px;
+    }
+    h4 {
+        font-size: 14px;
+    }
+    h5 {
+        font-size: 12px;
+    }
+    h6 {
+        font-size: 11px;
+    }
+    pre {
+        background-color: #f5f5f5;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+    }
+    code {
+        font-family: monospace;
+    }
+    footer {
+        text-align: center;
+        font-size: 12px;
+        margin-top: 20px;
+    }
 </style>
+<script>
+    // 获取当前时间，判断白天或夜晚模式
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour >= 18 || hour < 6) {
+        document.body.style.backgroundColor = '#333';
+    }
+
+    // 使用Highlight.js或Prism.js进行代码高亮
+    document.addEventListener('DOMContentLoaded', () => {
+        const codeBlocks = document.querySelectorAll('pre code');
+        codeBlocks.forEach(block => {
+            // Replace with your preferred highlight.js or prism.js setup
+            // Example with Highlight.js
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
 </head>
 <body>
 <h1>使用Sqoop将mysql数据导入到Hbase[整表,部分数据]</h1>
-<p>sqoop 迁移数据</p>
-<p>使用sqoop 将数据从mysql 导入到hbase 分为 整张表 和 部分数据，其中部分数据基于 where条件等。</p>
-<h2>相关的命令</h2>
+<h2 style="text-align: center;">sqoop 迁移数据</h2>
+<h3>相关的命令</h3>
 <pre><code># 整个表导入
 ./bin/sqoop import --driver com.mysql.jdbc.Driver --connect "jdbc:mysql://rm-adfagga.mysql.rds.aliyuncs.com/parking?zeroDateTimeBehavior=convertToNull" --username user1 --password 123123 --table parking_ths_car_record --hbase-table parking_ths_car_record_all --column-family id --hbase-row-key id --split-by park_id --hbase-create-table
 
@@ -137,14 +100,9 @@ footer {
 ./bin/sqoop import --connect "jdbc:mysql://rm-aaasdadadad.mysql.rds.aliyuncs.com/pp_parking?zeroDateTimeBehavior=convertToNull" --username user1 --password 123123 --query "select * from parking_ths_car_record  where createtime  BETWEEN '2018-09-01 00:00:00' AND '2018-12-26 00:00:00' AND \$CONDITIONS " --hbase-table 9_12_parking_ths_car_record --column-family id --hbase-row-key id --split-by park_id --hbase-create-table
 
 </code></pre>
-<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-<footer>Power By Gemini TextGenerate 2024-09-16</footer>
-<script>
-    const now = new Date();
-    const hour = now.getHours();
-    if (hour >= 18 || hour < 6) {
-        document.body.classList.add('night');
-    }
-</script>
+
+<footer>
+Power By Gemini TextGenerate 2024-09-16
+</footer>
 </body>
 </html>
