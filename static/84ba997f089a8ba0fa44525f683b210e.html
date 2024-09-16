@@ -1,91 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java metrics</title>
-    <meta name="description" content="关于Java web 监控系统。">
-    <meta name="keywords" content="Java, GitHub Pages">
-    <style>
-        body {
-            background-color: #000000; /*  像素风格 */
-            color: #ffffff;
-            font-family: sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
+<style>
+body {
+    background-color: #000000;
+    color: #00ff00;
+    font-family: monospace;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    max-width: 820px;
+    margin: 0 auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+}
 
-        h1 {
-            font-size: 20px;
-        }
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+    margin-bottom: 10px;
+}
 
-        h2 {
-            font-size: 18px;
-        }
+h1 {
+    font-size: 20px;
+}
 
-        h3 {
-            font-size: 16px;
-        }
+h2 {
+    font-size: 18px;
+}
 
-        h4 {
-            font-size: 14px;
-        }
+h3 {
+    font-size: 16px;
+}
 
-        h5 {
-            font-size: 12px;
-        }
+h4 {
+    font-size: 14px;
+}
 
-        h6 {
-            font-size: 11px;
-        }
+h5 {
+    font-size: 12px;
+}
 
-        code {
-            background-color: #222222;
-            color: #ffffff;
-            padding: 2px 4px;
-            border-radius: 2px;
-        }
+h6 {
+    font-size: 11px;
+}
 
-        pre {
-            background-color: #222222;
-            color: #ffffff;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
+p {
+    line-height: 21px;
+    text-align: left;
+}
 
-        pre code {
-            background-color: transparent;
-            padding: 0;
-            border-radius: 0;
-        }
+pre {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 10px;
+    line-height: 24px;
+    overflow-x: auto;
+}
 
-        footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
-            color: #888888;
-        }
+img {
+    display: block;
+    margin: 0 auto;
+    max-width: 600px;
+    height: 375px;
+}
 
-        .title-center {
-            text-align: center;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>
-        hljs.initHighlightingOnLoad();
-    </script>
+code {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 2px;
+    border-radius: 2px;
+}
+
+footer {
+    background-color: #000000;
+    color: #00ff00;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.highlight {
+    background-color: #222222;
+    color: #00ff00;
+}
+
+.highlight pre {
+    background-color: #222222;
+    color: #00ff00;
+}
+
+.highlight code {
+    background-color: #222222;
+    color: #00ff00;
+}
+
+.highlight .code {
+    background-color: #222222;
+    color: #00ff00;
+}
+</style>
+<meta charset="UTF-8">
+<title>Java metrics</title>
+<meta name="description" content="关于Java web 监控系统。">
+<meta name="keywords" content="Java, GitHub Pages">
 </head>
 <body>
-    <h1 class="title-center">Java metrics</h1>
-    <p class="title-center">关于Java web 监控系统。</p>
-
-    <h2>文档</h2>
-    <h3>Maven</h3>
-    <pre><code class="xml">
-    &lt;!--  metrics * --&gt;
+<h1>Java metrics</h1>
+<p>项目中有对程序的一个健康检查，以及TPS,QPS等。</p>
+<h2>文档</h2>
+<h3>Maven</h3>
+<pre><code class="language-xml">
+&lt;!--  metrics * --&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;io.dropwizard.metrics&lt;/groupId&gt;
         &lt;artifactId&gt;metrics-core&lt;/artifactId&gt;
@@ -106,9 +132,9 @@
         &lt;artifactId&gt;metrics-influxdb&lt;/artifactId&gt;
         &lt;version&gt;0.8.2&lt;/version&gt;
     &lt;/dependency&gt;
-    </code></pre>
-    <h3>核心工具类</h3>
-    <pre><code class="java">
+</code></pre>
+<h3>核心工具类</h3>
+<pre><code class="language-java">
 import com.codahale.metrics.*;
 import com.ktyh.think.filter.prometheus.DropwizardExportSetUp;
 import io.prometheus.client.CollectorRegistry;
@@ -137,8 +163,8 @@ public class MetricsCore {
     /**
      * @author 内存使用程度MB
      */
-    Gauge&lt;Long&gt; getFreeMemory = () -&gt; toMb(Runtime.getRuntime().freeMemory());
-    Gauge&lt;Long&gt; getTotalMemory = () -&gt; toMb(Runtime.getRuntime().totalMemory());
+    Gauge<Long> getFreeMemory = () -> toMb(Runtime.getRuntime().freeMemory());
+    Gauge<Long> getTotalMemory = () -> toMb(Runtime.getRuntime().totalMemory());
 
     public static synchronized MetricRegistry getInstance() {
         return METRIC_REGISTRY;
@@ -157,7 +183,7 @@ public class MetricsCore {
 
 
     public static void freeMemoryForJvm(MetricRegistry metrics) {
-        metrics.register(MetricRegistry.name("memory_free_mb_size"), new Gauge&lt;Long&gt;() {
+        metrics.register(MetricRegistry.name("memory_free_mb_size"), new Gauge<Long>() {
             @Override
             public Long getValue() {
                 return toMb(Runtime.getRuntime().freeMemory());
@@ -166,7 +192,7 @@ public class MetricsCore {
     }
 
     public static void totalMemoryForJvm(MetricRegistry metrics) {
-        metrics.register(MetricRegistry.name("memory_total_mb_size"), new Gauge&lt;Long&gt;() {
+        metrics.register(MetricRegistry.name("memory_total_mb_size"), new Gauge<Long>() {
             @Override
             public Long getValue() {
                 return toMb(Runtime.getRuntime().totalMemory());
@@ -281,15 +307,20 @@ public class MetricsCore {
     }
 }
 
-    </code></pre>
-    <h2>目前这种方式只是将数据推送到influxdb ，以及prometheus 。</h2>
-    <ul>
-        <li>数据采集</li>
-        <li>采集点(Filter,Controller,Service)</li>
-        <li>数据推送(influxdb,primetheus,jmx,console,cvs等。)</li>
-    </ul>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:50:36
-    </footer>
+</code></pre>
+<h2>目前这种方式只是将数据推送到influxdb ，以及prometheus 。</h2>
+<p>1 数据采集</p>
+<p>2 采集点(Filter,Controller,Service)</p>
+<p>3 数据推送(influxdb,primetheus,jmx,console,cvs等。)</p>
+<footer>
+    Power By Gemini TextGenerate 2024-09-17 00:36:35
+</footer>
+<script>
+    // 高亮代码
+    const codeElements = document.querySelectorAll('pre code');
+    codeElements.forEach(code => {
+        code.classList.add('highlight');
+    });
+</script>
 </body>
 </html>

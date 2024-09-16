@@ -1,90 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java ConcurrentBlockingQueue,For ME[原创]</title>
-    <meta name="description" content="笔记">
-    <meta name="keywords" content="ConcurrentBlockingQueue,java">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0; /* 动漫风格 */
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
-        h1 {
-            font-size: 20px;
-        }
-        h2 {
-            font-size: 18px;
-        }
-        h3 {
-            font-size: 16px;
-        }
-        h4 {
-            font-size: 14px;
-        }
-        h5 {
-            font-size: 12px;
-        }
-        h6 {
-            font-size: 11px;
-        }
-        pre {
-            background-color: #f5f5f5; /* 代码背景 */
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: monospace;
-            color: #333; /* 代码字体颜色 */
-        }
-        code {
-            background-color: #e5e5e5;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #333; /* 代码高亮颜色 */
-        }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>
-        hljs.initHighlightingOnLoad();
-        const theme = (new Date().getHours() >= 18) ? 'dark' : 'light';
-        document.body.classList.add(theme);
-        if (theme === 'dark') {
-            document.body.style.backgroundColor = '#333';
-            document.body.style.color = '#fff';
-            document.querySelector('pre').style.backgroundColor = '#222';
-            document.querySelector('code').style.backgroundColor = '#444';
-            document.querySelector('code').style.color = '#fff';
-        }
-    </script>
+<meta charset="UTF-8">
+<title>Java ConcurrentBlockingQueue,For ME[原创]</title>
+<meta name="description" content="笔记">
+<meta name="keywords" content="ConcurrentBlockingQueue,java">
+<style>
+body {
+background-color: #000000;
+color: #00ff00;
+font-family: monospace;
+line-height: 21px;
+max-width: 820px;
+margin: 0 auto;
+text-align: center;
+}
+
+h1, h2, h3, h4, h5, h6 {
+text-align: center;
+}
+
+h1 {
+font-size: 20px;
+}
+
+h2 {
+font-size: 18px;
+}
+
+h3 {
+font-size: 16px;
+}
+
+h4 {
+font-size: 14px;
+}
+
+h5 {
+font-size: 12px;
+}
+
+h6 {
+font-size: 11px;
+}
+
+pre {
+background-color: #000000;
+color: #00ff00;
+line-height: 24px;
+padding: 10px;
+}
+
+code {
+background-color: #000000;
+color: #00ff00;
+}
+
+img {
+display: block;
+margin: 0 auto;
+max-width: 600px;
+height: auto;
+}
+
+footer {
+text-align: center;
+font-size: 12px;
+}
+
+.highlight {
+background-color: #00ff00;
+color: #000000;
+}
+</style>
+<script>
+window.onload = function() {
+	// 随机种子: 666666661
+	const seed = 666666661;
+
+	// 获取当前时间
+	const now = new Date();
+	const hour = now.getHours();
+
+	// 判断是否为白天模式
+	const isDaytime = hour >= 6 && hour < 18;
+
+	// 随机生成背景颜色
+	const randomColor = function() {
+		const r = Math.floor(Math.random() * 256);
+		const g = Math.floor(Math.random() * 256);
+		const b = Math.floor(Math.random() * 256);
+		return `rgb(${r}, ${g}, ${b})`;
+	};
+
+	// 设置背景颜色
+	document.body.style.backgroundColor = isDaytime ? randomColor() : '#000000';
+
+	// 高亮代码
+	const codeElements = document.querySelectorAll('pre code');
+	codeElements.forEach(element => {
+		element.classList.add('highlight');
+	});
+};
+</script>
 </head>
 <body>
-    <h1>Java ConcurrentBlockingQueue,For ME[原创]</h1>
-    <p>笔记</p>
-    <p>keywords: ConcurrentBlockingQueue,java</p>
+<h1>Java ConcurrentBlockingQueue,For ME[原创]</h1>
+<p style="text-align: center;">笔记</p>
+<p style="text-align: center;">ConcurrentBlockingQueue,java</p>
 
-    <h2>Java代码复习</h2>
-    <p>date：2017-02-01</p>
-    <p>author：zhangjianxin</p>
+<p>ConcurrentBlockingQueue，自己写了一份增加理解，很久之前写代码，很地方不工整不要在意。</p>
 
-    <h3>1. ConcurrentBlockingQueue</h3>
-    <pre><code class="java">
-package me.firsh.tools;
+<h2>Java代码复习</h2>
+<p>date：2017-02-01</p>
+<p>author：zhangjianxin</p>
+
+<h3>1. ConcurrentBlockingQueue</h3>
+<pre><code>package me.firsh.tools;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -134,7 +166,7 @@ public class ConcurrentBlockingQueue&lt;T extends Exchengeable&gt; {
 
         private final long waitForNextProduce() {
                 while (true) {
-                        if (produceSequence.get() - comsumeCursor &lt; entries.length) {
+                        if (produceSequence.get() - comsumeCursor < entries.length) {
                                 return produceSequence.incrementAndGet();
                         } else {
                                 try {
@@ -155,7 +187,7 @@ public class ConcurrentBlockingQueue&lt;T extends Exchengeable&gt; {
         private final long waitForComsume() {
                 while (true) {
                         long comsume = proCursor - comsumeSequence.get();
-                        if (comsume &gt; 0 &amp;&amp; comsume &lt;= entries.length) {
+                        if (comsume > 0 && comsume <= entries.length) {
                                 return comsumeSequence.incrementAndGet();
                         } else {
                                 try {
@@ -183,11 +215,10 @@ public class ConcurrentBlockingQueue&lt;T extends Exchengeable&gt; {
         }
 
 }
-    </code></pre>
+</code></pre>
 
-    <h3>2.LengthByteArrayEncoder</h3>
-    <pre><code class="java">
-@Sharable
+<h3>2.LengthByteArrayEncoder</h3>
+<pre><code>@Sharable
 public class LengthByteArrayEncoder extends MessageToMessageEncoder&lt;byte[]&gt; {
 	@Override
 	protected void encode(ChannelHandlerContext ctx, byte[] msg,
@@ -306,42 +337,41 @@ public class LengthByteArrayEncoder extends MessageToMessageEncoder&lt;byte[]&gt
 		case 32:
 			return I32;
 		default:
-			if (v &gt;= NumEx.BYTE_MIN_VALUE &amp;&amp; v &lt;= NumEx.BYTE_MAX_VALUE) {
+			if (v >= NumEx.BYTE_MIN_VALUE && v <= NumEx.BYTE_MAX_VALUE) {
 				// byte[] r2 = new byte[2];
 				// r2[0] = B2Type.INT_8B;
 				byte[] r2 = { B2Type.INT_8B, 1 };
-				r2[1] = (byte) (v &amp; 0xff);
+				r2[1] = (byte) (v & 0xff);
 				return r2;
-			} else if (v &gt;= NumEx.SHORT_MIN_VALUE &amp;&amp; v &lt;= NumEx.SHORT_MAX_VALUE) {
+			} else if (v >= NumEx.SHORT_MIN_VALUE && v <= NumEx.SHORT_MAX_VALUE) {
 				// byte[] r2 = new byte[3];
 				// r2[0] = B2Type.INT_16B;
 				byte[] r2 = { B2Type.INT_16B, 1, 2 };
-				r2[1] = (byte) ((v &gt;&gt; 8) &amp; 0xff);
-				r2[2] = (byte) ((v &gt;&gt; 0) &amp; 0xff);
+				r2[1] = (byte) ((v >> 8) & 0xff);
+				r2[2] = (byte) ((v >> 0) & 0xff);
 				return r2;
 			} else {
 				// byte[] r2 = new byte[5];
 				// r2[0] = B2Type.INT_32B;
 				byte[] r2 = { B2Type.INT_32B, 1, 2, 3, 4 };
-				r2[1] = (byte) ((v &gt;&gt; 24) &amp; 0xff);
-				r2[2] = (byte) ((v &gt;&gt; 16) &amp; 0xff);
-				r2[3] = (byte) ((v &gt;&gt; 8) &amp; 0xff);
-				r2[4] = (byte) ((v &gt;&gt; 0) &amp; 0xff);
+				r2[1] = (byte) ((v >> 24) & 0xff);
+				r2[2] = (byte) ((v >> 16) & 0xff);
+				r2[3] = (byte) ((v >> 8) & 0xff);
+				r2[4] = (byte) ((v >> 0) & 0xff);
 				return r2;
 			}
 		}
 	}
 }
-    </code></pre>
+</code></pre>
 
-    <p>推荐在必要时候使用移位。</p>
-    <ul>
-        <li>以上操作经过验证可以直接拿去。</li>
-        <li>Owner breakEval13</li>
-        <li>https://github.com/breakEval13</li>
-    </ul>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:26:29
-    </footer>
+<h2>推荐在必要时候使用移位。</h2>
+<p>以上操作经过验证可以直接拿去。</p>
+<p>Owner `breakEval13`</p>
+<p>https://github.com/breakEval13</p>
+
+<footer>
+Power By Gemini TextGenerate 2024-09-17 00:13:24
+</footer>
 </body>
 </html>

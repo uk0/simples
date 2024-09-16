@@ -4,85 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>docker swarm 集成 Spring Cloud 验证</title>
-    <meta name="description" content="docekr swarm spring cloud 验证" />
-    <meta name="keywords" content="swarm" />
+    <meta name="description" content="docekr swarm spring cloud 验证">
+    <meta name="keywords" content="swarm">
     <style>
         body {
-            background-color: #f0f0f0; /* Dos复古风格 */
-            font-family: sans-serif;
+            background-color: #000;
+            color: #eee;
+            font-family: monospace;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2, h3, h4, h5, h6 {
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
-        h1 { font-size: 20px; }
-        h2 { font-size: 18px; }
-        h3 { font-size: 16px; }
-        h4 { font-size: 14px; }
-        h5 { font-size: 12px; }
-        h6 { font-size: 11px; }
-        pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-            overflow-x: auto;
-            border-radius: 4px;
+
+        h1 {
+            font-size: 20px;
         }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        p {
+            line-height: 21px;
+        }
+
         code {
-            background-color: #eee;
-            padding: 2px 4px;
-            border-radius: 4px;
             font-family: monospace;
+            background-color: #222;
+            color: #eee;
+            padding: 4px;
+            border-radius: 4px;
+            line-height: 24px;
+            display: block;
         }
+
+        img {
+            display: block;
+            margin: 0 auto;
+            max-width: 600px;
+            height: auto;
+        }
+
         .highlight {
-            background-color: #f0f0f0;
-            color: #333;
-            padding: 2px 4px;
-            border-radius: 4px;
+            background-color: #333;
+            color: #eee;
         }
-        .highlight pre code {
-            background-color: #eee;
-        }
-        .highlight pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-            overflow-x: auto;
-            border-radius: 4px;
-        }
+
         footer {
             text-align: center;
             font-size: 12px;
             margin-top: 20px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const codeBlocks = document.querySelectorAll('pre code');
-            const highlightBlocks = document.querySelectorAll('`');
-            const seed = 4538978253;
-            const now = new Date();
-            const isNight = now.getHours() >= 19 || now.getHours() < 6; // 判断是否晚上
-            document.body.style.backgroundColor = isNight ? '#222' : '#f0f0f0'; // 设置背景颜色
+        hljs.highlightAll();
 
-            codeBlocks.forEach(codeBlock => {
-                const code = codeBlock.textContent;
-                const highlightedCode = hljs.highlightAuto(code).value;
-                codeBlock.innerHTML = highlightedCode;
-            });
+        const date = new Date();
+        const hours = date.getHours();
 
-            highlightBlocks.forEach(block => {
-                block.classList.add('highlight');
-            });
-        });
+        if (hours >= 6 && hours < 18) {
+            document.body.style.backgroundColor = '#f0f0f0';
+            document.body.style.color = '#333';
+            document.querySelector('code').style.backgroundColor = '#eee';
+            document.querySelector('code').style.color = '#333';
+        } else {
+            document.body.style.backgroundColor = '#000';
+            document.body.style.color = '#eee';
+            document.querySelector('code').style.backgroundColor = '#222';
+            document.querySelector('code').style.color = '#eee';
+        }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
 </head>
 <body>
-    <h1>docker swarm 集成 Spring Cloud 验证</h1>
-    <h2>开始</h2>
+    <h1 style="text-align: center;">docker swarm 集成 Spring Cloud 验证</h1>
+    <h2 style="text-align: center;">开始</h2>
     <p>
      * 机器选择 Centos 7 4Gb内存
      * systemctl stop firewalld
@@ -92,14 +106,17 @@
      * systemctl start docker
      * systemctl enable docker
     </p>
-    <h2>docker swarm init</h2>
+
+    <h2 style="text-align: center;">docker swarm init</h2>
     <p>
      * 任意一台机器执行 `docker swarm init `
      * 讲得到的 结果 `copy`
      * 在其他两台机器上执行
      * 配置 docker swarm 的启动文件
     </p>
-    <pre><code class="yaml">version: '3'
+
+    <pre><code class="yaml">
+version: '3'
 services:
   eureka1:
     image: registry.ap-northeast-1.aliyuncs.com/emos_prod/emos.register.test:latest
@@ -181,15 +198,19 @@ services:
 networks:
   springcloud-overlay:
     driver: overlay
-</code></pre>
-    <h2>注意启动顺序  </h2>
-    <pre><code>#可以拆开分开执行
+    </code></pre>
+
+    <h2 style="text-align: center;">注意启动顺序</h2>
+    <pre><code class="bash">
+#可以拆开分开执行
 docker stack deploy -c  emeos.yml demo
-</code></pre>
-    <h3>问题解析</h3>
+    </code></pre>
+
+    <h3 style="text-align: center;">问题解析</h3>
     <p>
-     * 其中spring-clou
+     * 其中spring-cloud
     </p>
+
     <pre><code class="yaml">
 
 spring:
@@ -218,7 +239,7 @@ management:
   security:
     enabled: false
 
-</code></pre>
+    </code></pre>
     <p>
      * `HOST_NAME` 是要用 `swarm` 启动的服务名来定义的例如：`ths-account`
      * `EUREKA_SERVER_ADDRESS` 是高可用服务
@@ -226,11 +247,13 @@ management:
      * `APPLICATION_CONFIG_NAME` 是`config`服务的`application`名称 有些服务需要配置此项
      * `以上可能不善于表达，仅仅是技术方向的实现验证时间：2018年4月23日`
     </p>
+
     <p>
      转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权
     </p>
+
     <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:26:50
+        Power By Gemini TextGenerate 2024-09-17 00:13:46
     </footer>
 </body>
 </html>

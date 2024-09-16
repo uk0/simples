@@ -1,87 +1,129 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>CPS 王垠 大佬的代码[测试过]</title>
-    <meta name="description" content="转载">
-    <meta name="keywords" content="lisp, Script">
-    <style>
-        body {
-            background-color: #000000; /* Unix风格 */
-            font-family: sans-serif;
-            color: #ffffff;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
-        }
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
-        h1 { font-size: 20px; }
-        h2 { font-size: 18px; }
-        h3 { font-size: 16px; }
-        h4 { font-size: 14px; }
-        h5 { font-size: 12px; }
-        h6 { font-size: 11px; }
-        pre {
-            background-color: #222;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-        code {
-            font-family: monospace;
-            color: #ff0000;
-        }
-        .highlight {
-            background-color: #444;
-            padding: 2px;
-            border-radius: 3px;
-        }
-        footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
-        }
-        .image-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .image-container img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>
-        hljs.initHighlightingOnLoad();
+<style>
+body {
+background-color: #000000;
+color: #00ff00;
+font-family: monospace;
+margin: 0;
+max-width: 820px;
+margin: 0 auto;
+line-height: 21px;
+box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+}
 
-        function highlightCode() {
-            var codeElements = document.querySelectorAll("code");
-            codeElements.forEach(function(element) {
-                element.classList.add("highlight");
-            });
-        }
+h1 {
+font-size: 20px;
+}
 
-        window.onload = function() {
-            highlightCode();
-        };
-    </script>
+h2 {
+font-size: 18px;
+}
+
+h3 {
+font-size: 16px;
+}
+
+h4 {
+font-size: 14px;
+}
+
+h5 {
+font-size: 12px;
+}
+
+h6 {
+font-size: 11px;
+}
+
+code {
+background-color: #008000;
+color: #ffffff;
+font-family: monospace;
+line-height: 24px;
+padding: 2px 4px;
+}
+
+img {
+display: block;
+margin: 0 auto;
+width: 600px;
+height: 375px;
+}
+
+pre {
+background-color: #008000;
+color: #ffffff;
+font-family: monospace;
+padding: 10px;
+overflow: auto;
+}
+
+pre code {
+background-color: transparent;
+color: #ffffff;
+font-family: monospace;
+}
+
+.highlight {
+background-color: #00ff00;
+color: #000000;
+padding: 2px 4px;
+}
+
+footer {
+text-align: center;
+font-size: 12px;
+}
+</style>
+<meta charset="UTF-8">
+<title>CPS 王垠 大佬的代码[测试过]</title>
+<meta name="description" content="转载">
+<meta name="keywords" content="lisp, Script">
 </head>
 <body>
-    <h1>CPS 王垠 大佬的代码[测试过]</h1>
-    <p>转载</p>
-    <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
-    <h2>摘要: <code>CPS.scm</code> ,<code>pmatch.scm</code></h2>
-    <p><code>scheme</code>代码。</p>
-    <h2>Stat</h2>
-    <ul>
-        <li><code>CPS.scm</code> Code</li>
-        <li><code>pmatch.scm</code> Code</li>
-    </ul>
-    <h3>CPS</h3>
-    <pre><code class="scheme">;; A simple CPS transformer which does proper tail-call and does not
+<script>
+  // 使用随机种子 666666661 生成随机数
+  Math.seedrandom(666666661);
+
+  // 获取当前时间，判断是否为白天
+  const now = new Date();
+  const hour = now.getHours();
+  const isDay = hour >= 6 && hour <= 18;
+
+  // 设置背景颜色，白天模式使用 #ffffff，夜晚模式使用 #000000
+  document.body.style.backgroundColor = isDay ? '#ffffff' : '#000000';
+  document.body.style.color = isDay ? '#000000' : '#ffffff';
+
+  // 绑定代码高亮事件
+  const codeElements = document.querySelectorAll('code');
+  codeElements.forEach(code => {
+    code.addEventListener('click', function() {
+      this.classList.toggle('highlight');
+    });
+  });
+
+  // 设置标题和关键词居中
+  const title = document.querySelector('title');
+  const descriptionMeta = document.querySelector('meta[name="description"]');
+  const keywordsMeta = document.querySelector('meta[name="keywords"]');
+  title.style.textAlign = 'center';
+  descriptionMeta.style.textAlign = 'center';
+  keywordsMeta.style.textAlign = 'center';
+
+  // 设置主题色
+  const themeColor = isDay ? '#000000' : '#ffffff';
+  document.body.style.color = themeColor;
+</script>
+<center><h1>CPS 王垠 大佬的代码[测试过]</h1></center>
+<center><h2>摘要: `CPS.scm` ,`pmatch.scm`</h2></center>
+<center><h3>* `scheme`代码。</h3></center>
+<center><h2>Stat</h2></center>
+<center><h3>* `CPS.scm` Code</h3></center>
+<center><h3>* `pmatch.scm` Code</h3></center>
+<center><h2>CPS</h2></center>
+<pre><code>;; A simple CPS transformer which does proper tail-call and does not
 ;; duplicate contexts for if-expressions.
 
 ;; author: Yin Wang (yw21@cs.indiana.edu)
@@ -133,8 +175,8 @@
 `(,r ,d (lambda (,u) ,(ctx u))))])))))]))])
 (cps1 exp id))))%
 </code></pre>
-    <h3>pmatch</h3>
-    <pre><code class="scheme">(define-syntax pmatch
+<center><h2>pmatch</h2></center>
+<pre><code>(define-syntax pmatch
   (syntax-rules (else guard)
     ((_ (rator rand ...) cs ...)
      (let ((v (rator rand ...)))
@@ -160,9 +202,10 @@
 	 (ppat vx x (ppat vy y kt kf) kf))
        kf))
     ((_ v lit kt kf) (if (equal? v (quote lit)) kt kf))))
+
 </code></pre>
-    <h3>test</h3>
-    <pre><code class="scheme">;;; tests
+<center><h2>test</h2></center>
+<pre><code>;;; tests
 
 ;; var
 (cps 'x)
@@ -239,15 +282,11 @@
 ((eval fact-cps) 5 (lambda (v) v))
 ;; => 120
 </code></pre>
-    <h2>大佬的代码解析</h2>
-    <div class="image-container">
-        <img src="http://112firshme11224.test.upcdn.net/blog/tmp/cps.jpg" alt="CPS解析图">
-    </div>
-    <div class="image-container">
-        <img src="http://112firshme11224.test.upcdn.net/blog/tmp/cps-1.png" alt="CPS解析图">
-    </div>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:56:30
-    </footer>
+<center><h2>大佬的代码解析</h2></center>
+<img src="http://112firshme11224.test.upcdn.net/blog/tmp/cps.jpg">
+<img src="http://112firshme11224.test.upcdn.net/blog/tmp/cps-1.png">
+<footer>
+Power By Gemini TextGenerate 2024-09-17 00:42:41
+</footer>
 </body>
 </html>

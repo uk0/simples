@@ -1,67 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mongodb Aggregate Sum</title>
-    <meta name="description" content="Mongodb sum 查询聚合">
-    <meta name="keywords" content="mongo, sum">
-    <style>
-        body {
-            background-color: #000000; /* Dos复古风格背景色 */
-            color: #ffffff;
-            font-family: monospace;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
-        h1 {
-            font-size: 20px;
-        }
-        h2 {
-            font-size: 18px;
-        }
-        h3 {
-            font-size: 16px;
-        }
-        h4 {
-            font-size: 14px;
-        }
-        h5 {
-            font-size: 12px;
-        }
-        h6 {
-            font-size: 11px;
-        }
-        code {
-            background-color: #111111; /* 代码块背景色，与主题色协调 */
-            color: #00ff00; /* 代码块字体颜色，与主题色协调 */
-            padding: 5px;
-            border-radius: 4px;
-        }
-        pre {
-            background-color: #111111; /* 代码块背景色，与主题色协调 */
-            color: #00ff00; /* 代码块字体颜色，与主题色协调 */
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
-        footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Mongodb Aggregate Sum</title>
+<meta name="description" content="Mongodb sum 查询聚合" />
+<meta name="keywords" content="mongo, sum" />
+<style>
+body {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: sans-serif;
+  max-width: 820px;
+  margin: 0 auto;
+  line-height: 21px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+code {
+  font-family: monospace;
+  background-color: #282c34;
+  color: #d8dee9;
+  padding: 2px 4px;
+  border-radius: 2px;
+  line-height: 24px;
+}
+
+pre {
+  background-color: #282c34;
+  color: #d8dee9;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+  max-width: 600px;
+  height: auto;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+}
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var codeElements = document.querySelectorAll("code");
+    codeElements.forEach(function(element) {
+      element.addEventListener("click", function() {
+        element.classList.toggle("highlighted");
+      });
+    });
+
+    var preElements = document.querySelectorAll("pre");
+    preElements.forEach(function(element) {
+      element.addEventListener("click", function() {
+        element.classList.toggle("highlighted");
+      });
+    });
+
+    // Highlight.js
+    hljs.highlightAll();
+  });
+</script>
 </head>
 <body>
-    <h1>Mongodb search aggregate SUM</h1>
-    <p>find aggregate and where</p>
-    <pre><code>
-db.cabinet.aggregate(
+<h1>Mongodb search aggregate SUM</h1>
+<p> * find aggregate and where</p>
+<pre><code>db.cabinet.aggregate(
    [
      {
        $group:
@@ -88,28 +126,10 @@ db.cabinet.aggregate(
      }
    ]
 )
+
 </code></pre>
-    <script>
-        // 应用随机种子
-        Math.seedrandom(4538978253);
-
-        // 获取当前时间
-        let now = new Date();
-        let hour = now.getHours();
-
-        // 根据时间切换主题
-        if (hour >= 18 || hour < 6) {
-            // 夜间模式
-            document.body.style.backgroundColor = "#111111";
-            document.body.style.color = "#ffffff";
-        } else {
-            // 白天模式
-            document.body.style.backgroundColor = "#ffffff";
-            document.body.style.color = "#000000";
-        }
-    </script>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 22:03:52
-    </footer>
+<footer>
+Power By Gemini TextGenerate 2024-09-17 00:49:03
+</footer>
 </body>
 </html>

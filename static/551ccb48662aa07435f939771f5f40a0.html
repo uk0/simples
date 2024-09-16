@@ -1,167 +1,194 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rocketmq 多Master集群搭建</title>
-    <meta name="description" content="搭建一个多Master的rocketmq 集群">
-    <meta name="keywords" content="rocketmq">
-    <style>
-        body {
-            background-color: #1F2123;
-            color: #ccc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
-        h1 { font-size: 20px; }
-        h2 { font-size: 18px; }
-        h3 { font-size: 16px; }
-        h4 { font-size: 14px; }
-        h5 { font-size: 12px; }
-        h6 { font-size: 11px; }
-        pre {
-            background-color: #282c34;
-            padding: 10px;
-            overflow-x: auto;
-        }
-        code {
-            background-color: #282c34;
-            padding: 2px 4px;
-            font-family: 'Courier New', Courier, monospace;
-            color: #ccc;
-        }
-        footer {
-            text-align: center;
-            font-size: 12px;
-            color: #888;
-            margin-top: 20px;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/highlightjs@11.7.0/es/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<title>rocketmq 多Master集群搭建</title>
+<meta name="description" content="搭建一个多Master的rocketmq 集群">
+<meta name="keywords" content="rocketmq ">
+<style>
+body {
+  background: #111;
+  color: #eee;
+  font-family: sans-serif;
+  line-height: 21px;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+h1 {
+  font-size: 20px;
+}
+h2 {
+  font-size: 18px;
+}
+h3 {
+  font-size: 16px;
+}
+h4 {
+  font-size: 14px;
+}
+h5 {
+  font-size: 12px;
+}
+h6 {
+  font-size: 11px;
+}
+img {
+  display: block;
+  margin: 20px auto;
+  width: 600px;
+  height: 375px;
+}
+pre {
+  background: #222;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+  line-height: 24px;
+}
+code {
+  background: #333;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+.highlight {
+  background: #444;
+}
+footer {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var codeElements = document.querySelectorAll('pre code');
+    for (var i = 0; i < codeElements.length; i++) {
+      codeElements[i].classList.add('highlight');
+    }
+  });
+</script>
 </head>
 <body>
-    <h1>rocketmq 多Master集群搭建</h1>
-    <p>搭建一个多Master的rocketmq 集群</p>
-    <h2>quick start</h2>
-    <ul>
-        <li>准备RocketMQ 4.2.0 tar</li>
-        <li>准备JDK 1.8</li>
-    </ul>
-    <h2>config</h2>
-    <ul>
-        <li>三个broker的配置 broker-a，broker-b，broker-c
-            <ul>
-                <li>broker-a.properties</li>
-                <li>broker-b.properties</li>
-                <li>broker-c.properties</li>
-                <li>修改下面配置文件的 <code>brokerName</code>即可</li>
-            </ul>
-        </li>
-    </ul>
-    <pre><code class="bash">
-        #所属集群名字
-        brokerClusterName=rocketmq-aom
-        #broker名字，注意此处不同的配置文件填写的不一样
-        brokerName=broker-a|b|c
-        #0 表示 Master，>0 表示 Slave
-        brokerId=0
-        #nameServer地址，分号分割
-        namesrvAddr=tod1:9876;tod2:9876;tod3:9876
-        #在发送消息时，自动创建服务器不存在的topic，默认创建的队列数
-        defaultTopicQueueNums=4
-        #是否允许 Broker 自动创建Topic，建议线下开启，线上关闭
-        autoCreateTopicEnable=true
-        #是否允许 Broker 自动创建订阅组，建议线下开启，线上关闭
-        autoCreateSubscriptionGroup=true
-        #Broker 对外服务的监听端口
-        listenPort=10911
-        #删除文件时间点，默认凌晨 4点
-        deleteWhen=04
-        #文件保留时间，默认 48 小时
-        fileReservedTime=120
-        #commitLog每个文件的大小默认1G
-        mapedFileSizeCommitLog=1073741824
-        #ConsumeQueue每个文件默认存30W条，根据业务情况调整
-        mapedFileSizeConsumeQueue=300000
-        #destroyMapedFileIntervalForcibly=120000
-        #redeleteHangedFileInterval=120000
-        #检测物理文件磁盘空间
-        diskMaxUsedSpaceRatio=88
-        #存储路径
-        storePathRootDir=/home/aom/data/rocketmq/store
-        #commitLog 存储路径
-        storePathCommitLog=/home/aom/data/rocketmq/store/commitlog
-        #消费队列存储路径存储路径
-        storePathConsumeQueue=/home/aom/data/rocketmq/store/consumequeue
-        #消息索引存储路径
-        storePathIndex=/home/aom/data/rocketmq/store/index
-        #checkpoint 文件存储路径
-        storeCheckpoint=/home/aom/data/rocketmq/store/checkpoint
-        #abort 文件存储路径
-        abortFile=/home/aom/data/rocketmq/store/abort
-        #限制的消息大小
-        maxMessageSize=65536
-        #flushCommitLogLeastPages=4
-        #flushConsumeQueueLeastPages=2
-        #flushCommitLogThoroughInterval=10000
-        #flushConsumeQueueThoroughInterval=60000
-        #Broker 的角色
-        #- ASYNC_MASTER 异步复制Master
-        #- SYNC_MASTER 同步双写Master
-        #- SLAVE
-        brokerRole=ASYNC_MASTER
-        #刷盘方式
-        #- ASYNC_FLUSH 异步刷盘
-        #- SYNC_FLUSH 同步刷盘
-        flushDiskType=ASYNC_FLUSH
-        #checkTransactionMessageEnable=false
-        #发消息线程池数量
-        #sendMessageThreadPoolNums=128
-        #拉消息线程池数量
-        #pullMessageThreadPoolNums=128
-     </code></pre>
-    <h2>start</h2>
-    <ul>
-        <li>修改 脚本参数</li>
-        <pre><code class="bash">
-           #runbroker.sh
-            JAVA_OPT="${JAVA_OPT} -server -Xms1g  -Xmx1g -Xmn512m -XX:PermSize=128m -XX:MaxPermSize=320m"
-           #runserver.sh
-           JAVA_OPT="${JAVA_OPT} -server -Xms1g -Xmx1g -Xmn512m -XX:PermSize=128m -XX:MaxPermSize=320m
-        </code></pre>
-        <li>启动RocketMQ</li>
-        <pre><code class="bash">
-           #先启动Nameserv（三台机器）
-            nohup sh mqnamesrv &
-            nohup sh mqnamesrv &
-            nohup sh mqnamesrv &
-           #  启动 broker（三台机器）
-            nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-a.properties >/dev/null 2>&1 & 
+<h1>rocketmq 多Master集群搭建</h1>
+<p>搭建一个多Master的rocketmq 集群</p>
+<hr>
+<h2>quick start </h2>
+<ul>
+<li>准备RocketMQ 4.2.0 tar</li>
+<li>准备JDK 1.8</li>
+</ul>
+<h2>config</h2>
+<ul>
+<li> 三个broker的配置 broker-a，broker-b，broker-c
+broker-a.properties
+broker-b.properties
+broker-c.properties
+修改下面配置文件的 <code>brokerName</code>即可</li>
+</ul>
+<pre><code>#所属集群名字
+brokerClusterName=rocketmq-aom
+#broker名字，注意此处不同的配置文件填写的不一样
+brokerName=broker-a|b|c
+#0 表示 Master，>0 表示 Slave
+brokerId=0
+#nameServer地址，分号分割
+namesrvAddr=tod1:9876;tod2:9876;tod3:9876
+#在发送消息时，自动创建服务器不存在的topic，默认创建的队列数
+defaultTopicQueueNums=4
+#是否允许 Broker 自动创建Topic，建议线下开启，线上关闭
+autoCreateTopicEnable=true
+#是否允许 Broker 自动创建订阅组，建议线下开启，线上关闭
+autoCreateSubscriptionGroup=true
+#Broker 对外服务的监听端口
+listenPort=10911
+#删除文件时间点，默认凌晨 4点
+deleteWhen=04
+#文件保留时间，默认 48 小时
+fileReservedTime=120
+#commitLog每个文件的大小默认1G
+mapedFileSizeCommitLog=1073741824
+#ConsumeQueue每个文件默认存30W条，根据业务情况调整
+mapedFileSizeConsumeQueue=300000
+#destroyMapedFileIntervalForcibly=120000
+#redeleteHangedFileInterval=120000
+#检测物理文件磁盘空间
+diskMaxUsedSpaceRatio=88
+#存储路径
+storePathRootDir=/home/aom/data/rocketmq/store
+#commitLog 存储路径
+storePathCommitLog=/home/aom/data/rocketmq/store/commitlog
+#消费队列存储路径存储路径
+storePathConsumeQueue=/home/aom/data/rocketmq/store/consumequeue
+#消息索引存储路径
+storePathIndex=/home/aom/data/rocketmq/store/index
+#checkpoint 文件存储路径
+storeCheckpoint=/home/aom/data/rocketmq/store/checkpoint
+#abort 文件存储路径
+abortFile=/home/aom/data/rocketmq/store/abort
+#限制的消息大小
+maxMessageSize=65536
+#flushCommitLogLeastPages=4
+#flushConsumeQueueLeastPages=2
+#flushCommitLogThoroughInterval=10000
+#flushConsumeQueueThoroughInterval=60000
+#Broker 的角色
+#- ASYNC_MASTER 异步复制Master
+#- SYNC_MASTER 同步双写Master
+#- SLAVE
+brokerRole=ASYNC_MASTER
+#刷盘方式
+#- ASYNC_FLUSH 异步刷盘
+#- SYNC_FLUSH 同步刷盘
+flushDiskType=ASYNC_FLUSH
+#checkTransactionMessageEnable=false
+#发消息线程池数量
+#sendMessageThreadPoolNums=128
+#拉消息线程池数量
+#pullMessageThreadPoolNums=128
+</code></pre>
+<h2>start</h2>
+<ul>
+<li> 修改 脚本参数</li>
+</ul>
+<pre><code>#runbroker.sh
+JAVA_OPT="${JAVA_OPT} -server -Xms1g  -Xmx1g -Xmn512m -XX:PermSize=128m -XX:MaxPermSize=320m"
+#runserver.sh
+JAVA_OPT="${JAVA_OPT} -server -Xms1g -Xmx1g -Xmn512m -XX:PermSize=128m -XX:MaxPermSize=320m
+</code></pre>
+<ul>
+<li> 启动RocketMQ</li>
+</ul>
+<pre><code>#先启动Nameserv（三台机器）
+nohup sh mqnamesrv &
+nohup sh mqnamesrv &
+nohup sh mqnamesrv &
+#  启动 broker（三台机器）
+nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-a.properties >/dev/null 2>&1 & 
 
-            nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-b.properties >/dev/null 2>&1 & 
+nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-b.properties >/dev/null 2>&1 & 
 
-            nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-c.properties >/dev/null 2>&1 & 
-         </code></pre>
-    <h2>test</h2>
-    <ul>
-        <li>test RocketMQ</li>
-        <pre><code class="text">
-            [root@tod1 bin]# ./mqadmin clusterList -n 192.168.1.149:9876
-            Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
-            Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
-            #Cluster Name     #Broker Name            #BID  #Addr                  #Version                #InTPS(LOAD)       #OutTPS(LOAD) #PCWait(ms) #Hour #SPACE
-            rocketmq-aom      broker-a                0     192.168.1.149:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0128
-            rocketmq-aom      broker-b                0     192.168.1.150:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0116
-            rocketmq-aom      broker-c                0     192.168.1.151:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0116
-        </code></pre>
-    <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-    <footer>Power By Gemini TextGenerate 2024-09-16 21:54:06</footer>
+nohup sh mqbroker -c /home/rocketmq/conf/2m-noslave/broker-c.properties >/dev/null 2>&1 & 
+</code></pre>
+<h2>test</h2>
+<ul>
+<li> test RocketMQ</li>
+</ul>
+<pre><code>[root@tod1 bin]# ./mqadmin clusterList -n 192.168.1.149:9876
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+#Cluster Name     #Broker Name            #BID  #Addr                  #Version                #InTPS(LOAD)       #OutTPS(LOAD) #PCWait(ms) #Hour #SPACE
+rocketmq-aom      broker-a                0     192.168.1.149:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0128
+rocketmq-aom      broker-b                0     192.168.1.150:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0116
+rocketmq-aom      broker-c                0     192.168.1.151:10911    V4_2_0_SNAPSHOT          0.00(0,0ms)         0.00(0,0ms)          0 421335.24 0.0116
+</code></pre>
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+<footer>
+Power By Gemini TextGenerate 2024-09-17 00:39:50
+</footer>
 </body>
 </html>

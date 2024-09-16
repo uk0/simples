@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flink 高可用集群搭建 HA</title>
-    <meta name="description" content="搭建 一个高可用的 Flink 集群HA 用于项目测试">
+    <meta name="description" content="搭建 一个高可用的 Flink">
     <meta name="keywords" content="flink">
     <style>
         body {
-            background-color: #000000; /* 像素风格背景色 */
+            background-color: #000000; /* Unix 风格背景色 */
             color: #ffffff;
             font-family: sans-serif;
-            margin: 0;
-            padding: 0;
+            line-height: 21px;
             max-width: 820px;
             margin: 0 auto;
+            padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
             font-size: 20px;
+            text-align: center;
         }
 
         h2 {
             font-size: 18px;
+            text-align: center;
         }
 
         h3 {
@@ -42,94 +43,90 @@
             font-size: 11px;
         }
 
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
+        pre {
+            background-color: #222222; /* 代码高亮背景色 */
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 24px;
+            overflow-x: auto;
+            padding: 10px;
+            border-radius: 4px;
         }
 
         code {
-            background-color: #222;
-            color: #fff;
+            background-color: #222222; /* 代码高亮背景色 */
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 24px;
             padding: 2px 4px;
-            font-family: monospace;
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
-        pre {
-            background-color: #222;
-            color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            white-space: pre-wrap; /* 保持换行 */
-        }
-
-        pre code {
-            background-color: transparent;
-            padding: 0;
-            border-radius: 0;
-        }
-
-        .container {
-            padding: 20px;
+        img {
+            display: block;
+            margin: 0 auto;
+            max-width: 600px;
+            height: 375px;
         }
 
         footer {
             text-align: center;
-            padding: 10px;
-            background-color: #333;
-            color: #fff;
+            font-size: 12px;
+            margin-top: 20px;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script>
-        hljs.initHighlightingOnLoad();
+        hljs.highlightAll();
+        window.onload = function() {
+            // 使用随机种子生成随机数，决定背景色
+            const randomSeed = 666666661;
+            const randomNumber = Math.random();
+            const currentHour = new Date().getHours();
 
-        // 随机种子
-        const seed = 4538978253;
-        Math.seedrandom(seed);
-
-        // 获取当前时间，判断白天或夜晚
-        const now = new Date();
-        const hour = now.getHours();
-        const isDay = hour >= 6 && hour < 18;
-
-        // 设置背景色
-        document.body.style.backgroundColor = isDay ? "#f0f0f0" : "#222";
-
-        // 随机生成颜色
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
+            if (currentHour >= 19 || currentHour < 6) {
+                document.body.style.backgroundColor = '#222222';
+                document.body.style.color = '#ffffff';
+                document.querySelectorAll('code').forEach(code => {
+                    code.style.backgroundColor = '#222222';
+                    code.style.color = '#ffffff';
+                });
+                document.querySelectorAll('pre').forEach(pre => {
+                    pre.style.backgroundColor = '#222222';
+                    pre.style.color = '#ffffff';
+                });
+            } else {
+                document.body.style.backgroundColor = '#ffffff';
+                document.body.style.color = '#000000';
+                document.querySelectorAll('code').forEach(code => {
+                    code.style.backgroundColor = '#ffffff';
+                    code.style.color = '#000000';
+                });
+                document.querySelectorAll('pre').forEach(pre => {
+                    pre.style.backgroundColor = '#ffffff';
+                    pre.style.color = '#000000';
+                });
             }
-            return color;
-        }
 
-        // 代码高亮颜色随机生成
-        const codeElements = document.querySelectorAll('code');
-        codeElements.forEach(code => {
-            code.style.backgroundColor = getRandomColor();
-        });
+            // 将标题、关键字描述居中显示
+            document.querySelector('title').style.textAlign = 'center';
+            document.querySelector('meta[name="description"]').content = '搭建 一个高可用的 Flink';
+            document.querySelector('meta[name="keywords"]').content = 'flink';
+        };
     </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Flink 高可用集群搭建 HA</h1>
-        <h2>搭建 一个高可用的 Flink 集群HA</h2>
-        <p>用于项目测试</p>
-
-        <h2>quick start</h2>
-        <h3>flink-conf.yaml</h3>
-        <pre><code>
+    <h1>Flink 高可用集群搭建 HA</h1>
+    <h2>搭建一个高可用的Flink 集群HA</h2>
+    <p>用于项目测试</p>
+    <h2>quick start</h2>
+    <h3>flink-conf.yaml</h3>
+    <pre><code>
         jobmanager.rpc.port: 6123
 
+
         jobmanager.heap.mb: 512
+
 
         taskmanager.heap.mb: 512
 
@@ -137,60 +134,72 @@
 
         taskmanager.memory.preallocate: false
 
+
         parallelism.default: 1
+
 
         jobmanager.web.address: 0.0.0.0
 
         jobmanager.web.port: 8081
 
+
         jobmanager.archive.fs.dir: hdfs://ns/flink/completed_jobs/
 
         historyserver.web.address: 0.0.0.0
 
+
         historyserver.web.port: 8082
+
 
         historyserver.archive.fs.dir: hdfs://ns/flink/completed_jobs/
 
+
         historyserver.archive.fs.refresh-interval: 10000
 
+
+
         state.backend: filesystem
+
 
         state.backend.fs.checkpointdir: hdfs://ns/flink/checkpoints_backend
         state.backend.fs.savepointdir: hdfs://ns/flink/savepoints_backend
         state.checkpoints.dir: hdfs://ns/flink/checkpoints_data
         state.savepoints.dir: hdfs://ns/flink/savepoints_data
 
+
         taskmanager.tmp.dirs: /home/aom/data/flink/tmp
         env.log.dir: /home/aom/data/logs/flink
 
+
+
+
         fs.hdfs.hadoopconf: /home/aom/hadoop/etc/hadoop
+
 
         high-availability: zookeeper
         high-availability.zookeeper.quorum: dscn1:2181,dscn2:2181,dscn3:2181
         high-availability.zookeeper.storageDir: hdfs://ns/flink/recovery
         high-availability.zookeeper.path.root: /flink
-        </code></pre>
-        <h3>masters</h3>
-        <pre><code>
-        tod1:8081
-        tod2:8081
-        </code></pre>
-        <h3>slaves</h3>
-        <pre><code>
-        tod1
-        tod2
-        tod3
-        </code></pre>
-        <p>scp 到其他节点</p>
-        <h3>启动集群</h3>
-        <pre><code>
+    </code></pre>
+    <h3>masters</h3>
+    <pre><code>
+    tod1:8081
+    tod2:8081
+  </code></pre>
+    <h3>slaves</h3>
+    <pre><code>
+    tod1
+    tod2
+    tod3
+  </code></pre>
+    <h3>scp 到其他节点</h3>
+    <h3>启动集群</h3>
+    <pre><code>
         start-cluster.sh
-        </code></pre>
-        <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-    </div>
-
+    </code></pre>
+    <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:46:39
+        Power By Gemini TextGenerate 2024-09-17 00:32:58
     </footer>
 </body>
 </html>

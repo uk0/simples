@@ -1,146 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gitlab JC/CD 第一篇</title>
-    <meta name="description" content="spring-cloud java cicd gitlab">
-    <meta name="keywords" content="gitlab, cicd, java, spring-cloud">
-    <style>
-        body {
-            background-color: #333;
-            color: #eee;
-            font-family: sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
+<meta charset="utf-8">
+<title>Gitlab JC/CD 第一篇</title>
+<meta name="description" content="spring-cloud java cicd gitlab">
+<meta name="keywords" content="spring-cloud, java, cicd, gitlab">
+<style>
+    body {
+        background-color: #282c34; /*  Unix风格  */
+        font-family: sans-serif;
+        color: #f5f5f5;
+        max-width: 820px;
+        margin: 0 auto;
+        line-height: 21px;
+        padding: 20px;
+    }
 
-        h1 {
-            font-size: 20px;
-            margin-top: 0;
-        }
+    h1 {
+        font-size: 20px;
+    }
 
-        h2 {
-            font-size: 18px;
-        }
+    h2 {
+        font-size: 18px;
+    }
 
-        h3 {
-            font-size: 16px;
-        }
+    h3 {
+        font-size: 16px;
+    }
 
-        h4 {
-            font-size: 14px;
-        }
+    h4 {
+        font-size: 14px;
+    }
 
-        h5 {
-            font-size: 12px;
-        }
+    h5 {
+        font-size: 12px;
+    }
 
-        h6 {
-            font-size: 11px;
-        }
+    h6 {
+        font-size: 11px;
+    }
 
-        img {
-            max-width: 100%;
-            height: auto;
-        }
+    code {
+        background-color: #282c34; /*  Unix风格  */
+        color: #f5f5f5;
+        font-family: monospace;
+        padding: 4px;
+        border-radius: 4px;
+        line-height: 24px;
+    }
 
-        pre {
-            background-color: #222;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
+    pre {
+        background-color: #282c34; /*  Unix风格  */
+        color: #f5f5f5;
+        font-family: monospace;
+        padding: 4px;
+        border-radius: 4px;
+        line-height: 24px;
+    }
 
-        code {
-            background-color: #333;
-            color: #eee;
-            font-family: monospace;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
+    img {
+        display: block;
+        margin: 20px auto;
+        max-width: 600px;
+        height: 375px;
+    }
 
-        .hljs {
-            background-color: #222;
-            color: #eee;
-            font-family: monospace;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
+    .highlight {
+        background-color: #f5f5f5; /*  Unix风格  */
+        color: #282c34; /*  Unix风格  */
+        padding: 4px;
+        border-radius: 4px;
+    }
 
-        footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
-            color: #aaa;
+    footer {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+<script>
+    window.onload = function() {
+        // 获取当前时间
+        var currentHour = new Date().getHours();
+        // 判断时间段
+        if (currentHour >= 19 || currentHour < 6) {
+            document.body.style.backgroundColor = "#111";
         }
-
-        .title-container {
-            text-align: center;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>
-        hljs.highlightAll();
-
-        const now = new Date();
-        const hour = now.getHours();
-        if (hour >= 19 || hour < 7) {
-            document.body.style.backgroundColor = '#222';
-            document.body.style.color = '#eee';
-            document.body.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.4)';
-            document.querySelectorAll('pre, code, .hljs').forEach(element => {
-                element.style.backgroundColor = '#333';
-                element.style.color = '#eee';
-            });
-        } else {
-            document.body.style.backgroundColor = '#fff';
-            document.body.style.color = '#333';
-            document.body.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.2)';
-            document.querySelectorAll('pre, code, .hljs').forEach(element => {
-                element.style.backgroundColor = '#eee';
-                element.style.color = '#333';
-            });
-        }
-    </script>
+    };
+</script>
 </head>
 <body>
-    <div class="title-container">
-        <h1>Gitlab JC/CD 第一篇</h1>
-    </div>
-
-    <p>
-        <time datetime="2018-04-23T10:45:02+08:00">2018-04-23 10:45:02</time>
-    </p>
-
-    <h2>just now</h2>
-
-    <ul>
-        <li>不再介绍如何安装<code>Gitlab</code></li>
-        <li>从<code>runner</code> 开始介绍</li>
-    </ul>
-
-    <h2>配置Runner</h2>
-
-    <ul>
-        <li>管理员用户登录 第一步</li>
-        <img src="http://112firshme11224.test.upcdn.net/demos/e0a5ba5a-3b77-4871-a06d-b280040fcf8d.png" alt="第一步">
-        <li>第二步进入Runner配置项</li>
-        <img src="http://112firshme11224.test.upcdn.net/demos/f5f17d52-ff64-44a9-8f10-61a171ddbaf4.png" alt="第二步">
-        <li>获得runner的注册信息</li>
-        <img src="http://112firshme11224.test.upcdn.net/demos/7a0076af-57c3-4886-9bfb-e7edc4f03750.png" alt="获得runner的注册信息">
-        <li>启动一个Runner 并且配置</li>
-        <pre><code>sudo docker run -d --name gitlab-java --restart always \
+<h1 align="center">Gitlab JC/CD 第一篇</h1>
+<h2 align="center">spring-cloud java cicd gitlab</h2>
+<hr>
+<h2>just now </h2>
+<ul>
+<li>不再介绍如何安装<code>Gitlab</code></li>
+<li>从<code>runner</code> 开始介绍</li>
+</ul>
+<h2>配置Runner</h2>
+<ul>
+<li>管理员用户登录 第一步</li>
+<img src="http://112firshme11224.test.upcdn.net/demos/e0a5ba5a-3b77-4871-a06d-b280040fcf8d.png" alt="Runner配置第一步">
+<li> 第二步进入Runner配置项</li>
+<img src="http://112firshme11224.test.upcdn.net/demos/f5f17d52-ff64-44a9-8f10-61a171ddbaf4.png" alt="Runner配置第二步">
+<li> 获得runner的注册信息</li>
+<img src="http://112firshme11224.test.upcdn.net/demos/7a0076af-57c3-4886-9bfb-e7edc4f03750.png" alt="Runner注册信息">
+<li> 启动一个Runner 并且配置</li>
+<pre class="highlight"><code>sudo docker run -d --name gitlab-java --restart always \
   -v /srv/gitlab-java/config:/etc/gitlab-runner \
   -v /var/run/docker.sock:/var/run/docker.sock \
   gitlab/gitlab-runner:latest
-
 </code></pre>
-        <li>注册runner 到 Gitlab</li>
-        <pre><code>sudo docker exec -it gitlab-java gitlab-runner register \
+<li> 注册runner 到 Gitlab</li>
+<pre class="highlight"><code>sudo docker exec -it gitlab-java gitlab-runner register \
   --url "http://gitlab.emosa.com/" \
   --registration-token "hyNYzSsoJKjGqy1y4D-Q" \
   --executor docker \
@@ -166,17 +138,13 @@ Please enter the executor: docker, parallels, shell, kubernetes, docker-ssh, ssh
 # docker
 Please enter the default Docker image (e.g. ruby:2.1):
 # debian
-
 </code></pre>
-        <li>检查启动结果</li>
-        <img src="http://112firshme11224.test.upcdn.net/demos/a8e8f6f4-2567-4434-af95-4de02ee55c8a.png" alt="检查启动结果">
-        <li>Gitlab Runner 就配置完成了。</li>
-    </ul>
-
-    <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
-
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:35:41
-    </footer>
+<li> 检查启动结果</li>
+<img src="http://112firshme11224.test.upcdn.net/demos/a8e8f6f4-2567-4434-af95-4de02ee55c8a.png" alt="检查启动结果">
+<li> Gitlab Runner 就配置完成了。</li>
+</ul>
+<footer>
+Power By Gemini TextGenerate 2024-09-17 00:22:45
+</footer>
 </body>
 </html>

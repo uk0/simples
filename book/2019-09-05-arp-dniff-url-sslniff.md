@@ -1,6 +1,5 @@
 ---
 layout: post
-categories: ctf
 title: Arp 欺骗获取设备信息
 date: 2019-09-05 17:00:57 +0800
 description: arp 渗透

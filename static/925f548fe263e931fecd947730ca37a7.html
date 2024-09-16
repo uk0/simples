@@ -1,120 +1,121 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>raspberry pi zero 安装系统，以及添加USB识别网卡模式[badUSB]</title>
-    <meta name="description" content="一个用Python如何将自己的树莓派打造成“渗透测试神器”">
-    <meta name="keywords" content="raspberry,python">
-    <style>
-        body {
-            background-color: #333; /* Unix风格背景色 */
-            color: #eee;
-            font-family: sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        h1 {
-            font-size: 20px;
-            margin-top: 0;
-        }
-        h2 {
-            font-size: 18px;
-        }
-        h3 {
-            font-size: 16px;
-        }
-        h4 {
-            font-size: 14px;
-        }
-        h5 {
-            font-size: 12px;
-        }
-        h6 {
-            font-size: 11px;
-        }
-        code {
-            background-color: #444;
-            color: #eee;
-            padding: 2px 4px;
-            border-radius: 2px;
-            font-family: monospace;
-        }
-        pre {
-            background-color: #222;
-            color: #eee;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
-        .highlight {
-            background-color: #444;
-            color: #eee;
-            padding: 2px 4px;
-            border-radius: 2px;
-        }
-        footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
-        }
-        .title {
-            text-align: center;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script>
-        hljs.highlightAll();
-        let randomSeed = 4538978253;
-        let random = () => {
-            randomSeed = (randomSeed * 9301 + 49297) % 233280;
-            return randomSeed / 233280;
-        };
+<style>
+body {
+  background-color: #111;
+  color: #eee;
+  font-family: sans-serif;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  line-height: 21px;
+}
 
-        // 获取当前时间
-        let now = new Date();
-        let hour = now.getHours();
+h1 {
+  font-size: 20px;
+}
 
-        // 判断主题色
-        if (hour < 18) {
-            document.body.style.backgroundColor = '#eee'; // 白天模式
-            document.body.style.color = '#333';
-        } else {
-            document.body.style.backgroundColor = '#333'; // 夜晚模式
-            document.body.style.color = '#eee';
-        }
-    </script>
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+code {
+  background-color: #222;
+  color: #eee;
+  font-family: monospace;
+  line-height: 24px;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+pre {
+  background-color: #222;
+  color: #eee;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+img {
+  display: block;
+  margin: 20px auto;
+  max-width: 600px;
+  height: auto;
+}
+
+footer {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.highlight {
+  background-color: #333;
+}
+
+.highlight code {
+  background-color: #333;
+  color: #eee;
+}
+
+</style>
+<meta charset="utf-8">
+<title>raspberry pi zero 安装系统，以及添加USB识别网卡模式[badUSB]</title>
+<meta name="description" content="raspberry">
+<meta name="keywords" content="raspberry,python">
 </head>
 <body>
-    <h1 class="title">raspberry pi zero 安装系统，以及添加USB识别网卡模式[badUSB]</h1>
-    <p class="title">一个用Python如何将自己的树莓派打造成“渗透测试神器”</p>
-    <p>date：2017-10-21</p>
-    <p>author：zhangjianxin</p>
-
-    <h2 id="1-初始化树莓派zero">1 、 初始化树莓派zero。</h2>
-    <ul>
-        <li>第一步安装系统，</li>
-        <ul>
-            <li>有以下设备</li>
-            <ul>
-                <li>raspberry pi zero</li>
-                <li>SSK 转接卡</li>
-                <li>闪迪SD卡8GClass10</li>
-            </ul>
-            <li>第一次没有插入SD卡的时候</li>
-            <pre><code class="bash">➜  ~ df -h
+<center><h1>raspberry pi zero 安装系统，以及添加USB识别网卡模式[badUSB]</h1></center>
+<center><h2>一个用Python如何将自己的树莓派打造成“渗透测试神器”</h2></center>
+<p>date：2017-10-21</p>
+<p>author：zhangjianxin</p>
+<hr>
+<h2 id="1-初始化树莓派zero">1 、 初始化树莓派zero。</h2>
+<ul>
+<li>第一步安装系统，</li>
+<ul>
+<li>有以下设备</li>
+<ul>
+<li>raspberry pi zero</li>
+<li>SSK 转接卡</li>
+<li>闪迪SD卡8GClass10</li>
+</ul>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/1508598613256.jpg" alt="">
+<ul>
+<li>第一次没有插入SD卡的时候</li>
+</ul>
+<pre><code>➜  ~ df -h
 Filesystem                          Size   Used  Avail Capacity iused      ifree %iused  Mounted on
 /dev/disk1                         112Gi   93Gi   18Gi    84% 1444634 4293522645    0%   /
 devfs                              186Ki  186Ki    0Bi   100%     642          0  100%   /dev
 map -hosts                           0Bi    0Bi    0Bi   100%       0          0  100%   /net
 map auto_home                        0Bi    0Bi    0Bi   100%       0          0  100%   /home
 localhost:/fMn-YFzQfnHjvi04JpRLvc  112Gi  112Gi    0Bi   100%       0          0  100%   /Volumes/MobileBackups
+
 </code></pre>
-            <li>插入sd卡的时候（多了一个/dev/disk2s1 ）</li>
-            <img src="http://112firshme11224.test.upcdn.net/images/df-h-sd-card.png">
-            <pre><code class="bash">➜  ~ df -h
+<ul>
+<li>插入sd卡的时候（多了一个/dev/disk2s1 ）</li>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/df-h-sd-card.png" alt="">
+<pre><code>➜  ~ df -h
 Filesystem                          Size   Used  Avail Capacity iused      ifree %iused  Mounted on
 /dev/disk1                         112Gi   93Gi   18Gi    84% 1444634 4293522645    0%   /
 devfs                              186Ki  186Ki    0Bi   100%     642          0  100%   /dev
@@ -122,46 +123,62 @@ map -hosts                           0Bi    0Bi    0Bi   100%       0          0
 map auto_home                        0Bi    0Bi    0Bi   100%       0          0  100%   /home
 localhost:/fMn-YFzQfnHjvi04JpRLvc  112Gi  112Gi    0Bi   100%       0          0  100%   /Volumes/MobileBackups
 /dev/disk2s1                       7.4Gi  2.4Mi  7.4Gi     1%      76     243827    0%   /Volumes/usb
+
 </code></pre>
-            <li>通过diskutils工具进行umont这个SD卡(为了防止其他程序写入)</li>
-            <img src="http://112firshme11224.test.upcdn.net/images/umount-mac.png">
-            <pre><code class="bash">➜  ~ diskutil unmountDisk /dev/disk2s1
+<ul>
+<li>通过diskutils工具进行umont这个SD卡(为了防止其他程序写入)</li>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/umount-mac.png" alt="">
+<pre><code>➜  ~ diskutil unmountDisk /dev/disk2s1
 Unmount of all volumes on disk2 was successful
 </code></pre>
-            <li>通过dd 写入镜像到sd卡。(10min)</li>
-            <img src="http://112firshme11224.test.upcdn.net/images/dd-sd-car-success.png">
-            <pre><code class="bash">➜  ~ sudo dd bs=512  if=2017-02-16-raspbian-jessie.img  of=/dev/disk2s1
+<ul>
+<li>通过dd 写入镜像到sd卡。(10min)</li>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/dd-sd-car-success.png" alt="">
+<pre><code>➜  ~ sudo dd bs=512  if=2017-02-16-raspbian-jessie.img  of=/dev/disk2s1
 </code></pre>
-            <p> > Ethernet Gadget模式即USB网卡模式， 比较常见的就是通过android手机的usb接口对pc进行网络共享的一种手段， 一般电脑都会自动识别这种设备，并开启网卡进行共享。</p>
-        </ul>
-        <li>1、修改配置文件</li>
-        <ul>
-            <li>为了进行usb连接，我们需要修改BOOT文件夹下的<code>config.txt</code> 与<code>cmdline.txt</code>配置文件。</li>
-            <li>首先在<code>config.txt</code>最末行处换行添加如下代码，打开usb网卡模式：</li>
-            <pre><code class="bash">sudo vim config.txt
+<p>Ethernet Gadget模式即USB网卡模式，比较常见的就是通过android手机的usb接口对pc进行网络共享的一种手段，一般电脑都会自动识别这种设备，并开启网卡进行共享。</p>
+<ul>
+<li>1、修改配置文件</li>
+</ul>
+<p>为了进行usb连接，我们需要修改BOOT文件夹下的<code>config.txt</code> 与<code>cmdline.txt</code>配置文件。首先在<code>config.txt</code>最末行处换行添加如下代码，打开usb网卡模式：</p>
+<pre><code>sudo vim config.txt
 </code></pre>
-            <li>增加内容如下：</li>
-            <pre><code class="text">dtoverlay=dwc2
+<ul>
+<li>增加内容如下：</li>
+</ul>
+<pre><code>dtoverlay=dwc2
 </code></pre>
-            <img src="http://112firshme11224.test.upcdn.net/images/vim-config.png">
-            <li><code>cmdline.txt</code>文件中找到<code>rootwait</code>字段，并在其后面空格添加如下信息，在打开系统时开启usb网卡模式。</li>
-            <pre><code class="bash">sudo vim cmdline.txt
+<img src="http://112firshme11224.test.upcdn.net/images/vim-config.png" alt="">
+<ul>
+<li><code>cmdline.txt</code>文件中找到<code>rootwait</code>字段，并在其后面空格添加如下信息，在打开系统时开启usb网卡模式。</li>
+</ul>
+<pre><code>sudo vim cmdline.txt
 </code></pre>
-            <li>增加内容如下：</li>
-            <pre><code class="text">modules-load=dwc2,g_ether
+<ul>
+<li>增加内容如下：</li>
+</ul>
+<pre><code>  modules-load=dwc2,g_ether
 </code></pre>
-            <img src="http://112firshme11224.test.upcdn.net/images/vim-cmdline.png">
-            <li>通过usb连接设备树莓派zero有两个<code>MicroUSB</code>口，一个是<code>电源</code>插口，职司供电的功能， 另外一个就是usb接口，它除了供电以外还提供<code>OTG</code>的功能，我们也是通过这个接口来连接pc ssh连接到树莓派  默认账号为<code>pi</code> 密码为<code>raspberry</code></li>
-            <li>将树莓派的第二个USB口链接，并且链接到MacBook的USB口(Win10都可以)。</li>
-            <li>等待启动，树莓派zero的灯成黄色急闪状态(在load内核。)</li>
-            <li>在你的网络内看到以下显示，就可以ssh链接树莓派zero了。</li>
-            <img src="http://112firshme11224.test.upcdn.net/images/usb-otg.png">
-            <li>看到如上图：<code>ssh pi@raspberrypi.local</code> 输入密码链接即可。</li>
-            <li>配置网络地址，wifi网卡</li>
-            <pre><code class="bash">pi@raspberrypi:~ $ sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+<img src="http://112firshme11224.test.upcdn.net/images/vim-cmdline.png" alt="">
+<ul>
+<li>通过usb连接设备树莓派zero有两个<code>MicroUSB</code>口，一个是<code>电源</code>插口，职司供电的功能，另外一个就是usb接口，它除了供电以外还提供<code>OTG</code>的功能，我们也是通过这个接口来连接pc ssh连接到树莓派  默认账号为<code>pi</code> 密码为<code>raspberry</code></li>
+<li>将树莓派的第二个USB口链接，并且链接到MacBook的USB口(Win10都可以)。</li>
+<li>等待启动，树莓派zero的灯成黄色急闪状态(在load内核。)</li>
+<li>在你的网络内看到以下显示，就可以ssh链接树莓派zero了。</li>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/usb-otg.png" alt="">
+<ul>
+<li>看到如上图：<code>ssh pi@raspberrypi.local</code> 输入密码链接即可。</li>
+<li>配置网络地址，wifi网卡</li>
+</ul>
+<pre><code>pi@raspberrypi:~ $ sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
 </code></pre>
-            <li>添加以下内容</li>
-            <pre><code class="text">network={
+<ul>
+<li>添加以下内容</li>
+</ul>
+<pre><code>network={
 ssid="WiFi-B"
 psk="12345678"
 key_mgmt=WPA-PSK
@@ -176,61 +193,80 @@ priority=1
 
 #scan_ssid:连接隐藏WiFi时需要指定该值为1
 </code></pre>
-            <li>保存配置 <code>control + o 后 Enter</code></li>
-            <li>退出 <code>control + x </code></li>
-            <li>重启ZeroW <code>sudo reboot</code></li>
-            <li>ping Test</li>
-            <img src="http://112firshme11224.test.upcdn.net/images/ssh-new-ping.png">
-        </ul>
-    </ul>
-
-    <h2 id="2-配置和下载安装程序">2 、配置和下载安装程序</h2>
-    <ul>
-        <li>安装软件</li>
-        <pre><code class="bash">sudo apt-get update
+<ul>
+<li>保存配置 <code>control + o 后 Enter</code></li>
+<li>退出 <code>control + x </code></li>
+<li>重启ZeroW <code>sudo reboot</code></li>
+<li>ping Test</li>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/ssh-new-ping.png" alt="">
+<h2 id="2-配置和下载安装程序">2 、配置和下载安装程序</h2>
+<ul>
+<li>安装软件</li>
+</ul>
+<pre><code>sudo apt-get update
 </code></pre>
-        <img src="http://112firshme11224.test.upcdn.net/images/zero-update.png">
-        <pre><code class="bash">sudo apt-get install git john
+<img src="http://112firshme11224.test.upcdn.net/images/zero-update.png" alt="">
+<pre><code>sudo apt-get install git john
 </code></pre>
-        <img src="http://112firshme11224.test.upcdn.net/images/zero-install-git.png">
-        <li>克隆代码</li>
-        <pre><code class="bash">git clone --recursive  http://github.com/mame82/P4wnP1
+<img src="http://112firshme11224.test.upcdn.net/images/zero-install-git.png" alt="">
+<ul>
+<li>克隆代码</li>
+</ul>
+<pre><code>git clone --recursive  http://github.com/mame82/P4wnP1
 </code></pre>
-        <img src="http://112firshme11224.test.upcdn.net/images/git-clone-bad-usb.png">
-        <li>安装</li>
-        <pre><code class="bash">cd P4wnP1/
-./install.sh
+<img src="http://112firshme11224.test.upcdn.net/images/git-clone-bad-usb.png" alt="">
+<ul>
+<li>安装</li>
+</ul>
+<pre><code>cd P4wnP1/
+.／install.sh
 </code></pre>
-        <li>等待 下载大约300m数据，编译需要20分钟。</li>
-        <img src="http://112firshme11224.test.upcdn.net/images/install-y-success.jpg">
-        <li>提示</li>
-        <pre><code class="text">当然最重要的一点是安装后完毕wifi会修改为P4wnP1
+<ul>
+<li>等待 下载大约300m数据，编译需要20分钟。</li>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/install-y-success.jpg" alt="">
+<ul>
+<li>提示</li>
+</ul>
+<pre><code>当然最重要的一点是安装后完毕wifi会修改为P4wnP1
 密码是MaMe82-P4wnP1
 ssh连接的地址是172.24.0.1账号和密码还是树莓派的初始密码
 建议修改初始密码！小心被黑(bao)吃(ju)黑(hua)！！！
 </code></pre>
-        <li>将USB设备插到你要渗透的机器上，你会搜索到一个Wifi热点<code>P4wnP1</code>,密码<code>MaMe82-P4wnP1</code></li>
-        <li>链接后进行SSH链接 <code>ssh pi@172.24.0.1</code>即可。注：蓝牙ssh连接的地址是172.26.0.1</li>
-        <li>配置文件地址如下：</li>
-        <pre><code class="bash">pi@MAME82-P4WNP1:~ $ nano P4wnP1/setup.cfg
+<ul>
+<li>将USB设备插到你要渗透的机器上，你会搜索到一个Wifi热点<code>P4wnP1</code>,密码<code>MaMe82-P4wnP1</code></li>
+<li>链接后进行SSH链接
+<code>ssh pi@172.24.0.1</code>即可。注：蓝牙ssh连接的地址是172.26.0.1</li>
+<li>配置文件地址如下：</li>
+</ul>
+<pre><code>pi@MAME82-P4WNP1:~ $ nano P4wnP1/setup.cfg
 </code></pre>
-        <img src="http://112firshme11224.test.upcdn.net/images/hack-setting.png">
-        <li>目前有的功能列表</li>
-        <img src="http://112firshme11224.test.upcdn.net/images/windows-python-script-hack.png">
-        <li>测试shell,可以直接获取权限，图片：</li>
-        <img src="http://112firshme11224.test.upcdn.net/images/success-bad-usb-hack.png">
-    </ul>
-
-    <h2 id="3-成品图">3 成品图：</h2>
-    <img src="http://112firshme11224.test.upcdn.net/images/success-png.jpg">
-    <ul>
-        <li>以上操作经过验证可以直接拿去。</li>
-        <li>auther <code>breakEval13</code></li>
-        <li>https://github.com/breakEval13</li>
-    </ul>
-
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:38:07
-    </footer>
+<img src="http://112firshme11224.test.upcdn.net/images/hack-setting.png" alt="">
+<ul>
+<li>目前有的功能列表</li>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/windows-python-script-hack.png" alt="">
+<ul>
+<li>测试shell,可以直接获取权限，图片：</li>
+</ul>
+<img src="http://112firshme11224.test.upcdn.net/images/success-bad-usb-hack.png" alt="">
+<h2 id="3-成品图">3 成品图：</h2>
+<img src="http://112firshme11224.test.upcdn.net/images/success-png.jpg" alt="">
+<ul>
+<li>以上操作经过验证可以直接拿去。</li>
+<li>auther <code>breakEval13</code></li>
+<li>https://github.com/breakEval13</li>
+</ul>
+<footer>
+<p>Power By Gemini TextGenerate 2024-09-17 00:24:33</p>
+</footer>
+<script>
+  const codeBlocks = document.querySelectorAll('pre code');
+  codeBlocks.forEach(codeBlock => {
+    codeBlock.parentElement.classList.add('highlight');
+    hljs.highlightBlock(codeBlock);
+  });
+</script>
 </body>
 </html>

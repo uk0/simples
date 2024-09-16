@@ -8,20 +8,22 @@
     <meta name="keywords" content="Java, Scala,Hadoop,Flink">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #282c34; /* Dos复古风格 */
+            background: #282c34; /* Unix风格 */
+            font-family: sans-serif;
             color: #eee;
+            line-height: 21px;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
+            margin: 20px 0;
         }
 
         h1 {
@@ -48,14 +50,33 @@
             font-size: 11px;
         }
 
+        code {
+            background-color: #282c34; /* Unix风格 */
+            color: #eee;
+            font-family: monospace;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
         pre {
-            background-color: #222;
+            background-color: #282c34; /* Unix风格 */
+            color: #eee;
             padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            line-height: 24px;
             overflow-x: auto;
         }
 
-        code {
-            background-color: #222;
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 600px;
+            height: 375px;
+        }
+
+        .highlight {
+            background-color: #495057; /* Unix风格 */
             color: #eee;
             padding: 2px 4px;
             border-radius: 4px;
@@ -63,32 +84,23 @@
 
         footer {
             text-align: center;
-            font-size: 12px;
             margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .content {
+            padding: 20px;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>
-        hljs.highlightAll();
-        // 生成随机数种子
-        Math.seedrandom(4538978253);
-        // 获取当前时间，判断使用白天还是夜晚主题
-        var currentHour = new Date().getHours();
-        if (currentHour >= 18 || currentHour < 6) {
-            document.body.style.backgroundColor = '#181818';
-            document.body.style.color = '#eee';
-        } else {
-            document.body.style.backgroundColor = '#fff';
-            document.body.style.color = '#222';
-        }
-    </script>
 </head>
 <body>
-    <h1>Kubernetes命名空间资源限制[学习]</h1>
-    <p>Kubernetes命名空间资源限制主要是为了多个团队一起开发来区分资源使用情况。</p>
+    <div class="content">
+        <h1>Kubernetes命名空间资源限制[学习]</h1>
+        <p>Kubernetes命名空间资源限制主要是为了多个团队一起开发来区分资源使用情况。</p>
 
-    <h2>1. ResourceQuota</h2>
-    <pre><code class="yaml">
+        <h2>1. ResourceQuota</h2>
+        <pre><code class="language-yaml">
+
 apiVersion: v1
 kind: ResourceQuota
 metadata:
@@ -101,10 +113,10 @@ spec:
     limits.cpu: "4"
     limits.memory: 12Gi
 
-</code></pre>
+        </code></pre>
 
-    <h2>2. LimitRange</h2>
-    <pre><code class="yaml">
+        <h2>2. LimitRange</h2>
+        <pre><code class="language-yaml">
 
 apiVersion: v1
 kind: LimitRange
@@ -140,10 +152,10 @@ spec:
     type: Container
 
 
-</code></pre>
+        </code></pre>
 
-    <h2>3.映射方案Ceph RBD</h2>
-    <pre><code class="yaml">
+        <h2>3.映射方案Ceph RBD</h2>
+        <pre><code class="language-yaml">
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -197,11 +209,22 @@ spec:
    - [192.168.1.100]
    selector:
      app: demo-app-server
-</code></pre>
 
-    <p>感谢企业服务部牛总提供的解决方案</p>
+        </code></pre>
+
+        <p>感谢企业服务部牛总提供的解决方案</p>
+    </div>
+
     <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:55:50
+        Power By Gemini TextGenerate 2024-09-17 00:41:47
     </footer>
+
+    <script>
+        // Add highlighting for `...` blocks
+        const codeElements = document.querySelectorAll('pre code');
+        codeElements.forEach(element => {
+            element.classList.add('highlight');
+        });
+    </script>
 </body>
 </html>

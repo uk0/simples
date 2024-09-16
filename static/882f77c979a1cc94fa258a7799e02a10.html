@@ -1,243 +1,2866 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>serverless demo for kubernetes + ingress [原创]</title>
-    <meta name="description" content="通过 Serverless 创建 functionkubeless）以及简化开。">
-    <meta name="keywords" content="serverless">
-    <style>
-        body {
-            background-color: #000000; /* Replace with your desired style */
-            color: #FFFFFF;
-            font-family: Arial, sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
-        h1 {
-            font-size: 20px;
-        }
-        h2 {
-            font-size: 18px;
-        }
-        h3 {
-            font-size: 16px;
-        }
-        h4 {
-            font-size: 14px;
-        }
-        h5 {
-            font-size: 12px;
-        }
-        h6 {
-            font-size: 11px;
-        }
-        pre {
-            background-color: #222;
-            color: #eee;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        code {
-            background-color: #222;
-            color: #eee;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #aaa;
-        }
-        .img-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-</head>
-<body>
-    <h1>serverless demo for kubernetes + ingress [原创]</h1>
-    <p style="text-align: center;">通过 Serverless 创建 functionkubeless）以及简化开。</p>
+<meta charset="UTF-8">
+<title>serverless demo for kubernetes + ingress [原创]</title>
+<meta name="description" content="通过 Serverless 创建 functionkubeless）以及简化开。">
+<meta name="keywords" content="serverless">
+<style>
+body {
+  background-color: #282c34;
+  color: #ccc;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 820px;
+  line-height: 21px;
+}
 
-    <h2>文章介绍，Serverless + kubernetes + ingress + kubeless 快速开发function 简化开发，无服务器接口，让开发更快 更爽</h2>
+h1, h2, h3, h4, h5, h6 {
+  color: #eee;
+  font-weight: normal;
+}
 
-    <h2>工具</h2>
-    <ul>
-        <li>kubernetes</li>
-        <li>kubeless</li>
-        <li>ingress</li>
-        <li>serverless</li>
-    </ul>
+h1 {
+  font-size: 20px;
+}
 
-    <h2>启动Minikube</h2>
-    <ul>
-        <li>配置Docker 代理下载镜像速度能快一点。</li>
-        <pre><code class="bash">minikube start --docker-env HTTP_PROXY=http://192.168.155.2:8118 \
-                 --docker-env HTTPS_PROXY=https://192.168.155.2:8118
-</code></pre>
-        <li>检查kubernetes 是否已经启动完成。</li>
-        <div class="img-container">
-            <img src="http://112firshme11224.test.upcdn.net/demos/d8922ed9-aeb0-4056-9abb-3319cf2b7544.png" alt="kubernetes启动">
-        </div>
-        <li>检查ingress</li>
-        <div class="img-container">
-            <img src="http://112firshme11224.test.upcdn.net/demos/51342058-f68a-4c0f-ba9b-9ff846c8a571.png" alt="ingress启动">
-        </div>
-        <li>检查UI是否已经启动</li>
-        <div class="img-container">
-            <img src="http://112firshme11224.test.upcdn.net/demos/baee88c2-ccfc-4551-9596-6752c4640826.png" alt="UI启动">
-        </div>
-        <li>检查kubelessui[有没有都可以]</li>
-        <div class="img-container">
-            <img src="http://112firshme11224.test.upcdn.net/demos/4a80959d-8db3-4a44-bc41-403f1c77f324.png" alt="kubelessui启动">
-        </div>
-    </ul>
+h2 {
+  font-size: 18px;
+}
 
-    <h2>正题</h2>
-    <ul>
-        <li>创建一个空的目录一会要用到</li>
-        <ul>
-            <li>安装 serverless  `npm install serverless`</li>
-            <li>安装 serverless-kubeless  `npm install serverless-kubeless`</li>
-            <li>创建一个serverless function `serverless create --template kubeless-python`</li>
-            <li>看看serverless 支持多少模版</li>
-            <div class="img-container">
-                <img src="http://112firshme11224.test.upcdn.net/demos/6b52ee20-569a-4450-b3b9-b495c9e3fd0b.png" alt="serverless模版">
-            </div>
-        </ul>
-        <li>执行创建命令</li>
-        <pre><code class="bash">serverless create --template kubeless-python
-</code></pre>
-        <li>结果</li>
-        <pre><code class="bash">➜  demo2 serverless create --template kubeless-python
-    Serverless: Generating boilerplate...
-    _______                             __
-    |   _   .-----.----.--.--.-----.----|  .-----.-----.-----.
-    |   |___|  -__|   _|  |  |  -__|   _|  |  -__|__ --|__ --|
-    |____   |_____|__|  \___/|_____|__| |__|_____|_____|_____|
-    |   |   |             The Serverless Application Framework
-    |       |                           serverless.com, v1.25.0
-    -------'
+h3 {
+  font-size: 16px;
+}
 
-    Serverless: Successfully generated boilerplate for template: "kubeless-python"
-    Serverless: NOTE: Please update the "service" property in serverless.yml with your service name
-</code></pre>
-        <li>目录介绍</li>
-        <div class="img-container">
-            <img src="http://112firshme11224.test.upcdn.net/demos/0d3ccbe2-a619-44ca-bf70-267a2c6a10db.png" alt="目录结构">
-        </div>
-        >  里面会出现四个文件 ，第一个git的忽略文件(不用git可能没有)
-        > 第二个 是function 的主体
-        > 第三个是serverless 部署依赖的yml
-        <li>handler.py</li>
-        <pre><code class="python">import json
-def hello(request):
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "input": request.json
-    }
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
-    }
-    return response
-</code></pre>
-        <li>serverless.yml</li>
-        <pre><code class="yaml"># Welcome to Serverless!
-#
-# For full config options, check the kubeless plugin docs:
-#    https://github.com/serverless/serverless-kubeless
-#
-# For documentation on kubeless itself:
-#    http://kubeless.io
+h4 {
+  font-size: 14px;
+}
 
-# Update the service name below with your own service name
-service: hello-world
+h5 {
+  font-size: 12px;
+}
 
-# Please ensure the serverless-kubeless provider plugin is installed globally.
-# $ npm install -g serverless-kubeless
-#
-# ...before installing project dependencies to register this provider.
-# $ npm install
+h6 {
+  font-size: 11px;
+}
 
-provider:
-name: kubeless
-runtime: python2.7
+pre {
+  background-color: #222;
+  color: #eee;
+  padding: 10px;
+  overflow-x: auto;
+  line-height: 24px;
+}
 
-plugins:
-- serverless-kubeless
+code {
+  background-color: #222;
+  color: #eee;
+  padding: 2px 4px;
+  font-family: monospace;
+}
 
-functions:
-demo2:  # 有重名 hello 所以改成demo2
-    handler: handler.hello
-</code></pre>
-        <li>package.json [可以不用管]</li>
-        <li>以上的Serverless 可以运行了</li>
-        <li>开始部署</li>
-        <li>提示 `serverless` 可以简写  `sls`</li>
-        <pre><code class="bash">➜  demo2 serverless deploy
-    Serverless: Packaging service...
-    Serverless: Excluding development dependencies...
-    Serverless: Deploying function demo2...
-    Serverless: Function demo2 successfully deployed
+img {
+  display: block;
+  margin: 0 auto;
+  max-width: 600px;
+  height: auto;
+}
 
-</code></pre>
-        <li>查看是否部署成功</li>
-        <div class="img-container">
-            <img src="http://112firshme11224.test.upcdn.net/demos/c1313fae-c4dc-4b9f-bcb8-1508b8dec8fe.png" alt="部署成功">
-        </div>
-        <li>创建`Ingress`</li>
-        <pre><code class="bash">kubeless ingress create ingress-demo2  -n default --function demo2
-# 参数介绍
-# ingress-demo 是ingress 的名字
-# -n 是kubernetes 的命名空间
-# --function 是你要绑定到那个 function
-</code></pre>
-        <li>执行命令 没有错误即可，检查 ingress 是否创建</li>
-        <pre><code class="bash">kubeless ingress list
-</code></pre>
-        <div class="img-container">
-            <img src="http://112firshme11224.test.upcdn.net/demos/e2839acc-e728-4f81-99e1-97474ec53a40.png" alt="ingress列表">
-        </div>
-        <li>找到我们的链接</li>
-        <pre><code class="bash">demo2.192.168.64.2.nip.io
-</code></pre>
-        <li>用postman进行测试。</li>
-        <div class="img-container">
-            <img src="http://112firshme11224.test.upcdn.net/demos/6e04c70c-ad58-46a5-afc7-498b741323f6.png" alt="postman测试">
-        </div>
-        <li>测试通过</li>
-    </ul>
+footer {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  padding: 10px 0;
+}
 
-    <h2>总结</h2>
-    <ul>
-        <li>ingress 安装一定要检查好</li>
-        <li>serverless-kubeless 每次创建一个 fucntion 都需要在当前目录执行安装命令`npm install serverless-kubeless`</li>
-        <li>目前kubeless 支持的语言比较少(runtime) python nodejs</li>
-        <li>有兴趣可以看看 `aws lambda` 还有 `fnproject`</li>
-        <li>教程整理比较匆忙如果有疑问请留言。</li>
-    </ul>
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em;
+  background: #282c34;
+  color: #eee;
+  line-height: 24px;
+}
 
-    <p style="text-align: center;">转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+.hljs-keyword {
+  color: #f05079;
+}
 
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 22:00:35
-    </footer>
-</body>
-</html>
+.hljs-number {
+  color: #ff9f50;
+}
+
+.hljs-literal {
+  color: #f05079;
+}
+
+.hljs-string {
+  color: #c9b09a;
+}
+
+.hljs-doctag {
+  color: #ff9f50;
+}
+
+.hljs-comment {
+  color: #999;
+}
+
+.hljs-title {
+  color: #ff9f50;
+}
+
+.hljs-params {
+  color: #ff9f50;
+}
+
+.hljs-tag {
+  color: #ff9f50;
+}
+
+.hljs-attribute {
+  color: #ff9f50;
+}
+
+.hljs-selector {
+  color: #ff9f50;
+}
+
+.hljs-section {
+  color: #ff9f50;
+}
+
+.hljs-name {
+  color: #ff9f50;
+}
+
+.hljs-built_in {
+  color: #ff9f50;
+}
+
+.hljs-class {
+  color: #ff9f50;
+}
+
+.hljs-function {
+  color: #ff9f50;
+}
+
+.hljs-variable {
+  color: #ff9f50;
+}
+
+.hljs-link {
+  color: #ff9f50;
+}
+
+.hljs-symbol {
+  color: #ff9f50;
+}
+
+.hljs-emphasis {
+  color: #ff9f50;
+}
+
+.hljs-quote {
+  color: #ff9f50;
+}
+
+.hljs-type {
+  color: #ff9f50;
+}
+
+.hljs-regexp {
+  color: #ff9f50;
+}
+
+.hljs-operator {
+  color: #ff9f50;
+}
+
+.hljs-meta {
+  color: #ff9f50;
+}
+
+.hljs-meta-string {
+  color: #ff9f50;
+}
+
+.hljs-meta-keyword {
+  color: #ff9f50;
+}
+
+.hljs-deletion {
+  color: #ff9f50;
+}
+
+.hljs-addition {
+  color: #ff9f50;
+}
+
+.hljs-chunk {
+  color: #ff9f50;
+}
+
+.hljs-bullet {
+  color: #ff9f50;
+}
+
+.hljs-code {
+  color: #ff9f50;
+}
+
+.hljs-subst {
+  color: #ff9f50;
+}
+
+.hljs-template-tag {
+  color: #ff9f50;
+}
+
+.hljs-template-variable {
+  color: #ff9f50;
+}
+
+.hljs-attr {
+  color: #ff9f50;
+}
+
+.hljs-attr-name {
+  color: #ff9f50;
+}
+
+.hljs-attr-value {
+  color: #ff9f50;
+}
+
+.hljs-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity {
+  color: #ff9f50;
+}
+
+.hljs-entity-name {
+  color: #ff9f50;
+}
+
+.hljs-entity-other {
+  color: #ff9f50;
+}
+
+.hljs-entity-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute-name {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-inline-code {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-url {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-language-name {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-filename {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-directory {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-device {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-table {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-column {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-row {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-cell {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-header {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-footer {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-placeholder {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-macro {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-label {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-reference {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-definition {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-function {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector<style>
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-symbol {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-property {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-tag {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-selector {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-attribute {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-key {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-value {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-comment {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-punctuation {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-operator {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-special {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-pseudo {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-namespace {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-type {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-regexp {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-variable {
+  color: #ff9f50;
+}
+
+.hljs-entity-other-constant {
+  color: #ff9f50;
+}
+

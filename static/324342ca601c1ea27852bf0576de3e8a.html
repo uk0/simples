@@ -8,166 +8,125 @@
     <meta name="keywords" content="javascript, Handtable" />
     <style>
         body {
-            background-color: #f0f0f0; /* Dos复古风格 */
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            background: #222;
+            color: #eee;
+            font-family: 'Arial', sans-serif;
             max-width: 820px;
             margin: 0 auto;
-            padding-top: 20px;
-            padding-bottom: 20px;
-            transition: background-color 0.3s ease;
+            line-height: 21px;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
         }
-
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
         }
-
-        h1 {
-            font-size: 20px;
-        }
-
-        h2 {
-            font-size: 18px;
-        }
-
-        h3 {
-            font-size: 16px;
-        }
-
-        h4 {
-            font-size: 14px;
-        }
-
-        h5 {
-            font-size: 12px;
-        }
-
-        h6 {
-            font-size: 11px;
-        }
-
-        code {
-            background-color: #f5f5f5;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-
-        pre {
-            background-color: #f5f5f5;
+        h1 { font-size: 20px; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+        pre code {
+            font-family: 'Consolas', monospace;
+            line-height: 24px;
+            background-color: #292929;
+            color: #eee;
             padding: 10px;
             border-radius: 5px;
-            overflow-x: auto;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-
-        .container {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            padding: 20px;
+        img {
+            display: block;
+            margin: 0 auto;
+            width: 600px;
+            height: 375px;
+        }
+        .hljs {
+            background-color: #292929;
+            color: #eee;
+            padding: 10px;
             border-radius: 5px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-
+        .hljs-keyword {
+            color: #f05032;
+        }
+        .hljs-number {
+            color: #d19a66;
+        }
+        .hljs-string {
+            color: #91c990;
+        }
+        .hljs-comment {
+            color: #8c8c8c;
+        }
+        .hljs-doctag {
+            color: #8c8c8c;
+        }
+        .hljs-title {
+            color: #eee;
+        }
+        .hljs-meta {
+            color: #8c8c8c;
+        }
+        .hljs-attribute {
+            color: #eee;
+        }
+        .hljs-selector-tag {
+            color: #eee;
+        }
+        .hljs-selector-id {
+            color: #eee;
+        }
+        .hljs-selector-class {
+            color: #eee;
+        }
+        .hljs-selector-attr {
+            color: #eee;
+        }
+        .hljs-selector-pseudo {
+            color: #eee;
+        }
+        .hljs-literal {
+            color: #d19a66;
+        }
+        .hljs-built_in {
+            color: #d19a66;
+        }
+        .hljs-template-tag {
+            color: #d19a66;
+        }
+        .hljs-variable {
+            color: #eee;
+        }
+        .hljs-operator {
+            color: #eee;
+        }
+        .hljs-addition {
+            color: #91c990;
+        }
+        .hljs-deletion {
+            color: #f05032;
+        }
+        .hljs-emphasis {
+            font-style: italic;
+        }
+        .hljs-strong {
+            font-weight: bold;
+        }
         footer {
             text-align: center;
             margin-top: 20px;
             font-size: 12px;
         }
-
-        /* dlHighlight.js 스타일 적용 */
-        .dl-highlight {
-            background-color: #f5f5f5; /* 코드 블록 배경색 */
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        .dl-highlight .token.comment {
-            color: #7f8c8d; /* 주석 색상 */
-        }
-
-        .dl-highlight .token.string {
-            color: #c33; /* 문자열 색상 */
-        }
-
-        .dl-highlight .token.keyword {
-            color: #007bff; /* 키워드 색상 */
-        }
-
-        .dl-highlight .token.number {
-            color: #3498db; /* 숫자 색상 */
-        }
-
-        .dl-highlight .token.operator {
-            color: #000; /* 연산자 색상 */
-        }
-
-        .dl-highlight .token.punctuation {
-            color: #000; /* 구두점 색상 */
-        }
-
-        .dl-highlight .token.property {
-            color: #000; /* 속성 색상 */
-        }
-
-        .dl-highlight .token.tag {
-            color: #000; /* 태그 색상 */
-        }
-
-        .dl-highlight .token.attr-name {
-            color: #000; /* 속성 이름 색상 */
-        }
-
-        .dl-highlight .token.attr-value {
-            color: #000; /* 속성 값 색상 */
-        }
-
-        .dl-highlight .token.function {
-            color: #000; /* 함수 색상 */
-        }
-
-        .dl-highlight .token.class-name {
-            color: #000; /* 클래스 이름 색상 */
-        }
-
-        .dl-highlight .token.variable {
-            color: #000; /* 변수 색상 */
-        }
-
-        .dl-highlight .token.regex {
-            color: #000; /* 정규식 색상 */
-        }
-
-        .dl-highlight .token.boolean {
-            color: #000; /* 부울 색상 */
-        }
-
-        .dl-highlight .token.null {
-            color: #000; /* 널 색상 */
-        }
-
-        .dl-highlight .token.constant {
-            color: #000; /* 상수 색상 */
-        }
-
-        .dl-highlight .token.symbol {
-            color: #000; /* 기호 색상 */
-        }
-
-        .dl-highlight .token.meta {
-            color: #000; /* 메타 색상 */
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Handtable封装类,所有的Table都需要通过此工具操作表格</h1>
-        <p>回顾</p>
-        <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
-        <h2>代码</h2>
-        <pre><code class="dl-highlight">/**
+    <h1>Handtable封装类,所有的Table都需要通过此工具操作表格</h1>
+    <h2 style="text-align: center;">回顾</h2>
+    <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
+    <h2>代码</h2>
+    <pre><code class="hljs javascript">
+/**
  * @author 张建新
  * @数据表格加载
  * @callback 无
@@ -314,18 +273,8 @@ var HandtableTools = {
 	}
 }
 </code></pre>
-    </div>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:56:45
-    </footer>
-    <script>
-        // dlHighlight.js 라이브러리 로드
-        // (script 태그를 사용하거나 CDN 링크를 사용하여 라이브러리를 포함합니다.)
-        // 예시: <script src="https://cdn.jsdelivr.net/npm/dl-highlight@latest/dist/dl-highlight.min.js"></script>
-
-        // dlHighlight.js 초기화
-        // (코드 블록에 dl-highlight 클래스를 추가하여 강조 표시합니다.)
-        // 예시: <pre class="dl-highlight"><code>...코드...</code></pre>
-    </script>
+    <footer>Power By Gemini TextGenerate 2024-09-17 00:43:01</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>

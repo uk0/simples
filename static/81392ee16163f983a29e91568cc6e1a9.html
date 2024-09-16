@@ -1,149 +1,352 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>jenkins + docker + git 持续集成</title>
-    <meta name="description" content="jenkins + docker + git 持续集成">
-    <meta name="keywords" content="jenkins, docker">
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #222; /* Dos复古风格 */
-            color: #eee;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1 {
-            font-size: 20px;
-            text-align: center;
-        }
-        
-        h2 {
-            font-size: 18px;
-        }
-        
-        h3 {
-            font-size: 16px;
-        }
-        
-        h4 {
-            font-size: 14px;
-        }
-        
-        h5 {
-            font-size: 12px;
-        }
-        
-        h6 {
-            font-size: 11px;
-        }
-        
-        pre {
-            background-color: #282c34;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
-        
-        code {
-            font-family: monospace;
-            background-color: #333;
-            color: #eee;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-        
-        footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 20px;
-            color: #888;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script>
-        hljs.highlightAll();
+<meta charset="UTF-8">
+<title>jenkins + docker + git 持续集成</title>
+<meta name="description" content="jenkins + docker + git 持续集成">
+<meta name="keywords" content="jenkins, docker">
+<style>
+body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: monospace;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    max-width: 820px;
+    line-height: 21px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+    margin: 0 auto;
+}
 
-        // 随机种子 
-        Math.seedrandom(4538978253);
+h1 {
+    font-size: 20px;
+    margin-top: 0;
+}
 
-        // 随机生成背景颜色
-        function getRandomBackgroundColor() {
-            let colors = ['#222', '#eee'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
+h2 {
+    font-size: 18px;
+}
 
-        // 获取当前时间
-        let now = new Date();
-        let hour = now.getHours();
+h3 {
+    font-size: 16px;
+}
 
-        // 根据时间选择主题颜色
-        let backgroundColor = (hour >= 6 && hour < 18) ? '#eee' : '#222';
-        document.body.style.backgroundColor = backgroundColor;
-    </script>
+h4 {
+    font-size: 14px;
+}
+
+h5 {
+    font-size: 12px;
+}
+
+h6 {
+    font-size: 11px;
+}
+
+code {
+    background-color: #222222;
+    color: #00ff00;
+    font-size: 16px;
+    padding: 5px;
+    line-height: 24px;
+}
+
+img {
+    display: block;
+    margin: 0 auto;
+    width: 600px;
+    height: 375px;
+}
+
+pre {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.highlight {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.highlight pre {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.highlight code {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.highlight pre code {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.highlight .hljs-keyword {
+    color: #00ff00;
+}
+
+.highlight .hljs-string {
+    color: #00ffff;
+}
+
+.highlight .hljs-number {
+    color: #ff0000;
+}
+
+.highlight .hljs-comment {
+    color: #808080;
+}
+
+.highlight .hljs-doctag {
+    color: #00ffff;
+}
+
+.highlight .hljs-title {
+    color: #00ff00;
+}
+
+.highlight .hljs-section {
+    color: #00ffff;
+}
+
+.highlight .hljs-literal {
+    color: #00ffff;
+}
+
+.highlight .hljs-selector-tag {
+    color: #00ffff;
+}
+
+.highlight .hljs-selector-id {
+    color: #00ffff;
+}
+
+.highlight .hljs-selector-class {
+    color: #00ffff;
+}
+
+.highlight .hljs-selector-attr {
+    color: #00ffff;
+}
+
+.highlight .hljs-selector-pseudo {
+    color: #00ffff;
+}
+
+.highlight .hljs-attribute {
+    color: #00ffff;
+}
+
+.highlight .hljs-variable {
+    color: #00ffff;
+}
+
+.highlight .hljs-template-tag {
+    color: #00ffff;
+}
+
+.highlight .hljs-template-variable {
+    color: #00ffff;
+}
+
+.highlight .hljs-function {
+    color: #00ffff;
+}
+
+.highlight .hljs-class {
+    color: #00ffff;
+}
+
+.highlight .hljs-meta {
+    color: #00ffff;
+}
+
+.highlight .hljs-meta-string {
+    color: #00ffff;
+}
+
+.highlight .hljs-built_in {
+    color: #00ffff;
+}
+
+.highlight .hljs-symbol {
+    color: #00ffff;
+}
+
+.highlight .hljs-bullet {
+    color: #00ffff;
+}
+
+.highlight .hljs-link {
+    color: #00ffff;
+}
+
+.highlight .hljs-regexp {
+    color: #00ffff;
+}
+
+.highlight .hljs-subst {
+    color: #00ffff;
+}
+
+.highlight .hljs-type {
+    color: #00ffff;
+}
+
+.highlight .hljs-params {
+    color: #00ffff;
+}
+
+.highlight .hljs-constant {
+    color: #00ffff;
+}
+
+.highlight .hljs-emphasis {
+    color: #00ffff;
+}
+
+.highlight .hljs-strong {
+    color: #00ffff;
+}
+
+.highlight .hljs-quote {
+    color: #00ffff;
+}
+
+.highlight .hljs-code {
+    color: #00ffff;
+}
+
+.highlight .hljs-tag {
+    color: #00ffff;
+}
+
+.highlight .hljs-name {
+    color: #00ffff;
+}
+
+.highlight .hljs-deleted {
+    color: #00ffff;
+}
+
+.highlight .hljs-inserted {
+    color: #00ffff;
+}
+
+.highlight .hljs-changed {
+    color: #00ffff;
+}
+
+.highlight .hljs-gutter {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.highlight .hljs-gutter .hljs-line-number {
+    color: #00ff00;
+}
+
+.highlight .hljs-gutter .hljs-line-number:before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.highlight .hljs-gutter .hljs-line-number:after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.highlight .hljs-gutter .hljs-line-number:hover {
+    background-color: #222222;
+    color: #00ff00;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+}
+</style>
 </head>
 <body>
-    <h1>jenkins + docker + git 持续集成</h1>
-    <p>
-        <meta name="description" content="jenkins + docker + git 持续集成">
-        <meta name="keywords" content="jenkins, docker">
-    </p>
-    <blockquote>
-        <p>git push 以后， jenkins 自动触发 代码打包，生成docker image , docker push 到 仓库，发布到环境里。</p>
-    </blockquote>
-    <h2>安装jenkins</h2>
-    <p>这里不建议用 Docker 镜像，因为下面 Jenkins 自身会需要调用 Docker 来启动任务。</p>
-    <p>Jenkins + Docker + kubectl + git + Blue Ocean。</p>
-    <h3>导入 jenkins 源</h3>
-    <pre>
-        <code>
-wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins.io/redhat-stable/jenkins.repo
+<h1 style="text-align: center;">jenkins + docker + git 持续集成</h1>
+<p style="text-align: center;">jenkins + docker + git 持续集成</p>
+<p style="text-align: center;">jenkins, docker</p>
+
+<blockquote>
+<p>git push 以后， jenkins 自动触发 代码打包，生成docker image , docker push 到 仓库，发布到环境里。</p>
+</blockquote>
+
+<h1>安装jenkins</h1>
+<p>这里不建议用 Docker 镜像，因为下面 Jenkins 自身会需要调用 Docker 来启动任务。</p>
+<p>Jenkins + Docker + kubectl + git + Blue Ocean。</p>
+
+<h2>导入 jenkins 源</h2>
+<pre><code class="language-bash">wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins.io/redhat-stable/jenkins.repo
 rpm --import http://pkg.jenkins.io/redhat-stable/jenkins.io.key
 
 
 yum -y install jenkins 
-        </code>
-    </pre>
-    <h3>修改jenkins配置</h3>
-    <pre>
-        <code>
-vi /etc/sysconfig/jenkins
+</code></pre>
+
+<h2>修改jenkins配置</h2>
+<pre><code class="language-bash">vi /etc/sysconfig/jenkins
 
 # 修改jenkins 目录
 JENKINS_HOME="/opt/jenkins"
 
 # 修改jenkins 端口
 JENKINS_PORT="9999"
-        </code>
-    </pre>
-    <h3>移动目录</h3>
-    <pre>
-        <code>
-# 将目录移动过来，否则程序报错
+</code></pre>
+
+<h2>移动目录</h2>
+<pre><code class="language-bash"># 将目录移动过来，否则程序报错
 mv /var/lib/jenkins /opt/
-        </code>
-    </pre>
-    <h3>启动服务</h3>
-    <pre>
-        <code>
-systemctl start jenkins
+</code></pre>
+
+<h2>启动服务</h2>
+<pre><code class="language-bash">systemctl start jenkins
 systemctl enable jenkins
-        </code>
-    </pre>
-    <h3>访问WEB UI</h3>
-    <pre>
-        <code>
-http://myip:9999/ 
-        </code>
-    </pre>
-    <h3>生成密钥</h3>
-    <pre>
-        <code>
-# 切换用户
+</code></pre>
+
+<h2>访问WEB UI</h2>
+<pre><code class="language-bash">http://myip:9999/ 
+</code></pre>
+
+<h2>生成密钥</h2>
+<pre><code class="language-bash"># 切换用户
 su jenkins
 
 
@@ -152,18 +355,19 @@ ssh-keygen -t rsa -b 4096 -C "jenkins@git"
 
 # 查看key信息
 cat /home/jenkins/.ssh/id_rsa.pub
-        </code>
-    </pre>
-    <h2>jenkins 后台配置</h2>
-    <p>进入 jenkins --> Credentials --> Add Credentials</p>
-    <p>选择 系统管理 -- > 管理插件</p>
-    <ul>
-        <li>添加 Gradle Plugin 插件</li>
-        <li>添加 Git plugin 插件</li>
-    </ul>
-    <pre>
-        <code>
-常用插件
+</code></pre>
+
+<h2>jenkins 后台配置</h2>
+<p>进入 jenkins --> Credentials --> Add Credentials</p>
+<img src="http://jicki.me/images/posts/jenkins/4.png" alt="此处输入图片的描述">
+
+<p>选择 系统管理 -- > 管理插件</p>
+<ol>
+<li>添加 Gradle Plugin 插件</li>
+<li>添加 Git plugin 插件</li>
+</ol>
+
+<pre><code class="language-bash">常用插件
 
 Build WIth Parameters   # 执行 构建 前手工输入参数
 
@@ -175,48 +379,50 @@ Email Extension Plugin  # 邮件发送
 
 Multiple SCMs Plugin #多项目构建工具
 
-        </code>
-    </pre>
-    <p>下载慢可直接下载 hpi 文件，通过高级 导入插件安装</p>
-    <p>选择 系统管理 -- > Global Tool Configuration</p>
-    <p>安装JDK</p>
-    <p>安装 Gradle </p>
-    <p>安装 Git</p>
-    <p>创建项目  选择 自由风格 的项目</p>
-    <p>源码管理选择 Git</p>
-    <p>构建 选择  Invoke Gradle script</p>
-    <h2>构建触发器</h2>
-    <pre>
-        <code>
-# 勾选 Poll SCM
+</code></pre>
+
+<p>下载慢可直接下载 hpi 文件，通过高级 导入插件安装</p>
+<p>选择 系统管理 -- > Global Tool Configuration</p>
+<p>安装JDK</p>
+<img src="http://jicki.me/images/posts/jenkins/1.png" alt="描述">
+
+<p>安装 Gradle </p>
+<img src="http://jicki.me/images/posts/jenkins/2.png" alt="此处输入图片的描述">
+
+<p>安装 Git</p>
+<img src="http://jicki.me/images/posts/jenkins/3.png" alt="此处输入图片的描述">
+
+<p>创建项目  选择 自由风格 的项目</p>
+<p>源码管理选择 Git</p>
+<img src="http://jicki.me/images/posts/jenkins/5.png" alt="此处输入图片的描述">
+
+<p>构建 选择  Invoke Gradle script</p>
+<img src="http://jicki.me/images/posts/jenkins/6.png" alt="此处输入图片的描述">
+
+<h2>构建触发器</h2>
+
+<pre><code class="language-bash"># 勾选 Poll SCM
 
 # 每两分钟检查一次git代码是否有更新
 H/2 * * * *
-        </code>
-    </pre>
-    <h2>配置 邮件</h2>
-    <p>首先必须安装 Email Extension Plugin 插件</p>
-    <p>系统管理 --> 系统设置 -- > Jenkins Location</p>
-    <p>配置系统管理员邮件地址 --- >  xxx@163.com</p>
-    <p>配置 Extended E-mail Notification</p>
-    <pre>
-        <code>
-SMTP Server = 
+</code></pre>
 
-点击高级
+<h2>配置 邮件</h2>
+<p>首先必须安装 Email Extension Plugin 插件</p>
+<p>系统管理 --> 系统设置 -- > Jenkins Location</p>
+<p>配置系统管理员邮件地址 --- >  xxx@163.com</p>
 
-勾选 Use SMTP Authentication
+<p>配置 Extended E-mail Notification</p>
 
-输入 发送 用户 与 密码
+<p>SMTP Server = </p>
+<p>点击高级</p>
+<p>勾选 Use SMTP Authentication</p>
+<p>输入 发送 用户 与 密码</p>
+<p>填写 SMTP port</p>
 
-填写 SMTP port
+<p>Default Content Type 选择 HTML (text/html)</p>
 
-
-Default Content Type 选择 HTML (text/html)
-
-
-```
-Default Subject =  构建通知:$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!
+<pre><code class="language-bash">Default Subject =  构建通知:$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!
 
 
 Default Content = 
@@ -239,15 +445,33 @@ Default Content =
 
 <b style="font-size: 12px;">变更集:${JELLY_SCRIPT,template="html"}<br></b><hr>
 
-```
-        </code>
-    </pre>
-    <p>项目 -- > 构建后操作 --- > 添加 Editable Email Notification</p>
-    <p>拉到最下面 --- > 点击 Advanced Settings...</p>
-    <p>Recipient List 添加 收件邮箱 多个邮件以空格 隔开</p>
-    <p>原文作者 <a href="https://jicki.me/">小炒肉</a> .</p>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:43:39
-    </footer>
+</code></pre>
+
+<img src="http://jicki.me/images/posts/jenkins/8.png" alt="此处输入图片的描述">
+
+<p>项目 -- > 构建后操作 --- > 添加 Editable Email Notification</p>
+<p>拉到最下面 --- > 点击 Advanced Settings...</p>
+<img src="http://jicki.me/images/posts/jenkins/9.png" alt="此处输入图片的描述">
+
+<p>Recipient List 添加 收件邮箱 多个邮件以空格 隔开</p>
+<img src="http://jicki.me/images/posts/jenkins/10.png" alt="此处输入图片的描述">
+
+<p>原文作者 <a href="https://jicki.me/" title="Title">小炒肉</a> .</p>
+
+<footer>
+<p>Power By Gemini TextGenerate 2024-09-17 00:29:54</p>
+</footer>
+
+<script>
+var preElements = document.querySelectorAll('pre');
+for (var i = 0; i < preElements.length; i++) {
+    preElements[i].classList.add('highlight');
+}
+
+var codeElements = document.querySelectorAll('code');
+for (var i = 0; i < codeElements.length; i++) {
+    codeElements[i].classList.add('highlight');
+}
+</script>
 </body>
 </html>

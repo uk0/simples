@@ -1,114 +1,128 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
 <title>kargo kubernetes 1.6.4</title>
-<meta name="description" content="kargo kubernetes 1.6.4">
-<meta name="keywords" content="docker">
 <style>
-body {
-    background-color: #111;
-    color: #eee;
-    font-family: sans-serif;
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-    font-size: 20px;
-    margin-top: 0;
-}
-
-h2 {
-    font-size: 18px;
-}
-
-h3 {
-    font-size: 16px;
-}
-
-h4 {
-    font-size: 14px;
-}
-
-h5 {
-    font-size: 12px;
-}
-
-h6 {
-    font-size: 11px;
-}
-
-pre {
-    background-color: #222;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-}
-
-code {
-    font-family: monospace;
-    color: #eee;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-th, td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #333;
-}
-
-th {
-    background-color: #333;
-}
-
-.highlight {
-    background-color: #333;
-    padding: 5px;
-    border-radius: 3px;
-    display: inline-block;
-}
-
-.highlight code {
-    color: #eee;
-}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
-<script>
-    const randomSeed = 4538978253;
-    let date = new Date();
-    let hours = date.getHours();
-    const nightTheme = hours >= 18 || hours < 6;
-    if (nightTheme) {
-        document.body.style.backgroundColor = '#222';
-        document.body.style.color = '#eee';
-        document.body.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
-        document.querySelectorAll('pre').forEach(pre => pre.style.backgroundColor = '#111');
-        document.querySelectorAll('code').forEach(code => code.style.color = '#eee');
-        document.querySelectorAll('.highlight').forEach(highlight => highlight.style.backgroundColor = '#111');
-        document.querySelectorAll('.highlight code').forEach(code => code.style.color = '#eee');
+    body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family: monospace;
+        max-width: 820px;
+        margin: 0 auto;
+        line-height: 21px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     }
+    h1 {
+        font-size: 20px;
+    }
+    h2 {
+        font-size: 18px;
+    }
+    h3 {
+        font-size: 16px;
+    }
+    h4 {
+        font-size: 14px;
+    }
+    h5 {
+        font-size: 12px;
+    }
+    h6 {
+        font-size: 11px;
+    }
+    pre {
+        line-height: 24px;
+        background-color: #222222;
+        padding: 10px;
+        margin: 10px 0;
+        overflow-x: auto;
+        border-radius: 5px;
+    }
+    code {
+        background-color: #222222;
+        color: #ffffff;
+        font-family: monospace;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+    img {
+        display: block;
+        margin: 0 auto;
+        max-width: 600px;
+        height: auto;
+    }
+    .hljs {
+        background-color: #222222;
+        color: #ffffff;
+        font-family: monospace;
+        padding: 10px;
+        margin: 10px 0;
+        overflow-x: auto;
+        border-radius: 5px;
+    }
+    .hljs-comment,
+    .hljs-quote {
+        color: #808080;
+    }
+    .hljs-keyword,
+    .hljs-selector-tag,
+    .hljs-selector-id,
+    .hljs-selector-class,
+    .hljs-attribute,
+    .hljs-tag {
+        color: #ff7f50;
+    }
+    .hljs-number,
+    .hljs-literal,
+    .hljs-string,
+    .hljs-regexp {
+        color: #ffff00;
+    }
+    .hljs-title,
+    .hljs-section {
+        color: #ffffff;
+    }
+    .hljs-meta {
+        color: #008080;
+    }
+    .hljs-built_in {
+        color: #0000ff;
+    }
+    .hljs-operator,
+    .hljs-name {
+        color: #ffffff;
+    }
+    .hljs-emphasis {
+        font-style: italic;
+    }
+    .hljs-strong {
+        font-weight: bold;
+    }
+    footer {
+        text-align: center;
+        margin-top: 30px;
+    }
+</style>
+<script>
+    window.onload = function() {
+        var codeElements = document.querySelectorAll('pre code');
+        codeElements.forEach(function(codeElement) {
+            hljs.highlightElement(codeElement);
+        });
+    };
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
 </head>
 <body>
-<h1 align="center">kargo kubernetes 1.6.4</h1>
-<h2 align="center"></h2>
-<h3 align="center"></h3>
-<p>---</p>
-<h1 id="1初始化环境">1、初始化环境</h1>
-<p><blockquote>
-kargo update k8s 1.6.4
-</blockquote></p>
-<h2 id="11环境">1.1、环境：</h2>
-<table>
+<h1>kargo kubernetes 1.6.4</h1>
+<h2>1、初始化环境</h2>
+<pre><code>&gt; kargo update k8s 1.6.4
+</code></pre>
+<h3>1.1、环境：</h3>
+<table style="text-align: center;">
 <thead>
 <tr>
 <th>节点</th>
@@ -139,8 +153,8 @@ kargo update k8s 1.6.4
 </tr>
 </tbody>
 </table>
-<h2 id="12配置ssh-key-登陆">1.2、配置SSH Key 登陆</h2>
-<pre><code class="language-bash"># 确保本机也可以 ssh 连接，否则下面部署失败
+<h3>1.2、配置SSH Key 登陆</h3>
+<pre><code># 确保本机也可以 ssh 连接，否则下面部署失败
 
 ssh-keygen -t rsa -N ""
 
@@ -153,16 +167,12 @@ ssh-copy-id -i /root/.ssh/id_rsa.pub 10.6.0.55
 ssh-copy-id -i /root/.ssh/id_rsa.pub 10.6.0.56
 
 </code></pre>
-<h1 id="2获取-kargo">2、获取 Kargo</h1>
-<p><blockquote>
-Kargo 官方github
-https://github.com/kubernetes-incubator/kargo
-</blockquote></p>
-<h2 id="21安装基础软件">2.1、安装基础软件</h2>
-<p><blockquote>
-Kargo 是基于 ansible 统一部署，所以必须安装 ansible
-</blockquote></p>
-<pre><code class="language-bash"># 安装 centos 额外的yum源
+<h2>2、获取 Kargo</h2>
+<pre><code>&gt; Kargo 官方github
+&gt; https://github.com/kubernetes-incubator/kargo
+</code></pre>
+<h3>2.1、安装基础软件</h3>
+<pre><code># 安装 centos 额外的yum源
 yum install -y epel-release
 
 # 安装 软件
@@ -171,11 +181,11 @@ yum install -y python-pip python34 python-netaddr python34-pip ansible
 # 如果 报 no test named 'equalto' ，需要升级 Jinja2
 pip install --upgrade Jinja2
 </code></pre>
-<h2 id="22获取源码">2.2、获取源码</h2>
-<pre><code class="language-bash">git clone https://github.com/kubernetes-incubator/kargo
+<h3>2.2、获取源码</h3>
+<pre><code>git clone https://github.com/kubernetes-incubator/kargo
 </code></pre>
-<h2 id="23编辑配置文件">2.3、编辑配置文件</h2>
-<pre><code class="language-bash">cd kargo
+<h3>2.3、编辑配置文件</h3>
+<pre><code>cd kargo
 
 vim inventory/group_vars/k8s-cluster.yml
 
@@ -184,8 +194,8 @@ vim inventory/group_vars/k8s-cluster.yml
 
 
 </code></pre>
-<h2 id="24生成集群配置文件">2.4、生成集群配置文件</h2>
-<pre><code class="language-bash">cd kargo
+<h3>2.4、生成集群配置文件</h3>
+<pre><code>cd kargo
 
 CONFIG_FILE=inventory/inventory.cfg python3 contrib/inventory_builder/inventory.py 10.6.0.52 10.6.0.53 10.6.0.55 10.6.0.56
 
@@ -247,20 +257,20 @@ kube-master
 [calico-rr]
 
 </code></pre>
-<pre><code class="language-bash"># 1.6.4 镜像下载
+<pre><code># 1.6.4 镜像下载
 
 http://pan.baidu.com/s/1nvUc5mx
 
 
 </code></pre>
-<h2 id="25部署集群">2.5、部署集群</h2>
-<pre><code class="language-bash"># 执行如下命令，请确保SSH KEY 登陆, 端口一致
+<h3>2.5、部署集群</h3>
+<pre><code># 执行如下命令，请确保SSH KEY 登陆, 端口一致
 
 ansible-playbook -i inventory/inventory.cfg cluster.yml -b -v --private-key=~/.ssh/id_rsa
 
 </code></pre>
-<h2 id="26测试">2.6、测试</h2>
-<pre><code class="language-bash"># 两个 master 中使用 kubectl get nodes
+<h3>2.6、测试</h3>
+<pre><code># 两个 master 中使用 kubectl get nodes
 
 [root@k8s-node-1 ~]# kubectl get nodes
 NAME         STATUS    AGE       VERSION
@@ -323,7 +333,7 @@ netchecker-server                1/1       Running   0          16m
 
 
 </code></pre>
-<pre><code class="language-yaml"># 配置一个 nginx deplyment 与 nginx  service
+<pre><code># 配置一个 nginx deplyment 与 nginx  service
 
 apiVersion: extensions/v1beta1 
 kind: Deployment 
@@ -344,7 +354,7 @@ spec:
             - containerPort: 80
 
 </code></pre>
-<pre><code class="language-yaml">apiVersion: v1 
+<pre><code>apiVersion: v1 
 kind: Service
 metadata: 
   name: nginx-dm 
@@ -356,7 +366,7 @@ spec:
   selector: 
     name: nginx
 </code></pre>
-<pre><code class="language-bash"># 导入 yaml 文件
+<pre><code># 导入 yaml 文件
 
 
 [root@k8s-node-1 ~]# kubectl apply -f nginx.yaml 
@@ -378,7 +388,7 @@ netchecker-service   10.233.0.126    <nodes>       8081:31081/TCP   33m       ap
 nginx-dm             10.233.56.138   <none>        80/TCP           10m       name=nginx
 
 </code></pre>
-<pre><code class="language-yaml"># 部署一个  curl 的 pods 用来测试 内部通信
+<pre><code># 部署一个  curl 的 pods 用来测试 内部通信
 
 
 apiVersion: v1
@@ -395,7 +405,7 @@ spec:
     - while true; do sleep 1; done
 
 </code></pre>
-<pre><code class="language-bash"># 导入 yaml 文件
+<pre><code># 导入 yaml 文件
 
 [root@k8s-node-1 ~]# kubectl apply -f curl.yaml 
 pod "curl" created
@@ -407,7 +417,7 @@ curl                             1/1       Running   0          2m        10.233
 
 
 </code></pre>
-<pre><code class="language-bash"># 测试 curl --> nginx-svc
+<pre><code># 测试 curl --> nginx-svc
 
 
 [root@k8s-node-1 ~]# kubectl exec -it curl curl nginx-dm
@@ -440,7 +450,7 @@ Commercial support is available at
 </html>
 
 </code></pre>
-<pre><code class="language-yaml"># 创建一个 zk  集群 zk-deplyment  和 service
+<pre><code># 创建一个 zk  集群 zk-deplyment  和 service
 
 
 apiVersion: extensions/v1beta1
@@ -467,7 +477,7 @@ spec:
           - containerPort: 2181
 
 </code></pre>
-<pre><code class="language-yaml">apiVersion: extensions/v1beta1 
+<pre><code>apiVersion: extensions/v1beta1 
 kind: Deployment
 metadata:
   name: zookeeper-2
@@ -491,7 +501,7 @@ spec:
           - containerPort: 2181
 
 </code></pre>
-<pre><code class="language-yaml">apiVersion: extensions/v1beta1
+<pre><code>apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: zookeeper-3
@@ -514,7 +524,7 @@ spec:
           ports:
           - containerPort: 2181
 </code></pre>
-<pre><code class="language-yaml">apiVersion: v1 
+<pre><code>apiVersion: v1 
 kind: Service 
 metadata: 
   name: zookeeper-1 
@@ -535,7 +545,7 @@ spec:
     name: zookeeper-1
 
 </code></pre>
-<pre><code class="language-yaml">
+<pre><code>
 
 apiVersion: v1 
 kind: Service 
@@ -558,7 +568,7 @@ spec:
     name: zookeeper-2
 
 </code></pre>
-<pre><code class="language-yaml">
+<pre><code>
 
 apiVersion: v1 
 kind: Service 
@@ -581,7 +591,7 @@ spec:
     name: zookeeper-3
 
 </code></pre>
-<pre><code class="language-bash"># 查看状态  pods 与 service
+<pre><code># 查看状态  pods 与 service
 
 [root@k8s-node-1 ~]# kubectl get pods -o wide
 NAME                             READY     STATUS    RESTARTS   AGE       IP              NODE
@@ -592,22 +602,25 @@ zookeeper-3-479264707-hlv3x      1/1       Running   0          1m        10.233
 
 
 [root@k8s-node-1 ~]# kubectl get svc -o wide    
-NAME                 CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE       SELECTOR
+NAME                 CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
 zookeeper-1          10.233.25.46    <none>        2181/TCP,2888/TCP,3888/TCP   1m        name=zookeeper-1
 zookeeper-2          10.233.49.4     <none>        2181/TCP,2888/TCP,3888/TCP   1m        name=zookeeper-2
 zookeeper-3          10.233.50.206   <none>        2181/TCP,2888/TCP,3888/TCP   1m        name=zookeeper-3
 
 </code></pre>
-<h2 id="27部署一个-nginx-ingress">2.7、部署一个 Nginx Ingress</h2>
-<p><blockquote>
-Kubernetes 暴露服务的方式目前只有三种：LoadBlancer Service、NodePort Service、Ingress；
-什么是 Ingress ?  Ingress 就是利用 nginx haproxy 等负载均衡工具来暴露 Kubernetes 服务。
-</blockquote></p>
-<pre><code class="language-bash"># 首先 部署一个 http-backend, 用于统一转发 没有的域名 到指定页面。
+<h2>2.7、部署一个 Nginx Ingress</h2>
+<pre><code>&gt; Kubernetes 暴露服务的方式目前只有三种：LoadBlancer Service、NodePort Service、Ingress；
+&gt; 什么是 Ingress ?  Ingress 就是利用 nginx haproxy 等负载均衡工具来暴露 Kubernetes 服务。
+
+
+</code></pre>
+<pre><code>
+
+# 首先 部署一个 http-backend, 用于统一转发 没有的域名 到指定页面。
 # 官方 nginx  ingress 库 https://github.com/kubernetes/ingress/tree/master/examples/deployment/nginx
 
 </code></pre>
-<pre><code class="language-bash"># 下载官方的 nginx  backend 文件
+<pre><code># 下载官方的 nginx  backend 文件
 
 curl -O https://raw.githubusercontent.com/kubernetes/ingress/master/examples/deployment/nginx/default-backend.yaml
 
@@ -629,10 +642,10 @@ NAME                    CLUSTER-IP      EXTERNAL-IP   PORT(S)         AGE
 default-http-backend    10.233.20.232   <none>        80/TCP          33m
 
 </code></pre>
-<pre><code class="language-bash"># 部署 Ingress Controller 组件
+<pre><code># 部署 Ingress Controller 组件
 
 </code></pre>
-<pre><code class="language-bash"># 下载 官方 nginx-ingress-controller 的yaml文件
+<pre><code># 下载 官方 nginx-ingress-controller 的yaml文件
 
 curl -O https://raw.githubusercontent.com/kubernetes/ingress/master/examples/deployment/nginx/nginx-ingress-controller.yaml
 
@@ -665,7 +678,7 @@ nginx-ingress-controller   4         4         4         <none>          1m
 
 
 </code></pre>
-<pre><code class="language-bash"># 最后开始 部署 Ingress
+<pre><code># 最后开始 部署 Ingress
 # 这里请先看看官方 ingress 的 yaml 写法
 # https://kubernetes.io/docs/user-guide/ingress/
 
@@ -730,15 +743,15 @@ nginx-ingress   nginx.jicki.me             80        17s
 
 </code></pre>
 <img src="http://jicki.me/images/posts/kagro/1.png" alt="nginx">
-<h1 id="维护-faq">维护 FAQ</h1>
-<pre><code class="language-bash"># 卸载
+<h2>维护 FAQ</h2>
+<pre><code># 卸载
 
 cd kargo
 
 ansible-playbook -i inventory/inventory.cfg reset.yml -b -v --private-key=~/.ssh/id_rsa
 
 </code></pre>
-<pre><code class="language-bash"># 增加节点
+<pre><code># 增加节点
 
 # 首先编辑 inventory/inventory.cfg  增加一个节点 例：node5
 
@@ -756,13 +769,13 @@ ansible-playbook -i inventory/inventory.cfg cluster.yml -b -v --private-key=~/.s
 
 
 </code></pre>
-<pre><code class="language-bash"># 报错1
+<pre><code># 报错1
 # hostname 的问题
 # 部署 kargo 必须配置 hostname 否则 多 master 会出现 无法创建 api 等 pods
 # 如果 执行了 ansible-playbook 之前没改 hostname 必须删除 /tmp 下的 node[N]
 # 否则更改 /etc/hosts 失败
 </code></pre>
-<pre><code class="language-bash"># 报错 2
+<pre><code># 报错 2
 
 TASK [vault : check_vault | Set fact about the Vault cluster's initialization state] ***
 Monday 10 April 2017  17:47:42 +0800 (0:00:00.088)       0:01:22.030 ********** 
@@ -773,7 +786,7 @@ fatal: [node3]: FAILED! => {"failed": true, "msg": "'dict object' has no attribu
 
 </code></pre>
 <footer>
-Power By Gemini TextGenerate 2024-09-16 21:42:38
+Power By Gemini TextGenerate 2024-09-17 00:28:55
 </footer>
 </body>
 </html>

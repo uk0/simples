@@ -4,242 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>traefik 负载均衡</title>
-    <meta name="description" content="Traefik 是一款开源的反向代理与负载均衡工具。它最大的优点是能够与常见的微服务系统直接整合，可以实现自动化动态配置。目前支持Docker, Swarm, Mesos/Marathon, Mesos, Kubernetes, Consul, Etcd, Zookeeper, BoltDB, Rest API等等后端模型">
-    <meta name="keywords" content="docker, traefik, 负载均衡, 反向代理">
+    <meta name="description" content="traefik 负载均衡">
+    <meta name="keywords" content="docker">
     <style>
         body {
-            background-color: #1f1f1f;
+            background: #333; /* Unix风格背景色 */
             color: #eee;
             font-family: sans-serif;
+            line-height: 21px;
             max-width: 820px;
             margin: 0 auto;
             padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
-        h1, h2, h3, h4, h5, h6 {
-            margin-top: 20px;
-        }
-
         h1 {
             font-size: 20px;
+            margin-top: 0;
         }
-
         h2 {
             font-size: 18px;
+            margin-top: 0;
         }
-
         h3 {
             font-size: 16px;
+            margin-top: 0;
         }
-
         h4 {
             font-size: 14px;
+            margin-top: 0;
         }
-
         h5 {
             font-size: 12px;
+            margin-top: 0;
         }
-
         h6 {
             font-size: 11px;
+            margin-top: 0;
         }
-
-        pre {
-            background-color: #282c34;
-            padding: 10px;
-            overflow-x: auto;
-            border-radius: 4px;
-        }
-
         code {
-            font-family: monospace;
-            background-color: #333;
+            background-color: #222;
             color: #eee;
+            font-size: 14px;
+            line-height: 24px;
             padding: 2px 4px;
-            border-radius: 4px;
+            border-radius: 3px;
         }
-
-        .hljs {
-            background-color: #282c34;
+        pre {
+            background-color: #222;
             color: #eee;
+            font-size: 14px;
+            line-height: 24px;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
         }
-
-        .hljs-keyword {
-            color: #ff79c6;
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 600px;
+            height: auto;
         }
-
-        .hljs-string {
-            color: #a5c261;
-        }
-
-        .hljs-number {
-            color: #c679ff;
-        }
-
-        .hljs-comment {
-            color: #5c6370;
-        }
-
-        .hljs-tag {
-            color: #c679ff;
-        }
-
-        .hljs-attr {
-            color: #a5c261;
-        }
-
-        .hljs-built_in {
-            color: #a5c261;
-        }
-
-        .hljs-type {
-            color: #c679ff;
-        }
-
-        .hljs-selector-class {
-            color: #a5c261;
-        }
-
-        .hljs-selector-id {
-            color: #c679ff;
-        }
-
-        .hljs-selector-attr {
-            color: #a5c261;
-        }
-
-        .hljs-selector-pseudo {
-            color: #c679ff;
-        }
-
-        .hljs-operator {
-            color: #a5c261;
-        }
-
-        .hljs-property {
-            color: #a5c261;
-        }
-
-        .hljs-variable {
-            color: #a5c261;
-        }
-
-        .hljs-function {
-            color: #c679ff;
-        }
-
-        .hljs-link {
-            color: #a5c261;
-        }
-
-        .hljs-meta {
-            color: #a5c261;
-        }
-
-        .hljs-bullet {
-            color: #a5c261;
-        }
-
-        .hljs-emphasis {
-            color: #c679ff;
-        }
-
-        .hljs-strong {
-            color: #c679ff;
-        }
-
-        .hljs-title {
-            color: #c679ff;
-        }
-
-        .hljs-section {
-            color: #c679ff;
-        }
-
-        .hljs-name {
-            color: #c679ff;
-        }
-
-        .hljs-literal {
-            color: #a5c261;
-        }
-
-        .hljs-symbol {
-            color: #c679ff;
-        }
-
-        .hljs-regexp {
-            color: #c679ff;
-        }
-
-        .hljs-template-tag {
-            color: #c679ff;
-        }
-
-        .hljs-template-variable {
-            color: #a5c261;
-        }
-
-        .hljs-quote {
-            color: #a5c261;
-        }
-
-        .hljs-attribute {
-            color: #a5c261;
-        }
-
-        .hljs-value {
-            color: #a5c261;
-        }
-
-        .hljs-punctuation {
-            color: #eee;
-        }
-
-        .hljs-params {
-            color: #a5c261;
-        }
-
-        .hljs-class {
-            color: #c679ff;
-        }
-
-        .hljs-addition {
-            background-color: #22863a;
-            color: #eee;
-        }
-
-        .hljs-deletion {
-            background-color: #b31d28;
-            color: #eee;
-        }
-
-        .hljs-changed {
-            background-color: #b31d28;
-            color: #eee;
-        }
-
         footer {
             text-align: center;
-            margin-top: 20px;
             font-size: 12px;
+            margin-top: 20px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+        document.addEventListener('DOMContentLoaded', function() {
+            var currentTime = new Date();
+            var hour = currentTime.getHours();
+            if (hour >= 19 || hour < 6) {
+                document.body.style.backgroundColor = '#111'; // 夜间模式
+                document.body.style.color = '#eee';
+                document.querySelectorAll('code, pre').forEach(function(element) {
+                    element.style.backgroundColor = '#111';
+                    element.style.color = '#eee';
+                });
+            } else {
+                document.body.style.backgroundColor = '#333'; // 白天模式
+                document.body.style.color = '#eee';
+                document.querySelectorAll('code, pre').forEach(function(element) {
+                    element.style.backgroundColor = '#222';
+                    element.style.color = '#eee';
+                });
+            }
+        });
+    </script>
 </head>
 <body>
     <h1 style="text-align: center;">traefik 负载均衡</h1>
-    <p style="text-align: center;">Traefik 是一款开源的反向代理与负载均衡工具。它最大的优点是能够与常见的微服务系统直接整合，可以实现自动化动态配置。目前支持Docker, Swarm, Mesos/Marathon, Mesos, Kubernetes, Consul, Etcd, Zookeeper, BoltDB, Rest API等等后端模型</p>
+    <p style="text-align: center;">traefik 负载均衡</p>
+    <p style="text-align: center;">docker</p>
 
-    <h2 id="traefik-简介">Traefik 简介</h2>
-    <p>traefik 官网 <a href="https://docs.traefik.io/" target="_blank">https://docs.traefik.io/</a>  </p>
-    <p>github   <a href="https://github.com/containous/traefik" target="_blank">https://github.com/containous/traefik</a></p>
-    
+    <blockquote>
+        <p>Traefik 是一款开源的反向代理与负载均衡工具。它最大的优点是能够与常见的微服务系统直接整合，可以实现自动化动态配置。目前支持Docker, Swarm, Mesos/Marathon, Mesos, Kubernetes, Consul, Etcd, Zookeeper, BoltDB, Rest API等等后端模型</p>
+    </blockquote>
 
-    <h2 id="traefik-与-kubernetes">traefik 与 kubernetes</h2>
+    <h1>Traefik 简介</h1>
+    <p>traefik 官网 <a href="https://docs.traefik.io/">https://docs.traefik.io/</a></p>
+    <p>github   <a href="https://github.com/containous/traefik">https://github.com/containous/traefik</a></p>
 
-    <h3 id="11-kubernetes-环境">1.1 kubernetes 环境</h3>
-    <pre><code class="language-bash">[root@k8s-node-1 ~]#kubectl get nodes
+    <h1>traefik 与 kubernetes</h1>
+    <h2>1.1 kubernetes 环境</h2>
+    <pre><code>[root@k8s-node-1 ~]#kubectl get nodes
 NAME         STATUS         AGE
 k8s-node-1   Ready,master   5d
 k8s-node-2   Ready          5d
@@ -247,8 +117,8 @@ k8s-node-3   Ready          5d
 
 </code></pre>
 
-    <h3 id="12-下载-traefik-dm">1.2 下载 traefik-dm</h3>
-    <pre><code class="language-bash"># 定义 node-2 node-3 标签。
+    <h2>1.2 下载 traefik-dm</h2>
+    <pre><code># 定义 node-2 node-3 标签。
 
 kubectl label nodes k8s-node-2 role=traefik-lb
 kubectl label nodes k8s-node-3 role=traefik-lb
@@ -337,8 +207,8 @@ kube-system   traefik-ingress-controller   1         1         1            1   
 
 </code></pre>
 
-    <h3 id="13-部署一个-nginx-应用">1.3 部署一个 nginx 应用</h3>
-    <pre><code class="language-bash"># 创建一个 nginx yaml 文件
+    <h2>1.3 部署一个 nginx 应用</h2>
+    <pre><code># 创建一个 nginx yaml 文件
 
 apiVersion: extensions/v1beta1 
 kind: Deployment 
@@ -390,8 +260,8 @@ nginx-dm   2         2         2            2           35m
 	
 </code></pre>
 
-    <h3 id="14-创建-traefik-ingress">1.4 创建 traefik ingress</h3>
-    <pre><code class="language-bash"># 创建 traefik-ingress yaml 文件
+    <h2>1.4 创建 traefik ingress</h2>
+    <pre><code># 创建 traefik-ingress yaml 文件
 
 
 apiVersion: extensions/v1beta1
@@ -421,8 +291,8 @@ traefik-ingress   traefik.test.jicki.me             80        32m
 	
 </code></pre>
 
-    <h3 id="15-创建-traefik-web-ui">1.5 创建 traefik web ui </h3>
-    <pre><code class="language-bash"># 下载 web ui yaml 文件
+    <h2>1.5 创建 traefik web ui </h2>
+    <pre><code># 下载 web ui yaml 文件
 
 curl -O https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/ui.yaml
 
@@ -430,8 +300,8 @@ curl -O https://raw.githubusercontent.com/containous/traefik/master/examples/k8s
 
 </code></pre>
 
-    <h3 id="16-访问-nginx-应用">1.6 访问 nginx 应用</h3>
-    <pre><code class="language-bash">[root@k8s-node-1 ~]#curl -I traefik.test.jicki.me
+    <h2>1.6 访问 nginx 应用</h2>
+    <pre><code>[root@k8s-node-1 ~]#curl -I traefik.test.jicki.me
 HTTP/1.1 200 OK
 Accept-Ranges: bytes
 Content-Length: 612
@@ -443,19 +313,12 @@ Server: nginx/1.11.7
 
 </code></pre>
 
-    <h3 id="17-访问-traefik-web-ui">1.7 访问 traefik web ui</h3>
-    <pre><code class="language-bash">http://10.6.0.187:8888
-http://10.6.0.188:8888
-</code></pre>
+    <h2>1.7 访问 traefik web ui</h2>
+    <p>http://10.6.0.187:8888</p>
+    <p>http://10.6.0.188:8888</p>
 
-    <h3 id="18-心跳检测">1.8 心跳检测</h3>
+    <h2>1.8 心跳检测</h2>
     <p>Null</p>
-
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 22:06:52
-    </footer>
-    <script>
-        hljs.highlightAll();
-    </script>
+    <footer>Power By Gemini TextGenerate 2024-09-17 00:51:51</footer>
 </body>
 </html>

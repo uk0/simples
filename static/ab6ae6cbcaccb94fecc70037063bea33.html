@@ -1,115 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nginx 后端服务器获取前端用户真实IP</title>
-    <meta name="description" content="Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP，让Nginx 把用户IP传递到后端里面去。">
-    <meta name="keywords" content="Nginx, IP">
-    <style>
-        body {
-            background-color: #222;
-            color: #eee;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        h1, h2, h3, h4, h5, h6 {
-            text-align: center;
-        }
-        h1 {
-            font-size: 20px;
-        }
-        h2 {
-            font-size: 18px;
-        }
-        h3 {
-            font-size: 16px;
-        }
-        h4 {
-            font-size: 14px;
-        }
-        h5 {
-            font-size: 12px;
-        }
-        h6 {
-            font-size: 11px;
-        }
-        pre {
-            background-color: #333;
-            border-radius: 4px;
-            font-family: monospace;
-            overflow-x: auto;
-            padding: 10px;
-        }
-        code {
-            background-color: #222;
-            color: #eee;
-        }
-        .hljs {
-            background-color: #222;
-            color: #eee;
-            font-family: monospace;
-            overflow-x: auto;
-            padding: 10px;
-        }
-        .hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-number {
-            color: #f08080;
-        }
-        .hljs-title, .hljs-section, .hljs-identifier, .hljs-name, .hljs-type {
-            color: #ff8000;
-        }
-        .hljs-string, .hljs-doctag, .hljs-meta {
-            color: #00ff00;
-        }
-        .hljs-comment, .hljs-template-tag, .hljs-attr, .hljs-tag {
-            color: #808080;
-        }
-        .hljs-bullet, .hljs-link, .hljs-symbol, .hljs-regexp {
-            color: #0000ff;
-        }
-        .hljs-class, .hljs-function, .hljs-attribute, .hljs-tag {
-            color: #ffffff;
-        }
-        .hljs-built_in, .hljs-variable, .hljs-preprocessor {
-            color: #ffff00;
-        }
-        .hljs-constant, .hljs-params, .hljs-meta-string {
-            color: #00ffff;
-        }
-        footer {
-            text-align: center;
-            font-size: 12px;
-            color: #aaa;
-            margin-top: 20px;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script>
-        hljs.highlightAll();
-        document.addEventListener('DOMContentLoaded', function() {
-            const now = new Date();
-            const hour = now.getHours();
-            if (hour >= 18 || hour < 6) {
-                document.body.style.backgroundColor = '#333';
-            }
-            const codeElements = document.querySelectorAll('pre code');
-            codeElements.forEach(code => {
-                code.addEventListener('click', function() {
-                    this.classList.toggle('highlighted');
-                });
-            });
-        });
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nginx 后端服务器获取前端用户真实IP</title>
+<meta name="description" content="Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP，让Nginx 把用户IP传递到后端里面去。">
+<meta name="keywords" content="Nginx, IP">
+<style>
+body {
+    background-color: #333333;
+    color: #eee;
+    font-family: sans-serif;
+    line-height: 21px;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+h1 {
+    font-size: 20px;
+}
+h2 {
+    font-size: 18px;
+}
+h3 {
+    font-size: 16px;
+}
+h4 {
+    font-size: 14px;
+}
+h5 {
+    font-size: 12px;
+}
+h6 {
+    font-size: 11px;
+}
+code {
+    font-family: monospace;
+    background-color: #222;
+    color: #eee;
+    padding: 5px;
+    border-radius: 5px;
+    line-height: 24px;
+}
+pre {
+    background-color: #222;
+    color: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+img {
+    display: block;
+    margin: 0 auto;
+    max-width: 600px;
+    height: auto;
+}
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <h1>Nginx 后端服务器获取前端用户真实IP</h1>
-    <h2 id="问题">问题</h2>
-    <p>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP.</p>
-    <h2 id="解决办法">解决办法</h2>
-    <pre><code>1. Nginx 开启 http_realip_module 模块
+<h1>Nginx 后端服务器获取前端用户真实IP</h1>
+<p>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP，让Nginx 把用户IP传递到后端里面去。</p>
+<h2>问题</h2>
+<p>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP.</p>
+<h2>解决办法</h2>
+<pre><code>1. Nginx 开启 http_realip_module 模块
 
     ./configure --with-http_realip_module
 
@@ -136,8 +102,8 @@
 	pattern="%{X-FORWARDED-FOR}i %l %u %t %r %s %b %D %q %{User-Agent}i %T" resolveHosts="false"/>
 	
 </code></pre>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 21:34:51
-    </footer>
+<footer>
+Power By Gemini TextGenerate 2024-09-17 00:21:52
+</footer>
 </body>
 </html>

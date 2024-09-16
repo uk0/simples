@@ -4,135 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Positive Script 正则表达式[来自项目中的经历]</title>
-    <meta name="description" content="回顾笔记" />
-    <meta name="keywords" content="Positive, Script" />
+    <meta name="description" content="回顾笔记">
+    <meta name="keywords" content="Positive, Script">
     <style>
         body {
-            background-color: #282c34;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .container {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 21px;
             max-width: 820px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: #fff;
-            color: #282c34;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
+        
         h1, h2, h3, h4, h5, h6 {
             text-align: center;
         }
-
+        
         h1 {
             font-size: 20px;
+            margin-bottom: 10px;
         }
-
+        
         h2 {
             font-size: 18px;
+            margin-bottom: 8px;
         }
-
+        
         h3 {
             font-size: 16px;
+            margin-bottom: 6px;
         }
-
+        
         h4 {
             font-size: 14px;
+            margin-bottom: 4px;
         }
-
+        
         h5 {
             font-size: 12px;
+            margin-bottom: 2px;
         }
-
+        
         h6 {
             font-size: 11px;
+            margin-bottom: 1px;
         }
-
-        pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        
+        img {
+            display: block;
+            margin: 0 auto;
+            width: 600px;
+            height: 375px;
         }
-
+        
         code {
-            background-color: #eee;
-            padding: 2px 4px;
+            background-color: #f2f2f2;
+            padding: 5px;
             border-radius: 3px;
-            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            line-height: 24px;
         }
-
-        .hljs {
-            background-color: #eee;
+        
+        pre {
+            background-color: #f2f2f2;
             padding: 10px;
             border-radius: 5px;
+            font-size: 14px;
+            line-height: 24px;
             overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
         }
-
-        .hljs-comment {
-            color: #999;
-        }
-
-        .hljs-keyword {
-            color: #f05031;
-        }
-
-        .hljs-string {
-            color: #0f9650;
-        }
-
-        .hljs-number {
-            color: #a020f0;
-        }
-
-        .hljs-title {
-            color: #0f9650;
-        }
-
-        .hljs-tag {
-            color: #0f9650;
-        }
-
-        .hljs-attr {
-            color: #a020f0;
-        }
-
+        
         footer {
             text-align: center;
-            margin-top: 20px;
             font-size: 12px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Positive Script 正则表达式[来自项目中的经历]</h1>
-        <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
-
-        <h2>摘要: Positive</h2>
-        <ul>
-            <li><code>正则表达式</code>基本介绍以及整理的部分测试代码。</li>
-        </ul>
-
-        <h2>Regular expression Demo</h2>
-        <h3>Regular expression Code</h3>
-
-        <pre>
-            <code>
-`^\d+$`　　/**匹配非负整数（正整数 + 0） 　*/
+    <h1>Positive Script 正则表达式[来自项目中的经历]</h1>
+    <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
+    <h2>摘要: Positive</h2>
+    <ul>
+        <li><code>正则表达式</code>基本介绍以及整理的部分测试代码。</li>
+    </ul>
+    <h2>Regular expression Demo</h2>
+    <p>Regular expression Code</p>
+    <pre><code>`^\d+$`　　/**匹配非负整数（正整数 + 0） 　*/
 /**匹配整数*/ `^\d+(\.\d+)?$`　　/**匹配非负浮点数（正浮点数 + 0）*/
 `^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$`　　/**匹配正浮点数*/
 `^((-\d+(\.\d+)?)|(0+(\.0+)?))$`　　/**匹配非正浮点数（负浮点数 + 0）*/
@@ -189,45 +149,4 @@ $ 匹配输入字符串的结束位置。如果设置了 `RegExp` 对象的Multi
 \xn 匹配 n，其中 n 为十六进制转义值。十六进制转义值必须为确定的两个数字长。
 \num 匹配 num，其中num是一个正整数。对所获取的匹配的引用。
 \n 标识一个八进制转义值或一个后向引用。如果 \n 之前至少 n 个获取的子表达式，则 n 为后向引用。否则，如果 n 为八进制数字 (0-7)，则 n 为一个八进制转义值。
-\nm 标识一个八进制转义值或一个后向引用。如果 \nm 之前至少有`is preceded by at least nm `个获取得子表达式，则 nm 为后向引用。如果 \nm 之前至少有 n 个获取，则 n 为一个跟文字 m 的后向引用。如果前面的条件都不满足，若 n 和 m 均为八进制数字 (0-7)，则 \nm 将匹配八进制转义值 nm。 \nml 如果 n 为八进制数字 (0-3)，且 m 和 l 均为八进制数字 (0-7)，则匹配八.
-            </code>
-        </pre>
-
-    </div>
-    <footer>
-        Power By Gemini TextGenerate 2024-09-16 22:06:04
-    </footer>
-    <script>
-        // 使用随机种子生成随机数
-        Math.seedrandom(4538978253);
-
-        // 获取当前时间
-        const now = new Date();
-        const hour = now.getHours();
-
-        // 判断白天/夜晚模式
-        if (hour >= 6 && hour < 18) {
-            // 白天模式
-            document.body.style.backgroundColor = '#f5f5f5';
-            document.body.style.color = '#282c34';
-            document.querySelector('.container').style.backgroundColor = '#fff';
-            document.querySelector('.container').style.color = '#282c34';
-        } else {
-            // 夜晚模式
-            document.body.style.backgroundColor = '#282c34';
-            document.body.style.color = '#fff';
-            document.querySelector('.container').style.backgroundColor = '#fff';
-            document.querySelector('.container').style.color = '#282c34';
-        }
-
-        // 代码高亮
-        const codeElements = document.querySelectorAll('pre code');
-        codeElements.forEach(codeElement => {
-            const code = codeElement.textContent;
-            const highlightedCode = hljs.highlight(code, { language: 'text' });
-            codeElement.innerHTML = highlightedCode.value;
-        });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-</body>
-</html>
+\nm 标识一个八进制转义值或一个后向引用。如果 \nm 之前至少有`is preceded by at least nm `个获取得子表达式，则 nm 为后向引用。如果 \nm 之前至少有 n 个获取，则 n 为一个跟
