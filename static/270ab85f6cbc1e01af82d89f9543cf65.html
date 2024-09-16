@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通过Serverless 获取 hadoop 文件系统的[原创]</title>
+<meta name="description" content="开放文件下载">
+<meta name="keywords" content="serverless 操作 hdfs">
+<style>
+body {
+  font-family: sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+h5 {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+h6 {
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+pre {
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+code {
+  background-color: #eee;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.highlight {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.highlight pre {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.highlight code {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+}
+
+.night-mode {
+  background-color: #222;
+  color: #eee;
+}
+
+.night-mode pre {
+  background-color: #333;
+}
+
+.night-mode code {
+  background-color: #333;
+}
+</style>
+<script>
+  // 获取当前时间，判断是否为夜间模式
+  const now = new Date();
+  const hour = now.getHours();
+  const isNight = hour >= 19 || hour < 6;
+
+  // 设置主题
+  if (isNight) {
+    document.body.classList.add('night-mode');
+  }
+
+  // 初始化 Highlight.js 或 Prism.js
+  // ... (根据你使用的代码高亮库进行初始化)
+
+  // 获取所有代码块
+  const codeBlocks = document.querySelectorAll('pre code');
+
+  // 循环遍历代码块，添加高亮效果
+  codeBlocks.forEach(codeBlock => {
+    // 使用 Highlight.js 或 Prism.js 对代码块进行高亮
+    // ... (根据你使用的代码高亮库进行高亮)
+  });
+</script>
+</head>
+<body>
+<h1>通过Serverless (Kubeless)  进行操作Hdfs , 实现下载文件.</h1>
+
+<h2>code</h2>
+
+<h3>Python </h3>
+
+<pre><code>from hdfs import Client
+from bottle import route,HTTPResponse
+client = Client("http://hdfs-web-svc.cloudera:50070", root="/", timeout=100, session=False)
+
+headers = {}
+headers[str("content-type")] = 'application/octet-stream'
+headers['Content-Disposition'] = 'attachment;filename="data.csv"'
+@route('/download')
+def getfile():
+    with client.read("/public/csv/parking_ths_car_record/part-m-00000") as reader:
+        content = reader.read()
+        content = content.decode('utf-8', 'ignore').encode('gbk')
+        return HTTPResponse(body=content, status=200, headers=headers)
+
+</code></pre>
+
+<h3>serverless.yml</h3>
+
+<pre><code># Welcome to Serverless!
+#
+# For full config options, check the kubeless plugin docs:
+#    https://github.com/serverless/serverless-kubeless
+#
+# For documentation on kubeless itself:
+#    http://kubeless.io
+
+# Update the service name below with your own service name
+service: getfile
+
+# Please ensure the serverless-kubeless provider plugin is installed globally.
+# $ npm install -g serverless-kubeless
+#
+# ...before installing project dependencies to register this provider.
+# $ npm install
+
+provider:
+  name: kubeless
+  namespace: ${env:K8S_NAMESPACE, 'cloudera'}
+  runtime: python2.7
+
+plugins:
+  - serverless-kubeless
+
+functions:
+  getfile:
+    handler: handler.getfile
+
+</code></pre>
+
+<h3>requirements.txt</h3>
+
+<pre><code>bottle==0.12.13
+hdfs==2.1.0
+</code></pre>
+
+<h3>kubernetes Ingress </h3>
+
+<pre><code>apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: getfile-ing
+  namespace: cloudera
+spec:
+  rules:
+  - host: getfile.kube.ibm-testing.com
+    http:
+      paths:
+      - backend:
+          serviceName: getfile
+          servicePort: 8080
+</code></pre>
+
+<h2>相关地址</h2>
+
+> https://github.com/serverless/
+
+> 更多信息可以 关注
+
+> https://github.com/kubeless/kubeless/tree/f49533233cd79b116113ea10454cb2ca234dadfd/docker/runtime
+
+<footer>
+Power By Gemini TextGenerate 2024-09-16
+</footer>
+</body>
+</html>

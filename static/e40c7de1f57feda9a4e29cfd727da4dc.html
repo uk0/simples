@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Install Docker for CentOS6</title>
+    <meta name="description" content="This article describes how to install Docker and Docker Compose on CentOS 6.x.">
+    <meta name="keywords" content="Docker, Docker Compose, CentOS 6, installation">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.5s ease;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .title-container {
+            text-align: center;
+        }
+
+        .title-container h1,
+        .title-container h2,
+        .title-container h3,
+        .title-container h4,
+        .title-container h5,
+        .title-container h6 {
+            margin-top: 0;
+        }
+
+        .night-mode {
+            background-color: #222;
+            color: #eee;
+        }
+
+        .night-mode code {
+            background-color: #333;
+        }
+
+        .night-mode pre {
+            background-color: #333;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        hljs.initHighlightingOnLoad();
+        window.onload = function() {
+            const now = new Date();
+            const hour = now.getHours();
+            if (hour >= 18 || hour < 6) {
+                document.body.classList.add('night-mode');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="title-container">
+        <h1>Install Docker for CentOS6</h1>
+        <h2>By Gemini TextGenerate</h2>
+    </div>
+
+    <p>This article describes how to install Docker and Docker Compose on CentOS 6.x.</p>
+
+    <h2>Zero, Preface</h2>
+    <p>Originally, Docker officially requires CentOS 7.0 or later for CentOS series, but sometimes it is necessary to install it on an existing CentOS 6.x system.</p>
+
+    <p>For example, I encountered a situation where I needed to deploy a Java application on an existing CentOS 6.5 server. The Java application was developed based on Java8 and Mysql5.6, both of which used corresponding features. However, the existing CentOS 6.5 was already running several PHP and Java applications, with JDK7 installed and Mysql5.1 installed. At first glance, it seemed like a hopeless situation!</p>
+
+    <p>Fortunately, Docker's powerful software and hardware isolation features come into play! So, we'll go down the Docker path! The remaining problem becomes the installation of Docker & Docker Compose!</p>
+
+    <p>This article is based on the following two articles, combined with the pitfalls I encountered.</p>
+
+    <ul>
+        <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-docker-on-centos-6">How To Install Docker on CentOS 6</a></li>
+        <li><a href="https://medium.com/@k.a.shah/docker-and-docker-compose-in-centos-6-55e4a27410d3">Docker and docker-compose in CentOS 6</a></li>
+    </ul>
+
+    <h2>One, Install Docker</h2>
+    <p>This section is mainly from: <a href="https://www.digitalocean.com/community/tutorials/how-to-install-docker-on-centos-6">How To Install Docker on CentOS 6</a></p>
+
+    <p>The following commands are run under root privileges.</p>
+
+    <p>Docker is part of the Extra Packages for Enterprise Linux (EPEL), which is a community repository of non-standard packages for RHEL distributions. First, we will install the EPEL repository:</p>
+
+    <pre><code class="bash">rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</code></pre>
+
+    <h3>Update yum source:</h3>
+    <pre><code class="bash">yum update -y</code></pre>
+
+    <p>Now let's install Docker by installing the docker-io package:</p>
+
+    <pre><code class="bash">yum -y install docker-io</code></pre>
+
+    <p>After installation, we need to start the Docker daemon:</p>
+
+    <pre><code class="bash">service docker start</code></pre>
+
+    <p>Finally, optionally, we let Docker start when the server starts:</p>
+
+    <pre><code class="bash">chkconfig docker on</code></pre>
+
+    <p>After the above steps, Docker has been successfully installed.</p>
+
+    <h2>Two, Install Docker Compose</h2>
+    <p>This section is mainly from: <a href="https://medium.com/@k.a.shah/docker-and-docker-compose-in-centos-6-55e4a27410d3">Docker and docker-compose in CentOS 6</a></p>
+
+    <p>Docker Compose is a Python-written tool that can manage multiple Docker containers at the same time. Because it's CentOS6.x, we can't install it directly, we need to install it through Python's pip manager tool.</p>
+
+    <p>Generally, CentOS6.5 comes with Pyhton2.6, so we need to install Python2.7 first.</p>
+
+    <h3>2.1, Install development tools and Python2.7</h3>
+    <pre><code class="bash"># yum groupinstall "Development"
+# yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel
+# wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tar.xz
+# tar -xvf Python-2.7.8.tar.xz
+# cd Python-2.7.8
+# ./configure --prefix=/usr/local
+# make && make altinstall
+# mv /usr/bin/python /usr/bin/python2.6.6
+# ln -s /usr/local/bin/python2.7 /usr/bin/python
+vi /usr/bin/yum CHANGE to python2.6.6</code></pre>
+
+    <p>The above steps install Python2.7 from source code. The third-to-last line renames the original python program to python2.6.6; the second-to-last line links/replaces the python2.7 program to the original python program. The last line is not a command, it just means that the first line declaration of the /usr/bin/yum yum program needs to be changed to the original python2.6.6. That is:</p>
+
+    <pre><code class="bash">
+
+#!/usr/bin/python
+import sys
+......
+
+#modify
+
+#!/usr/bin/python2.6.6
+import sys
+......
+</code></pre>
+
+    <p>In short, the Python version has been upgraded, but the yum program still uses the original Python version.</p>
+
+    <h3>2.2, Install pip</h3>
+    <pre><code class="bash"># The download address of get-pip.py in the original article is expired, the new address is https://bootstrap.pypa.io/get-pip.py, so the command is changed to:
+
+wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py </code></pre>
+
+    <h3>2.3, Install docker-compose</h3>
+    <pre><code class="bash">pip install docker-compose</code></pre>
+
+    <p>If everything goes smoothly, the above steps will complete the installation of docker-compose. Verify if the installation was successful by checking the version information:</p>
+
+    <pre><code class="bash">docker-compose version</code></pre>
+
+    <h2>Three, Pitfalls I Encountered</h2>
+
+    <h3>3.1, pip version problem</h3>
+
+    <p>When executing pip install docker-compose in section 2.3, the following error message is encountered:</p>
+
+    <pre><code class="bash">pkg_resources.DistributionNotFound: The 'pip==8.1.0' distribution was not found and is required by the application</code></pre>
+
+    <p>Based on <a href="https://segmentfault.com/q/1010000003988868">关于pip安装时提示pkg_resources.DistributionNotFound 错误问题</a> and <a href="https://www.cnblogs.com/wdf0908/p/5649911.html">CentOS升级Python2.7启发</a>, I ran the whereis pip command and found that it was calling /usr/bin/pip. Check its contents:</p>
+
+    <pre><code class="bash">cat /usr/bin/pip</code></pre>
+
+    <p>The following is printed:</p>
+
+    <pre><code class="python">
+
+#!/usr/bin/python
+# EASY-INSTALL-ENTRY-SCRIPT: 'pip==8.1.0','console_scripts','pip'
+__requires__ = 'pip==8.1.0'
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.exit(
+        load_entry_point('pip==8.1.0', 'console_scripts', 'pip')()
+    )
+</code></pre>
+
+    <p>However, considering:</p>
+
+    <pre><code class="bash">ll /usr/local/lib/python2.7/site-packages | grep pip
+打印如下：
+
+# drwxr-xr-x 10 root root  4096 Jun 16 13:08 pip
+# drwxr-xr-x  2 root root  4096 Jun 16 13:08 pip-9.0.1.dist-info</code></pre>
+
+    <p>I changed all 8.1.0 in /usr/bin/pip to 9.0.1, and then pip worked normally. I'm not sure why, I don't understand Python, just passing by...</p>
+
+    <p>I guess because, after python get-pip.py installed pip, but /usr/bin/pip still calls the old version of pip, causing the problem.</p>
+
+    <h3>3.2, docker-compose version problem</h3>
+
+    <p>After executing pip install docker-compose in section 2.3, docker-compose is installed.</p>
+
+    <p>However, when running docker-compose build, it will prompt that our Dcoker version is too low and requires upgrading Docker! The default installed docker-compose version is too high! Obviously, our current situation is that we can't upgrade Docker anymore, we can only downgrade the docker-compose version.</p>
+
+    <p>First, check the Docker version we have installed:</p>
+
+    <pre><code class="bash">docker -v</code></pre>
+
+    <pre><code class="text">Docker version 1.7.1, build 786b29d/1.7.1</code></pre>
+
+    <p>After searching on Google, I found a method for downgrading the docker-compose version on StackOverflow: <a href="https://stackoverflow.com/questions/33182535/error-the-docker-engine-version-is-less-than-the-minimum-required-by-compose">ERROR: The Docker Engine version is less than the minimum required by Compose</a></p>
+
+    <p>After checking the Docker Compose Github Docs, I found that docker-compose version 1.5.2 is compatible with Docker 1.7.1: <a href="https://docs.docker.com/compose/install/#install-compose">Note that Compose 1.5.2 requires Docker 1.7.1 or later.</a></p>
+
+    <p>Okay, let's start downgrading docker-compose, first uninstall:</p>
+
+    <pre><code class="bash">pip uninstall docker-compose</code></pre>
+
+    <p>Then install the specified version:</p>
+
+    <pre><code class="bash">pip install docker-compose==1.5.2</code></pre>
+
+    <p>So far, docker-compose has been downgraded successfully!</p>
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+</body>
+</html>

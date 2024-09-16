@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aws Serverless for lambda Test</title>
+    <meta name="description" content="Serverless test to Aws lambda" />
+    <meta name="keywords" content="lambda serverless aws kubeless" />
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        h1 {
+            font-size: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            hljs.highlightAll();
+
+            // Toggle theme based on time
+            const hour = new Date().getHours();
+            if (hour >= 19 || hour < 6) {
+                document.body.style.backgroundColor = '#222';
+                document.body.style.color = '#eee';
+            }
+
+            // Add random seed
+            const seed = 199602051111;
+            Math.seedrandom(seed);
+
+            // Example interaction: Toggle code visibility
+            const codeBlocks = document.querySelectorAll('pre');
+            codeBlocks.forEach(block => {
+                const toggleButton = document.createElement('button');
+                toggleButton.textContent = 'Show/Hide Code';
+                toggleButton.addEventListener('click', () => {
+                    block.classList.toggle('hidden');
+                });
+                block.parentNode.insertBefore(toggleButton, block);
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Aws Lambda to Serverless</h1>
+    <img src="http://112firshme11224.test.upcdn.net/demos/a43efa7f-f810-4164-970f-8bd1f309650c.png" alt="Aws Lambda to Serverless">
+
+    <h2>aws lambda function 编辑器</h2>
+    <img src="http://112firshme11224.test.upcdn.net/demos/8d472d40-ff9c-4108-91be-1364307b5599.png" alt="aws lambda function 编辑器">
+
+    <h3>编辑器的console 以及 测试按钮，语言版本</h3>
+    <img src="http://112firshme11224.test.upcdn.net/demos/111c3da3-cb1e-48de-b3b7-c286d9fc55e2.png" alt="编辑器的console 以及 测试按钮，语言版本">
+
+    <h4>常用的配置项</h4>
+    <img src="http://112firshme11224.test.upcdn.net/demos/89ba65d2-c46a-434e-bb96-afa15d02c6f5.png" alt="常用的配置项">
+
+    <img src="http://112firshme11224.test.upcdn.net/demos/bfa64818-bf58-45fa-8e2a-51405c187f7e.png" alt="常用的配置项">
+
+    <h2>配置AWS IAM执行策略</h2>
+
+    <pre><code class="json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "iam:*",
+                "apigateway:*",
+                "cloudformation:ListStacks",
+                "logs:*",
+                "cloudformation:ValidateTemplate",
+                "cloudformation:DescribeStackEvents",
+                "cloudformation:CreateStack",
+                "lambda:*",
+                "cloudformation:UpdateStack",
+                "cloudformation:DescribeStackResource",
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:ExecuteChangeSet",
+                "cloudformation:DescribeStacks"
+            ],
+            "Resource": "*"
+        }
+    ]
+}</code></pre>
+
+    <h2>demo</h2>
+
+    <img src="http://112firshme11224.test.upcdn.net/demos/070f4afd-25c7-4783-a9e3-e77f133daad8.gif" alt="demo">
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.5s ease;
+}
+
+h1 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+h3 {
+  font-size: 16px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+h4 {
+  font-size: 14px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+h5 {
+  font-size: 12px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+h6 {
+  font-size: 11px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+pre {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: monospace;
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: #888;
+}
+
+.highlight {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.highlight pre {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.highlight code {
+  font-family: monospace;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+/* 夜间模式 */
+body.night {
+  background-color: #222;
+  color: #eee;
+}
+
+body.night h1,
+body.night h2,
+body.night h3,
+body.night h4,
+body.night h5,
+body.night h6 {
+  color: #eee;
+}
+
+body.night code {
+  background-color: #333;
+  color: #eee;
+}
+
+body.night pre {
+  background-color: #333;
+  color: #eee;
+}
+
+body.night .highlight {
+  background-color: #333;
+  color: #eee;
+}
+
+body.night .highlight code {
+  background-color: transparent;
+  color: #eee;
+}
+</style>
+<meta charset="UTF-8">
+<title>RocketMQ消息队列安装以及使用[原创精品]</title>
+<meta name="description" content="笔记">
+<meta name="keywords" content="RocketMQ">
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      <h1>RocketMQ消息队列安装以及使用[原创精品]</h1>
+      <h2>摘要: 我要装个RocketMQ</h2>
+      <h3># rocketmq 安装</h3>
+      <p>安装rocketmq需要环境：</p>
+      <ul>
+        <li>jdk1.7以上</li>
+        <li>maven</li>
+        <li>git</li>
+      </ul>
+      <h4>*jdk1.8*</h4>
+      <pre><code class="bash">wget http://112firshme11224.test.upcdn.net/blog/tmp/jdk-8u92-linux-x64.tar.gz
+</code></pre>
+      <h4>*maven下载：*</h4>
+      <pre><code class="bash">wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+
+tar xf apache-maven-3.3.9-bin.tar.gz -C /opt/
+</code></pre>
+      <h4>*git下载：*</h4>
+      <pre><code class="bash">yum install git -y
+
+</code></pre>
+      <h4>*环境变量如下：*</h4>
+      <pre><code class="bash">export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL
+export JAVA_HOME=/opt/jdk/jdk1.8.0_65
+export JRE_HOME=/opt/jdk/jdk1.8.0_65/jre
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
+export PATH=$PATH:$JAVA_HOME/bin/
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=/usr/local/
+export M2_HOME=/opt/apache-maven-3.3.9
+export PATH=$PATH:$M2_HOME/bin
+export ROCKETMQ_HOME=/opt/RocketMQ-3.5.8/devenv
+export NAMESRV_ADDR=127.0.0.1:9876
+</code></pre>
+      <h4>*使配置文件生效*</h4>
+      <pre><code class="bash">source /etc/profile
+</code></pre>
+      <h4>*检测maven*</h4>
+      <pre><code class="bash">[root@dscn1 ~]# mvn -v
+Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-11T00:41:47+08:00)
+Maven home: /opt/apache-maven-3.3.9
+Java version: 1.8.0_65, vendor: Oracle Corporation
+Java home: /opt/jdk/jdk1.8.0_65/jre
+Default locale: zh_CN, platform encoding: UTF-8
+OS name: "linux", version: "2.6.32-573.22.1.el6.x86_64", arch: "amd64", family: "unix"
+</code></pre>
+      <h2 id="toc">一、正式开始安装rocketmq</h2>
+      <p>1、下载安装</p>
+      <pre><code class="text">a）wget https://github.com/alibaba/RocketMQ/archive/v3.5.8.tar.gz		###下载包
+b）tar -xf v3.5.8.tar.gz	 -C /opt/	###解压
+c）cd /opt/RocketMQ-3.5.8 	###进入解压后目录
+d）sh install.sh			###进行安装(下载国外的数据，时间较长)
+</code></pre>
+      <p>2、修改文件内存</p>
+      <pre><code class="bash">cd /opt/RocketMQ-3.5.8/devenv/bin
+#vim修改runbroker.sh、runserver.sh两个文件
+-------------------------------------
+JAVA_OPT="${JAVA_OPT} -server -Xms512m -Xmx512m -Xmn256m -XX:PermSize=128m -XX:MaxPermSize=320m"		###Xms启动时内存，Xmx最大内存，Xmn最小内存
+--------------------------------------
+</code></pre>
+      <p>3、启动`nameserver`</p>
+      <pre><code class="bash">nohup sh  mqnamesrv >/var/log/ns.log 2>&1 &
+</code></pre>
+      <p>4、验证`nameserver`是否启动：</p>
+      <pre><code class="bash">tail -f /var/log/ns.log   ###查看日志有无错误信息
+</code></pre>
+      <p>5、启动`broker`
+       在启动`borker`之前需要指定`nameserver`地址：</p>
+      <pre><code class="bash">echo "export NAMESRV_ADDR=127.0.0.1:9876" >> /etc/profile		###写入到环境变量，或者直接
+-n来指定
+ nohup sh mqbroker -n 192.168.0.106:9876 autoCreateTopicEnable=true > /var/log/mq.log 2>&1 &
+</code></pre>
+      <p>6、检验是否开启</p>
+      <pre><code class="bash">tail -f /var/log/mq.log   ###查看日志有无错误信息
+</code></pre>
+      <p>7、关闭的命令：</p>
+      <pre><code class="bash">sh mqshutdown namesrv
+sh mqshutdown broker
+</code></pre>
+      <p>8、创建队列</p>
+      <pre><code class="bash">sh mqadmin updateTopic -b "192.168.0.106:10911" -t Topic1 -r 10 -w 10			###-b   broker的ip和端口	-t java程序中定义的名字
+</code></pre>
+      <p>9、更改broker配置文件，更改ip,使外网可以访问</p>
+      <pre><code class="bash">sh mqadmin updateBrokerConfig -b 192.168.0.106:10911 -k brokerIP1 -v 192.168.0.106
+</code></pre>
+      <p>10、以此输入下面两个命令：</p>
+      <pre><code class="bash">bash tools.sh com.alibaba.rocketmq.example.quickstart.Producer		###生产者(生产队列)
+
+bash tools.sh com.alibaba.rocketmq.example.quickstart.Consumer		###消费者（清理队列）
+</code></pre>
+      <p>如果报错是内存不够，就改`runbroker.sh`、`runserver.sh`两个文件
+      如果启动报错是不知道主机：
+      检查/etc/sysconfig/network 中的记录的hostname是否和/etc/hosts中的主机名绑定一致，如果不一致请确保一致
+      在/etc/hosts中添加 192.168.1.118 hostname的名称(master01)跟/etc/sysconfig/network一样(master01)
+      开启9876rocketmq的nameserver端口  #vim /etc/sysconfig/iptables</p>
+      <h2 id="toc">二、一主一从的配置</h2>
+      <p>除了启动步骤不同。其余与上面一主的配置相同：</p>
+      <p>1、修改/opt/RocketMQ-3.5.8/devenv/bin/runbroker.sh、runserver.sh两个文件：</p>
+      <pre><code class="bash">JAVA_OPT="${JAVA_OPT} -server -Xms512m -Xmx512m -Xmn256m -XX:PermSize=128m -XX:MaxPermSize=320m"		###Xms启动时内存，Xmx最大内存，Xmn最小内存
+</code></pre>
+      <p>2、主的机器修改/opt/RocketMQ-3.5.8/devenv/conf/2m-2s-async/broker-a.properties</p>
+      <pre><code class="bash">namesrvAddr=192.168.0.106:9876;192.168.0.107:9876
+brokerIP1=192.168.0.106
+brokerClusterName=DefaultCluster
+brokerName=broker-a
+brokerId=0
+deleteWhen=04
+fileReservedTime=48
+brokerRole=ASYNC_MASTER
+flushDiskType=ASYNC_FLUSH
+storePathRootDir=/opt/RocketMQ-3.4.6
+storePathCommitLog=/opt/RocketMQ-3.4.6/log/commitlog
+</code></pre>
+      <p>3、从的机器修改/opt/RocketMQ-3.5.8/devenv/conf/2m-2s-async/broker-a-s.properties</p>
+      <pre><code class="bash">namesrvAddr=192.168.0.106:9876;192.168.0.107:9876
+brokerIP1=192.168.0.107
+brokerClusterName=DefaultCluster
+brokerName=broker-a
+brokerId=1
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SLAVE
+flushDiskType=ASYNC_FLUSH
+storePathRootDir=/opt/RocketMQ-3.4.6
+storePathCommitLog=/opt/RocketMQ-3.4.6/log/commitlog
+</code></pre>
+      <p>参考内容和解释如下：</p>
+      <pre><code class="bash">#所属集群名字
+brokerClusterName=rocketmq-cluster
+#broker名字，注意此处不同的配置文件填写的不一样
+brokerName=broker-a|broker-b
+#0 表示 Master， >0 表示 Slave
+brokerId=0
+#nameServer地址，分号分割
+namesrvAddr=rocketmq-nameserver1:9876;rocketmq-nameserver2:9876
+#在发送消息时，自动创建服务器不存在的topic，默认创建的队列数
+defaultTopicQueueNums=4
+#是否允许 Broker 自动创建Topic，建议线下开启，线上关闭
+autoCreateTopicEnable=true
+#是否允许 Broker 自动创建订阅组，建议线下开启，线上关闭
+autoCreateSubscriptionGroup=true
+#Broker 对外服务的监听端口
+listenPort=10911
+#删除文件时间点，默认凌晨 0点
+deleteWhen=00
+#文件保留时间，默认 48 小时
+fileReservedTime=120
+#commitLog每个文件的大小默认1G
+mapedFileSizeCommitLog=1073741824
+#ConsumeQueue每个文件默认存30W条，根据业务情况调整
+mapedFileSizeConsumeQueue=300000
+#destroyMapedFileIntervalForcibly=120000
+#redeleteHangedFileInterval=120000
+#检测物理文件磁盘空间
+diskMaxUsedSpaceRatio=88
+#存储路径
+storePathRootDir=/opt/rocketmq/data
+#commitLog 存储路径
+storePathCommitLog=/opt/rocketmq/data/commitlog
+#消费队列存储路径存储路径
+storePathConsumeQueue=/opt/rocketmq/data/consumequeue
+#消息索引存储路径
+storePathIndex=/opt/rocketmq/data/index
+#checkpoint 文件存储路径
+storeCheckpoint=/opt/rocketmq/data/checkpoint
+#abort 文件存储路径
+abortFile=/opt/rocketmq/data/abort
+#限制的消息大小
+maxMessageSize=65536
+#flushCommitLogLeastPages=4
+#flushConsumeQueueLeastPages=2
+#flushCommitLogThoroughInterval=10000
+#flushConsumeQueueThoroughInterval=60000
+#Broker 的角色
+#- ASYNC_MASTER 异步复制Master
+#- SYNC_MASTER 同步双写Master
+#- SLAVE
+brokerRole=ASYNC_MASTER
+#刷盘方式
+#- ASYNC_FLUSH 异步刷盘
+#- SYNC_FLUSH 同步刷盘
+flushDiskType=ASYNC_FLUSH
+#checkTransactionMessageEnable=false
+#发消息线程池数量
+#sendMessageThreadPoolNums=128
+#拉消息线程池数量
+#pullMessageThreadPoolNums=128
+</code></pre>
+      <p>4、两个机器上都启动nameserver:</p>
+      <pre><code class="bash">nohup sh  mqnamesrv >/var/log/ns.log 2>&1 &
+</code></pre>
+      <p>5、主的机器启动broker：</p>
+      <pre><code class="bash"> nohup sh mqbroker -c ../conf/2m-2s-async/broker-a.properties > /var/log/mq.log 2>&1 &
+</code></pre>
+      <p>6、从的机器启动broker：</p>
+      <pre><code class="bash"> nohup sh mqbroker -c ../conf/2m-2s-async/broker-a-s.properties > /var/log/mq.log 2>&1 &
+</code></pre>
+      <h2 id="toc">运行成功的图！</h2>
+      <img src="http://112firshme11224.test.upcdn.net/blog/tmp/rocketmq-p.png" alt="运行成功的图">
+      <img src="http://112firshme11224.test.upcdn.net/blog/tmp/rocketmq-c.png" alt="运行成功的图">
+      <h2>禁止转载，盗版必究。</h2>
+      <p><a href="https://juejin.im/post/5a31e9c5f265da431d3cb134"><img src="https://badge.juejin.im/entry/5a31ea02f265da4319564878/likes.svg?style=plastic" alt="点赞"></a></p>
+      <footer class="footer">
+        Power By Gemini TextGenerate 2024-09-16
+      </footer>
+    </div>
+  </div>
+  <script>
+  // 获取当前时间
+  const now = new Date();
+  const hour = now.getHours();
+
+  // 判断白天或夜晚模式
+  if (hour >= 6 && hour < 18) {
+    document.body.classList.remove('night');
+  } else {
+    document.body.classList.add('night');
+  }
+
+  // 代码高亮
+  const codeBlocks = document.querySelectorAll('pre code');
+  codeBlocks.forEach(block => {
+    hljs.highlightBlock(block);
+  });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

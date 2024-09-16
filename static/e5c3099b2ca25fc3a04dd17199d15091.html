@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kubernetes命名空间资源限制[学习]</title>
+  <meta name="description" content="Java, Scala,Hadoop,Flink">
+  <meta name="keywords" content="Java, Scala,Hadoop,Flink">
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-top: 0;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    h4 {
+      font-size: 14px;
+    }
+
+    h5 {
+      font-size: 12px;
+    }
+
+    h6 {
+      font-size: 11px;
+    }
+
+    pre {
+      background-color: #f0f0f0;
+      padding: 10px;
+      overflow-x: auto;
+      border-radius: 4px;
+    }
+
+    code {
+      font-family: monospace;
+      background-color: #eee;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+    }
+
+    .title-center {
+      text-align: center;
+    }
+
+    .code-highlight {
+      background-color: #f0f0f0;
+      padding: 10px;
+      overflow-x: auto;
+      border-radius: 4px;
+    }
+
+    .dark-mode {
+      background-color: #222;
+      color: #eee;
+    }
+
+    .dark-mode pre {
+      background-color: #333;
+    }
+
+    .dark-mode code {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const randomSeed = 199602051111;
+    const currentHour = new Date().getHours();
+    const isNightMode = currentHour >= 18 || currentHour < 6;
+    if (isNightMode) {
+      document.body.classList.add('dark-mode');
+    }
+  </script>
+  <h1 class="title-center">Kubernetes命名空间资源限制[学习]</h1>
+  <p class="title-center">Java, Scala,Hadoop,Flink</p>
+  <p>Kubernetes命名空间资源限制主要是为了多个团队一起开发来区分资源使用情况。</p>
+
+  <h2>1. ResourceQuota</h2>
+  <pre class="code-highlight"><code class="yaml">
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-resources
+  namespace: test
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 2Gi
+    limits.cpu: "4"
+    limits.memory: 12Gi
+
+</code></pre>
+
+  <h2>2. LimitRange</h2>
+  <pre class="code-highlight"><code class="yaml">
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limits
+spec:
+  limits:
+  - max:
+      cpu: "4"
+      memory: 2Gi
+    min:
+      cpu: 200m
+      memory: 6Mi
+    maxLimitRequestRatio:
+      cpu: 3
+      memory: 2
+    type: Pod
+  - default:
+      cpu: 300m
+      memory: 200Mi
+    defaultRequest:
+      cpu: 200m
+      memory: 100Mi
+    max:
+      cpu: "2"
+      memory: 1Gi
+    min:
+      cpu: 100m
+      memory: 3Mi
+    maxLimitRequestRatio:
+      cpu: 5
+      memory: 4
+    type: Container
+
+
+</code></pre>
+
+  <h2>3.映射方案Ceph RBD</h2>
+  <pre class="code-highlight"><code class="yaml">
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: demo-app-server
+  namespace: [namespace]
+spec:
+  replicas: 1
+  selector:
+    app: demo-app-server
+  template:
+    metadata:
+      labels:
+        app: demo-app-server
+    spec:
+      containers:
+        - name: demo-app-server-container
+          image: image.firsh.io/demo-base/appserver:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+          env:
+            - name: APP_HOME_CONF_DIR
+              value: /home/demo-app/conf
+          command: ["java","-jar","/home/demo-app/demoapp.jar"]
+          volumeMounts:
+                - name: config-volume
+                  mountPath: /home/demo-app/conf
+                - name: app-log
+                  mountPath: /var/log/development
+      volumes:
+        - name: config-volume
+          configMap:
+            name: demo-app-server
+        - name: app-log
+          hostPath:
+            path: /kube/demo-apiserver/logs
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: demo-app-service
+ namespace: demo
+spec:
+   #type: ClusterIP
+   ports:
+   - name: demo-app-out-in
+     port: 1000
+     targetPort: 8080
+   externalIPs:
+   - [192.168.1.100]
+   selector:
+     app: demo-app-server
+</code></pre>
+
+  <p>感谢企业服务部牛总提供的解决方案</p>
+  <footer>
+    Power By Gemini TextGenerate 2024-09-16
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script>
+    Prism.highlightAll();
+  </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEA Java注释模板设置详解</title>
+    <meta name="description" content="matching,mac">
+    <meta name="keywords" content="java, IDEA,mac">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .highlight {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script>
+        hljs.initHighlightingOnLoad();
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const hour = now.getHours();
+            if (hour >= 18 || hour < 6) {
+                document.body.style.backgroundColor = '#222';
+                document.body.style.color = '#eee';
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>IDEA Java注释模板设置详解</h1>
+    <p style="text-align: center;">matching,mac</p>
+    <p style="text-align: center;">java, IDEA,mac</p>
+    <p>设置注释模板的入口： Window->Preference->Java->Code Style->Code Template 然后展开Comments节点就是所有需设置注释的元素啦。现就每一个元素逐一介绍：</p>
+    <h2>1、文件(Files)注释标签：</h2>
+    <pre><code class="java">
+/**   
+* @Title: ${file_name}
+* @Package ${package_name}
+* @Description: ${todo}(用一句话描述该文件做什么)
+* @author A18ccms A18ccms_gmail_com   
+* @date ${date} ${time}
+* @version V1.0   
+*/
+    </code></pre>
+    <h2>2.类型(Types)注释标签（类的注释）：</h2>
+    <pre><code class="java">
+/**
+* @ClassName: ${type_name}
+* @Description: ${todo}(这里用一句话描述这个类的作用)
+* @author A18ccms a18ccms_gmail_com
+* @date ${date} ${time}
+* 
+* ${tags}
+*/
+    </code></pre>
+    <h2>3.字段(Fields)注释标签：</h2>
+    <pre><code class="java">
+/**
+* @Fields ${field} : ${todo}(用一句话描述这个变量表示什么)
+*/
+    </code></pre>
+    <h3>构造函数标签：</h3>
+    <pre><code class="java">
+/**
+* <p>Title: </p>
+* <p>Description: </p>
+* ${tags}
+*/
+    </code></pre>
+    <h2>4.方法(Constructor & Methods)标签：</h2>
+    <pre><code class="java">
+/**
+* @Title: ${enclosing_method}
+* @Description: ${todo}(这里用一句话描述这个方法的作用)
+* @param ${tags}    设定文件
+* @return ${return_type}    返回类型
+* @throws
+*/
+    </code></pre>
+    <h2>5.覆盖方法(Overriding Methods)标签：</h2>
+    <pre><code class="java">
+/* (非 Javadoc)
+* <p>Title: ${enclosing_method}</p>
+* <p>Description: </p>
+* ${tags}
+* ${see_to_overridden}
+*/
+    </code></pre>
+    <h2>6. 代表方法(Delegate Methods)标签：</h2>
+    <pre><code class="java">
+/**
+* ${tags}
+* ${see_to_target}
+*/
+    </code></pre>
+    <h3>getter方法标签：</h3>
+    <pre><code class="java">
+/**
+* @return ${bare_field_name}
+*/
+    </code></pre>
+    <h3>setter方法标签：</h3>
+    <pre><code class="java">
+/**
+* @param ${param} 要设置的 ${bare_field_name}
+*/
+    </code></pre>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Centos kafka 消息队列</title>
+<meta name="description" content="Centos kafka 消息队列">
+<meta name="keywords" content="kafka">
+<style>
+body {
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+pre {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: #666;
+}
+
+.night-mode {
+  background-color: #222;
+  color: #eee;
+}
+
+.night-mode pre {
+  background-color: #333;
+}
+
+.night-mode code {
+  background-color: #444;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<script>
+  hljs.initHighlightingOnLoad();
+
+  function toggleTheme() {
+    const body = document.body;
+    if (body.classList.contains('night-mode')) {
+      body.classList.remove('night-mode');
+    } else {
+      body.classList.add('night-mode');
+    }
+  }
+
+  const currentHour = new Date().getHours();
+  if (currentHour >= 18 || currentHour < 6) {
+    toggleTheme();
+  }
+</script>
+</head>
+<body>
+<h1>kafka 消息队列</h1>
+
+<p>
+> kafka new Version
+</p>
+
+<h2>安装配置</h2>
+
+<p>查询下载最新版本 kafka
+<a href="http://kafka.apache.org/downloads.html">http://kafka.apache.org/downloads.html</a></p>
+
+<pre><code>wget http://mirror.bit.edu.cn/apache/kafka/0.8.2.0/kafka-0.8.2.0-src.tgz
+tar zxvf kafka-0.8.2.0-src.tgz
+mv kafka-0.8.2.0-src /opt/local/kafka
+cd /opt/local/kafka
+./gradlew jar
+</code></pre>
+
+<p>提示:
+错误: 找不到或无法加载主类 org.gradle.wrapper.GradleWrapperMain
+需要先安装 gradle</p>
+
+<pre><code>http://www.scala-lang.org/files/archive/scala-2.10.4.tgz
+tar zxvf scala-2.10.4.tgz
+mv scala-2.10.4 /usr/lib64/scala
+</code></pre>
+
+<p>设置环境变量</p>
+
+<pre><code>vi /etc/profile
+</code></pre>
+
+<pre><code>export SACLA_HOME=/usr/lib64/scala/
+export PATH=$SACLA_HOME/bin:$PATH
+source /etc/profile
+</code></pre>
+
+<p>然后再执行 gradlew jar</p>
+
+<pre><code>./gradlew jarAll
+</code></pre>
+
+<p>如果 jarAll 会报错，java 版本不能为1.8 不然会报不兼容的错误，请使用1.7版本</p>
+
+<pre><code>./gradlew jar --stacktrace  --info --debug
+
+ 
+
+创建日志目录
+
+```
+mkdir -p /opt/local/kafka/logs
+```
+ 
+
+编辑配置文件
+
+ 
+```
+vim config/server.properties
+```
+
+
+将 log.dirs=/tmp/kafka-logs
+改为
+
+```
+log.dirs=/opt/local/kafka/logs
+```
+
+将 zookeeper.connect=localhost:2181
+改为
+
+```
+zookeeper.connect=172.24.0.100:2181
+```
+
+启动程序
+
+```
+nohup /opt/local/kafka/bin/zookeeper-server-start.sh /opt/local/kafka/config/zookeeper.properties &
+nohup /opt/local/kafka/bin/kafka-server-start.sh /opt/local/kafka/config/server.properties &
+```
+
+
+创建主题
+
+```
+/opt/local/kafka/bin/kafka-topics.sh --create --zookeeper 192.168.20.200:2181 --replication-factor 1 --partitions 1 --topic LJ200
+```
+
+查看现有主题
+
+```
+/opt/local/kafka/bin/kafka-topics.sh --list --zookeeper 192.168.20.200:2181
+```
+</pre>
+
+<footer>
+Power By Gemini TextGenerate 2024-09-16
+</footer>
+</body>
+</html>

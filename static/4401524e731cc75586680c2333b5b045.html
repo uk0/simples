@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>如何读懂并写出装逼的函数式代码 [fork]</title>
+<meta name="description" content="一行能装逼的JavaScript代码,如何读懂并写出装逼的函数式代码">
+<meta name="keywords" content="javascript,java">
+<style>
+body {
+  background-color: #f2f2f2;
+  color: #333;
+  font-family: sans-serif;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 20px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+pre {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: monospace;
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+.night-mode {
+  background-color: #222;
+  color: #eee;
+}
+
+.night-mode pre {
+  background-color: #333;
+}
+
+.night-mode code {
+  background-color: #333;
+}
+</style>
+</head>
+<body>
+<h1>如何读懂并写出装逼的函数式代码 [fork]</h1>
+<p style="text-align: center;">一行能装逼的JavaScript代码</p>
+<h2 id="先看代码">先看代码</h2>
+<p>date：2017-05-01</p>
+<p>author：zhangjianxin</p>
+<h3 id="toc"></h3>
+<h2 id="这个代码平淡无奇-就是从一个数组中找到一个数-on的算法-找不到就返回-null">这个代码平淡无奇，就是从一个数组中找到一个数，O(n)的算法，找不到就返回 null。</h2>
+<p>下面是正常的 old-school 的方式。不用多说</p>
+<pre><code class="language-javascript">//正常的版本
+function find (x, y) {
+  for ( let i = 0; i &lt; x.length; i++ ) {
+    if ( x[i] == y ) return i;
+  }
+  return null;
+}
+
+let arr = [0,1,2,3,4,5]
+console.log(find(arr, 2))
+console.log(find(arr, 8))
+</code></pre>
+<p>结果到了函数式成了下面这个样子（好像上面的那些代码在下面若影若现，不过又有点不太一样，为了消掉if语言，让其看上去更像一个表达式，动用了 ? 号表达式）：</p>
+<pre><code class="language-javascript">//函数式的版本
+const find = ( f => f(f) ) ( f =>
+  (next => (x, y, i = 0) =>
+    ( i >= x.length) ?  null :
+      ( x[i] == y ) ? i :
+        next(x, y, i+1))((...args) =>
+          (f(f))(...args)))
+
+let arr = [0,1,2,3,4,5]
+console.log(find(arr, 2))
+console.log(find(arr, 8))
+
+</code></pre>
+<h2 id="为了讲清这个代码-需要先补充一些知识">为了讲清这个代码，需要先补充一些知识。</h2>
+<h3 id="javascript的箭头函数">Javascript的箭头函数</h3>
+<p>首先先简单说明一下，ECMAScript2015 引入的箭头表达式。箭头函数其实都是匿名函数，其基本语法如下：</p>
+<pre><code class="language-javascript">    param1, param2, …, paramN) => { statements }
+    (param1, param2, …, paramN) => expression
+         // 等于 :  => { return expression; }
+
+    // 只有一个参数时,括号才可以不加:
+    (singleParam) => { statements }
+    singleParam => { statements }
+
+    //如果没有参数,就一定要加括号:
+    () => { statements }
+
+</code></pre>
+<p>下面是一些示例：</p>
+<pre><code class="language-javascript">var simple = a => a > 15 ? 15 : a;
+simple(16); // 15
+simple(10); // 10
+
+let max = (a, b) => a > b ? a : b;
+
+// Easy array filtering, mapping, ...
+
+var arr = [5, 6, 13, 0, 1, 18, 23];
+var sum = arr.reduce((a, b) => a + b);  // 66
+var even = arr.filter(v => v % 2 == 0); // [6, 0, 18]
+var double = arr.map(v => v * 2);       // [10, 12, 26, 0, 2, 36, 46]
+
+</code></pre>
+<p>看上去不复杂吧。不过，上面前两个 simple 和 max 的例子都把这箭头函数赋值给了一个变量，于是它就有了一个名字。有时候，某些函数在声明的时候就是调用的时候，尤其是函数式编程中，一个函数还对外返回函数的时候。比如下在这个例子：</p>
+<pre><code class="language-javascript">function MakePowerFn(power) {
+  return function PowerFn(base) {
+    return Math.pow(base, power);
+  }
+}
+
+power3 = MakePowerFn(3); //制造一个X的3次方的函数
+power2 = MakePowerFn(2); //制造一个X的2次方的函数
+
+console.log(power3(10)); //10的3次方 = 1000
+console.log(power2(10)); //10的2次方 = 100
+
+</code></pre>
+<p>其实，在 MakePowerFn 函数里的那个 PowerFn 根本不需要命名，完全可以写成：</p>
+<pre><code class="language-javascript">function MakePowerFn(power) {
+  return function(base) {
+    return Math.pow(base, power);
+  }
+}
+
+</code></pre>
+<p>如果用箭头函数，可以写成：</p>
+<pre><code class="language-javascript">
+
+MakePowerFn = power  => {
+  return base => {
+    return Math.pow(base, power);
+  }
+}
+</code></pre>
+<p>我们还可以写得更简洁（如果用表达式的话，就不需要 { 和 }， 以及 return 语句 ）：</p>
+<pre><code class="language-javascript">
+MakePowerFn = power => base => Math.pow(base, power)
+</code></pre>
+<p>我还是加上括号，和换行可能会更清楚一些：</p>
+<pre><code class="language-javascript">
+MakePowerFn = (power) => (
+  (base) => (Math.pow(base, power))
+)
+
+</code></pre>
+<p>好了，有了上面的知识，我们就可以进入一个更高级的话题——匿名函数的递归。</p>
+<h3 id="匿名函数的递归">匿名函数的递归</h3>
+<p>函数式编程立志于用函数表达式消除有状态的函数，以及for/while循环，所以，在函数式编程的世界里是不应该用for/while循环的，而要改用递归（递归的性能很差，所以，一般是用尾递归来做优化，也就是把函数的计算的状态当成参数一层一层的往下传递，这样语言的编译器或解释器就不需要用函数栈来帮你保存函数的内部变量的状态了）。</p>
+<p>好了，那么，匿名函数的递归该怎么做？</p>
+<p>一般来说，递归的代码就是函数自己调用自己，比如我们求阶乘的代码：</p>
+<pre><code class="language-javascript">function fact(n){
+  return n==0 ? 1 :  n * fact(n-1);
+};
+result = fact(5);
+</code></pre>
+<p>在匿名函数下，这个递归该怎么写呢？对于匿名函数来说，<code>我们可以把匿名函数当成一个参数传给另外一个函数，因为函数的参数有名字，所以就可以调用自己了</code>。
+如下所示：</p>
+<pre><code class="language-javascript">function combinator(func) {
+  func(func);
+}
+
+</code></pre>
+<p>这个是不是有点作弊的嫌疑？Anyway，我们再往下，把上面这个函数整成箭头函数式的匿名函数的样子。</p>
+<pre><code class="language-javascript">（func) => (func(func))
+</code></pre>
+<p>现在你似乎就不像作弊了吧。把上面那个求阶乘的函数套进来是这个样子：</p>
+<p>首先，先重构一下fact，把fact中自己调用自己的名字去掉：</p>
+<pre><code class="language-javascript">
+
+function fact(func, n) {
+  return n==0 ? 1 :  n * func(func, n-1);
+}
+
+fact(fact, 5); //输出120
+</code></pre>
+<p>然后，我们再把上面这个版本变成箭头函数的匿名函数版：</p>
+<pre><code class="language-javascript">
+var fact = (func, n) => ( n==0 ? 1 :  n * func(func, n-1) )
+fact(fact, 5)
+</code></pre>
+<p>这里，我们依然还要用一个fact来保存这个匿名函数，我们继续，我们要让匿名函数声明的时候，就自己调用自己。</p>
+<p>也就是说，我们要把</p>
+<pre><code class="language-javascript">
+(func, n) => ( n==0 ? 1 :  n * func(func, n-1) )
+</code></pre>
+<p>这个函数当成调用参数，传给下面这个函数：</p>
+<pre><code class="language-javascript">
+(func, x) => func(func, x)
+</code></pre>
+<p>最终我们得到下面的代码：</p>
+<pre><code class="language-javascript">
+( (func, x) => func(func, x) ) (  //函数体
+  (func, n) => ( n==0 ? 1 :  n * func(func, n-1) ), //第一个调用参数
+  5 //第二调用参数
+);
+</code></pre>
+<p>好像有点绕，anyway, 你看懂了吗？没事，我们继续。</p>
+<h3 id="动用高阶函数的递归">动用高阶函数的递归</h3>
+<p>但是上面这个递归的匿名函数在自己调用自己，所以，代码中有hard code的实参。我们想实参去掉，如何去掉呢？我们可以参考前面说过的那个 MakePowerFn 的例子，不过这回是递归版的高阶函数了。</p>
+<pre><code class="language-javascript">
+HighOrderFact = function(func){
+  return function(n){
+    return n==0 ? 1 : n * func(func)(n-1);
+  };
+};
+</code></pre>
+<p>我们可以看，上面的代码简单说来就是，需要一个函数做参数，然后返回这个函数的递归版本。那么，我们怎么调用呢？</p>
+<pre><code class="language-javascript">
+fact = HighOrderFact(HighOrderFact);
+fact(5);
+</code></pre>
+<p>连起来写就是：</p>
+<pre><code class="language-javascript">
+HighOrderFact ( HighOrderFact ) ( 5 )
+</code></pre>
+<p>但是，这样让用户来调用很不爽，所以，以我们一个<code>函数</code>把 <code>HighOrderFact</code> ( <code>HighOrderFact</code> ) 给代理一下：</p>
+<pre><code class="language-javascript">
+fact = function ( hifunc ) {
+  return hifunc ( hifunc );
+} (
+  //调用参数是一个函数
+  function (func) {
+    return function(n){
+      return n==0 ? 1 : n * func(func)(n-1);
+    };
+  }
+);
+
+fact(5); //于是我们就可以直接使用了
+
+</code></pre>
+<p>用箭头函数重构一下，是不是简洁了一些？</p>
+<pre><code class="language-javascript">
+fact = (highfunc => highfunc ( highfunc ) ) (
+  func => n =>  n==0 ? 1 : n * func(func)(n-1)
+);
+
+</code></pre>
+<p>上面就是我们最终版的阶乘的函数式代码。</p>
+<h3 id="回顾之前的程序">回顾之前的程序</h3>
+<p>我们再来看那个查找数组的正常程序：</p>
+<pre><code class="language-javascript">
+//正常的版本
+function find (x, y) {
+  for ( let i = 0; i &lt; x.length; i++ ) {
+    if ( x[i] == y ) return i;
+  }
+  return null;
+}
+</code></pre>
+<p>先把for干掉，搞成递归版本：</p>
+<pre><code class="language-javascript">
+function find (x, y, i=0) {
+  if ( i >= x.length ) return null;
+  if ( x[i] == y ) return i;
+  return find(x, y, i+1);
+}
+</code></pre>
+<p>然后，写出带实参的匿名函数的版本（注：其中的if代码被重构成了 ？号表达式）：</p>
+<pre><code class="language-javascript">
+( (func, x, y, i) => func(func, x, y, i) ) (  //函数体
+  (func, x, y, i=0) => (
+      i >= x.length ?  null :
+         x[i] == y  ?  i : func (func, x, y, i+1)
+  ), //第一个调用参数
+  arr, //第二调用参数
+  2 //第三调用参数
+)
+
+</code></pre>
+<p>最后，引入高阶函数，去除实参：</p>
+<pre><code class="language-javascript">
+const find = ( highfunc => highfunc( highfunc ) ) (
+   func => (x, y, i = 0) => (
+     i >= x.length ?  null :
+           x[i] == y  ?  i : func (func) (x, y, i+1)
+   )
+);
+
+</code></pre>
+<p>注：函数式编程装逼时一定要用const字符，这表示我写的函数里的状态是 immutable 的，天生骄傲！</p>
+<p>再注：我写的这个比原来版的那个简单了很多，原来版本的那个又在函数中套了一套 next， 而且还动用了不定参数，当然，如果你想装逼装到天上的，理论上来说，你可以套N层，呵呵。现在，你可以体会到，如此逼装的是怎么来的了吧？。</p>
+<p>其它你还别说这就是装逼，简单来说，我们可以使用数学的方式来完成对复杂问题的描述，那怕是递归。其实，这并不是新鲜的东西，这是Alonzo Church 和 Haskell Curry 上世纪30年代提出来的东西，这个就是 Y Combinator 的玩法，关于这个东西，你可以看看下面两篇文章：</p>
+<ul>
+<li>《The Y Combinator (Slight Return)》，</li>
+<li>《Wikipedia: Fixed-point combinator》</li>
+</ul>
+<p>以上操作经过验证可以直接拿去。</p>
+<p>Owner <code>breakEval13</code></p>
+<p>https://github.com/breakEval13</p>
+<footer>
+<p>Power By Gemini TextGenerate 2024-09-16</p>
+</footer>
+<script>
+  // 获取当前时间
+  const now = new Date();
+  const hour = now.getHours();
+
+  // 判断白天或夜晚
+  if (hour >= 6 && hour < 18) {
+    // 白天模式
+    document.body.classList.remove('night-mode');
+  } else {
+    // 夜晚模式
+    document.body.classList.add('night-mode');
+  }
+
+  // Highlight.js or Prism.js 代码高亮
+  // (您需要在页面中包含 Highlight.js 或 Prism.js 库)
+  // ...
+</script>
+</body>
+</html>

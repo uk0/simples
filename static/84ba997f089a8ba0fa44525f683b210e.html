@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java metrics</title>
+    <meta name="description" content="关于Java web 监控系统。">
+    <meta name="keywords" content="Java, GitHub Pages">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .title-container {
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+    <div class="title-container">
+        <h1>Java metrics</h1>
+        <p>关于Java web 监控系统。</p>
+    </div>
+    <h2>文档</h2>
+    <h3>Maven</h3>
+    <pre><code class="language-xml">
+ <!--  metrics * -->
+    <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>3.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-servlets</artifactId>
+        <version>3.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.codahale.metrics</groupId>
+        <artifactId>metrics-healthchecks</artifactId>
+        <version>3.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>com.github.davidb</groupId>
+        <artifactId>metrics-influxdb</artifactId>
+        <version>0.8.2</version>
+    </dependency>
+</code></pre>
+    <h3>核心工具类</h3>
+    <pre><code class="language-java">
+import com.codahale.metrics.*;
+import com.ktyh.think.filter.prometheus.DropwizardExportSetUp;
+import io.prometheus.client.CollectorRegistry;
+import metrics_influxdb.InfluxdbReporter;
+import metrics_influxdb.api.protocols.InfluxdbProtocols;
+import org.slf4j.LoggerFactory;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.util.concurrent.TimeUnit;
+/**
+ * Created by zhangjianxin on 2016/11/3.
+ * metrics core config and static void formart
+ */
+public class MetricsCore {
+    /**
+     * 因数据存在争议，改为单例模式。
+     */
+    private static final MetricRegistry METRIC_REGISTRY = new MetricRegistry();
+    private static String HOST_IP_ADDRESS;
+    private static String USERNAME;
+    private static String PASSWORD;
+    private static String DATABASE;
+    private static int PORT;
+    private static ServletRequest ARG_REQ;
+    private static ServletResponse ARG_RESP;
+    /**
+     * @author 内存使用程度MB
+     */
+    Gauge<Long> getFreeMemory = () -> toMb(Runtime.getRuntime().freeMemory());
+    Gauge<Long> getTotalMemory = () -> toMb(Runtime.getRuntime().totalMemory());
+
+    public static synchronized MetricRegistry getInstance() {
+        return METRIC_REGISTRY;
+    }
+
+    public static ScheduledReporter influxdbReporter(MetricRegistry metrics) {
+        InitInfluxdbConfig();//初始化
+        return InfluxdbReporter.forRegistry(metrics)
+                .protocol(InfluxdbProtocols.http(HOST_IP_ADDRESS, PORT, USERNAME, PASSWORD, DATABASE))
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .filter(MetricFilter.ALL)
+                .skipIdleMetrics(false)
+                .build();
+    }
+
+
+    public static void freeMemoryForJvm(MetricRegistry metrics) {
+        metrics.register(MetricRegistry.name("memory_free_mb_size"), new Gauge<Long>() {
+            @Override
+            public Long getValue() {
+                return toMb(Runtime.getRuntime().freeMemory());
+            }
+        });
+    }
+
+    public static void totalMemoryForJvm(MetricRegistry metrics) {
+        metrics.register(MetricRegistry.name("memory_total_mb_size"), new Gauge<Long>() {
+            @Override
+            public Long getValue() {
+                return toMb(Runtime.getRuntime().totalMemory());
+            }
+        });
+    }
+
+    //转换为MB
+    private static long toMb(long bytes) {
+        return bytes / 1024 / 1024;
+    }
+
+    /**
+     * 初始化时序数据库配置，可以通过反射进行更改
+     **/
+
+    public static void InitInfluxdbConfig() {
+        PORT = 8085;
+        HOST_IP_ADDRESS = "192.168.1.102";
+        USERNAME = "root";
+        PASSWORD = "root";
+        // DATABASE = "Metrics";
+        DATABASE = "_internal";
+    }
+
+    /**
+     * 传递初始化参数，用单例去回调
+     *
+     * @param "Servlet request and respone"
+     */
+
+    public static void requestFullArgs(ServletRequest req, ServletResponse resp) {
+        ARG_REQ = req;
+        ARG_RESP = resp;
+    }
+
+    /**
+     * Reporter 数据的展现位置
+     *
+     * @param metrics
+     * @return
+     */
+
+    public ConsoleReporter consoleReporter(MetricRegistry metrics) {
+        return ConsoleReporter.forRegistry(metrics)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build();
+    }
+
+    public Slf4jReporter slf4jReporter(MetricRegistry metrics) {
+        return Slf4jReporter.forRegistry(metrics)
+                .outputTo(LoggerFactory.getLogger("demo.metrics"))
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build();
+    }
+
+    public JmxReporter jmxReporter(MetricRegistry metrics, String doMain) {
+        return JmxReporter.forRegistry(metrics)
+                .inDomain(doMain)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .filter(MetricFilter.ALL).build();
+    }
+
+    /**
+     * Meters会将最近1分钟，5分钟，15分钟的TPS（每秒处理的request数）给打印出来，还有所有时间的TPS。
+     *
+     * @param metrics
+     * @return
+     */
+    public Meter requestMeter(MetricRegistry metrics, String arg) {
+        return metrics.meter(MetricRegistry.name("meter_event_" + arg));
+    }
+
+    /**
+     * 直方图
+     *
+     * @param metrics
+     * @return
+     */
+
+    public Histogram responseSizes(MetricRegistry metrics, String arg) {
+        return metrics.histogram(MetricRegistry.name("size_histogram_" + arg));
+    }
+
+    /**
+     * 计数器
+     *
+     * @param metrics
+     * @return
+     */
+
+    public Counter pendingJobs(MetricRegistry metrics, String arg) {
+        return metrics.counter(MetricRegistry.name("counter_Job_" + arg));
+    }
+
+    /**
+     * 计时器
+     *
+     * @param metrics
+     * @return
+     */
+
+    public Timer responsesExecureTime(MetricRegistry metrics, String arg) {
+        return metrics.timer(MetricRegistry.name("response_timer_" + arg));
+    }
+
+    public Meter requestURLCount(MetricRegistry metrics, String arg) {
+        return metrics.meter(MetricRegistry.name("request_URL_" + arg));
+    }
+}
+
+</code></pre>
+    <h2>目前这种方式只是将数据推送到influxdb ，以及prometheus 。</h2>
+    <p>1 数据采集</p>
+    <p>2 采集点(Filter,Controller,Service)</p>
+    <p>3 数据推送(influxdb,primetheus,jmx,console,cvs等。)</p>
+    <footer>Power By Gemini TextGenerate 2024-09-16</footer>
+    <script>
+        // JavaScript to change background color based on time
+        const currentHour = new Date().getHours();
+        const body = document.body;
+        if (currentHour >= 18 || currentHour < 6) {
+            body.style.backgroundColor = '#222';
+            body.style.color = '#eee';
+        } else {
+            body.style.backgroundColor = '#f5f5f5';
+            body.style.color = '#333';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kubernetes 项目学习笔记。</title>
+<meta name="description" content="nodejs。">
+<meta name="keywords" content="Javascript, nodejs">
+<style>
+body {
+  font-family: sans-serif;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f0f0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.5s ease;
+}
+
+h1 {
+  font-size: 20px;
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+pre {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 10px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+.title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.title-container h1, .title-container h2, .title-container h3, .title-container h4, .title-container h5, .title-container h6 {
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<script>
+  // 获取当前时间
+  const now = new Date();
+  const hour = now.getHours();
+  // 根据时间判断是否为夜晚模式
+  const isNight = hour >= 19 || hour < 6;
+  if (isNight) {
+    document.body.style.backgroundColor = '#222';
+  }
+</script>
+<div class="title-container">
+  <h1>Kubernetes 项目学习笔记。</h1>
+  <h2>nodejs。</h2>
+  <h3>Javascript, nodejs</h3>
+</div>
+
+<p>这一篇学习笔记，记录了kubernetes 容器编排框架的实战，以及模拟线上负载均衡等功能。</p>
+
+<h2>介绍</h2>
+
+<ul>
+<li>kubernetes 是一个容器的编排引擎，目前最火的容器引擎Docker作为支撑。</li>
+<li>kubernetes 开放RESTfull api共给调用，以及K8S-SDK-JAVA ，等调用方式，支持HELM包的方式进行部署。</li>
+<li>剩下的正在完善，因为工作繁忙，我会慢慢补充。</li>
+</ul>
+
+<h2>架构图</h2>
+
+<img src="http://112firshme11224.test.upcdn.net/kubernetes1.6.jpg" alt="请添加描述">
+
+<h2>高可用架构图</h2>
+
+<img src="http://112firshme11224.test.upcdn.net/gaokeyong.png" alt="请添加描述">
+
+<footer>
+  Power By Gemini TextGenerate 2024-09-16
+</footer>
+</body>
+</html>

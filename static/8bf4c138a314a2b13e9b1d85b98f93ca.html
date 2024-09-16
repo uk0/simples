@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>shell bash 模版填充ENV</title>
+<meta name="description" content="通过环境变量来初始化模版数据">
+<meta name="keywords" content="storm bash shell 替换  模版 ">
+<style>
+body {
+  font-family: sans-serif;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+pre {
+  background-color: #f0f0f0;
+  padding: 10px;
+  overflow-x: auto;
+  border-radius: 5px;
+}
+
+code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: #666;
+}
+
+.title-meta {
+  text-align: center;
+}
+
+.title-meta h1, .title-meta h2, .title-meta h3, .title-meta h4, .title-meta h5, .title-meta h6 {
+  margin: 0;
+  padding: 0;
+}
+
+.title-meta h1 {
+  font-size: 28px;
+}
+
+.title-meta h2 {
+  font-size: 24px;
+}
+
+.title-meta h3 {
+  font-size: 20px;
+}
+
+.title-meta h4 {
+  font-size: 18px;
+}
+
+.title-meta h5 {
+  font-size: 16px;
+}
+
+.title-meta h6 {
+  font-size: 14px;
+}
+
+.title-meta p {
+  font-size: 14px;
+}
+
+.title-meta p {
+  margin-top: 10px;
+}
+
+.title-meta p {
+  color: #666;
+}
+
+.title-meta p {
+  font-weight: 400;
+}
+
+.title-meta p {
+  line-height: 1.5;
+}
+
+.title-meta p {
+  text-align: center;
+}
+
+.title-meta p {
+  margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+<script>
+  const seed = 199602051111;
+  const random = () => {
+    let x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+  };
+  const now = new Date();
+  const isNight = now.getHours() >= 18 || now.getHours() < 6;
+  document.body.style.backgroundColor = isNight ? '#222' : '#fff';
+  document.body.style.color = isNight ? '#eee' : '#222';
+</script>
+<div class="title-meta">
+  <h1>shell bash 模版填充ENV</h1>
+  <h2>通过环境变量来初始化模版数据</h2>
+  <h3><p>storm bash shell 替换  模版 </p></h3>
+</div>
+<h1 id="quick-start">quick  start</h1>
+<pre><code class="language-bash">#!/bin/bash
+ZK_IP="192.168.1.1"
+cat ${template_path} |
+awk '$0 !~ /^\s*#.*$/' |
+sed 's/[ "]/\\&/g' |
+while read -r line;do
+    eval echo ${line}
+done &gt;${dst_path}
+</code></pre>
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+<footer class="footer">
+  Power By Gemini TextGenerate 2024-09-16
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
