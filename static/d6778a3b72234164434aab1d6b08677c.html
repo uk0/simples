@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nginx 分段配置负载均衡[原创]</title>
+  <meta name="description" content="nginx">
+  <meta name="keywords" content="linux,负载均衡,Nginx">
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    h1 {
+      font-size: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    h4 {
+      font-size: 14px;
+    }
+
+    h5 {
+      font-size: 12px;
+    }
+
+    h6 {
+      font-size: 11px;
+    }
+
+    pre {
+      background-color: #f0f0f0;
+      padding: 10px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: monospace;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 20px;
+    }
+
+    .night-mode {
+      background-color: #222;
+      color: #eee;
+    }
+
+    .night-mode code {
+      color: #eee;
+    }
+
+    .night-mode pre {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // 获取当前时间
+    const now = new Date();
+    const hour = now.getHours();
+
+    // 判断是否为夜晚模式
+    const isNight = hour >= 18 || hour < 6;
+
+    // 设置背景颜色
+    if (isNight) {
+      document.body.classList.add('night-mode');
+    }
+  </script>
+  <h1 style="text-align: center;">Nginx 分段配置负载均衡[原创]</h1>
+  <p style="text-align: center;">date：2017-11-06</p>
+  <p style="text-align: center;">author：zhangjianxin</p>
+
+  <h2>解决方案</h2>
+
+  <h3>nginx config</h3>
+  <pre><code class="language-bash">
+user  nginx;
+worker_processes  5;
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+worker_rlimit_nofile 1024;
+
+events {
+  worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                     '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    log_format  error '$remote_addr - $remote_user [$time_local] "$request" '
+                     '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  logs/access.log  main;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+    gzip  on;
+    include /etc/nginx/conf.d/upstream/*.conf;
+    include /etc/nginx/conf.d/vhost/*.conf;
+}
+  </code></pre>
+
+  <h3>nginx upstream config</h3>
+  <pre><code class="language-bash">
+upstream post_servers {
+    ip_hash;
+    server dscn01:80 weight=5 backup;
+    server dscn02:80 weight=10 max_fails=3 fail_timeout=30s;
+}
+
+  </code></pre>
+
+  <h3>nginx vhost  config</h3>
+  <pre><code class="language-bash">
+server {
+    listen       80;      #监听80端口
+    access_log   logs/post.access.log main;  #使用main等级配置访问日志。
+    error_log    logs/post.error.log error;          #使用error等级配置错误日志。
+
+    set $post_servers_upstream   "post_servers";   #使用set指令配置upstream为：'post_servers'
+    location / {  #将所有的请求代理到post_servers_upstream中。
+      proxy_pass      http://$post_servers_upstream;
+    }
+  }
+
+  </code></pre>
+
+  <img src="http://112firshme11224.test.upcdn.net/images/WX20171106-142637@2x.png" alt="nginx config">
+
+  <img src="http://112firshme11224.test.upcdn.net/images/WX20171106-142733@2x.png" alt="nginx vhost config">
+
+  <p>* 以上操作经过验证可以直接拿去。</p>
+  <p>* auther `breakEval13`</p>
+  <p>* https://github.com/breakEval13</p>
+  <footer>
+    Power By Gemini TextGenerate 2024-09-16
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script>
+    Prism.highlightAll();
+  </script>
+</body>
+</html>

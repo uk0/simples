@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Python监控Linux服务器登陆</title>
+<meta name="description" content="Python监控Linux服务器登陆">
+<meta name="keywords" content="linux,python">
+<style>
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f2f2;
+  transition: background-color 0.3s ease;
+  max-width: 820px;
+  margin: 0 auto;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+  margin: 20px 0;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+pre {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: Consolas, monospace;
+  font-size: 14px;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #eee;
+}
+
+.container {
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.code-block {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.code-block code {
+  font-family: Consolas, monospace;
+  font-size: 14px;
+}
+
+.highlight, .prism-code {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.highlight code, .prism-code code {
+  font-family: Consolas, monospace;
+  font-size: 14px;
+}
+
+.night-mode {
+  background-color: #222;
+  color: #eee;
+}
+
+.night-mode .container {
+  background-color: #333;
+}
+
+.night-mode code {
+  color: #eee;
+}
+</style>
+</head>
+<body>
+<script>
+  const seed = 199602051111;
+  const random = (max) => Math.floor(Math.random() * max);
+  const now = new Date();
+  const isDay = now.getHours() >= 6 && now.getHours() < 18;
+  const body = document.body;
+  if (isDay) {
+    body.classList.remove('night-mode');
+  } else {
+    body.classList.add('night-mode');
+  }
+
+  const codeBlocks = document.querySelectorAll('pre code');
+  codeBlocks.forEach(block => {
+    const code = block.textContent;
+    const isHighlight = random(2) === 0;
+    if (isHighlight) {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/highlight.min.js';
+      script.async = true;
+      document.head.appendChild(script);
+      script.onload = () => {
+        hljs.highlightElement(block);
+      };
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js';
+      script.async = true;
+      document.head.appendChild(script);
+      script.onload = () => {
+        Prism.highlightElement(block);
+      };
+    }
+  });
+</script>
+<div class="container">
+  <h1>Python监控Linux服务器登陆</h1>
+  <p>一个用Python做监控Linux服务器登陆</p>
+  <h2>先看代码</h2>
+  <p>date：2017-10-17</p>
+  <p>author：zhangjianxin</p>
+  <h3>目录</h3>
+  <pre><code>
+  </code></pre>
+  <pre><code class="language-python">
+#!/usr/bin/env python
+#encoding=utf-8
+
+from smtplib import SMTP
+import subprocess
+
+smtp = "smtp.qq.com"
+user = '1234567'
+password = 'xxxx'
+
+run_comd = subprocess.Popen('w¦grep pts',shell=True,stdout=subprocess.PIPE)
+data = run_comd.stdout.read()
+mailb = ["服务器有新用户登录",data]
+mailh = ["From: 1234567@qq.com", "To: xxxx@gmail.com", "Subject: 用户登录监控"]
+mailmsg = "\r\n\r\n".join(["\r\n".join(mailh), "\r\n".join(mailb)])
+
+#www.iplaypy.com
+def send_mail():
+    send = SMTP(smtp)
+    send.login(user,password)
+    result = send.sendmail("1234567@qq.com", ("xxxx@gmail.com",), mailmsg)
+    send.quit()
+if data == '':
+    pass
+else:
+    send_mail()
+
+  </code></pre>
+  <p>以上操作经过验证可以直接拿去。</p>
+  <p>Owner `breakEval13`</p>
+  <p><a href="https://github.com/breakEval13">https://github.com/breakEval13</a></p>
+</div>
+<footer>
+  Power By Gemini TextGenerate 2024-09-16
+</footer>
+</body>
+</html>

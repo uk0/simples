@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mongodb作为Flink 的 Sink</title>
+    <meta name="description" content="笔记">
+    <meta name="keywords" content="Mongodb,flink">
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .highlight {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .highlight pre {
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Prism.highlightAll();
+            hljs.highlightAll();
+            const now = new Date();
+            const hour = now.getHours();
+            if (hour >= 18 || hour < 6) {
+                document.body.style.backgroundColor = '#222';
+                document.body.style.color = '#fff';
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Mongodb作为Flink 的 Sink</h1>
+    <p>因工作需求所整合Flink + Mongodb 作为一个Demo 帮助大家跳坑。</p>
+    <p>Mongodb 采用集群主从模式。</p>
+    <h2>MongoSink.Java</h2>
+    <p>继承RichSinkFunction，重写`open` 和 `invoke`方法，还有`close`。</p>
+    <pre><code class="language-java">
+package com.e.firsh.spb.sink;
+
+import com.alibaba.fastjson.JSON;
+import com.e.firs.spb.utils.Mongo.MongoService;
+import org.apache.flink.configuration.Configuration;
+
+import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+
+import java.net.UnknownHostException;
+
+/**
+ * Created by zhangjianxin on 2017/7/31.
+ */
+public  class MongoSink extends RichSinkFunction&lt;String&gt; {
+    public static  String CollectionName = "collection-a";
+    private MongoService mongoService;
+    @Override
+    public void invoke(String t) {
+        try {
+            this.mongoService.saveJson(JSON.parseObject(t),CollectionName);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void open(Configuration config) {
+        mongoService = new MongoService();
+        try {
+            super.open(config);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+};
+    </code></pre>
+    <h2>MongoService.Java</h2>
+    <p>MongoDB Service 处理工具</p>
+    <pre><code class="language-java">
+package com.e.firsh.spb.utils.Mongo;
+
+import com.alibaba.fastjson.JSONObject;
+
+import java.net.UnknownHostException;
+import java.util.List;
+
+/**
+ * Created by zhangjianxin on 2017/7/31.
+ */
+public class MongoService {
+
+
+
+    private EntryDao EntryDao = new EntryDao();
+
+    /**
+     * 保存
+     * @param saveJson
+     * @throws UnknownHostException
+     */
+    public void saveJson(JSONObject saveJson, String CollectionName) throws UnknownHostException {
+        this.EntryDao.save(CollectionName,saveJson,true);
+    }
+
+
+
+
+    /**
+     * 更新
+     * @param Entry
+     * @throws UnknownHostException
+     */
+    public void update(Entry Entry,String CollectionName) throws UnknownHostException {
+        this.EntryDao.update(Entry,CollectionName);
+    }
+
+    /**
+     * 查询所有
+     * @return
+     * @throws UnknownHostException
+     */
+    public List&lt;Entry&gt; findAll(String CollectionName) throws UnknownHostException{
+        return this.EntryDao.findAll(CollectionName);
+    }
+
+
+    /**
+     * 删除操作
+     * @param id
+     * @throws UnknownHostException
+     */
+    public void remove(int id,String CollectionName) throws UnknownHostException{
+        this.EntryDao.remove(id,CollectionName);
+    }
+}
+
+    </code></pre>
+    <h2>MongoManager.Java</h2>
+    <p>获得mongodb链接池的工具类，获得某个DB的链接。</p>
+    <pre><code class="language-java">
+package com.e.firsh.spb.utils.Mongo;
+
+/**
+ * Created by zhangjianxin on 2017/7/31.
+ */
+import com.mongodb.*;
+import com.mongodb.client.MongoDatabase;
+
+import java.util.Arrays;
+
+public class MongoManager {
+
+    private static Mongo mongo = null;
+    private static MongoClient mongoClient= null;
+    private MongoManager() { }
+
+    static {
+        initDBPrompties();
+    }
+
+    public static DB getDB(String dbName) {
+        return mongo.getDB(dbName);
+    }
+    public static MongoDatabase getDatabase(String dbName) {
+        return mongoClient.getDatabase(dbName);
+    }
+
+    /**
+     * 初始化连接池
+     */
+    private static void initDBPrompties() {
+        try {
+
+            MongoClientOptions.Builder mcob = MongoClientOptions.builder();
+            mcob.connectionsPerHost(1000);
+            mcob.socketKeepAlive(true);
+            mcob.readPreference(ReadPreference.secondaryPreferred());
+            MongoClientOptions mco = mcob.build();
+
+            mongoClient = new MongoClient(Arrays.asList(
+                    new ServerAddress("127.0.0.1", 27017),
+                    new ServerAddress("127.0.0.1", 27017),
+                    new ServerAddress("127.0.0.1", 27017)), mco);
+
+
+            mongo = new Mongo(MongoDBConstant.HOST, MongoDBConstant.PORT);
+            MongoOptions opt = mongo.getMongoOptions();
+            opt.connectionsPerHost = MongoDBConstant.POOLSIZE;
+            opt.threadsAllowedToBlockForConnectionMultiplier = MongoDBConstant.BLOCKSIZE;
+        } catch (MongoException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+    </code></pre>
+    <h2>EntryDao.java</h2>
+    <p>用来操作实体的工具类</p>
+    <pre><code class="language-java">
+package com.e.firsh.spb.utils.Mongo;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.alibaba.fastjson.JSONObject;
+import com.mongodb.*;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.util.JSON;
+import org.bson.Document;
+
+/**
+ * Created by zhangjianxin on 2017/7/31.
+ */
+public class EntryDao {
+
+    /**
+     * 删除操作
+     * @param id
+     * @throws UnknownHostException
+     */
+    public void remove(int id,String CollectionName) throws UnknownHostException{
+        MongoDatabase mongo = MongoManager.getDatabase(MongoDBConstant.DB);
+        MongoCollection coll = mongo.getCollection(CollectionName);
+
+
+        Document baseDBO =new Document();
+        baseDBO.put("id", id);
+
+        //删除某一条记录
+        coll.deleteOne(baseDBO);
+    }
+
+
+    /**
+     *
+     * @param CollectionName 集合名
+     * @param saveJson  待存入JSON
+     * @param useDefaultId  未传入_id时，若为true则使用MongoDB自动生成的_id。若为false则生成UUID作为主键
+     * @return
+     */
+    public JSONObject save(String CollectionName, JSONObject saveJson, boolean useDefaultId) {
+        JSONObject resp = new JSONObject();
+        try {
+            MongoDatabase mongo = MongoManager.getDatabase(MongoDBConstant.DB);
+            MongoCollection coll = mongo.getCollection(CollectionName);
+            Object _id = null;
+           if (!saveJson.containsKey("_id")){
+                if (!useDefaultId) {
+                    _id = UUID.randomUUID().toString();
+                    saveJson.put("Data", _id);
+                }
+            } else if(saveJson.containsKey("_id"))  {
+                _id = saveJson.get("_id");
+            }
+            Document doc = Document.parse(saveJson.toString());
+            coll.insertOne(doc);
+            resp.put("Data", _id);
+        } catch (MongoTimeoutException e1) {
+            e1.printStackTrace();
+            resp.put("ReasonMessage",e1.getClass() + ":" + e1.getMessage());
+            return resp;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.put("ReasonMessage",e.getClass() + ":" + e.getMessage());
+        }
+        return resp;
+    }
+
+}
+    </code></pre>
+    <h2>JsonUtils.java</h2>
+    <p>JSON的小工具类</p>
+    <pre><code class="language-java">
+package com.tod.spb.utils.Mongo;
+
+import java.io.OutputStream;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+
+
+/**
+ * Json转化工具，可以实现java对象和json字符串之间的互相转化&lt;br /&gt;
+ * Created by zhangjianxin on 2017/7/31.
+ */
+public class JsonUtils {
+    static ObjectMapper objectMapper = new ObjectMapper();
+
+    /**
+     * java 对象转换为json 存入流中
+     *
+     * @param obj
+     * @return  s
+     */
+    public static String toJson(Object obj) {
+        String s = "";
+        try {
+            s = objectMapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
+    /**
+     * java 对象转换为json 存入流中
+     *
+     * @param obj
+     * @param out
+     */
+    public static void toJson(Object obj, OutputStream out) {
+        try {
+            objectMapper.writeValue(out, obj);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * json 转为java对象
+     *
+     * @param json
+     * @param obj
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static void fromJson(String json, Object obj, Class valueType) {
+        try {
+            obj = objectMapper.readValue(json, valueType);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * json 转为java对象
+     * @param json
+     * @param obj
+     * @param valueTypeRef
+     */
+    @SuppressWarnings("rawtypes")
+    public static void fromJson(String json, Object obj, TypeReference valueTypeRef) {
+        try {
+            obj = objectMapper.readValue(json, valueTypeRef);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * json 转为java对象
+     *
+     * @param json
+     * @return obj
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Object fromJson(String json, Class valueType) {
+        Object obj = null;
+        try {
+            obj = objectMapper.readValue(json, valueType);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
+    /**
+     * json 转为java对象
+     *
+     * @param json
+     * @return obj
+     * @param valueTypeRef
+     */
+    @SuppressWarnings({ "rawtypes", "hiding" })
+    public static &lt;Object&gt; Object fromJson(String json, TypeReference valueTypeRef) {
+        Object obj = null;
+        try {
+            obj = objectMapper.readValue(json, valueTypeRef);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+}
+
+    </code></pre>
+    <h2>MongoDBHelper.java</h2>
+    <p>用来测试MongoDB链接成功</p>
+    <pre><code class="language-bash">
+package com.tod.spb.utils.Mongo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import java.net.UnknownHostException;
+
+
+/**
+ * Created by zhangjianxin on 2017/7/31.
+ */
+public class MongoDBHelper {
+
+    public static  String CollectionName = "collection-a";
+    /**
+     * 保存
+     * @param null
+     * @throws UnknownHostException
+     */
+    private MongoService mongoService = new MongoService();
+
+
+    public void save() throws UnknownHostException{
+        JSONObject data = new JSONObject();
+        data.put("tableName","1");
+        data.put("body","jsonobject");
+        data.put("number","12345");
+        this.mongoService.saveJson(data,CollectionName);
+    }
+
+
+
+    public static void main(String[] args) {
+
+        try {
+            MongoDBHelper mongoDBHelper = new MongoDBHelper();
+            mongoDBHelper.save();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+    </code></pre>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+</body>
+</html>

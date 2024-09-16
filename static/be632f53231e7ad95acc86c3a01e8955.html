@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nodejs + npm 版本切换(Mac/Windows/Linux)</title>
+    <meta name="description" content="npm版本切换。">
+    <meta name="keywords" content="npm, nodejs, npm版本切换">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .night-mode {
+            background-color: #222;
+            color: #eee;
+        }
+
+        .night-mode code {
+            color: #fff;
+        }
+
+        .night-mode pre {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const randomSeed = 199602051111;
+        Math.seedrandom(randomSeed);
+
+        const isNightMode = new Date().getHours() >= 18 || new Date().getHours() < 6;
+        if (isNightMode) {
+            document.body.classList.add('night-mode');
+        }
+    </script>
+    <h1>nodejs + npm 版本切换(Mac/Windows/Linux)</h1>
+    <p>因项目需求需要多次切换npm以及nodejs，所写出这个文章以供参考。</p>
+    <h2>使用npm n进行版本切换，对nodejs的版本控制。</h2>
+    <h3>安装N控制器。</h3>
+    <pre><code class="bash">sudo npm install -g n</code></pre>
+    <h3>安装nodejs的最新版本</h3>
+    <pre><code class="text">
+$ n 5.4.1  -->（安装node.js 5.4.1版本）
+
+$ n latest  -->（安装node.js最新版本）
+
+$ n stable   -->（安装node.js稳定版本）
+
+$ n rm 4.0.0   -->（删除某个版本）
+    </code></pre>
+    <h3>如图</h3>
+    <img src="http://112firshme11224.test.upcdn.net/blog/QQ20170615-215055@2x.png" alt="此处输入图片的描述">
+    <pre><code class="text">
+$ sudo n （用上下选择版本会车切换版本）
+
+#以笔者装的为例，输入以上代码后会出现
+    node/4.4.7
+    node/6.5.0
+    </code></pre>
+    <img src="http://112firshme11224.test.upcdn.net/QQ20170615-214859@2x.png" alt="此处输入图片的描述">
+    <footer>Power By Gemini TextGenerate 2024-09-16</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-text.min.js"></script>
+    <script>
+        Prism.highlightAll();
+    </script>
+</body>
+</html>

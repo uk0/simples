@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Flink 消费RocketMQ 如何定义Source[原创精品]</title>
+<meta name="description" content="笔记">
+<meta name="keywords" content="RocketMQ">
+<style>
+body {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: sans-serif;
+  background-color: #f5f5f5;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+pre {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: monospace;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+}
+
+.night-mode {
+  background-color: #222;
+  color: #eee;
+}
+
+.night-mode pre {
+  background-color: #333;
+}
+
+.night-mode code {
+  color: #eee;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    Prism.highlightAll();
+    hljs.highlightAll();
+
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour >= 18 || hour < 6) {
+      document.body.classList.add('night-mode');
+    }
+  });
+</script>
+</head>
+<body>
+<h1>Flink 消费RocketMQ 如何定义Source[原创精品]</h1>
+<p>笔记</p>
+<h2>摘要: RocketMQ-->Flink-->CrateDB</h2>
+<ul>
+<li>本文不涉及Sink的定义</li>
+<li>详情关注 <code>Github</code> <a href="https://github.com/zmatsh">https://github.com/zmatsh</a></li>
+<li>稍后会整理成插件放到GitHub ：<a href="https://github.com/zmatsh/rocketmq-flink-source-plugin">https://github.com/zmatsh/rocketmq-flink-source-plugin</a></li>
+</ul>
+<h2># Flink Source定义</h2>
+<pre><code class="java">package com.flink.source;
+import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
+import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
+import com.alibaba.rocketmq.common.message.Message;
+import com.alibaba.rocketmq.common.message.MessageExt;
+import com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
+
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.*;
+
+/**
+ * Created by zhangjianxin on 2017/7/20.
+ */
+public class RocketMQSource extends RichSourceFunction&lt;String&gt; implements MessageListenerConcurrently  {
+    public static DefaultMQPushConsumer consumer;
+    public static LinkedBlockingQueue&lt;String&gt; queue;
+
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List&lt;MessageExt&gt; list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+        long offset = list.get(0).getQueueOffset();
+        String maxOffset = list.get(0).getProperty("MAX_OFFSET");
+        long diff = Long.parseLong(maxOffset) - offset;
+        if (diff &gt; 100000) {
+            System.out.println("消息堆积");
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        }
+        byte[] body;
+        String message;
+        for (Message msg : list) {
+            if(msg.getTopic().equals("user")){
+                body = msg.getBody();
+                message = new String(body, Charset.forName("GBK"));
+                try {
+                    queue.put(message);
+                    System.out.println("------------------user:"+message+"------------------");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else if(msg.getTopic().equals("org")){
+                body = msg.getBody();
+                message = new String(body, Charset.forName("GBK"));
+                try {
+                    queue.put(message);
+                    System.out.println("------------------org:"+message+"------------------");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+    @Override
+    public void open(Configuration parameters) throws Exception {
+        String consumerGroupName = "flink-crate";
+        String namesrvAddr = "127.0.0.1:9876";
+        int queueSize=1000;
+        int consumeMessageMAXSize = 1;
+        queue = new LinkedBlockingQueue&lt;&gt;(queueSize);
+        consumer = new DefaultMQPushConsumer(consumerGroupName);
+        consumer.setNamesrvAddr(namesrvAddr);
+        consumer.setInstanceName(UUID.randomUUID().toString());
+        consumer.setConsumeMessageBatchMaxSize(consumeMessageMAXSize);//消息数量每次读取的消息数量
+        consumer.setMessageModel(MessageModel.CLUSTERING);
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+        consumer.registerMessageListener(this);
+        consumer.subscribe("user", "*");
+        consumer.subscribe("org", "*");
+        System.out.println("启动线程");
+        consumer.start();
+        System.out.println("RocketMQ Started.");
+        super.open(parameters);
+    }
+
+    @Override
+    public void run(SourceContext sourceContext) throws Exception {
+        System.out.println("run");
+        String obj = "";
+        while (true) {
+            System.out.println("------------------queue = "+queue+"------------------------");
+            if(queue!=null &amp;&amp; !queue.isEmpty()){
+                System.out.println("------------------size = "+queue.size()+"------------------------");
+                obj = queue.take();
+                sourceContext.collect(obj);
+            }else {
+                System.out.println("休眠1s");
+                Thread.sleep(1000);
+            }
+        }
+    }
+    @Override
+    public void cancel() {
+
+    }
+}
+
+</code></pre>
+<h2>## Main方法调用Flink启动JobManager</h2>
+<pre><code class="java">  final ParameterTool parameterTool = ParameterTool.fromArgs(args);
+
+        if (parameterTool.getNumberOfParameters() &lt; 5) {
+            System.out.println("Missing parameters!");
+            System.out.println("\nUsage: Flink-&gt;MQ-&gt;CrateDB \n" +
+                    "--consumerGroupName &lt;消费组名称&gt; \n" +
+                    "--parallelism &lt;并发数量&gt; \n"+
+                    "--qsize &lt;转发队列的大小&gt;\n" +
+                    "--mqaddr &lt;MQ地址&gt;\n" +
+                    "--consumer &lt;consumer read Message size&gt;\n");
+            return;
+        }
+
+   RocketMQSource rocketMQSource2 = new RocketMQSource(
+                   parameterTool.get("consumerGroupName","DEMO")
+                  ,parameterTool.get("mqaddr","127.0.0.1:9876")
+                  ,parameterTool.getInt("qsize",1000)
+                  ,parameterTool.getInt("consumer",1)
+          );
+</code></pre>
+<h2>## 禁止转载，盗版必究。`倒贴必须DDOS你！`</h2>
+<footer>
+Power By Gemini TextGenerate 2024-09-16
+</footer>
+</body>
+</html>

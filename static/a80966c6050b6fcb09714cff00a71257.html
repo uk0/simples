@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xgboost on yarn (cdh,cloudera)</title>
+    <meta name="description" content="xgboost install on yarn">
+    <meta name="keywords" content="xgboost">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+    <h1>xgboost on yarn (cdh,cloudera)</h1>
+    <p>xgboost install on yarn</p>
+
+    <h2>yum  安装基础的依赖</h2>
+    <pre><code class="bash">yum install gcc-c++ fuse-devel git  hadoop-libhdfs-devel
+</code></pre>
+
+    <h2>  配置环境变量</h2>
+    <pre><code class="bash">export MVN_HOME=/opt/soft/apache-maven-3.6.0
+export PATH=$MVN_HOME/bin:$PATH
+export XGB_HOME=/home/download
+export PATH=$XGB_HOME:$PATH
+export HDFS_LIB_PATH=${XGB_HOME}/xgboost-packages/libhdfs
+export LD_LIBRARY_PATH=${XGB_HOME}/xgboost-packages/lib64:$JAVA_HOME/jre/lib/amd64/server:/${XGB_HOME}/xgboost-packages/libhdfs:$LD_LIBRARY_PATH
+export HADOOP_HOME=/opt/cloudera/parcels/CDH/lib/hadoop
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=/opt/cloudera/parcels/CDH/lib/hadoop-hdfs
+export HADOOP_MAPRED_HOME=/opt/cloudera/parcels/CDH/lib/hadoop-yarn
+export HADOOP_YARN_HOME=$HADOOP_MAPRED_HOME
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+</code></pre>
+
+    <h2>xgboost git clone  and install </h2>
+    <pre><code class="bash">mkdir -p xgboost-packages/lib64
+
+cd xgboost-packages
+
+
+git clone --recursive https://github.com/dmlc/xgboost
+cd xgboost
+cp make/config.mk ./
+vim config.mk
+add line # HADOOP_HOME = /usr/lib/hadoop
+
+mkdir build
+cd build
+cmake .. USE_HDFS=ON # 开启HDFS
+make -j4
+
+</code></pre>
+
+    <h2>install python package on env</h2>
+    <pre><code class="bash">
+
+cd python-package/ && python setup.py install 
+</code></pre>
+
+    <h2>install jvm-package on env</h2>
+    <pre><code class="bash">
+cd jvm-packages/ && mvn install:install-file -Dfile=xgboost4j-spark-0.83-jar-with-dependencies.jar -DgroupId=ml.dmlc -DartifactId=xgboost4j-spark -Dversion=0.7 -Dpackaging=jar
+</code></pre>
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+    <script>
+        const currentTime = new Date();
+        const isDayTime = currentTime.getHours() >= 6 && currentTime.getHours() < 18;
+        const body = document.body;
+        if (isDayTime) {
+            body.style.backgroundColor = '#f0f0f0';
+            body.style.color = '#333';
+        } else {
+            body.style.backgroundColor = '#222';
+            body.style.color = '#eee';
+        }
+    </script>
+</body>
+</html>

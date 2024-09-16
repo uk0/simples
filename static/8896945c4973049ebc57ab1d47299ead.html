@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>使用python把图片存入数据库.</title>
+<meta name="description" content="笔记">
+<meta name="keywords" content="Python,lambda">
+<style>
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+  color: #333;
+  max-width: 820px;
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+h1 {
+  font-size: 20px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 18px;
+  text-align: center;
+}
+
+h3 {
+  font-size: 16px;
+  text-align: center;
+}
+
+h4 {
+  font-size: 14px;
+  text-align: center;
+}
+
+h5 {
+  font-size: 12px;
+  text-align: center;
+}
+
+h6 {
+  font-size: 11px;
+  text-align: center;
+}
+
+pre {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: monospace;
+}
+
+.highlight {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-x: auto;
+}
+
+.highlight pre {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 0;
+}
+
+.highlight code {
+  font-family: monospace;
+  background-color: transparent;
+}
+
+.highlight .token.comment,
+.highlight .token.prolog,
+.highlight .token.doctype,
+.highlight .token.cdata {
+  color: slategray;
+}
+
+.highlight .token.punctuation {
+  color: #999;
+}
+
+.highlight .token.tag,
+.highlight .token.operator,
+.highlight .token.keyword {
+  color: #333;
+}
+
+.highlight .token.attr-name {
+  color: #777;
+}
+
+.highlight .token.string,
+.highlight .token.char,
+.highlight .token.builtin,
+.highlight .token.number {
+  color: #008080;
+}
+
+.highlight .token.entity,
+.highlight .token.url,
+.highlight .token.symbol,
+.highlight .token.variable {
+  color: #000080;
+}
+
+.highlight .token.bold {
+  font-weight: bold;
+}
+
+.highlight .token.italic {
+  font-style: italic;
+}
+
+.highlight .token.inserted {
+  background-color: #008080;
+  color: #fff;
+}
+
+.highlight .token.deleted {
+  background-color: #800000;
+  color: #fff;
+}
+
+.highlight .token.selector,
+.highlight .token.attribute-name,
+.highlight .token.attribute-value {
+  color: #000080;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+</style>
+</head>
+<body>
+<h1>使用python把图片存入数据库.</h1>
+<h2>没事看看文章而已～</h2>
+<h3>使用python把图片存入数据库</h3>
+<p>一般情况下我们是把图片存储在文件系统中，而只在数据库中存储文件路径的，但是有时候也会有特殊的需求：把图片二进制存入数据库。</p>
+<p>今天我们采用的是python+mysql的方式</p>
+<p>MYSQL 是支持把图片存入数据库的，也相应的有一个专门的字段 BLOB (Binary Large Object)，即较大的二进制对象</p>
+<p>还有个更大的存二进制的LONGBLOB；</p>
+<p>这里需要注意：尽量把字段设置大一些，因为如果设置的字段长度过小，就会出现图片只显示一部分的情况。第二：如果数据量大的话尽量避免使用这种方式进行，因为mysq
+l对于大数据的查询速度会很慢。</p>
+<p>下面上代码：</p>
+<pre><code class="language-python">#!/usr/bin/python
+#-*- coding: UTF-8 -*-
+
+import MySQLdb as mysql
+import sys
+try:
+    #读取图片文件
+    fp = open("./test.jpg")
+    img = fp.read()
+    fp.close()
+except IOError,e:
+    print "Error %d %s" % (e.args[0],e.args[1])
+    sys.exit(1)
+try:
+    #mysql连接
+    conn = mysql.connect(host='localhost',user='root',passwd='123456',db='test')
+    cursor = conn.cursor()
+    #注意使用Binary()函数来指定存储的是二进制
+    cursor.execute("INSERT INTO images SET data='%s'" % mysql.Binary(img))
+    #如果数据库没有设置自动提交，这里要提交一下
+    conn.commit()
+    cursor.close()
+    #关闭数据库连接
+    conn.close()
+except mysql.Error,e:
+    print "Error %d %s" % (e.args[0],e.args[1])
+    sys.exit(1)
+
+</code></pre>
+<p>* 以上代码经过验证可以直接拿去修改调用</p>
+<p>* Owner `breakEval13`</p>
+<p>* <a href="https://github.com/breakEval13">https://github.com/breakEval13</a></p>
+<footer>
+Power By Gemini TextGenerate 2024-09-16
+</footer>
+<script>
+  // Highlight.js
+  hljs.highlightAll();
+
+  // Prism.js
+  Prism.highlightAll();
+
+  // 背景颜色切换
+  const isNight = new Date().getHours() >= 18 || new Date().getHours() < 6;
+  document.body.style.backgroundColor = isNight ? '#222' : '#f0f0f0';
+  document.body.style.color = isNight ? '#fff' : '#333';
+</script>
+</body>
+</html>

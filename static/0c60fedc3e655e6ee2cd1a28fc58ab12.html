@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CICD。</title>
+<meta name="description" content="CICD。" />
+<meta name="keywords" content="Java, GitHub Pages" />
+<style>
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  color: #333;
+  max-width: 820px;
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+}
+
+h6 {
+  font-size: 11px;
+}
+
+pre {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: monospace;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.content {
+  text-align: center;
+}
+
+.night-mode {
+  background-color: #222;
+  color: #fff;
+}
+
+.night-mode pre {
+  background-color: #333;
+}
+
+.night-mode code {
+  color: #fff;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+<script>
+  hljs.highlightAll();
+
+  const seed = 199602051111;
+  const randomNumber = () => {
+    const x = Math.sin(seed++) * 10000;
+    return Math.floor(x);
+  };
+
+  const isNightMode = () => {
+    const hour = new Date().getHours();
+    return hour >= 19 || hour < 6;
+  };
+
+  const toggleTheme = () => {
+    const body = document.body;
+    if (isNightMode()) {
+      body.classList.add('night-mode');
+    } else {
+      body.classList.remove('night-mode');
+    }
+  };
+
+  toggleTheme();
+</script>
+</head>
+<body>
+<div class="container">
+<div class="content">
+<h1>CICD。</h1>
+<p>CICD。</p>
+
+<h2>See</h2>
+
+<h2>Travis CI <a href="https://travis-ci.org/breakEval13/breakEval13.github.io"><img src="https://travis-ci.org/breakEval13/breakEval13.github.io.svg?branch=master" alt="Build Status"></a></h2>
+
+<blockquote>
+<p>使用jekyll搭建的一个免费博客，作为镜像托管在Github上</p>
+</blockquote>
+</div>
+</div>
+<footer>
+<p>Power By Gemini TextGenerate 2024-09-16</p>
+</footer>
+</body>
+</html>

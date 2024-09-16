@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apache Httpd 2.4.43 Install</title>
+    <meta name="description" content="安装httpd">
+    <meta name="keywords" content="安装httpd">
+    <style>
+        body {
+            background-color: #f0f0f0; /* 白天模式背景色 */
+            color: #333;
+            font-family: sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            overflow-x: auto;
+            border-radius: 5px;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .highlight {
+            background-color: #f0f0f0;
+            padding: 10px;
+            overflow-x: auto;
+            border-radius: 5px;
+        }
+
+        .highlight pre {
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+            border-radius: 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script>
+        const time = new Date();
+        const hour = time.getHours();
+        if (hour >= 18 || hour < 6) {
+            document.body.style.backgroundColor = '#222';
+            document.body.style.color = '#eee';
+        }
+    </script>
+</head>
+<body>
+    <h1>Apache Httpd 2.4.43 Install</h1>
+    <p>安装httpd 过程记录。</p>
+
+    <h2>准备</h2>
+    <ul>
+        <li>系统 Linux x86_64 gcc 版本4.8</li>
+        <li>apr + apr-utils + pcre + httpd-2.4.43 `源码包`</li>
+        <li>`yum install -y libxml2-devel`</li>
+        <li>`yum install -y gcc gcc-c++`</li>
+    </ul>
+
+    <h2>安装开始</h2>
+
+    <h3>apr</h3>
+    <pre><code class="bash">wget -c http://archive.apache.org/dist/apr/apr-1.6.2.tar.gz
+tar -xf apr-1.6.2.tar.gz
+cd apr-1.6.2
+./configure --prefix=/usr/local/apr
+make && make install
+</code></pre>
+
+    <h3>apr-utils</h3>
+    <pre><code class="bash">wget -c http://archive.apache.org/dist/apr/apr-util-1.6.1.tar.gz
+tar -xf apr-util-1.6.1.tar.gz
+cd apr-util-1.6.1
+./configure --prefix=/usr/local/apr-util --with-apr=/usr/local/apr/bin/apr-1-config
+make && make install
+</code></pre>
+
+    <h3>pcre</h3>
+    <pre><code class="bash">wget -c https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.gz
+tar -xf pcre-8.41.tar.gz
+cd pcre-8.41
+./configure --prefix=/usr/local/pcre
+make && make install
+</code></pre>
+
+    <h3>httpd</h3>
+    <pre><code class="bash">wget https://ftp.riken.jp/net/apache//httpd/httpd-2.4.43.tar.gz
+tar -zxvf httpd-2.4.43.tar.gz
+cd httpd-2.4.43
+cd ..
+cp -r apr-1.6.2 httpd-2.4.43/srclib/apr
+cp -r apr-util-1.6.1  httpd-2.4.43/srclib/apr-util
+
+./configure --prefix=/usr/local/apache2 --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr-util --with-pcre=/usr/local/pcre --enable-mods-shared=most --enable-so --with-included-apr
+make && make install
+</code></pre>
+
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+</body>
+</html>

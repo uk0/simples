@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hadoop HDFS 作为 Flink 的 Sink</title>
+    <meta name="description" content="笔记">
+    <meta name="keywords" content="hdfs, flink">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        h4 {
+            font-size: 14px;
+        }
+
+        h5 {
+            font-size: 12px;
+        }
+
+        h6 {
+            font-size: 11px;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title-container h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .title-container p {
+            font-size: 16px;
+            color: #777;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+    <div class="title-container">
+        <h1>Hadoop HDFS 作为 Flink 的 Sink</h1>
+        <p>笔记</p>
+    </div>
+    <p>因工作需求，学习了 Hdfs 分布式文件存储系统，所整合 Flink + HDFS 作为一个 Demo 帮助大家跳坑。</p>
+    <p>HDFS 采用 NS 高可用模式。</p>
+    <h2>HDFSManager.Java</h2>
+    <p>* 初始化 HDFS 链接。</p>
+    <pre><code class="java">package com.e.firsh.spb.utils.hdfs;
+
+import com.alibaba.fastjson.JSONObject;
+import com.e.firsh.base.esb.BO;
+import com.e.firsh.base.utils.Registry;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.Set;
+
+/**
+ * The type Hdfs manager.
+ */
+public class HDFSManager {
+    private static Logger logger = LoggerFactory.getLogger(HDFSManager.class);
+    private static Configuration configuration;
+    private static FileSystem fs;
+
+    public HDFSManager() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("fs.defaultFS", "hdfs://ns");
+        jsonObject.put("dfs.nameservices", "ns");
+        jsonObject.put("dfs.ha.namenodes.ns","nn1,nn2");
+        jsonObject.put("dfs.namenode.rpc-address.ns.nn1", "10.11.0.12:9000");
+        jsonObject.put("dfs.namenode.rpc-address.ns.nn2", "10.11.0.13:9000");
+        jsonObject.put("dfs.client.failover.proxy.provider.ns", "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider");
+        init(jsonObject);
+    }
+
+    public boolean init(JSONObject args) {
+        Configuration conf = new Configuration();
+        Set<String> itr = args.keySet();
+        if (itr != null) {
+            for (String pname : itr) {
+                String pvalue = args.getString(pname);
+                conf.set(pname, pvalue);
+            }
+        }
+        try {
+            fs = FileSystem.get(conf);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage() + ":{}", e);
+        }
+        return false;
+    }
+
+
+    public BO appendToFile(String destPath, String line) throws IOException {
+        BO respBO = BO.createResponseBO();
+        Path path = new Path(destPath);
+        FSDataOutputStream dos = null;
+        try {
+            if (!fs.exists(path)) {
+                dos = fs.create(path);
+            } else {
+                dos = fs.append(path);
+            }
+            byte[] readBuf = line.getBytes("UTF-8");
+            dos.write(readBuf, 0, readBuf.length);
+            dos.close();
+            respBO.setDataNameValue("length", readBuf.length);
+        } catch (Exception e) {
+            logger.error(e.getMessage() + ":{}", e);
+            respBO.setCompleteCode(BO.BO_V_CC_FAILED);
+        } finally {
+            if (dos != null) {
+                dos.close();
+            }
+        }
+        return respBO;
+    }
+
+    public static void main(String[] args) {
+        HDFSManager hdfsManager = new HDFSManager();
+        try {
+            hdfsManager.appendToFile("/testmq","hello w");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void init2(){
+         configuration = new Configuration();
+        /**TODO 添加Hadoop配置内容*/
+        configuration.set("dfs.namenode.name.dir", "file:///home/admin/data/hadoop/hdfs/name");
+        configuration.set("dfs.nameservices", "ns");
+        configuration.set("dfs.ha.namenodes.ns", "nn1,nn2");
+        configuration.set("dfs.namenode.rpc-address.ns.nn1", "10.11.0.12:9000");
+        configuration.set("dfs.namenode.rpc-address.ns.nn2", "10.11.0.13:9000");
+        configuration.set("dfs.namenode.shared.edits.dir", "qjournal://10.11.0.12:8485;10.11.0.13:8485;10.11.0.14:8485/ns");
+        configuration.set("hadoop.tmp.dir", "/home/admin/data/hadoop/tmp");
+        configuration.set("fs.defaultFS", "hdfs://ns");
+        configuration.set("dfs.journalnode.edits.dir", "/home/admin/data/hadoop/journal");
+        configuration.set("dfs.client.failover.proxy.provider.ns", "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider");
+        configuration.set("ha.zookeeper.quorum", "10.11.0.12:2181,10.11.0.13:2181,10.11.0.14:2181");
+        configuration.set("mapreduce.input.fileinputformat.split.minsize", "10");
+
+
+        try {
+            fs = FileSystem.get(configuration);
+        } catch (Exception e) {
+            logger.error(e.getMessage() + ":{}", e);
+        }
+    }
+}
+
+</code></pre>
+    <h2>HDFSSink.Java</h2>
+    <p>* 继承`RichSinkFunction`，重写`open` 和 `invoke`方法，还有`close`。</p>
+    <pre><code class="java">package com.e.firsh.spb.sink;
+
+import com.e.firsh.spb.utils.hdfs.HDFSManager;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+
+/**
+ * Created by zhangjianxin on 2017/8/1.
+ */
+public class HDFSSink extends RichSinkFunction<String> {
+    private HDFSManager hdfsManager;
+    private final static  String  HDFS_PATH ="/testmq";
+    @Override
+    public void invoke(String t) throws Exception {
+        hdfsManager.appendToFile(HDFS_PATH,t);
+    }
+    @Override
+    public void open(Configuration config) {
+        hdfsManager = new HDFSManager();
+    }
+}
+
+</code></pre>
+    <h2>以上代码为简易版经过修改，思路清晰，（Flink自带一种HDFS的链接方式详情见链接：）</h2>
+    <p>* https://ci.apache.org/projects/flink/flink-docs-release-1.4/dev/connectors/filesystem_sink.html</p>
+    <footer>
+        Power By Gemini TextGenerate 2024-09-16
+    </footer>
+    <script>
+        // 获取当前时间，判断白天或夜晚
+        const now = new Date();
+        const hour = now.getHours();
+        const isDaytime = hour >= 6 && hour < 18;
+
+        // 设置背景颜色
+        document.body.style.backgroundColor = isDaytime ? '#f5f5f5' : '#333';
+        document.body.style.color = isDaytime ? '#333' : '#fff';
+    </script>
+</body>
+</html>

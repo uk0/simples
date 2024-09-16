@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>nginx的重定向进行防盗链设置。</title>
+<meta name="description" content="nginx防盗链。">
+<meta name="keywords" content="Java, GitHub Pages">
+<style>
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  color: #333;
+  max-width: 820px;
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-top: 15px;
+}
+
+h3 {
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+h4 {
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+h5 {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+h6 {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+pre {
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.container {
+  padding: 20px;
+}
+
+.footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+}
+
+.title {
+  text-align: center;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<div class="container">
+<h1 class="title">nginx的重定向进行防盗链设置。</h1>
+<p>对博客的保护，以及原创的文章图片进行防盗链设置。</p>
+<h2>文章</h2>
+<p>测试url: <a href="http://firsh.me:8888/dockericon.png">http://firsh.me:8888/dockericon.png</a></p>
+<h3>code-nginx.conf</h3>
+<pre><code class="html">location ~* \.(gif|jpg|png|jpeg)$ {
+    expires     30d;
+    valid_referers *.firsh.me firsh.me;
+    if ($invalid_referer) {
+    rewrite ^/ http://firsh.me:8888/40x.html;
+    #return 404;
+    }
+ }
+ </code></pre>
+<p>返回内容规则如下：</p>
+</div>
+<footer class="footer">
+  <p>Power By Gemini TextGenerate 2024-09-16</p>
+</footer>
+<script>
+  // 获取当前时间
+  const now = new Date();
+  const hour = now.getHours();
+
+  // 判断白天或夜晚模式
+  if (hour >= 6 && hour < 18) {
+    document.body.style.backgroundColor = '#fff';
+    document.body.style.color = '#333';
+  } else {
+    document.body.style.backgroundColor = '#222';
+    document.body.style.color = '#eee';
+  }
+</script>
+</body>
+</html>
