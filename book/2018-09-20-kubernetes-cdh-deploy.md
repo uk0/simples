@@ -27,7 +27,7 @@ keywords: hadoop cdh kubernetes
  * Kubernetes默认会创建一个`SLB`（用来给Ingress 使用)，我们用来暴露CDH的`UI`就是需要采用 `Ingress` 来进行暴露。
  * `Ingress` 所在 `Namespace = kube-system`
 
-![](http://112firshme11224.test.upcdn.net/demos/17612368-36b7-49c3-bcbd-6bd7848c849a.png)
+![](/static/demos/17612368-36b7-49c3-bcbd-6bd7848c849a.png)
 
 *  域名解析 注意是`泛域名`
 
@@ -706,23 +706,23 @@ spec:
 * 启动流程进入`Master-deploy ` 去执行`start.sh`启动，根据机器情况，启动时间不等，期间可以用`netstat -tlunp` 查看端口是否占用来验证启动成功与否.
 * `CDH` 需要用到Kubernetes的`特权模式`,相关细节请查关键字 `Kubernetes securityContext`
 * 部分界面如下：
-![](http://112firshme11224.test.upcdn.net/demos/2f2be0a5-ef33-4458-9cd4-433b9a3ebed4.png)
+![](/static/demos/2f2be0a5-ef33-4458-9cd4-433b9a3ebed4.png)
 
 
 * 服务界面
 
-    ![](http://112firshme11224.test.upcdn.net/demos/3596a98d-8de0-4641-b2b6-e7904061479d.png)
+    ![](/static/demos/3596a98d-8de0-4641-b2b6-e7904061479d.png)
 
 * PVC 界面
 
-    ![](http://112firshme11224.test.upcdn.net/demos/e68c1177-32c0-419b-8acd-eeecbfd702dc.png)
+    ![](/static/demos/e68c1177-32c0-419b-8acd-eeecbfd702dc.png)
 
 *  CDH 节点界面
 
-    ![](http://112firshme11224.test.upcdn.net/demos/49f7fc4a-2f25-4895-818a-0e6d296983b0.png)
+    ![](/static/demos/49f7fc4a-2f25-4895-818a-0e6d296983b0.png)
 
 * 节点服务运行情况。
-    ![](http://112firshme11224.test.upcdn.net/demos/a054ea06-ffcb-4340-bfc9-7b307d7cbc99.png)
+    ![](/static/demos/a054ea06-ffcb-4340-bfc9-7b307d7cbc99.png)
 
 
 

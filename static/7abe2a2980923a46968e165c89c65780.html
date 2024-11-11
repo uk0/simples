@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="通过 Serverless 创建 functionkubeless）以及简化开。">
+    <meta name="keywords" content="serverless">
+    <title>serverless demo for kubernetes + ingress [原创]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> serverless demo for kubernetes + ingress [原创]</p>
+        <p><strong>Categories:</strong> serverless kubernetes ingress kubeless</p>
+        <p><strong>Description:</strong> 通过 Serverless 创建 functionkubeless）以及简化开。</p>
+        <p><strong>Keywords:</strong> serverless</p>
+    </div>
+    <div class="content">
+        <h4 id="serverless-kubernetes-ingress-kubeless-function">文章介绍，Serverless + kubernetes + ingress + kubeless 快速开发function 简化开发，无服务器接口，让开发更快 更爽</h4>
+<h2 id="_1">工具</h2>
+<ul>
+<li>kubernetes</li>
+<li>kubeless</li>
+<li>ingress</li>
+<li>serverless</li>
+</ul>
+<h2 id="minikube">启动Minikube</h2>
+<ul>
+<li>配置Docker 代理下载镜像速度能快一点。</li>
+</ul>
+<pre class="codehilite"><code class="language-bash">minikube start --docker-env HTTP_PROXY=http://192.168.155.2:8118 \
+                 --docker-env HTTPS_PROXY=https://192.168.155.2:8118
+</code></pre>
+
+<ul>
+<li>检查kubernetes 是否已经启动完成。</li>
+</ul>
+<p><img alt="" src="/static/demos/d8922ed9-aeb0-4056-9abb-3319cf2b7544.png" /></p>
+<ul>
+<li>检查ingress</li>
+</ul>
+<p><img alt="" src="/static/demos/51342058-f68a-4c0f-ba9b-9ff846c8a571.png" /></p>
+<ul>
+<li>检查UI是否已经启动</li>
+</ul>
+<p><img alt="" src="/static/demos/baee88c2-ccfc-4551-9596-6752c4640826.png" /></p>
+<ul>
+<li>检查kubelessui[有没有都可以]</li>
+</ul>
+<p><img alt="" src="/static/demos/4a80959d-8db3-4a44-bc41-403f1c77f324.png" /></p>
+<h2 id="_2">正题</h2>
+<ul>
+<li>
+<p>创建一个空的目录一会要用到</p>
+<ul>
+<li>
+<p>安装 serverless  <code>npm install serverless</code> </p>
+</li>
+<li>
+<p>安装 serverless-kubeless  <code>npm install serverless-kubeless</code></p>
+</li>
+<li>
+<p>创建一个serverless function <code>serverless create --template kubeless-python</code></p>
+</li>
+<li>
+<p>看看serverless 支持多少模版</p>
+</li>
+</ul>
+<p><img alt="" src="/static/demos/6b52ee20-569a-4450-b3b9-b495c9e3fd0b.png" /></p>
+</li>
+<li>
+<p>执行创建命令</p>
+</li>
+</ul>
+<pre class="codehilite"><code class="language-bash">    serverless create --template kubeless-python
+</code></pre>
+
+<ul>
+<li>结果 </li>
+</ul>
+<pre class="codehilite"><code class="language-bash">➜  demo2 serverless create --template kubeless-python
+    Serverless: Generating boilerplate...
+    _______                             __
+    |   _   .-----.----.--.--.-----.----|  .-----.-----.-----.
+    |   |___|  -__|   _|  |  |  -__|   _|  |  -__|__ --|__ --|
+    |____   |_____|__|  \___/|_____|__| |__|_____|_____|_____|
+    |   |   |             The Serverless Application Framework
+    |       |                           serverless.com, v1.25.0
+    -------'
+
+    Serverless: Successfully generated boilerplate for template: &quot;kubeless-python&quot;
+    Serverless: NOTE: Please update the &quot;service&quot; property in serverless.yml with your service name
+</code></pre>
+
+<ul>
+<li>目录介绍</li>
+</ul>
+<p><img alt="" src="/static/demos/0d3ccbe2-a619-44ca-bf70-267a2c6a10db.png" /></p>
+<blockquote>
+<p>里面会出现四个文件 ，第一个git的忽略文件(不用git可能没有)
+第二个 是function 的主体
+第三个是serverless 部署依赖的yml</p>
+</blockquote>
+<ul>
+<li>handler.py</li>
+</ul>
+<pre class="codehilite"><code class="language-python">import json
+def hello(request):
+    body = {
+        &quot;message&quot;: &quot;Go Serverless v1.0! Your function executed successfully!&quot;,
+        &quot;input&quot;: request.json
+    }
+    response = {
+        &quot;statusCode&quot;: 200,
+        &quot;body&quot;: json.dumps(body)
+    }
+    return response
+</code></pre>
+
+<ul>
+<li>serverless.yml</li>
+</ul>
+<pre class="codehilite"><code class="language-yaml">    # Welcome to Serverless!
+    #
+    # For full config options, check the kubeless plugin docs:
+    #    https://github.com/serverless/serverless-kubeless
+    #
+    # For documentation on kubeless itself:
+    #    http://kubeless.io
+
+    # Update the service name below with your own service name
+    service: hello-world
+
+    # Please ensure the serverless-kubeless provider plugin is installed globally.
+    # $ npm install -g serverless-kubeless
+    #
+    # ...before installing project dependencies to register this provider.
+    # $ npm install
+
+    provider:
+    name: kubeless
+    runtime: python2.7
+
+    plugins:
+    - serverless-kubeless
+
+    functions:
+    demo2:  # 有重名 hello 所以改成demo2
+        handler: handler.hello
+</code></pre>
+
+<ul>
+<li>
+<p>package.json [可以不用管]</p>
+</li>
+<li>
+<p>以上的Serverless 可以运行了</p>
+</li>
+<li>
+<p>开始部署</p>
+</li>
+<li>
+<p>提示 <code>serverless</code> 可以简写  <code>sls</code></p>
+</li>
+</ul>
+<pre class="codehilite"><code class="language-bash">    ➜  demo2 serverless deploy
+    Serverless: Packaging service...
+    Serverless: Excluding development dependencies...
+    Serverless: Deploying function demo2...
+    Serverless: Function demo2 successfully deployed
+</code></pre>
+
+<ul>
+<li>查看是否部署成功</li>
+</ul>
+<p><img alt="" src="/static/demos/c1313fae-c4dc-4b9f-bcb8-1508b8dec8fe.png" /></p>
+<ul>
+<li>创建<code>Ingress</code></li>
+</ul>
+<pre class="codehilite"><code class="language-bash">kubeless ingress create ingress-demo2  -n default --function demo2
+# 参数介绍
+# ingress-demo 是ingress 的名字
+# -n 是kubernetes 的命名空间
+# --function 是你要绑定到那个 function
+</code></pre>
+
+<ul>
+<li>执行命令 没有错误即可，检查 ingress 是否创建</li>
+</ul>
+<pre class="codehilite"><code class="language-bash">    kubeless ingress list
+</code></pre>
+
+<p><img alt="" src="/static/demos/e2839acc-e728-4f81-99e1-97474ec53a40.png" /></p>
+<ul>
+<li>找到我们的链接</li>
+</ul>
+<pre class="codehilite"><code class="language-bash">    demo2.192.168.64.2.nip.io
+</code></pre>
+
+<ul>
+<li>用postman进行测试。</li>
+</ul>
+<p><img alt="" src="/static/demos/6e04c70c-ad58-46a5-afc7-498b741323f6.png" /></p>
+<p>测试通过</p>
+<h2 id="_3">总结</h2>
+<ul>
+<li>ingress 安装一定要检查好</li>
+<li>serverless-kubeless 每次创建一个 fucntion 都需要在当前目录执行安装命令<code>npm install serverless-kubeless</code></li>
+<li>目前kubeless 支持的语言比较少(runtime) python nodejs</li>
+<li>有兴趣可以看看 <code>aws lambda</code> 还有 <code>fnproject</code></li>
+<li>教程整理比较匆忙如果有疑问请留言。</li>
+</ul>
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

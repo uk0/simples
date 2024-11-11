@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ehcache集群配置terracotta">
+    <meta name="keywords" content="ehcache, terracotta">
+    <title>ehcache集群配置terracotta。</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> ehcache集群配置terracotta。</p>
+        <p><strong>Categories:</strong> mongo</p>
+        <p><strong>Description:</strong> ehcache集群配置terracotta</p>
+        <p><strong>Keywords:</strong> ehcache, terracotta</p>
+    </div>
+    <div class="content">
+        <h1 id="ehcacheterracotta">ehcache集群配置terracotta</h1>
+<ul>
+<li>ehcache for maven conf</li>
+</ul>
+<pre class="codehilite"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.ehcache&lt;/groupId&gt;
+            &lt;artifactId&gt;ehcache&lt;/artifactId&gt;
+            &lt;version&gt;${ehcache.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.ehcache&lt;/groupId&gt;
+            &lt;artifactId&gt;ehcache-clustered&lt;/artifactId&gt;
+            &lt;version&gt;${ehcache.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+</code></pre>
+
+<ul>
+<li>tc-config.xml (ehcache3.4.0)版本已经被合并了里面包含<code>terracotta</code></li>
+</ul>
+<pre class="codehilite"><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;tc-config xmlns=&quot;http://www.terracotta.org/config&quot;
+           xmlns:ohr=&quot;http://www.terracotta.org/config/offheap-resource&quot;&gt;
+  &lt;!--
+    This is the default Terracotta server configuration file for the Ehcache kit.
+
+    It defines a single offheap resource of 512MB to be used for caching data.
+
+    It also defines a single server, but you can add another one to benefit from high availability.
+  --&gt;
+
+  &lt;plugins&gt;
+    &lt;config&gt;
+      &lt;ohr:offheap-resources&gt;
+        &lt;ohr:resource name=&quot;main&quot; unit=&quot;MB&quot;&gt;512&lt;/ohr:resource&gt;
+      &lt;/ohr:offheap-resources&gt;
+    &lt;/config&gt;
+  &lt;/plugins&gt;
+
+  &lt;servers&gt;
+    &lt;server host=&quot;10.11.0.224&quot; name=&quot;s1&quot;&gt;
+      &lt;!--
+        Indicates the location for logs files - %H will resolve to user home directory.
+        Note that relative path will be resolved from the location of this configuration file.
+       --&gt;
+      &lt;logs&gt;/home/hadmin/data/logs/ehcache/ehcache-server/terracotta-logs-s1&lt;/logs&gt;
+
+      &lt;!--
+        This port is used by clients to communicate to the server.
+        Its value is actually the default one and is thus omitted.
+      --&gt;
+      &lt;tsa-port&gt;9410&lt;/tsa-port&gt;
+
+      &lt;!--
+        This port is used for server to server communication.
+        Its value is actually the default one and is thus omitted.
+      --&gt;
+      &lt;tsa-group-port&gt;9430&lt;/tsa-group-port&gt;
+    &lt;/server&gt;
+    &lt;server host=&quot;10.11.0.225&quot; name=&quot;s2&quot;&gt;
+      &lt;!--
+                   Indicates the location for logs files - %H will resolve to user home directory.
+        Note that relative path will be resolved from the location of this configuration file.
+       --&gt;
+      &lt;logs&gt;/home/hadmin/data/logs/ehcache/ehcache-server/terracotta-logs-s2&lt;/logs&gt;
+
+      &lt;!--
+                   This port is used by clients to communicate to the server.
+        Its value is actually the default one and is thus omitted.
+      --&gt;
+      &lt;tsa-port&gt;9410&lt;/tsa-port&gt;
+
+      &lt;!--
+                   This port is used for server to server communication.
+        Its value is actually the default one and is thus omitted.
+      --&gt;
+      &lt;tsa-group-port&gt;9430&lt;/tsa-group-port&gt;
+    &lt;/server&gt;
+
+    &lt;!--
+      Below a sample server definition that will give HA to the cluster if run on a different host.
+
+      Servers know how to communicate between each others because each version of the config file on each host
+      will list all servers in it.
+    --&gt;
+    &lt;!--&lt;server host=&quot;otherhost&quot; name=&quot;other-server&quot;&gt;--&gt;
+      &lt;!--&lt;logs&gt;logs&lt;/logs&gt;--&gt;
+      &lt;!--&lt;tsa-port&gt;9410&lt;/tsa-port&gt;--&gt;
+    &lt;!--&lt;/server&gt;--&gt;
+
+    &lt;!--
+      Indicates how much time a server taking over after a failure in an active will wait
+      to allow existing clients to reconnect. The time unit is seconds.
+    --&gt;
+    &lt;client-reconnect-window&gt;120&lt;/client-reconnect-window&gt;
+  &lt;/servers&gt;
+&lt;/tc-config&gt;
+</code></pre>
+
+<ul>
+<li>
+<p>以上的配置文件为两个节点</p>
+</li>
+<li>
+<p>分别在两个节点上运行相应命令。</p>
+</li>
+</ul>
+<pre class="codehilite"><code class="language-bash"># 1
+nohup ./bin/start-tc-server.sh  -f conf/tc-config.xml  -n s1 &amp;
+# 2
+nohup ./bin/start-tc-server.sh  -f conf/tc-config.xml  -n s2 &amp;
+</code></pre>
+
+<ul>
+<li>
+<p>这样两台基本的Ehcache 服务集群就搭建成功了。</p>
+</li>
+<li>
+<p>文章写的比较着急，不忙了在继续整理，望理解。</p>
+</li>
+<li>
+<p>测试代码</p>
+</li>
+</ul>
+<pre class="codehilite"><code class="language-java">package todcloud.utils.ehcache;
+
+/**
+ * Created by zhangjianxin on 2017/12/4.
+ * Github Breakeval13
+ * blog firsh.me
+ */
+import java.net.URI;
+
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.slf4j.Logger;
+
+import static java.net.URI.create;
+import static org.ehcache.clustered.client.config.builders.ClusteredResourcePoolBuilder.clusteredDedicated;
+import static org.ehcache.clustered.client.config.builders.ClusteringServiceConfigurationBuilder.cluster;
+import static org.ehcache.config.builders.CacheConfigurationBuilder.newCacheConfigurationBuilder;
+import static org.ehcache.config.builders.CacheManagerBuilder.newCacheManagerBuilder;
+import static org.ehcache.config.builders.ResourcePoolsBuilder.heap;
+import static org.ehcache.config.units.MemoryUnit.MB;
+import static org.slf4j.LoggerFactory.getLogger;
+
+public class ClusteredProgrammatic {
+    private static final Logger LOGGER = getLogger(ClusteredProgrammatic.class);
+
+    public static void main(String[] args) {
+        LOGGER.info(&quot;Creating clustered cache manager&quot;);
+        final URI uri = create(&quot;terracotta://10.11.0.224:9410/s1&quot;);
+        try (CacheManager cacheManager = newCacheManagerBuilder()
+                .with(cluster(uri).autoCreate().defaultServerResource(&quot;main&quot;))
+                .withCache(&quot;basicCache&quot;,
+                        newCacheConfigurationBuilder(Long.class, String.class,
+                                heap(100).offheap(1, MB).with(clusteredDedicated(512, MB))))
+                .build(true)) {
+            Cache&lt;Long, String&gt; basicCache = cacheManager.getCache(&quot;basicCache&quot;, Long.class, String.class);
+
+            LOGGER.info(&quot;Putting to cache&quot;);
+//            basicCache.put(100L, &quot;da one!&quot;);
+//            basicCache.put(1L, &quot;da one1L!&quot;);
+            System.out.println(basicCache.get(1L));
+            LOGGER.info(&quot;Closing cache manager&quot;);
+        }
+
+        LOGGER.info(&quot;Exiting&quot;);
+    }
+}
+</code></pre>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

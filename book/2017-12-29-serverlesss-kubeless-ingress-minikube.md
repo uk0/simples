@@ -29,20 +29,20 @@ minikube start --docker-env HTTP_PROXY=http://192.168.155.2:8118 \
 ```
   * 检查kubernetes 是否已经启动完成。
 
-  ![](http://112firshme11224.test.upcdn.net/demos/d8922ed9-aeb0-4056-9abb-3319cf2b7544.png)
+  ![](/static/demos/d8922ed9-aeb0-4056-9abb-3319cf2b7544.png)
 
   * 检查ingress
      
-  ![](http://112firshme11224.test.upcdn.net/demos/51342058-f68a-4c0f-ba9b-9ff846c8a571.png)
+  ![](/static/demos/51342058-f68a-4c0f-ba9b-9ff846c8a571.png)
    
 
   * 检查UI是否已经启动
     
-  ![](http://112firshme11224.test.upcdn.net/demos/baee88c2-ccfc-4551-9596-6752c4640826.png)
+  ![](/static/demos/baee88c2-ccfc-4551-9596-6752c4640826.png)
 
   * 检查kubelessui[有没有都可以]
 
-  ![](http://112firshme11224.test.upcdn.net/demos/4a80959d-8db3-4a44-bc41-403f1c77f324.png)
+  ![](/static/demos/4a80959d-8db3-4a44-bc41-403f1c77f324.png)
 
 
 
@@ -59,7 +59,7 @@ minikube start --docker-env HTTP_PROXY=http://192.168.155.2:8118 \
     
     * 看看serverless 支持多少模版
 
-    ![](http://112firshme11224.test.upcdn.net/demos/6b52ee20-569a-4450-b3b9-b495c9e3fd0b.png)
+    ![](/static/demos/6b52ee20-569a-4450-b3b9-b495c9e3fd0b.png)
 
 * 执行创建命令
 
@@ -85,7 +85,7 @@ minikube start --docker-env HTTP_PROXY=http://192.168.155.2:8118 \
 ```
 * 目录介绍
 
-![](http://112firshme11224.test.upcdn.net/demos/0d3ccbe2-a619-44ca-bf70-267a2c6a10db.png)
+![](/static/demos/0d3ccbe2-a619-44ca-bf70-267a2c6a10db.png)
 
 > 里面会出现四个文件 ，第一个git的忽略文件(不用git可能没有)
 > 第二个 是function 的主体
@@ -159,7 +159,7 @@ def hello(request):
 
 * 查看是否部署成功
 
-![](http://112firshme11224.test.upcdn.net/demos/c1313fae-c4dc-4b9f-bcb8-1508b8dec8fe.png)
+![](/static/demos/c1313fae-c4dc-4b9f-bcb8-1508b8dec8fe.png)
 
 * 创建`Ingress`
 
@@ -177,7 +177,7 @@ kubeless ingress create ingress-demo2  -n default --function demo2
     kubeless ingress list
 ```
 
-![](http://112firshme11224.test.upcdn.net/demos/e2839acc-e728-4f81-99e1-97474ec53a40.png)
+![](/static/demos/e2839acc-e728-4f81-99e1-97474ec53a40.png)
 
 * 找到我们的链接
 
@@ -187,7 +187,7 @@ kubeless ingress create ingress-demo2  -n default --function demo2
 
 * 用postman进行测试。
 
-![](http://112firshme11224.test.upcdn.net/demos/6e04c70c-ad58-46a5-afc7-498b741323f6.png)
+![](/static/demos/6e04c70c-ad58-46a5-afc7-498b741323f6.png)
 
   测试通过
 

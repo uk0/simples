@@ -724,7 +724,7 @@ export default class PayAgent extends PureComponent {
 
 * 最终完成这个页面，进行访问查看。
 
-![](http://112firshme11224.test.upcdn.net/demos/104d4e32-f0f8-4a54-8f87-a839fce15176.png)
+![](/static/demos/104d4e32-f0f8-4a54-8f87-a839fce15176.png)
 
 
 

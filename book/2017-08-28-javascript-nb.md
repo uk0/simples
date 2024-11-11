@@ -23,7 +23,7 @@ author：zhangjianxin
 
    * 然后让大家运行，出来的结果让人有点出乎意料，请看：
 
-   ![](http://112firshme11224.test.upcdn.net/blog/66042438.jpg)
+   ![](/static/blog/66042438.jpg)
 
 
    * > 太风骚了有木有！如果有人诋毁前端瞧不起JS的话，那就可以把这段代码发给他了~
@@ -36,12 +36,12 @@ author：zhangjianxin
   * 首先要运用到的第一个知识就是js运算符的优先级，因为这么长一段运算看的人眼花，我们必须得先根据优先级分成n小段，然后再各个击破。优先级的排列如下表：
 
   *  优先级从高到低：
-   ![](http://112firshme11224.test.upcdn.net/blog/-365094845.png)
+   ![](/static/blog/-365094845.png)
 
 
 # 二、根据此规则，我们把这一串运算分为以下16个子表达式：
 
-   ![](http://112firshme11224.test.upcdn.net/blog/-238288323.jpg)
+   ![](/static/blog/-238288323.jpg)
 
    * 运算符用红色标出，有一点可能大家会意识不到，其实中括号[]也是一个运算符，用来通过索引访问数组项，另外也可以访问字符串的子字符，有点类似charAt方法，如：’abcd'[1] // 返回’b’。而且中括号的优先级还是最高的哦。
 
@@ -74,12 +74,12 @@ ToPrimitive(input, PreferredType?)
 
 2. 通过ToNumber()把值转换成Number，直接看ECMA 9.3的表格
 规则如下：
-   ![](http://112firshme11224.test.upcdn.net/blog/823282545.png)
+   ![](/static/blog/823282545.png)
 
 3. 通过ToString()把值转化成字符串， 直接看ECMA 9.8的表格
 
 规则如下：
-   ![](http://112firshme11224.test.upcdn.net/blog/-376644909.png)
+   ![](/static/blog/-376644909.png)
 
 
 

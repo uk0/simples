@@ -19,17 +19,17 @@ keywords: Mavne, java
 * 如图所示，成功的倒入了·`org.apache.thrift`
   但是工具里面没有找到 `clearBit`，`setBit`等方法。
 
-![](http://112firshme11224.test.upcdn.net/blog/QQ20170708-002142@2x.png)
+![](/static/blog/QQ20170708-002142@2x.png)
 
 
 * 经过查证，的确没有，那么为什么会发生这个事情。
 
- ![](http://112firshme11224.test.upcdn.net/blog/error.png)
+ ![](/static/blog/error.png)
  
  
 * 揭开迷雾
     
- ![](http://112firshme11224.test.upcdn.net/blog/success-geterror.png)
+ ![](/static/blog/success-geterror.png)
  
  * 发现了存在的包竟然是MSF4J的包。
    于是找到了解决方案代码如下：
@@ -52,7 +52,7 @@ keywords: Mavne, java
    * 于是仔细查看pom.xml文件的内容，发现了问题，怀疑Maven加载包的顺序是有优先级的(从上到下)
    * 于是将 `org.apache.thrift` 放到了MSF4J包的上面。
    * 成功解决问题：
-   ![](http://112firshme11224.test.upcdn.net/blog/th3.png)
+   ![](/static/blog/th3.png)
    
 ## 总结
    学习了Mavne的加载顺序，以及排错方式：

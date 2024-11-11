@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hadoop集群配置zookeeper HA">
+    <meta name="keywords" content="Hadoop, zookeeper">
+    <title>Hadoop集群配置HA。</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> Hadoop集群配置HA。</p>
+        <p><strong>Categories:</strong> Hadoop</p>
+        <p><strong>Description:</strong> Hadoop集群配置zookeeper HA</p>
+        <p><strong>Keywords:</strong> Hadoop, zookeeper</p>
+    </div>
+    <div class="content">
+        <h1 id="hadoopha">hadoop集群配置HA</h1>
+<h1 id="_1">准备</h1>
+<ul>
+<li>JDK1.8</li>
+<li>NTP</li>
+<li>zookeeper</li>
+<li>NTPDATE</li>
+<li>配置目录</li>
+</ul>
+<pre class="codehilite"><code class="language-bash">scp -r zookeeper/ dscn$:/home/zookeeper
+
+scp -r hadoop/ dscn$:/home/hadoop
+
+mkdir  -p /home/program/hadoop/  data logs pids  # hadoop 文件路径
+
+mkdir  -p  /home/program/zookeeper data logs pids # zookeeper 文件
+</code></pre>
+
+<pre class="codehilite"><code class="language-bash">hdfs haadmin -transitionToActive nn1 --forcemanual
+解决启动节点都为 `standby`
+</code></pre>
+
+<h1 id="hadoop">环境变量 Hadoop</h1>
+<pre class="codehilite"><code class="language-bash">  echo &quot;
+        export JAVA_HOME=/usr/java/jdk1.8.0_73
+        export HADOOP_HOME=/home/dscs/hadoop
+        export HADOOP_LOG_DIR=/home/program/hadoop/logs
+        export HADOOP_PID_DIR=/home/program/hadoop/pids
+        export HADOOP_IDENT_STRING=dscs
+        export YARN_LOG_DIR=/home/program/hadoop/logs
+        export YARN_PID_DIR=/home/program/hadoop/pids
+        export YARN_IDENT_STRING=dscs
+        export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+        PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$JAVA_HOME/bin:$PATH
+        &quot; &gt;&gt;~/.bash_profile
+    source ~/.bash_profile
+</code></pre>
+
+<h1 id="java">环境变量 Java</h1>
+<pre class="codehilite"><code class="language-bash">    export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
+</code></pre>
+
+<h1 id="zookeeper-config">zookeeper config</h1>
+<pre class="codehilite"><code class="language-bash">    dataDir=/usr/local/program/zookeeper/data
+    dataLogDir=/usr/local/program/zookeeper/logs
+    clientPort=2181
+    tickTime=2000
+    initLimit=5
+    syncLimit=2
+    server.1=dscn1:2888:3888
+    server.2=dscn2:2888:3888
+    server.3=dscn3:2888:3888
+</code></pre>
+
+<pre class="codehilite"><code class="language-bash">    for i in 1 2 3
+    do 
+
+        ssh dscn$i mkdir -p /home/program/zookeeper/data/ echo $i &gt; /home/program/zookeeper/data/myid
+
+    done 
+</code></pre>
+
+<h1 id="hadoop_1">hadoop 启动流程</h1>
+<ul>
+<li>
+<p>启动 zookeeper (3个节点)</p>
+<pre class="codehilite"><code>```bash
+    ./zkServer.sh start ../conf/zoo.cfg
+```
+</code></pre>
+
+<ul>
+<li>启动 JournalNode (3个节点) 
+    <code>bash
+        sbin/hadoop-daemon.sh start journalnode</code></li>
+<li>在其中一个namenode上格式化：
+    <code>bash
+         bin/hdfs namenode -format -bjsxt</code></li>
+<li>
+<p>启动刚刚格式化的namenode:</p>
+<p><code>bash
+    sbin/hadoop-daemon.sh start namenode</code>
+ * 在另一个没有格式化的namenode上执行</p>
+</li>
+</ul>
+<p>```bash
+        bin/hdfs namenode -bootstrapStandby </p>
+<p>```
+ * 启动第二个namenode</p>
+<p><code>bash
+     sbin/hadoop-daemon.sh start namenode</code></p>
+</li>
+<li>
+<p>启动第二个datanode(3个节点)</p>
+<p><code>bash
+     sbin/hadoop-daemon.sh start datanode</code></p>
+</li>
+<li>
+<p>在其中一个namenode上初始化zkfc：</p>
+<p><code>bash
+    bin/hdfs zkfc -formatZK</code></p>
+</li>
+<li>
+<p>启动 JobHistory</p>
+</li>
+</ul>
+<p><code>bash
+    sbin/mr-jobhistory-daemon.sh start historyserver</code></p>
+<p># 异常描述 
+  * Hadoop2.0的HA机制判断两者元数据不一致时，为了防止脑裂，所以使两者都处于standby状态,
+  * 场景：两台namenode都是standby。
+  * zk集群里只是保存，hadoop集群的ha状态，而不保存数据，所以在ha机制出现问题时，可以使用此条命令：
+  * 停止集群 hadoop</p>
+<p><code>bash
+        hdfs zkfc -formatZK</code></p>
+<p># 插曲 scp 发现存储不够了</p>
+<p>```bash</p>
+<p>[root@dscn1 hadoop]# vgs
+  VG   #PV #LV #SN Attr   VSize    VFree
+  VG00   1  10   0 wz--n- &lt;199.51g &lt;1.26g</p>
+<p>lvextend -L +173G /dev/mapper/VG00-lvroot</p>
+<p>xfs_growfs /dev/mapper/VG00-lvroot</p>
+<p>```</p>
+<h1 id="_2">读取文件里面的文件路径参数【转译】</h1>
+<pre class="codehilite"><code class="language-bash">HBASE_TMP_DIR=$(cat $HBASE_PACKAGE_PATH/config | grep HBASE_TMP_DIR | awk -F &quot;=&quot; '{print$2}')
+
+HBASE_TMP_DIR_STR=$(echo $HBASE_TMP_DIR | sed 's#\/#\\\/#g')
+
+sed -i &quot;s/HBASE_TMP_DIR/$HBASE_TMP_DIR_STR/&quot; $HBASE_HOME/conf/hbase-site.xml
+</code></pre>
+
+<h1 id="_3">读取节点配置合理配置主从节点</h1>
+<pre class="codehilite"><code class="language-bash">OLD_IFS=&quot;$IFS&quot;
+IFS=&quot;,&quot;
+arr=($HBASE_REGION)
+IFS=&quot;$OLD_IFS&quot;
+for s in ${arr[@]}
+do
+    echo &quot;$s&quot; &gt;&gt;$HBASE_HOME/conf/regionservers
+done
+</code></pre>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Java, Scala,Hadoop,Flink">
+    <meta name="keywords" content="Java, Scala,Hadoop,Flink">
+    <title>ffmpeg转换GIF图片参数,MOV转GIF[常用]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> ffmpeg转换GIF图片参数,MOV转GIF[常用]</p>
+        <p><strong>Categories:</strong> Java, Scala,Hadoop,Flink</p>
+        <p><strong>Description:</strong> Java, Scala,Hadoop,Flink</p>
+        <p><strong>Keywords:</strong> Java, Scala,Hadoop,Flink</p>
+    </div>
+    <div class="content">
+        <p>ffmpeg转换GIF图片参数,这里介绍的是MOV转为GIF来方便放到Blog上。</p>
+<h2 id="1">1. 介绍</h2>
+<p>ffmpeg除了在音视频方面牛叉之外，在转换gif动态图片方面也是不弱的，修改分辨率，改变帧率，颜色模式，添加水印字幕等等均不在话下；</p>
+<p>下面几个操作命令是我这几天一一测试过，有需要的拿去，ffmpeg真的超级强大，轻而易举就能实现想要的效果；</p>
+<h2 id="2">2. 从视频第三十秒处开始截取视频，截取十秒钟片段</h2>
+<pre class="codehilite"><code class="language-bash">ffmpeg -ss 0 -t 150 -i Flinkdemo.mov  -s 800x600 -f gif -r 1 b.gif
+</code></pre>
+
+<p><img alt="描述" src="/static/posts/ffmpeg/QQ20170629-151034@2x.png" /></p>
+<h2 id="3">3.频率限制</h2>
+<p>限制GIF体积大小</p>
+<p>直接输出的gif体积会相对比较大，压缩不是很厉害，像在QQ中发送gif体积不能大于6M，所以要使用参数来降低gif图片体积大小；</p>
+<p>-s 输出分辨率
+-r 帧率</p>
+<pre class="codehilite"><code class="language-bash">ffmpeg -i A.wmv -s 320x240  -r 10 B.gif
+</code></pre>
+
+<h2 id="4rgbrgb24gif">4.RGB颜色限制,输出RGB24位颜色gif图片</h2>
+<pre class="codehilite"><code class="language-bash">ffmpeg -i A.wmv -pix_fmt rgb24   B.gif
+</code></pre>
+
+<h2 id="5gif">5.给gif动态图片添加字幕</h2>
+<pre class="codehilite"><code class="language-bash">ffmpeg -i A.gif   -vf &quot;ass=test.ass&quot;   B.gif
+</code></pre>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

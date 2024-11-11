@@ -24,7 +24,7 @@ Arangodb
 ## 1. 安装部署
 
 
-![arangodb](http://112firshme11224.test.upcdn.net/posts/arangodb/WX20170703-180430@2x.png)
+![arangodb](/static/posts/arangodb/WX20170703-180430@2x.png)
 
 
 ## 2.使用介绍 （Building your own ArangoDB image）

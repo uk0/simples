@@ -266,9 +266,9 @@ nohup sh  mqnamesrv >/var/log/ns.log 2>&1 &
 
 ## 运行成功的图！
 
-![](http://112firshme11224.test.upcdn.net/blog/tmp/rocketmq-p.png)
+![](/static/blog/tmp/rocketmq-p.png)
 
-![](http://112firshme11224.test.upcdn.net/blog/tmp/rocketmq-c.png)
+![](/static/blog/tmp/rocketmq-c.png)
 
 ## 禁止转载，盗版必究。
 

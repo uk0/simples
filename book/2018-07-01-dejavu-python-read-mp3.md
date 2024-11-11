@@ -89,7 +89,7 @@ pip install PyDejavu
 
 ```
 
-![](http://112firshme11224.test.upcdn.net/demos/788db197-f796-42d2-8ea5-ef655160e7c5.png)
+![](/static/demos/788db197-f796-42d2-8ea5-ef655160e7c5.png)
 
 转载请注明出处，本文采用 [CC4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/) 协议授权
 

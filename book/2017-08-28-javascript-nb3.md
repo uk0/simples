@@ -25,26 +25,26 @@ Javascript是一门很吊的语言，我可能学了假的JavaScript，哈哈，
 "★★★★★☆☆☆☆☆".slice(5 - rate, 10 - rate);定义一个变量rate是1到5的值，然后执行上面代码，看图
 ```
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/1.jpg)
+ ![](/static/blog/js/1.jpg)
 才发现插件什么的都弱爆了
 
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/2.jpg)
+ ![](/static/blog/js/2.jpg)
 2、如何装逼用代码骂别人SB
 ```javascript
 (!(~+[])+{})[--[~+""][+[]]*[~+[]] + ~~!+[]]+({}+[])[[~!+[]]*~+[]]
 
 ```
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/3.jpg)
+ ![](/static/blog/js/3.jpg)
 
 
 了解为什么请移步：`一行能装逼的JavaScript代码`
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/6.jpg)
+ ![](/static/blog/js/6.jpg)
 
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/4.jpg)
+ ![](/static/blog/js/4.jpg)
 3、如何用代码优雅的证明自己NB
 这个牛逼了
 
@@ -54,7 +54,7 @@ console.log(([][[]]+[])[+!![]]+([]+{})[!+[]+!![]])
 
 
 ```
- ![](http://112firshme11224.test.upcdn.net/blog/js/5.jpg)
+ ![](/static/blog/js/5.jpg)
 
 
 4、JavaScript 错误处理的方式的正确姿势
@@ -70,9 +70,9 @@ try {
 }
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/7.jpg)
+![](/static/blog/js/7.jpg)
 
-![](http://112firshme11224.test.upcdn.net/blog/js/8.jpg)
+![](/static/blog/js/8.jpg)
 
 5、从一行代码里面学点JavaScript
 ```javascript
@@ -89,9 +89,9 @@ Math.pow(2,24)).toString(16)}`)
 ```
 接下来在浏览器控制看看：something magic happens
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/9.jpg)
+ ![](/static/blog/js/9.jpg)
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/10.jpg)
+ ![](/static/blog/js/10.jpg)
 
 
 具体分析请参见这篇文章：从一行代码里面学点JavaScript
@@ -104,13 +104,13 @@ Math.random().toString(36).substring(2) // 11位
 
 ```
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/11.jpg)
+ ![](/static/blog/js/11.jpg)
 
 7、(10)["toString"]() === "10"
 
 解析请移步：js奇淫技巧1
 
- ![](http://112firshme11224.test.upcdn.net/blog/js/12.jpg)
+ ![](/static/blog/js/12.jpg)
 
 8、匿名函数自执行
 这么多写法你选择哪一种？我选择死亡。
@@ -159,7 +159,7 @@ void在JavaScript中是一个操作符，对传入的操作不执行并且返回
 
 当然，除了出于装逼的原因外，实际用途上不太赞成使用void，因为void的出现是为了兼容早起ECMAScript标准中没有undefined属性。void 0的写法让代码晦涩难懂。
 
-![](http://112firshme11224.test.upcdn.net/blog/js/13.jpg)
+![](/static/blog/js/13.jpg)
 
 10、论如何优雅的取整
 
@@ -174,7 +174,7 @@ var c= 2.33 >> 0
 
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/14.jpg)
+![](/static/blog/js/14.jpg)
 
 11、如何优雅的实现金钱格式化：1234567890 --> 1,234,567,890
 用正则魔法实现：
@@ -200,7 +200,7 @@ console.log(formatCash('1234567890')) // 1,234,567,890
 
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/15.jpg)
+![](/static/blog/js/15.jpg)
 
 12、这个我服，还有这个你很机智
 我服
@@ -212,7 +212,7 @@ while (1) {
 
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/16.jpg)
+![](/static/blog/js/16.jpg)
 
 你很机智，好一个障眼法
 
@@ -233,7 +233,7 @@ var b = ( a++, 99 );
 console.log(a);  // 1
 console.log(b);  // 99
 ```
-![](http://112firshme11224.test.upcdn.net/blog/js/17.jpg)
+![](/static/blog/js/17.jpg)
 
 14、论如何最佳的让两个整数交换数值
 常规办法：
@@ -257,7 +257,7 @@ a ^= b;
 
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/18.jpg)
+![](/static/blog/js/18.jpg)
 
 哈哈😄，看不懂的童鞋建议去补习一下C语言的位操作，我就不去复习了，以前学嵌入式时候学的位操作都忘了
 
@@ -272,7 +272,7 @@ var b=JSON.parse(JSON.stringify(a))
 
 
 ```
-![](http://112firshme11224.test.upcdn.net/blog/js/19.jpg)
+![](/static/blog/js/19.jpg)
 
 不考虑IE的情况下，标准JSON格式的对象蛮实用，不过对于undefined和function的会忽略掉。
 
@@ -285,7 +285,7 @@ var a =1
 +a
 
 ```
-![](http://112firshme11224.test.upcdn.net/blog/js/20.jpg)
+![](/static/blog/js/20.jpg)
 
 17、如何装逼的写出"hello world!"
 滚动条很长哦😯
@@ -295,9 +295,9 @@ var a =1
 
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/21.jpg)
+![](/static/blog/js/21.jpg)
 
-![](http://112firshme11224.test.upcdn.net/blog/js/22.jpg)
+![](/static/blog/js/22.jpg)
 
 居然能运行，牛逼的隐式转换
 
@@ -305,12 +305,12 @@ var a =1
 
 18、parseInt(0.0000008) === 8
 
-![](http://112firshme11224.test.upcdn.net/blog/js/23.jpg)
+![](/static/blog/js/23.jpg)
 
 
 19、++[[]][+[]]+[+[]] == 10
 
-![](http://112firshme11224.test.upcdn.net/blog/js/24.jpg)
+![](/static/blog/js/24.jpg)
 
 强大的隐式转换，23333
 
@@ -318,7 +318,7 @@ var a =1
 
 20、0.1 + 0.2 == 0.3
 
-![](http://112firshme11224.test.upcdn.net/blog/js/80.jpg)
+![](/static/blog/js/80.jpg)
 
 0.1 +0.2 == 0.3 竟然是不成立的。。。。所以这就是为什么数据库存储对于货币的最小单位都是分。
 
@@ -335,7 +335,7 @@ var a =1
 [...new Set([1, "1", 2, 1, 1, 3])]
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/25.jpg)
+![](/static/blog/js/25.jpg)
 
 前不久面试阿里就问了这道题，哈哈，所以也写上一下
 
@@ -347,7 +347,7 @@ var a =1
 Array(6).fill(8)
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/26.jpg)
+![](/static/blog/js/26.jpg)
 
 这个够短了吧，好像是当初哪里看到的一个面试题，就自己想到了ES6的一些API
 
@@ -378,7 +378,7 @@ if (b) {
 
 24、JavaScript版迷宫
 
-![](http://112firshme11224.test.upcdn.net/blog/js/27.jpg)
+![](/static/blog/js/27.jpg)
 逃出迷宫，2333
 
 
@@ -392,7 +392,7 @@ var minInNumbers = Math.min.apply(Math, numbers);
 
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/js/28.jpg)
+![](/static/blog/js/28.jpg)
 
 26、将argruments对象转换成数组
 
@@ -424,7 +424,7 @@ f('firsh'); // 将会弹出窗口显示firsh
 
 这种方式可以根据传入字符串内容来创建一个函数 是不是高大上？！
 
-![](http://112firshme11224.test.upcdn.net/blog/js/29.jpg)
+![](/static/blog/js/29.jpg)
 
 28、从一个数组中找到一个数，O(n)的算法，找不到就返回 null。
 正常的版本:

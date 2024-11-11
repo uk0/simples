@@ -1,0 +1,504 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="rust入门介绍，以及第一个程序里面包含了rust多少设计思想">
+    <meta name="keywords" content="rust rust入门程序 rustweb actix">
+    <title>Rust 第一个入门程序</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> Rust 第一个入门程序</p>
+        <p><strong>Categories:</strong> Rust</p>
+        <p><strong>Description:</strong> rust入门介绍，以及第一个程序里面包含了rust多少设计思想</p>
+        <p><strong>Keywords:</strong> rust rust入门程序 rustweb actix</p>
+    </div>
+    <div class="content">
+        <p>记录第一个rust 程序，以及对用到的工具rust语言特性的介绍。</p>
+<h3 id="rust">Rust 官方文档</h3>
+<ul>
+<li>https://doc.rust-lang.org/book/</li>
+</ul>
+<h3 id="rust-cargo">安装rust cargo</h3>
+<ul>
+<li>安装 
+    <code>bash
+    ## install rust
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ##</code></li>
+<li>官方安装文档</li>
+</ul>
+<blockquote>
+<p>https://forge.rust-lang.org/infra/other-installation-methods.html</p>
+</blockquote>
+<h3 id="rust_1">创建一个rust项目</h3>
+<pre class="codehilite"><code class="language-bash">cargo new web_demo  --bin
+
+
+&gt; cd web_demo
+&gt; tree .
+.
+├── Cargo.toml
+└── src
+    └── main.rs
+
+1 directory, 2 files
+</code></pre>
+
+<p>Let’s take a closer look at <code>Cargo.toml</code>:</p>
+<pre class="codehilite"><code class="language-toml">[package]
+name = &quot;web-demo&quot;
+version = &quot;0.1.0&quot;
+authors = [&quot;张建新 &lt;zhangjianxin@bigsfintech.com&gt;&quot;]
+edition = &quot;2018&quot;
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+# 下面是我做测试添加的依赖
+actix-web = &quot;2.0&quot;
+actix-rt = &quot;1.0&quot;
+actix-files = &quot;0.2.1&quot;
+actix-session = &quot;0.3.0&quot;
+serde_json = &quot;1.0&quot;
+serde=&quot;1.0.104&quot;
+strfmt=&quot;0.1.6&quot;
+kv = &quot;0.20.2&quot;
+base64 = &quot;0.12.0&quot;
+</code></pre>
+
+<p>This is called a manifest, and it contains all of the metadata that Cargo needs to compile your package.</p>
+<p>Here’s what’s in <code>src/main.rs</code>:</p>
+<pre class="codehilite"><code class="language-rust">fn main() {
+    println!(&quot;Hello, world!&quot;);
+}
+</code></pre>
+
+<h3 id="_1">开始添砖加瓦</h3>
+<pre class="codehilite"><code class="language-rust">use actix_files;
+use actix_web::http::StatusCode;
+use actix_web::{
+    guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
+};
+use kv::*;
+use std::collections::HashMap;
+use std::{fs, path};
+use std::str;
+use strfmt::strfmt;
+use actix_files::NamedFile;
+use std::path::PathBuf;
+use base64::{decode, encode};
+use serde::{Deserialize, Serialize};
+
+
+#[derive(Serialize, Deserialize)]
+struct ResultResp {
+    msg: String,
+    code: String,
+    data: String,
+    data_array :Vec&lt;String&gt;,
+}
+
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq)]
+struct KvS {
+    url: String,
+    data: String,
+}
+
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq)]
+struct History {
+    url: String,
+    s: String,
+    r: String,
+    time: String,
+    ip: String,
+}
+
+
+#[derive(Deserialize)]
+struct RequestData {
+    help: bool,
+    data: String,
+    exec: String,
+    args: Vec&lt;String&gt;,
+}
+#[derive(Deserialize)]
+struct RequestDataAddurl {
+    help: bool,
+    data: String,
+    exec: String,
+    url: String,
+    args: Vec&lt;String&gt;,
+}
+
+
+
+fn reset(name: &amp;str) -&gt; String {
+    let s = format!(&quot;./stroe/{}&quot;, name);
+    //let _ = fs::remove_dir_all(&amp;s);
+    s
+}
+
+
+
+async fn hello() -&gt; impl Responder {
+    &quot;hello&quot;
+}
+
+//* 修改模板 以及保存模板
+async fn modify_template(info: web::Json&lt;RequestData&gt;) -&gt; impl Responder {
+    let mut resp = ResultResp {
+        msg: &quot;data == null is error &quot;.to_owned(),
+        code: format!(&quot;Use {} &quot;, info.exec.to_owned()),
+        data: &quot;&quot;.to_owned(),
+        data_array: Vec::new(),
+    };
+
+    //if tos::template::CMD_LIST.contains(&amp;&amp;*info.exec) {
+        println!(&quot;{}&quot;, &quot;success&quot;.to_owned());
+
+        put_k(info.exec.to_owned(), info.data.to_owned());
+
+        resp.data.push_str(&quot;template add success&quot;);
+    //}
+
+    let j = serde_json::ser::to_string(&amp;resp);
+    HttpResponse::Ok()
+        .content_type(&quot;application/json&quot;)
+        .header(&quot;X-Hdr&quot;, &quot;sample&quot;);
+
+    j
+}
+
+//* 获取单个模板信息
+async fn get_template(info: web::Json&lt;RequestData&gt;) -&gt; impl Responder {
+    let mut resp = ResultResp {
+        msg: &quot;data == null is error &quot;.to_owned(),
+        code: format!(&quot;Use {} &quot;, info.exec.to_owned()),
+        data: &quot;&quot;.to_owned(),
+        data_array: Vec::new(),
+    };
+
+    //if tos::template::CMD_LIST.contains(&amp;&amp;*info.exec) {
+        println!(&quot;{}&quot;, &quot;success&quot;.to_owned());
+        let mut x =  String::from(&quot;&quot;);
+        match get_k(info.exec.to_owned()) {
+            Some(v) =&gt; x = v,
+            None =&gt; panic!(),
+        }
+        let b = base64::decode(x).unwrap();
+
+        let s = str::from_utf8(&amp;b).unwrap();
+
+        resp.data.push_str(s);
+    //}
+
+    let j = serde_json::ser::to_string(&amp;resp);
+    HttpResponse::Ok()
+        .content_type(&quot;application/json&quot;)
+        .header(&quot;X-Hdr&quot;, &quot;sample&quot;);
+
+    j
+}
+
+//* iter keys
+
+fn iter_k() -&gt;Vec&lt;String&gt;{
+    let path = reset(&quot;kvs&quot;);
+    let cfg = Config::new(path.clone());
+    let store = Store::new(cfg).unwrap();
+    let test_iter = store.bucket::&lt;String,String&gt;(Some(&quot;stroe&quot;)).unwrap();
+    let mut v: Vec&lt;String&gt; = vec![];
+    for item in test_iter.iter() {
+        let item = item.unwrap();
+        let key: String = item.key().unwrap();
+        let value = item.value::&lt;String&gt;().unwrap();
+        println!(&quot;key: {}, value: {}&quot;, key, value);
+        // let b;
+        // match  base64::decode(value) {
+        //     Ok(v) =&gt; b =v,
+        //     Err(e) =&gt; panic!(),
+        // }
+        // let s = str::from_utf8(&amp;b).unwrap();
+        v.push(key.to_owned());
+    }
+    v
+}
+
+//* 获取所有模板 信息 列表JSON
+async fn get_templates() -&gt; impl Responder {
+    let  mut resp = ResultResp {
+        msg: &quot;data == null is error &quot;.to_owned(),
+        code: &quot;0&quot;.to_owned(),
+        data: &quot;&quot;.to_owned(),
+        data_array: Vec::new(),
+    };
+    println!(&quot;{}&quot;, &quot;success&quot;.to_owned());
+
+    resp.data_array = iter_k();
+
+    let j = serde_json::ser::to_string(&amp;resp);
+    HttpResponse::Ok()
+        .content_type(&quot;application/json&quot;)
+        .header(&quot;X-Hdr&quot;, &quot;sample&quot;);
+
+    j
+}
+
+//* 发起请求
+/// extract `Info` using serde
+async fn start_http_client_post(info: web::Json&lt;RequestData&gt;) -&gt; Result&lt;String&gt; {
+    if info.help {
+        let message = format!(&quot;{}&quot;, tos::template::TRACKING_HELP);
+        return Result::Ok(message);
+    }
+    if tos::template::CMD_LIST.contains(&amp;&amp;*info.exec) {
+        println!(&quot;{}&quot;, info.args[0]);
+        let mut vars = HashMap::new();
+        vars.insert(&quot;timestamp&quot;.to_string(), info.args[0].to_string());
+        vars.insert(&quot;tcuId&quot;.to_string(), info.args[1].to_string());
+        vars.insert(&quot;vin&quot;.to_string(), info.args[2].to_string());
+
+        let mut x =String::from(&quot;&quot;);
+
+        match get_k(info.exec.to_owned()) {
+            Some(v) =&gt; x = v,
+            None =&gt; panic!(),
+        }
+        let b = base64::decode(x).unwrap();
+
+        let s = str::from_utf8(&amp;b).unwrap();
+        println!(&quot;{}&quot;, s);
+
+        return Result::Ok(format!(&quot;{}&quot;, strfmt(&amp;s.to_owned(), &amp;vars).unwrap()));
+    }
+
+    return Result::Ok(format!(&quot;not found cmd  = {}&quot;, info.exec));
+}
+
+#[warn(unused_mut)]
+fn put_k(K: String, V: String) -&gt; Result&lt;(), Error&gt; {
+    // Configure the database
+    let path = reset(&quot;kvs&quot;);
+    let cfg = Config::new(path.clone());
+    let store = Store::new(cfg).unwrap();
+    // raw Integer String
+    let test = store.bucket::&lt;String, String&gt;(Some(&quot;stroe&quot;))?;
+    // Set testing = 123
+
+    test.set(K, V)?;
+
+    let temp_get = test.get(&quot;TrackingCmd&quot;).unwrap();
+    println!(&quot;{:?}&quot;, temp_get);
+    Ok(())
+}
+
+
+
+//* get kv stroe by 'K
+
+fn get_k(K: String) -&gt; Option&lt;String&gt; {
+    // Configure the database
+    let path = reset(&quot;kvs&quot;);
+    let cfg = Config::new(path.clone());
+    let store = Store::new(cfg).unwrap();
+
+    let test_get = store.bucket::&lt;String, String&gt;(Some(&quot;stroe&quot;)).unwrap();
+
+    let c = test_get.get(K.to_owned()).unwrap();
+
+    c
+}
+
+async fn static_index(req: HttpRequest) -&gt; Result&lt;NamedFile&gt; {
+    Ok(actix_files::NamedFile::open(
+        &quot;../static/index.html&quot;,
+    )?)
+}
+
+#[actix_rt::main]
+async fn main() -&gt; std::io::Result&lt;()&gt; {
+    use actix_web::{web, App, HttpServer};
+
+    HttpServer::new(|| {
+        App::new()
+            .wrap(middleware::Compress::default())
+            .data(web::JsonConfig::default().limit(4096)) // &lt;- limit size of the payload (global configuration)
+            .service(web::resource(&quot;/addTask&quot;).route(web::post().to(start_http_client_post)))
+            .service(web::resource(&quot;/hello&quot;).route(web::get().to(hello)))
+            .service(web::resource(&quot;/addTemplate&quot;).route(web::post().to(modify_template)))
+            .service(web::resource(&quot;/getTemplate&quot;).route(web::post().to(get_template)))
+            .service(web::resource(&quot;/getTemplateList&quot;).route(web::get().to(get_templates)))
+            .service(actix_files::Files::new(
+                &quot;/static&quot;,
+                &quot;../static/&quot;,
+            ))
+            .default_service(
+                web::resource(&quot;&quot;).route(web::get().to(static_index)).route(
+                    web::route()
+                        .guard(guard::Not(guard::Get()))
+                        .to(|| HttpResponse::MethodNotAllowed()),
+                ),
+            )
+    })
+    .bind(&quot;127.0.0.1:8088&quot;)?
+    .run()
+    .await
+}
+</code></pre>
+
+<h3 id="web">写一个简单的web遇到哪些感觉有意思的东西</h3>
+<ul>
+<li>match 大体功能同等于<code>switch</code> 但是加强了枚举</li>
+<li>Some  <code>一个神奇的枚举种类</code> （比较有意思的点）</li>
+<li><code>||</code> <code>闭包</code></li>
+<li>? <code>Error propagation  一般会和 Match Some Restlt&lt;Option&gt;</code> 打一套组合拳 主要还是用于传播 （比较有意思的点）</li>
+<li>unwrap  和  <code>?</code> 相反的工作 <code>?</code>是传播  <code>unwrap</code> 摊开数据 解包数据返回。</li>
+<li>async await Rust的异步并发编程</li>
+</ul>
+<pre class="codehilite"><code class="language-rust">async fn print_async() {
+     println!(&quot;Hello from print_async&quot;)
+}
+
+fn main() {
+     let future = print_async();
+     println!(&quot;Hello from main&quot;);
+     futures::block_on(future);
+}
+// 本质上是 延迟运算
+// 在手动 poll future 之前，异步函数内部一行代码也不会执行
+</code></pre>
+
+<ul>
+<li>await! <code>是一个编译器内建的 macro ，用来暂停（pause） Future 的执行流程，并且把执行流程交回给调用方 (yield) 和React访问rest接口 一致。</code></li>
+</ul>
+<h4 id="rust_2">今天是学习Rust的第一天 开阔了视野</h4>
+<ul>
+<li>文章不定时更新，遇到自己觉得有意思的问题 第一时间更新上来。</li>
+</ul>
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

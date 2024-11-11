@@ -66,11 +66,11 @@ sudo ifconfig lo0 alias 10.200.10.1/24    # 24是掩码
 ```
 不同的软件使用的端口可能不一样，根据情况设置，最后的代理地址就是上面第二部分的 IP 加上这个端口，如下图：
 
-![](http://112firshme11224.test.upcdn.net/demos/f6838f96-60db-4123-a907-450351efda7a.png)
+![](/static/demos/f6838f96-60db-4123-a907-450351efda7a.png)
 
 
 4. 结果测试图
 
-![](http://112firshme11224.test.upcdn.net/demos/d9600bf0-ce6a-41f6-a50b-ce569ea6bfb8.png)
+![](/static/demos/d9600bf0-ce6a-41f6-a50b-ce569ea6bfb8.png)
 
 转载请注明出处，本文采用 [CC4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/) 协议授权

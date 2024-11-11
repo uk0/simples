@@ -16,26 +16,26 @@ keywords: Idea, java
   先上图，毕竟是无图无真相的时代：
 ```
 ## 注册 twitter
-![](http://112firshme11224.test.upcdn.net/blog/twitter-reg.png)
+![](/static/blog/twitter-reg.png)
 
 ## 获取 JRebel 激活码
 
     * 进入 `https://my.jrebel.com`
     * 通过twitter登录
 
- ![](http://112firshme11224.test.upcdn.net/blog/jerbel-reg.png)
+ ![](/static/blog/jerbel-reg.png)
 
 ## 授权
 
- ![](http://112firshme11224.test.upcdn.net/blog/outh-jrebel.png)
+ ![](/static/blog/outh-jrebel.png)
 
 ## 安装Jrebel，输入激活码
 `安装Jrebel`
-![](http://112firshme11224.test.upcdn.net/blog/Jrebel-plugin.png)
+![](/static/blog/Jrebel-plugin.png)
 
 `输入激活码`
 
-![](http://112firshme11224.test.upcdn.net/blog/jrebel-code.png)
+![](/static/blog/jrebel-code.png)
 
 
 

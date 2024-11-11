@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="一行能装逼的JavaScript代码">
+    <meta name="keywords" content="javascript,java">
+    <title>这些JavaScript编程黑科技，装逼指南，高逼格代码，让你惊叹不已 [fork]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> 这些JavaScript编程黑科技，装逼指南，高逼格代码，让你惊叹不已 [fork]</p>
+        <p><strong>Categories:</strong> javascript</p>
+        <p><strong>Description:</strong> 一行能装逼的JavaScript代码</p>
+        <p><strong>Keywords:</strong> javascript,java</p>
+    </div>
+    <div class="content">
+        <p>这些JavaScript编程黑科技，装逼指南，高逼格代码，让你惊叹不已</p>
+<h1 id="_1">先看代码</h1>
+<p>date：2017-05-01
+author：zhangjianxin</p>
+<div class="toc">
+<ul>
+<li><a href="#_1">先看代码</a></li>
+</ul>
+</div>
+<p>Javascript是一门很吊的语言，我可能学了假的JavaScript，哈哈，大家还有什么推荐的，补充送那啥邀请码。</p>
+<p>本文秉承着：你看不懂是你SB，我写的代码就要牛逼。</p>
+<p>1、单行写一个评级组件</p>
+<pre class="codehilite"><code class="language-javascript">&quot;★★★★★☆☆☆☆☆&quot;.slice(5 - rate, 10 - rate);定义一个变量rate是1到5的值，然后执行上面代码，看图
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/1.jpg" />
+才发现插件什么的都弱爆了</p>
+<p><img alt="" src="/static/blog/js/2.jpg" />
+2、如何装逼用代码骂别人SB</p>
+<pre class="codehilite"><code class="language-javascript">(!(~+[])+{})[--[~+&quot;&quot;][+[]]*[~+[]] + ~~!+[]]+({}+[])[[~!+[]]*~+[]]
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/3.jpg" /></p>
+<p>了解为什么请移步：<code>一行能装逼的JavaScript代码</code></p>
+<p><img alt="" src="/static/blog/js/6.jpg" /></p>
+<p><img alt="" src="/static/blog/js/4.jpg" />
+3、如何用代码优雅的证明自己NB
+这个牛逼了</p>
+<pre class="codehilite"><code class="language-javascript">console.log(([][[]]+[])[+!![]]+([]+{})[!+[]+!![]])
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/5.jpg" /></p>
+<p>4、JavaScript 错误处理的方式的正确姿势
+😂😂joy,joy,joy😂，舅服你</p>
+<pre class="codehilite"><code class="language-javascript">try {
+    something
+} catch (e) {
+    window.location.href =
+        &quot;http://stackoverflow.com/search?q=[js]+&quot; +
+        e.message;
+}
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/7.jpg" /></p>
+<p><img alt="" src="/static/blog/js/8.jpg" /></p>
+<p>5、从一行代码里面学点JavaScript</p>
+<pre class="codehilite"><code class="language-javascript">[].forEach.call($$(&quot;*&quot;),function(a){
+    a.style.outline=&quot;1px solid #&quot;+(~~(Math.random()*(1&lt;&lt;24))).toString(16)
+})
+</code></pre>
+
+<p>翻译成正常语言就是这样的</p>
+<pre class="codehilite"><code class="language-javascript">Array.prototype.forEach.call(document.querySelectorAll('*'),
+dom =&gt; dom.style.outline = `1px solid #${parseInt(Math.random() *
+Math.pow(2,24)).toString(16)}`)
+</code></pre>
+
+<p>接下来在浏览器控制看看：something magic happens</p>
+<p><img alt="" src="/static/blog/js/9.jpg" /></p>
+<p><img alt="" src="/static/blog/js/10.jpg" /></p>
+<p>具体分析请参见这篇文章：从一行代码里面学点JavaScript</p>
+<p>6、论如何优雅的取随机字符串</p>
+<pre class="codehilite"><code class="language-javascript">Math.random().toString(16).substring(2) // 13位
+Math.random().toString(36).substring(2) // 11位
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/11.jpg" /></p>
+<p>7、(10)<a href="">"toString"</a> === "10"</p>
+<p>解析请移步：js奇淫技巧1</p>
+<p><img alt="" src="/static/blog/js/12.jpg" /></p>
+<p>8、匿名函数自执行
+这么多写法你选择哪一种？我选择死亡。</p>
+<pre class="codehilite"><code class="language-javascript">( function() {}() );
+( function() {} )();
+[ function() {}() ];
+
+~ function() {}();
+! function() {}();
++ function() {}();
+- function() {}();
+
+delete function() {}();
+typeof function() {}();
+void function() {}();
+new function() {}();
+new function() {};
+
+var f = function() {}();
+
+1, function() {}();
+1 ^ function() {}();
+1 &gt; function() {}();
+// ...
+</code></pre>
+
+<p>9、另外一种undefined
+从来不需要声明一个变量的值是undefined，因为JavaScript会自动把一个未赋值的变量置为undefined。所有如果你在代码里这么写，会被鄙视的</p>
+<pre class="codehilite"><code class="language-javascript">var data = undefined;
+</code></pre>
+
+<p>但是如果你就是强迫症发作，一定要再声明一个暂时没有值的变量的时候赋上一个undefined。那你可以考虑这么做：</p>
+<pre class="codehilite"><code class="language-javascript">var data = void 0; // undefined
+</code></pre>
+
+<p>void在JavaScript中是一个操作符，对传入的操作不执行并且返回undefined。void后面可以跟()来用，例如void(0)，看起来是不是很熟悉？没错，在HTML里阻止带href的默认点击操作时，都喜欢把href写成javascript:void(0)，实际上也是依靠void操作不执行的意思。</p>
+<p>当然，除了出于装逼的原因外，实际用途上不太赞成使用void，因为void的出现是为了兼容早起ECMAScript标准中没有undefined属性。void 0的写法让代码晦涩难懂。</p>
+<p><img alt="" src="/static/blog/js/13.jpg" /></p>
+<p>10、论如何优雅的取整</p>
+<pre class="codehilite"><code class="language-javascript">var a = ~~2.33
+
+var b= 2.33 | 0
+
+var c= 2.33 &gt;&gt; 0
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/14.jpg" /></p>
+<p>11、如何优雅的实现金钱格式化：1234567890 --&gt; 1,234,567,890
+用正则魔法实现：</p>
+<pre class="codehilite"><code class="language-javascript">var test1 = '1234567890'
+var format = test1.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+console.log(format) // 1,234,567,890
+</code></pre>
+
+<p>非正则的优雅实现：</p>
+<pre class="codehilite"><code class="language-javascript"> function formatCash(str) {
+       return str.split('').reverse().reduce((prev, next, index) =&gt; {
+            return ((index % 3) ? next : (next + ',')) + prev
+       })
+}
+console.log(formatCash('1234567890')) // 1,234,567,890
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/15.jpg" /></p>
+<p>12、这个我服，还有这个你很机智
+我服</p>
+<pre class="codehilite"><code class="language-javascript">while (1) {
+    alert('牛逼你把我关了啊')
+}
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/16.jpg" /></p>
+<p>你很机智，好一个障眼法</p>
+<p>清除缓存：</p>
+<pre class="codehilite"><code class="language-javascript">&lt;a href=&quot;javascript:alert('清除成功');&quot;&gt;清除缓存&lt;/a&gt;
+</code></pre>
+
+<p>13、逗号运算符</p>
+<pre class="codehilite"><code class="language-javascript">var a = 0;
+var b = ( a++, 99 );
+console.log(a);  // 1
+console.log(b);  // 99
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/17.jpg" /></p>
+<p>14、论如何最佳的让两个整数交换数值
+常规办法：</p>
+<pre class="codehilite"><code class="language-javascript">var a=1,b=2;
+a += b;
+b = a - b;
+a -= b;
+</code></pre>
+
+<p>缺点也很明显，整型数据溢出，对于32位字符最大表示数字是2147483647，如果是2147483645和2147483646交换就失败了。
+黑科技办法：</p>
+<pre class="codehilite"><code class="language-javascript">a ^= b;
+b ^= a;
+a ^= b;
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/18.jpg" /></p>
+<p>哈哈😄，看不懂的童鞋建议去补习一下C语言的位操作，我就不去复习了，以前学嵌入式时候学的位操作都忘了</p>
+<p>15、实现标准JSON的深拷贝</p>
+<pre class="codehilite"><code class="language-javascript">var a = {
+    a: 1,
+    b: { c: 1, d: 2 }
+}
+var b=JSON.parse(JSON.stringify(a))
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/19.jpg" /></p>
+<p>不考虑IE的情况下，标准JSON格式的对象蛮实用，不过对于undefined和function的会忽略掉。</p>
+<p>16、不用Number、parseInt和parseFloat和方法把"1"字符串转换成数字
+哈哈，不准用强制类型转换，那么就想到了强大了隐式转换</p>
+<pre class="codehilite"><code class="language-javascript">var a =1
++a
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/20.jpg" /></p>
+<p>17、如何装逼的写出"hello world!"
+滚动条很长哦😯</p>
+<pre class="codehilite"><code class="language-javascript">([]+[][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+(![]+[])[!+[]+!![]]+([]+{})[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+(!![]+[])[+[]]+([][[]]+[])[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]])())[+[]]+([][[]]+[])[!+[]+!![]+!![]]+(![]+[])[!+[]+!![]]+(![]+[])[!+[]+!![]]+([]+{})[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+[][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+([][[]]+[])[+[]]+([][[]]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(![]+[])[!+[]+!![]+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+([]+[][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+(![]+[])[!+[]+!![]]+([]+{})[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+(!![]+[])[+[]]+([][[]]+[])[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]])())[!+[]+!![]+!![]]+([][[]]+[])[!+[]+!![]+!![]])()([][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(![]+[])[!+[]+!![]+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+([]+[][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+(![]+[])[!+[]+!![]]+([]+{})[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+(!![]+[])[+[]]+([][[]]+[])[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]])())[!+[]+!![]+!![]]+([][[]]+[])[!+[]+!![]+!![]])()(([]+{})[+[]])[+[]]+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+[]))+([]+{})[+!![]]+(!![]+[])[+!![]]+(![]+[])[!+[]+!![]]+([][[]]+[])[!+[]+!![]]+[][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+([][[]]+[])[+[]]+([][[]]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(![]+[])[!+[]+!![]+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+([]+[][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+(![]+[])[!+[]+!![]]+([]+{})[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+(!![]+[])[+[]]+([][[]]+[])[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]])())[!+[]+!![]+!![]]+([][[]]+[])[!+[]+!![]+!![]])()([][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(![]+[])[!+[]+!![]+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+([]+[][(![]+[])[!+[]+!![]+!![]]+([]+{})[+!![]]+(!![]+[])[+!![]]+(!![]+[])[+[]]][([]+{})[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]]+(![]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+[]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(!![]+[])[+[]]+([]+{})[+!![]]+(!![]+[])[+!![]]]((!![]+[])[+!![]]+([][[]]+[])[!+[]+!![]+!![]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!![]]+([][[]]+[])[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]+!![]+!![]]+(![]+[])[!+[]+!![]]+([]+{})[+!![]]+([]+{})[!+[]+!![]+!![]+!![]+!![]]+(+{}+[])[+!![]]+(!![]+[])[+[]]+([][[]]+[])[!+[]+!![]+!![]+!![]+!![]]+([]+{})[+!![]]+([][[]]+[])[+!![]])())[!+[]+!![]+!![]]+([][[]]+[])[!+[]+!![]+!![]])()(([]+{})[+[]])[+[]]+(!+[]+!![]+[])+(+!![]+[]))
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/21.jpg" /></p>
+<p><img alt="" src="/static/blog/js/22.jpg" /></p>
+<p>居然能运行，牛逼的隐式转换</p>
+<p>18、parseInt(0.0000008) === 8</p>
+<p><img alt="" src="/static/blog/js/23.jpg" /></p>
+<p>19、++[[]][+[]]+[+[]] == 10</p>
+<p><img alt="" src="/static/blog/js/24.jpg" /></p>
+<p>强大的隐式转换，23333</p>
+<p>20、0.1 + 0.2 == 0.3</p>
+<p><img alt="" src="/static/blog/js/80.jpg" /></p>
+<p>0.1 +0.2 == 0.3 竟然是不成立的。。。。所以这就是为什么数据库存储对于货币的最小单位都是分。</p>
+<p>简单说，0.1和0.2的二进制浮点表示都不是精确的，所以相加后不是0.3，接近（不等于）
+0.30000000000000004。</p>
+<p>所以，比较数字时，应该有个宽容值。ES6中这个宽容值被预定义了：Number.EPSILON。</p>
+<p>21、最短的代码实现数组去重</p>
+<pre class="codehilite"><code class="language-javascript">[...new Set([1, &quot;1&quot;, 2, 1, 1, 3])]
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/25.jpg" /></p>
+<p>前不久面试阿里就问了这道题，哈哈，所以也写上一下</p>
+<p>22、用最短的代码实现一个长度为m(6)且值都n(8)的数组</p>
+<pre class="codehilite"><code class="language-javascript">Array(6).fill(8)
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/26.jpg" /></p>
+<p>这个够短了吧，好像是当初哪里看到的一个面试题，就自己想到了ES6的一些API</p>
+<p>23、短路表达式
+条件判断</p>
+<pre class="codehilite"><code class="language-javascript">var a = b &amp;&amp; 1
+    // 相当于
+if (b) {
+    a = 1
+} else {
+    a = b
+}
+
+var a = b || 1
+    // 相当于
+if (b) {
+    a = b
+} else {
+    a = 1
+}
+</code></pre>
+
+<p>24、JavaScript版迷宫</p>
+<p><img alt="" src="/static/blog/js/27.jpg" />
+逃出迷宫，2333</p>
+<p>25、取出一个数组中的最大值和最小值</p>
+<pre class="codehilite"><code class="language-javascript">var numbers = [5, 458 , 120 , -215 , 228 , 400 , 122205, -85411];
+var maxInNumbers = Math.max.apply(Math, numbers);
+var minInNumbers = Math.min.apply(Math, numbers);
+</code></pre>
+
+<p><img alt="" src="/static/blog/js/28.jpg" /></p>
+<p>26、将argruments对象转换成数组</p>
+<pre class="codehilite"><code class="language-javascript">var argArray = Array.prototype.slice.call(arguments);
+</code></pre>
+
+<p>或者ES6：</p>
+<pre class="codehilite"><code class="language-javascript">var argArray = Array.from(arguments)
+</code></pre>
+
+<p>27、javascript高逼格之<code>Function</code>构造函数</p>
+<p>很多<code>JavaScript</code>教程都告诉我们，不要直接用内置对象的构造函数来创建基本变量，例如var arr = new Array(2); 的写法就应该用var arr = [1, 2];的写法来取代。</p>
+<p>但是，Function构造函数（注意是<code>大写</code>的Function）有点特别。Function构造函数接受的参数中，第一个是要传入的参数名，第二个是函数内的代码（用字符串来表示）。</p>
+<pre class="codehilite"><code class="language-javascript">var f = new Function('a', 'alert(a)');
+f('firsh'); // 将会弹出窗口显示firsh
+</code></pre>
+
+<p>这种方式可以根据传入字符串内容来创建一个函数 是不是高大上？！</p>
+<p><img alt="" src="/static/blog/js/29.jpg" /></p>
+<p>28、从一个数组中找到一个数，O(n)的算法，找不到就返回 null。
+正常的版本:</p>
+<pre class="codehilite"><code class="language-javascript">function find (x, y) {
+  for ( let i = 0; i &lt; x.length; i++ ) {
+    if ( x[i] == y ) return i;
+  }
+  return null;
+}
+
+let arr = [0,1,2,3,4,5]
+console.log(find(arr, 2))
+console.log(find(arr, 8))
+</code></pre>
+
+<p>结果到了函数式成了下面这个样子（好像上面的那些代码在下面若影若现，不过又有点不太一样，为了消掉if语言，让其看上去更像一个表达式，动用了 ? 号表达式）：</p>
+<pre class="codehilite"><code class="language-javascript">//函数式的版本
+const find = ( f =&gt; f(f) ) ( f =&gt;
+  (next =&gt; (x, y, i = 0) =&gt;
+    ( i &gt;= x.length) ?  null :
+      ( x[i] == y ) ? i :
+        next(x, y, i+1))((...args) =&gt;
+          (f(f))(...args)))
+
+let arr = [0,1,2,3,4,5]
+console.log(find(arr, 2))
+console.log(find(arr, 8))
+</code></pre>
+
+<ul>
+<li>以上操作经过验证可以直接拿去。</li>
+<li>Owner <code>breakEval13</code></li>
+<li>https://github.com/breakEval13</li>
+</ul>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

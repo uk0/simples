@@ -64,7 +64,7 @@ Void main()
 
 但目前其实目的已经很明确，我们要调用WinExec函数就要知道在不同系统中WinExec函数所在的地址，那么用什么方法知道这个函数所在的地址呢？这里我介绍一种非常简便的办法，使用vc自带的depends工具。打开Depends，随便拖一个PE文件进去如下图：
 
-![](http://112firshme11224.test.upcdn.net/demos/feb1aef7-5ae0-43d1-bdbf-b234589fa766.jpeg)
+![](/static/demos/feb1aef7-5ae0-43d1-bdbf-b234589fa766.jpeg)
 
 
 我们可以看到KERNEL.DLL的入口地址是0x7c800000而WinExec的入口地址是0x0006250D那么WinExec的地址就出来了两个相加得到0x7C86250D，这个方法是不是很简单？另外本菜鸟使用的是windows XP sp3不同的系统可能有所不同。
@@ -102,7 +102,7 @@ void main()
 
 按F10进入反汇编调试器中，在按Alt+8看到汇编代码，此时并没有机器码啊，别着急，在空白的地方右击出现的下拉菜单中选中Code Byte一项。看看出现了什么？在每一行汇编代码前出现了机器码！如下图
 
-![](http://112firshme11224.test.upcdn.net/demos/0d6ce28d-d9c8-47b8-b21b-1eeb923c9754.bmp)
+![](/static/demos/0d6ce28d-d9c8-47b8-b21b-1eeb923c9754.bmp)
 
 下面要做的工作就是把这些机器码抄下来了，这个是体力活。直接抄在一起比如：558BEC83EC……那么我们还要在每两个字母前手动添加/x么？当然不用，写一个小程序，一劳永逸：
 

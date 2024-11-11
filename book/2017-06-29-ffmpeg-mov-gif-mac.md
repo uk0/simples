@@ -24,7 +24,7 @@ ffmpeg除了在音视频方面牛叉之外，在转换gif动态图片方面也�
 ffmpeg -ss 0 -t 150 -i Flinkdemo.mov  -s 800x600 -f gif -r 1 b.gif
 ```
 
-![描述](http://112firshme11224.test.upcdn.net/posts/ffmpeg/QQ20170629-151034@2x.png)
+![描述](/static/posts/ffmpeg/QQ20170629-151034@2x.png)
 
 
 ## 3.频率限制

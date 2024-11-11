@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="nodejs。">
+    <meta name="keywords" content="Javascript, nodejs">
+    <title>Javascript or nodejs 学习笔记。</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> Javascript or nodejs 学习笔记。</p>
+        <p><strong>Categories:</strong> nodejs,nodejs,学习笔记</p>
+        <p><strong>Description:</strong> nodejs。</p>
+        <p><strong>Keywords:</strong> Javascript, nodejs</p>
+    </div>
+    <div class="content">
+        <p>这一篇学习笔记，记录了今日所学的一些关于Javascript的高级用法。</p>
+<h2 id="main">Main</h2>
+<ul>
+<li>
+<p>今天主要学习的是Javascript的原型，闭包，以及this指针。</p>
+</li>
+<li>
+<p>废话不多直接上代码；</p>
+</li>
+</ul>
+<h2 id="javascript">Javascript闭包</h2>
+<pre class="codehilite"><code class="language-javascript">/**
+ * Created by zhangjianxin on 2017/6/21.
+ */
+
+function a(){
+    var tmp=1;
+    return function a_sub(x){
+        console.log(x+(tmp++));
+    }
+}
+
+var b = a;      /**此处a和b是一模一样的,b是从a拷贝了一份过去*/
+var c1 = a();   /**此处a加上了括号，于是c1的函数其实就是 a中return回来的函数（此函数可以调用a外面的变量tmp）*/
+var c2 = b();   /**为了证明a和b是同样的功能，且是复制了一份*/
+c1(3);    /**输出4*/
+c1(3);    /**输出5,——说明a并内存并未释放*/
+
+c2(3);    /**输出4——说明a和b是复制关系(两个独立的对象)，内存中互相独立*/
+/**另外一个例子***************************************************** * **/
+var test = (function(){
+    var tmp=1;
+    return function(x){
+        console.log(tmp+x);
+    }
+})
+var d = test();     /**var objname = function(){...}和 function objname(){...}定义是一样的效果*/
+d(3)
+</code></pre>
+
+<h2 id="javascript-this">Javascript this指针问题</h2>
+<pre class="codehilite"><code class="language-javascript">/**
+ * Created by zhangjianxin on 2017/6/21.
+ */
+
+
+
+var fuckthis = {
+    var1:&quot;asdasd&quot;,
+
+    func1:function () {
+        var f1 = &quot;1&quot;;
+        console.log(&quot;func1&quot;+ this.var1)
+    },
+    func2:function () {
+        var f2 = &quot;2&quot;;
+        console.log(&quot;func2&quot;+f2)
+    },
+
+    func3:function () {
+        this.func1();
+    }
+}
+
+fuckthis.func3();
+</code></pre>
+
+<h2 id="javascript_1">Javascript原型</h2>
+<pre class="codehilite"><code class="language-javascript">/**
+ * Created by zhangjianxin on 2017/6/21.
+ */
+
+
+function preson() {
+    console.log(&quot;preson&quot;);
+}
+
+var p = new preson();
+
+preson.prototype.fuck = function () {
+    console.log(&quot;fuck prototype&quot;);
+}
+
+preson.prototype.fuck2 = function () {
+    console.log(&quot;fuck prototype 2222&quot;);
+}
+
+
+p.fuck2();
+</code></pre>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

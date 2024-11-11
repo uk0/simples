@@ -42,12 +42,12 @@ get-python	default  	hellowithdata.handler	python2.7	HTTP	     	            	1/1
 ## UI查看
 
 
-![](http://112firshme11224.test.upcdn.net/demos/33632748-61ce-41ac-9ede-f9b9a0b2fc7f.png)
+![](/static/demos/33632748-61ce-41ac-9ede-f9b9a0b2fc7f.png)
 
 ## 用命令测试
 
 
-![](http://112firshme11224.test.upcdn.net/demos/ff6ab7bd-2891-428d-b7f3-4975b07ae896.png)
+![](/static/demos/ff6ab7bd-2891-428d-b7f3-4975b07ae896.png)
 
 
 ## curl请求

@@ -21,7 +21,7 @@ docker run -d \
   wnameless/oracle-xe-11g
 ```
 
-![](http://112firshme11224.test.upcdn.net/images/oracle.png)
+![](/static/images/oracle.png)
 
 ### Installation(with Ubuntu 16.04)
 ```
@@ -43,7 +43,7 @@ By default, the password verification is disable(password never expired). If you
 docker run -d -p 49160:22 -p 49161:1521 -e ORACLE_PASSWORD_VERIFY=true wnameless/oracle-xe-11g
 ```
 
-![](http://112firshme11224.test.upcdn.net/images/oracle2.png)
+![](/static/images/oracle2.png)
 
 
 For performance concern, you may want to disable the disk asynch IO:
@@ -104,4 +104,4 @@ ADD init.sql /docker-entrypoint-initdb.d/
 ```
 
 
-![](http://112firshme11224.test.upcdn.net/images/oracle3.png)
+![](/static/images/oracle3.png)

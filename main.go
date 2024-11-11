@@ -289,14 +289,14 @@ func generateIndexHTML(articles []Article, avatarURL string) {
             <img src="{{.AvatarURL}}" alt="GitHub Avatar" class="github-avatar">
         </a>
     </header>
-    <h1>君子论心不论迹。</h1>
+    <h1>君子论迹不论心。</h1>
     <ul id="article-list">
         {{range .Articles}}
         <li><a href="{{.URL}}"></a></li>
         {{end}}
     </ul>
     <footer>
-        Power By Gemini AutoTextGenerate
+        Power By AI AutoTextGenerate
     </footer>
 
     <script>

@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="笔记">
+    <meta name="keywords" content="Redis,linxu,centos">
+    <title>Redis安装,For Centos6</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> Redis安装,For Centos6</p>
+        <p><strong>Categories:</strong> Redis</p>
+        <p><strong>Description:</strong> 笔记</p>
+        <p><strong>Keywords:</strong> Redis,linxu,centos</p>
+    </div>
+    <div class="content">
+        <p>没事看看文章而已～</p>
+<h1 id="redis">Redis安装</h1>
+<p>date：2016-11-15
+author：YangRaner </p>
+<div class="toc">
+<ul>
+<li><a href="#redis">Redis安装</a></li>
+<li><a href="#1">1.检查安装依赖程序</a></li>
+<li><a href="#2redis">2.下载Redis</a></li>
+<li><a href="#3redis">3.解压Redis</a></li>
+<li><a href="#4redis">4.编译安装Redis</a></li>
+<li><a href="#5redis">5.配置Redis</a></li>
+<li><a href="#6redis">6.启动Redis</a></li>
+<li><a href="#7">7.添加开机启动项</a></li>
+<li><a href="#8redis">8.Redis配置参数</a></li>
+<li><a href="#9redis">9.重启Redis</a></li>
+</ul>
+</div>
+<h1 id="1">1.检查安装依赖程序</h1>
+<pre class="codehilite"><code class="language-bash">yum install -y tcl gcc-c++ wget
+</code></pre>
+
+<h1 id="2redis">2.下载Redis</h1>
+<pre class="codehilite"><code class="language-bash">mkdir /opt/redis/
+cd /opt/redis/
+wget http://download.redis.io/releases/redis-3.0.4.tar.gz
+</code></pre>
+
+<h1 id="3redis">3.解压Redis</h1>
+<pre class="codehilite"><code class="language-bash">tar -xzvf redis-3.0.4.tar.gz
+</code></pre>
+
+<h1 id="4redis">4.编译安装Redis</h1>
+<pre class="codehilite"><code class="language-bash">cd redis-3.0.4
+make
+make install    
+-------------------------------------------------------------
+make install安装完成后，会在/usr/local/bin目录下生成下面几个可执行文件，它们的作用分别是：
+redis-server：Redis服务器端启动程序
+redis-cli：Redis客户端操作工具。也可以用telnet根据其纯文本协议来操作
+redis-benchmark：Redis性能测试工具
+redis-check-aof：数据修复工具
+redis-check-dump：检查导出工具
+</code></pre>
+
+<h1 id="5redis">5.配置Redis</h1>
+<pre class="codehilite"><code class="language-bash">cp redis.conf /etc/   复制配置文件到/etc/目录
+vim /etc/redis.conf    修改redis文件
+----------------------------------------------
+daemonize yes     修改daemonize配置项为yes，使Redis进程在后台运行
+requirepass Ejtone   # 设置密码，以提供远程登陆
+</code></pre>
+
+<h1 id="6redis">6.启动Redis</h1>
+<pre class="codehilite"><code class="language-bash">cd /usr/local/bin       进入bin目录下
+./redis-server /etc/redis.conf      启动Redis
+ps -ef | grep redis         查看redis进程
+----------------------------------------------
+root  18443  1  0 13:05 ?    00:00:00 ./redis-server *:6379 
+</code></pre>
+
+<h1 id="7">7.添加开机启动项</h1>
+<pre class="codehilite"><code class="language-bash"># 让Redis在服务器重启后自动启动，需要将启动命令写入开机启动项
+echo &quot;/usr/local/bin/redis-server /etc/redis.conf&quot; &gt;&gt;/etc/rc.local
+</code></pre>
+
+<p><strong>以上完成安装</strong></p>
+<h1 id="8redis">8.Redis配置参数</h1>
+<blockquote>
+<ul>
+<li>在前面的操作中，我们用到了使Redis进程在后台运行的参数，下面介绍其它一些常用的Redis启动参数：<em><em>
+<code>daemonize</code>：是否以后台daemon方式运行
+<code>pidfile</code>：pid文件位置
+<code>port</code>：监听的端口号
+<code>timeout</code>：请求超时时间
+<code>loglevel</code>：log信息级别
+<code>logfile</code>：log文件位置
+<code>databases</code>：开启数据库的数量
+<code>save</code> * </em>：保存快照的频率，第一个</em>表示多长时间，第二个*表示执行多少次写操作。在一定时间内执行一定数量的写操作时，自动保存快照。可设置多个条件。
+<code>rdbcompression</code>：是否使用压缩
+<code>dbfilename</code>：数据快照文件名（只是文件名）
+<code>dir</code>：数据快照的保存目录（仅目录）
+<code>appendonly</code>：是否开启appendonlylog，开启的话每次写操作会记一条log，这会提高数据抗风险能力，但影响效率。
+<code>appendfsync</code>：appendonlylog如何同步到磁盘。三个选项，分别是每次写都强制调用fsync、每秒启用一次fsync、不调用fsync等待系统自己同步</li>
+</ul>
+</blockquote>
+<h1 id="9redis">9.重启Redis</h1>
+<ul>
+<li>9.1如果Redis已经配置为service服务，可以通过以下方式重启：</li>
+</ul>
+<pre class="codehilite"><code class="language-bash">service redis restart
+</code></pre>
+
+<ul>
+<li>9.2如果Redis没有配置为service服务，可以通过以下方式重启：</li>
+</ul>
+<pre class="codehilite"><code class="language-bash">/usr/local/bin/redis-cli shutdown
+/usr/local/bin/redis-server /etc/redis.conf
+</code></pre>
+
+<ul>
+<li>以上代码经过验证可以直接拿去修改调用</li>
+<li>Owner <code>breakEval13</code></li>
+<li>https://github.com/breakEval13</li>
+</ul>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

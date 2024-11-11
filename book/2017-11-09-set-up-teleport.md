@@ -25,7 +25,7 @@ keywords: Teleport 跳板机
 
 Teleport 工作时从宏观上看是以集群为单位，也就是说**公网算作一个集群，内网算作另一个集群，内网集群通过 ssh 隧道保持跟公网的链接状态，同时内网机群允许公网集群用户连接**，大体工作模式如下
 
-![Teleport 工作模式](http://112firshme11224.test.upcdn.net/markdown/hsnj8.png)
+![Teleport 工作模式](/static/markdown/hsnj8.png)
 
 ### 三、搭建公网 Master
 
@@ -261,11 +261,11 @@ tctl --config /etc/teleport/teleport.yaml users add mritd root
 
 添加成功后会返回一个 OTP 认证初始化地址，浏览器访问后可以使用 Google 扫描 OTP 二维码从而在登录时增加一层 OTP 认证
 
-![OTP CMD](http://112firshme11224.test.upcdn.net/markdown/chuyf.png)
+![OTP CMD](/static/markdown/chuyf.png)
 
 访问该地址后初始化密码及 OTP
 
-![init OTP](http://112firshme11224.test.upcdn.net/markdown/czwmd.png)
+![init OTP](/static/markdown/czwmd.png)
 
 ### 四、搭建内网 Master
 
@@ -558,15 +558,15 @@ mritd.test1 be9080fb-bdba-4823-9fb6-294e0b0dcce3 172.16.0.80:3022 arch=x86_64,ro
 
 Teleport 支持 Web 页面访问，直接访问 `https://公网IP:3080`，然后登陆即可，登陆后如下
 
-![Web login](http://112firshme11224.test.upcdn.net/markdown/9yf6k.png)
+![Web login](/static/markdown/9yf6k.png)
 
 通过 Cluster 选项可以切换不同集群，点击后面的用户名可以选择不同用户登录到不同主机(用户授权在添加用户时控制)，登陆成功后如下
 
-![Login Success](http://112firshme11224.test.upcdn.net/markdown/m7hz5.png)
+![Login Success](/static/markdown/m7hz5.png)
 
 通过 Teleport 进行的所有操作可以通过审计菜单进行操作回放
 
-![Audit](http://112firshme11224.test.upcdn.net/markdown/c8a74.png)
+![Audit](/static/markdown/c8a74.png)
 
 #### 7.2、命令行测试
 

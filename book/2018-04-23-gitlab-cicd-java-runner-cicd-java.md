@@ -87,17 +87,17 @@ release-jar-dev:
 
 * 看一下目录结构
 
-![](http://112firshme11224.test.upcdn.net/demos/7382a109-79c5-41c3-91ba-fa5d946ac61f.png)
+![](/static/demos/7382a109-79c5-41c3-91ba-fa5d946ac61f.png)
 
 * 这个总体配置很简单都是`yaml`文件规范，主要还是项介绍一下里面的`cache` cache 是做CICD避免不掉的东西，可以用来 将编译好的文件传送到下一个 `stage` 实现方式大概是 将你要`cache`的包 打成一个`zip`包,启动下一个`stage`在进行`unzip`到当初的目录地址。
 
 * 在以上的配置中 `GITLAB_USER`,`GITLAB_PASS`
 
-![](http://112firshme11224.test.upcdn.net/demos/66b3a3ce-0df4-4c69-8c43-f3738001aaa1.png)
+![](/static/demos/66b3a3ce-0df4-4c69-8c43-f3738001aaa1.png)
 
 * 设置运行的环境变量
 
-![](http://112firshme11224.test.upcdn.net/demos/6c890392-8690-4384-bc57-ffc38f9cae86.png)
+![](/static/demos/6c890392-8690-4384-bc57-ffc38f9cae86.png)
 
 * 推荐创建全局Cache 。
 

@@ -20,7 +20,7 @@ keywords: Java, FreeMarker
 * 1、概述：FreeMarker是一款模板引擎：即一种基于模板、用来生成输出文本的通用工具。更多的是被用来设计生成HTML页面。
    简单说就是：FreeMarker是使用模板生成文本页面来呈现已经准备好的数据。如下图表述
    
-![描述](http://112firshme11224.test.upcdn.net/posts/java/20141227152045529.png)
+![描述](/static/posts/java/20141227152045529.png)
 
  FreeMarker官网：http://freemarker.org/
 * 2通过一个简单的例子来展示如何使用FreeMarker定义模板、绑定模型数据、生成最终显示的Html页面：

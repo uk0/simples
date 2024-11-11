@@ -194,8 +194,8 @@ keywords: lisp, Script
 
 ##  大佬的代码解析
 
-![](http://112firshme11224.test.upcdn.net/blog/tmp/cps.jpg)
+![](/static/blog/tmp/cps.jpg)
 
-![](http://112firshme11224.test.upcdn.net/blog/tmp/cps-1.png)
+![](/static/blog/tmp/cps-1.png)
 
 

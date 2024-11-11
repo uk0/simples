@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="笔记">
+    <meta name="keywords" content="RocketMQ">
+    <title>Flink 消费RocketMQ 如何定义Source[原创精品]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> Flink 消费RocketMQ 如何定义Source[原创精品]</p>
+        <p><strong>Categories:</strong> RocketMQ,Flink,MapReduce</p>
+        <p><strong>Description:</strong> 笔记</p>
+        <p><strong>Keywords:</strong> RocketMQ</p>
+    </div>
+    <div class="content">
+        <p>RocketMQ消息队列整合Flink的解决方案。</p>
+<h2 id="rocketmq-flink-cratedb">摘要: RocketMQ--&gt;Flink--&gt;CrateDB</h2>
+<ul>
+<li>本文不涉及Sink的定义</li>
+<li>详情关注 <code>Github</code> https://github.com/zmatsh</li>
+<li>稍后会整理成插件放到GitHub ：https://github.com/zmatsh/rocketmq-flink-source-plugin</li>
+</ul>
+<h1 id="flink-source">Flink Source定义</h1>
+<pre class="codehilite"><code class="language-java">package com.flink.source;
+import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
+import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
+import com.alibaba.rocketmq.common.message.Message;
+import com.alibaba.rocketmq.common.message.MessageExt;
+import com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
+
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.*;
+
+/**
+ * Created by zhangjianxin on 2017/7/20.
+ */
+public class RocketMQSource extends RichSourceFunction&lt;String&gt; implements MessageListenerConcurrently  {
+    public static DefaultMQPushConsumer consumer;
+    public static LinkedBlockingQueue&lt;String&gt; queue;
+
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List&lt;MessageExt&gt; list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+        long offset = list.get(0).getQueueOffset();
+        String maxOffset = list.get(0).getProperty(&quot;MAX_OFFSET&quot;);
+        long diff = Long.parseLong(maxOffset) - offset;
+        if (diff &gt; 100000) {
+            System.out.println(&quot;消息堆积&quot;);
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        }
+        byte[] body;
+        String message;
+        for (Message msg : list) {
+            if(msg.getTopic().equals(&quot;user&quot;)){
+                body = msg.getBody();
+                message = new String(body, Charset.forName(&quot;GBK&quot;));
+                try {
+                    queue.put(message);
+                    System.out.println(&quot;------------------user:&quot;+message+&quot;------------------&quot;);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else if(msg.getTopic().equals(&quot;org&quot;)){
+                body = msg.getBody();
+                message = new String(body, Charset.forName(&quot;GBK&quot;));
+                try {
+                    queue.put(message);
+                    System.out.println(&quot;------------------org:&quot;+message+&quot;------------------&quot;);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+    @Override
+    public void open(Configuration parameters) throws Exception {
+        String consumerGroupName = &quot;flink-crate&quot;;
+        String namesrvAddr = &quot;127.0.0.1:9876&quot;;
+        int queueSize=1000;
+        int consumeMessageMAXSize = 1;
+        queue = new LinkedBlockingQueue&lt;&gt;(queueSize);
+        consumer = new DefaultMQPushConsumer(consumerGroupName);
+        consumer.setNamesrvAddr(namesrvAddr);
+        consumer.setInstanceName(UUID.randomUUID().toString());
+        consumer.setConsumeMessageBatchMaxSize(consumeMessageMAXSize);//消息数量每次读取的消息数量
+        consumer.setMessageModel(MessageModel.CLUSTERING);
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+        consumer.registerMessageListener(this);
+        consumer.subscribe(&quot;user&quot;, &quot;*&quot;);
+        consumer.subscribe(&quot;org&quot;, &quot;*&quot;);
+        System.out.println(&quot;启动线程&quot;);
+        consumer.start();
+        System.out.println(&quot;RocketMQ Started.&quot;);
+        super.open(parameters);
+    }
+
+    @Override
+    public void run(SourceContext sourceContext) throws Exception {
+        System.out.println(&quot;run&quot;);
+        String obj = &quot;&quot;;
+        while (true) {
+            System.out.println(&quot;------------------queue = &quot;+queue+&quot;------------------------&quot;);
+            if(queue!=null &amp;&amp; !queue.isEmpty()){
+                System.out.println(&quot;------------------size = &quot;+queue.size()+&quot;------------------------&quot;);
+                obj = queue.take();
+                sourceContext.collect(obj);
+            }else {
+                System.out.println(&quot;休眠1s&quot;);
+                Thread.sleep(1000);
+            }
+        }
+    }
+    @Override
+    public void cancel() {
+
+    }
+}
+</code></pre>
+
+<h2 id="mainflinkjobmanager">Main方法调用Flink启动JobManager</h2>
+<pre class="codehilite"><code class="language-java">  final ParameterTool parameterTool = ParameterTool.fromArgs(args);
+
+        if (parameterTool.getNumberOfParameters() &lt; 5) {
+            System.out.println(&quot;Missing parameters!&quot;);
+            System.out.println(&quot;\nUsage: Flink-&gt;MQ-&gt;CrateDB \n&quot; +
+                    &quot;--consumerGroupName &lt;消费组名称&gt; \n&quot; +
+                    &quot;--parallelism &lt;并发数量&gt; \n&quot;+
+                    &quot;--qsize &lt;转发队列的大小&gt;\n&quot; +
+                    &quot;--mqaddr &lt;MQ地址&gt;\n&quot; +
+                    &quot;--consumer &lt;consumer read Message size&gt;\n&quot;);
+            return;
+        }
+
+   RocketMQSource rocketMQSource2 = new RocketMQSource(
+                   parameterTool.get(&quot;consumerGroupName&quot;,&quot;DEMO&quot;)
+                  ,parameterTool.get(&quot;mqaddr&quot;,&quot;127.0.0.1:9876&quot;)
+                  ,parameterTool.getInt(&quot;qsize&quot;,1000)
+                  ,parameterTool.getInt(&quot;consumer&quot;,1)
+          );
+</code></pre>
+
+<h2 id="ddos">禁止转载，盗版必究。<code>倒贴必须DDOS你！</code></h2>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

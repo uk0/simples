@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="npm版本切换。">
+    <meta name="keywords" content="npm, nodejs, npm版本切换">
+    <title>nodejs + npm 版本切换(Mac/Windows/Linux)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> nodejs + npm 版本切换(Mac/Windows/Linux)</p>
+        <p><strong>Categories:</strong> nodejs,npm,mac</p>
+        <p><strong>Description:</strong> npm版本切换。</p>
+        <p><strong>Keywords:</strong> npm, nodejs, npm版本切换</p>
+    </div>
+    <div class="content">
+        <p>因项目需求需要多次切换npm以及nodejs，所写出这个文章以供参考。</p>
+<h1 id="npm-nnodejs">使用npm n进行版本切换，对nodejs的版本控制。</h1>
+<h2 id="n">安装N控制器。</h2>
+<pre class="codehilite"><code class="language-bash">sudo npm install -g n
+</code></pre>
+
+<h2 id="nodejs">安装nodejs的最新版本</h2>
+<pre class="codehilite"><code class="language-text">$ n 5.4.1  --&gt;（安装node.js 5.4.1版本）
+
+$ n latest  --&gt;（安装node.js最新版本）
+
+$ n stable   --&gt;（安装node.js稳定版本）
+
+$ n rm 4.0.0   --&gt;（删除某个版本）
+</code></pre>
+
+<h2 id="_1">如图</h2>
+<p><img alt="此处输入图片的描述" src="/static/blog/QQ20170615-215055@2x.png" /></p>
+<pre class="codehilite"><code class="language-text">$ sudo n （用上下选择版本会车切换版本）
+
+#以笔者装的为例，输入以上代码后会出现
+    node/4.4.7
+    node/6.5.0
+</code></pre>
+
+<p><img alt="此处输入图片的描述" src="/static/QQ20170615-214859@2x.png" /></p>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

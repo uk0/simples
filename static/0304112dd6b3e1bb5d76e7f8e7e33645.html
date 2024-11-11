@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flink学习笔记">
+    <meta name="keywords" content="Flink, Graph，StreamGraph">
+    <title>Flink Graph Vertex[来自项目中的经历]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> Flink Graph Vertex[来自项目中的经历]</p>
+        <p><strong>Categories:</strong> Idea,java</p>
+        <p><strong>Description:</strong> Flink学习笔记</p>
+        <p><strong>Keywords:</strong> Flink, Graph，StreamGraph</p>
+    </div>
+    <div class="content">
+        <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
+<h2 id="graph">摘要: Graph构建</h2>
+<ul>
+<li><code>Graph</code>对象是用户的操作入口，主要包含<code>edge</code>和<code>vertex</code>两部分。边是由点组成，所以边中所有的点就是点的全集，但这个全集包含了重复的点，去重后就是<code>Vertex</code>。</li>
+</ul>
+<h2 id="flink-graph-demo">Flink Graph Demo</h2>
+<ul>
+<li>ConnectedComponentsData</li>
+</ul>
+<pre class="codehilite"><code class="language-java">package com.todcloud.flink.StreamGraph.utils;
+
+/**
+ * Created by zhangjianxin on 2017/7/14.
+ */
+import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
+
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Provides the default data sets used for the Connected Components example program.
+ * The default data sets are used, if no parameters are given to the program.
+ *
+ */
+public class ConnectedComponentsData {
+
+    public static final long[] VERTICES  = new long[] {
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    /**至高点*/
+    public static DataSet&lt;Long&gt; getDefaultVertexDataSet(ExecutionEnvironment env) {
+        List&lt;Long&gt; verticesList = new LinkedList&lt;Long&gt;();
+        for (long vertexId : VERTICES) {
+            verticesList.add(vertexId);
+        }
+        return env.fromCollection(verticesList);
+    }
+    /**边缘*/
+    public static final Object[][] EDGES = new Object[][] {
+            new Object[]{1L, 2L},
+            new Object[]{2L, 3L},
+            new Object[]{2L, 4L},
+            new Object[]{3L, 5L},
+            new Object[]{6L, 7L},
+            new Object[]{8L, 9L},
+            new Object[]{8L, 10L},
+            new Object[]{5L, 11L},
+            new Object[]{11L, 12L},
+            new Object[]{10L, 13L},
+            new Object[]{9L, 14L},
+            new Object[]{13L, 14L},
+            new Object[]{1L, 15L},
+            new Object[]{16L, 1L}
+    };
+    /**制造数据采集*/
+    public static DataSet&lt;Tuple2&lt;Long, Long&gt;&gt; getDefaultEdgeDataSet(ExecutionEnvironment env) {
+
+        List&lt;Tuple2&lt;Long, Long&gt;&gt; edgeList = new LinkedList&lt;Tuple2&lt;Long, Long&gt;&gt;();
+        for (Object[] edge : EDGES) {
+            edgeList.add(new Tuple2&lt;Long, Long&gt;((Long) edge[0], (Long) edge[1]));
+        }
+        return env.fromCollection(edgeList);
+    }
+
+}
+</code></pre>
+
+<ul>
+<li>ConnectedComponents</li>
+</ul>
+<pre class="codehilite"><code class="language-java">package com.todcloud.flink.StreamGraph;
+
+/**
+ * Created by zhangjianxin on 2017/7/14.
+ */
+import com.todcloud.flink.StreamGraph.utils.ConnectedComponentsData;
+import org.apache.flink.api.common.functions.FlatJoinFunction;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.JoinFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.aggregation.Aggregations;
+import org.apache.flink.api.java.functions.FunctionAnnotation.ForwardedFields;
+import org.apache.flink.api.java.functions.FunctionAnnotation.ForwardedFieldsFirst;
+import org.apache.flink.api.java.functions.FunctionAnnotation.ForwardedFieldsSecond;
+import org.apache.flink.api.java.operators.DeltaIteration;
+import org.apache.flink.api.java.tuple.Tuple1;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.util.Collector;
+
+/**
+ *使用增量迭代实现连接的组件算法
+ *
+ * &lt;p&gt;最初，算法为每个顶点分配一个惟一的ID. 在每一步中，顶点选择自己ID的最小值
+ *邻居的I Ds，作为它的新ID，并告诉它的邻居它的新ID。算法完成后，同一组件中的所有顶点将具有相同的ID
+ *
+ * &lt;p&gt;一个顶点的组件 ID没有改变，不需要在下一步传播它的信息 的一步。正因为如此,
+ */
+@SuppressWarnings(&quot;serial&quot;)
+public class ConnectedComponents {
+
+
+    public static void main(String... args) throws Exception {
+
+        /** 检查输入参数 */
+        final ParameterTool params = ParameterTool.fromArgs(args);
+
+        /** 建立执行环境 */
+        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        final int maxIterations = params.getInt(&quot;iterations&quot;, 10);
+
+        /** 在web接口中提供可用的参数 */
+        env.getConfig().setGlobalJobParameters(params);
+
+        /** 顶点和边读数据 */
+        DataSet&lt;Long&gt; vertices = getVertexDataSet(env, params);
+        DataSet&lt;Tuple2&lt;Long, Long&gt;&gt; edges = getEdgeDataSet(env, params).flatMap(new UndirectEdge());
+
+        /** 分配初始组件(等于顶点id) */
+        DataSet&lt;Tuple2&lt;Long, Long&gt;&gt; verticesWithInitialId = vertices.map(new DuplicateValue&lt;Long&gt;());
+
+        /**打开一个增量迭代 */
+        DeltaIteration&lt;Tuple2&lt;Long, Long&gt;, Tuple2&lt;Long, Long&gt;&gt; iteration =
+                verticesWithInitialId.iterateDelta(verticesWithInitialId, maxIterations, 0);
+
+        /** 应用步骤逻辑 */
+        /** 加入边缘，选择最小的邻居 */
+        /** 如果候选的组件较小，则更新 */
+        DataSet&lt;Tuple2&lt;Long, Long&gt;&gt; changes = iteration.getWorkset().join(edges).where(0).equalTo(0).with(new NeighborWithComponentIDJoin())
+                .groupBy(0).aggregate(Aggregations.MIN, 1)
+                .join(iteration.getSolutionSet()).where(0).equalTo(0)
+                .with(new ComponentIdFilter());
+
+        /**关闭增量迭代(增量和新工作集是相同的) */
+        DataSet&lt;Tuple2&lt;Long, Long&gt;&gt; result = iteration.closeWith(changes, changes);
+
+        /**排放结果 */
+        if (params.has(&quot;output&quot;)) {
+            result.writeAsCsv(params.get(&quot;output&quot;), &quot;\n&quot;, &quot; &quot;);
+
+            env.execute(&quot;连接组件的DEMO&quot;);
+        } else {
+            System.out.println(&quot;打印输出到stdout. Use --output to specify output path.&quot;);
+            result.print();
+        }
+    }
+
+
+    /**
+     * 函数将值转换为两个字段的值
+     */
+    @ForwardedFields(&quot;*-&gt;f0&quot;)
+    public static final class DuplicateValue&lt;T&gt; implements MapFunction&lt;T, Tuple2&lt;T, T&gt;&gt; {
+
+        @Override
+        public Tuple2&lt;T, T&gt; map(T vertex) {
+            return new Tuple2&lt;T, T&gt;(vertex, vertex);
+        }
+    }
+
+    /**
+     *
+     通过向每个输入边缘发射输入边本身和一个反向的版本，以无定向的边缘
+     */
+    public static final class UndirectEdge implements FlatMapFunction&lt;Tuple2&lt;Long, Long&gt;, Tuple2&lt;Long, Long&gt;&gt; {
+        Tuple2&lt;Long, Long&gt; invertedEdge = new Tuple2&lt;Long, Long&gt;();
+
+        @Override
+        public void flatMap(Tuple2&lt;Long, Long&gt; edge, Collector&lt;Tuple2&lt;Long, Long&gt;&gt; out) {
+            invertedEdge.f0 = edge.f1;
+            invertedEdge.f1 = edge.f0;
+            out.collect(edge);
+            out.collect(invertedEdge);
+        }
+    }
+
+    /**
+     * UDF that joins a (Vertex-ID, Component-ID) pair that represents the current component that
+     * a vertex is associated with, with a (Source-Vertex-ID, Target-VertexID) edge. The function
+     * produces a (Target-vertex-ID, Component-ID) pair.
+     */
+    @ForwardedFieldsFirst(&quot;f1-&gt;f1&quot;)
+    @ForwardedFieldsSecond(&quot;f1-&gt;f0&quot;)
+    public static final class NeighborWithComponentIDJoin implements JoinFunction&lt;Tuple2&lt;Long, Long&gt;, Tuple2&lt;Long, Long&gt;, Tuple2&lt;Long, Long&gt;&gt; {
+
+        @Override
+        public Tuple2&lt;Long, Long&gt; join(Tuple2&lt;Long, Long&gt; vertexWithComponent, Tuple2&lt;Long, Long&gt; edge) {
+            return new Tuple2&lt;Long, Long&gt;(edge.f1, vertexWithComponent.f1);
+        }
+    }
+
+    /**
+     * Emit the candidate (Vertex-ID, Component-ID) pair if and only if the
+     * candidate component ID is less than the vertex's current component ID.
+     */
+    @ForwardedFieldsFirst(&quot;*&quot;)
+    public static final class ComponentIdFilter implements FlatJoinFunction&lt;Tuple2&lt;Long, Long&gt;, Tuple2&lt;Long, Long&gt;, Tuple2&lt;Long, Long&gt;&gt; {
+
+        @Override
+        public void join(Tuple2&lt;Long, Long&gt; candidate, Tuple2&lt;Long, Long&gt; old, Collector&lt;Tuple2&lt;Long, Long&gt;&gt; out) {
+            if (candidate.f1 &lt; old.f1) {
+                out.collect(candidate);
+            }
+        }
+    }
+
+    /**  UTIL 研究方法  */
+
+    private static DataSet&lt;Long&gt; getVertexDataSet(ExecutionEnvironment env, ParameterTool params) {
+        if (params.has(&quot;vertices&quot;)) {
+            return env.readCsvFile(params.get(&quot;vertices&quot;)).types(Long.class).map(
+                    new MapFunction&lt;Tuple1&lt;Long&gt;, Long&gt;() {
+                        public Long map(Tuple1&lt;Long&gt; value) {
+                            return value.f0;
+                        }
+                    });
+        } else {
+            System.out.println(&quot;Executing Connected Components example with default vertices data set.&quot;);
+            System.out.println(&quot;Use --vertices to specify file input.&quot;);
+            return ConnectedComponentsData.getDefaultVertexDataSet(env);
+        }
+    }
+
+    private static DataSet&lt;Tuple2&lt;Long, Long&gt;&gt; getEdgeDataSet(ExecutionEnvironment env, ParameterTool params) {
+        if (params.has(&quot;edges&quot;)) {
+            return env.readCsvFile(params.get(&quot;edges&quot;)).fieldDelimiter(&quot; &quot;).types(Long.class, Long.class);
+        } else {
+            System.out.println(&quot;Executing Connected Components example with default edges data set.&quot;);
+            System.out.println(&quot;Use --edges to specify file input.&quot;);
+            return ConnectedComponentsData.getDefaultEdgeDataSet(env);
+        }
+    }
+}
+</code></pre>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>

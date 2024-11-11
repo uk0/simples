@@ -16,10 +16,10 @@ keywords: hadoop
   * 1. 集群检查
 
     今天检查Hadoop 服务器发现Yarn上面的job莫名其妙的变多了，而且一直再跑。
-    ![](http://112firshme11224.test.upcdn.net/demos/7422da30-8014-41f6-a922-55f86a3ce252.png)
+    ![](/static/demos/7422da30-8014-41f6-a922-55f86a3ce252.png)
     经过排查在`/tmp/ /var/tmp` 下面发现了 Java 还有tmp.txt
     内容如下：
-    ![](http://112firshme11224.test.upcdn.net/demos/63c45ec8-bcbd-4fbd-98bb-ee624eb4ea70.png)
+    ![](/static/demos/63c45ec8-bcbd-4fbd-98bb-ee624eb4ea70.png)
 
     服务器地址:`transfer.sh`
 

@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="回顾">
+    <meta name="keywords" content="javascript, Handtable">
+    <title>简易Table封装类,所有的Table都需要通过此工具操作合并col，row</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --day-bg: #ffffff;
+            --day-text: #333333;
+            --night-bg: #1a1a1a;
+            --night-text: #f0f0f0;
+        }
+
+        body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 21px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .metadata {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        .night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        h1 { font-size: 19px; text-align: center; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        h4 { font-size: 14px; }
+        h5 { font-size: 12px; }
+        h6 { font-size: 11px; }
+
+        pre {
+            line-height: 24px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+        }
+
+        img {
+            display: block;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="metadata">
+        <p><strong>Title:</strong> 简易Table封装类,所有的Table都需要通过此工具操作合并col，row</p>
+        <p><strong>Categories:</strong> Handtable,HandtableExcel</p>
+        <p><strong>Description:</strong> 回顾</p>
+        <p><strong>Keywords:</strong> javascript, Handtable</p>
+    </div>
+    <div class="content">
+        <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
+<h2 id="_1">代码</h2>
+<pre class="codehilite"><code class="language-javascript">/**
+ * divId:插入表格的divId
+ * listTitle:插入表格标题
+ * listData:插入表格数据
+ */
+function addTable(divId, listTitle, listData,n) {
+    var num = parseInt(Math.random()*100);
+    var tableDivId = &quot;table&quot;+num.toString();
+    var div = document.getElementById(divId);
+    div.innerHTML = &quot;&quot;;
+    var strTitle = &quot;&quot;;
+    var scendTitle = &quot;&quot;;
+    var strDate = &quot;&quot;;
+    for (var i = 0; i &lt; listTitle.length; i++) {
+        if (listTitle[i].indexOf(&quot;:&quot;) != -1) {
+            var strs = listTitle[i].split(&quot;:&quot;);
+            strTitle += '&lt;th&gt;' + strs[0] + '&lt;/th&gt;';
+        } else {
+            strTitle += '&lt;th&gt;' + listTitle[i] + '&lt;/th&gt;';
+        }
+    }
+    for (var i = 0; i &lt; listTitle.length; i++) {
+        if (listTitle[i].indexOf(&quot;:&quot;) != -1) {
+            var strs = listTitle[i].split(&quot;:&quot;);
+            scendTitle += '&lt;th&gt;' + strs[1] + '&lt;/th&gt;';
+        } else {
+            scendTitle += '&lt;th&gt;' + listTitle[i] + '&lt;/th&gt;';
+        }
+    }
+    /**alert(listData.length);*/
+    for (i = 0; i &lt; listData.length; i++) {
+        strDate += '&lt;tr&gt;';
+        for (j = 0; j &lt; listData[0].length; j++) {
+            strDate += '&lt;td&gt;' + listData[i][j] + '&lt;/td&gt;';
+        }
+        strDate += '&lt;/tr&gt;';
+    }
+    var table = '&lt;table class=&quot;t1&quot; id='+tableDivId+' width=&quot;100%&quot;  cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; &gt;&lt;thead&gt;' + '&lt;tr&gt;' + strTitle + '&lt;/tr&gt;&lt;tr&gt;' + scendTitle + '&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;' + strDate + '&lt;/tbody&gt;&lt;/table&gt;';
+    div.innerHTML = table;
+    uniteTdCells(tableDivId,n);
+    uniteTdRells(tableDivId);
+}
+/*
+ * 合并行
+ * tableId:需要操作表格的Id
+ */
+function uniteTdCells(tableDivId,n) {
+    var table = document.getElementById(tableDivId);
+    var nLeftCol = n;
+    for (var r = 0; r &lt; table.rows.length; r++) {
+        for (var c = 0; c &lt; table.rows[r].cells.length; c++) {
+            /**选择要合并的列序数，去掉默认全部合并*/
+            if (r &gt;= 2 &amp;&amp; c &gt;= nLeftCol) {
+                continue;
+            }
+            for (j = r + 1; j &lt; table.rows.length; j++) {
+                var cell1 = table.rows[r].cells[c].innerHTML;
+                var cell2 = table.rows[j].cells[c].innerHTML;
+                if (cell1 == cell2) {
+                    table.rows[j].cells[c].style.display = 'none';
+                    table.rows[r].cells[c].rowSpan++;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/*
+ *合并列
+ *tableId：操作表格ID
+ */
+function uniteTdRells(tableDivId) {
+    var table = document.getElementById(tableDivId);
+    for (var c = 0; c &lt; table.rows[0].cells.length; c++) {
+        for (j = c + 1; j &lt; table.rows[0].cells.length; j++) {
+            var strOne = table.rows[0].cells[c].innerHTML;
+            var strTwo = table.rows[0].cells[j].innerHTML;
+            if (strOne == strTwo) {
+                table.rows[0].cells[j].style.display = 'none';
+                table.rows[0].cells[c].colSpan++;
+            }
+        }
+    }
+}
+
+
+
+function uniteTdCellsOne( n) {
+    var table = document.getElementById(tableId);
+    var nLeftCol = n;
+    for (var r = 0; r &lt; table.rows.length; r++) {
+        for (var c = 7; c &lt; table.rows[r].cells.length; c++) {
+            /**                 /**选择要合并的列序数，去掉默认全部合并*/
+            /**                 if (r &gt;= 2 &amp;&amp; c &gt;= nLeftCol)*/
+            /**                 {*/
+            /**                     continue; */
+            /**                 }*/
+            for (j = r + 1; j &lt; table.rows.length; j++) {
+                var cell1 = table.rows[r].cells[c].innerHTML;
+                var cell2 = table.rows[j].cells[c].innerHTML;
+                if (cell1 == cell2) {
+                    table.rows[j].cells[c].style.display = 'none';
+                    table.rows[r].cells[c].rowSpan++;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+}
+</code></pre>
+    </div>
+    <footer>
+        Power By Python Markdown Generate 2024-11-11 11:02:36
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function setThemeMode() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            if (hour >= 18 || hour < 6) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
+            } else {
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
+            }
+        }
+
+        setThemeMode();
+        setInterval(setThemeMode, 60000);
+    </script>
+</body>
+</html>
