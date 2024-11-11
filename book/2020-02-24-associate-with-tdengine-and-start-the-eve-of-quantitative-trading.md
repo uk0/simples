@@ -153,12 +153,12 @@ CREATE TABLE bitmex.order_l1_10
 ```
 * 采集服务目录结构
 
-![](http://112firshme11224.test.upcdn.net/blog/2020-02-25-22-06-16.png!100)
+![](/static/blog/2020-02-25-22-06-16.png)
 
 * 采集服务日志恢复
   > 下图所看到的是 GRPC服务断掉了，数据将会写入log文件并且有明确的标记，当grpc再次可用，将会启动日志恢复。
 
-![](http://112firshme11224.test.upcdn.net/blog/2020-02-25-22-12-48.png!100)
+![](/static/blog/2020-02-25-22-12-48.png)
 
 
 ### 通过Middware将数据实时的放入TDEngine（这里存在一层日志备份未来可能存储到Hdfs走FLink训练）

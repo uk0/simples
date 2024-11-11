@@ -1433,48 +1433,48 @@ spec:
 
 * StatefulSet
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-00-44-25.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-00-44-25.png)
 
 * service
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-00-45-23.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-00-45-23.png)
 
 
 * taos
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-00-47-07.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-00-47-07.png)
 
 
 
 * 开始重启测试
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-00-48-11.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-00-48-11.png)
 
 
 * 重启后状态信息
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-00-48-31.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-00-48-31.png)
 
 
 * 端口等待 
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-00-49-11.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-00-49-11.png)
 
 
 * 重启后恢复
 
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-00-49-32.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-00-49-32.png)
 
 
 * 恢复后 还在继续写入（其中一个库的一个表）
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-00-52-32.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-00-52-32.png)
 
 
 * 补一张 PVC
 
-![](http://112firshme11224.test.upcdn.net/blog/2021-04-24-01-00-37.png!100/watermark/text/VXB5dW4g5Zu+5bqK/font/simyou/align/southeast/size/18/color/FFFFFF/margin/5x5)
+![](/static/blog/2021-04-24-01-00-37.png)
 
 
 #### tdengine 采用默认配置文件没有修改时区，镜像也没有修改时区，所以日志时间有误差，忽略即可，（强迫症可以自己加）

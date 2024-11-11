@@ -24,7 +24,7 @@ keywords: Vim, Markdown, Table of Contents
 
 ## 功能演示
 
-![vim-markdown-toc-screenshot](https://raw.githubusercontent.com/mzlogin/vim-markdown-toc/master/screenshots/english.gif)
+![vim-markdown-toc-screenshot](/static/mzlogin/vim-markdown-toc/master/screenshots/english.gif)
 
 ## 一些体会
 

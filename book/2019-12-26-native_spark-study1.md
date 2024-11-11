@@ -65,22 +65,22 @@ cargo run --example make_rdd
 
 * 看一下代码
 
-![](http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-46-14.png!100)
+![](/static/blog/2019-12-26-10-46-14.png)
 
 * 启动测试节点 
 
-![](http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-47-39.png!100)
+![](/static/blog/2019-12-26-10-47-39.png)
 
 
 * 进入Master
 
 
-![](http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-48-47.png!100)
+![](/static/blog/2019-12-26-10-48-47.png)
 
 
 * 测试native_spark
 
-![](http://112firshme11224.test.upcdn.net/blog/2019-12-26-10-50-53.png!100)
+![](/static/blog/2019-12-26-10-50-53.png)
 
 
 * 在容器内测试native_spark 集群 `./file_read --deployment_mode distributed --local_ip=0.0.0.0`
@@ -89,7 +89,7 @@ cargo run --example make_rdd
 RUST_BACKTRACE=full ./file_read --deployment_mode distributed --local_ip=0.0.0.0
 ```
 
-![](http://112firshme11224.test.upcdn.net/blog/2019-12-26-11-07-11.png!100)
+![](/static/blog/2019-12-26-11-07-11.png)
 
 
 #### 未完结
