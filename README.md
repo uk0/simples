@@ -18,7 +18,8 @@ go build .
 nohup ./simples  >blog.log 2>&1 &
 ```
 
-![img.png](img.png)
+<img width="955" alt="image" src="https://github.com/user-attachments/assets/089f26a6-69bf-4fa1-90b6-68f5517ef65a">
+
 
 
 #### 简单干净
