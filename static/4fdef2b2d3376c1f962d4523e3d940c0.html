@@ -111,79 +111,79 @@
         <p>IDEA Java注释模板设置详解
 设置注释模板的入口： Window-&gt;Preference-&gt;Java-&gt;Code Style-&gt;Code Template 然后展开Comments节点就是所有需设置注释的元素啦。现就每一个元素逐一介绍：</p>
 <h2 id="1files">1、文件(Files)注释标签：</h2>
-<pre class="codehilite"><code class="language-java">/**   
-* @Title: ${file_name}
-* @Package ${package_name}
-* @Description: ${todo}(用一句话描述该文件做什么)
-* @author A18ccms A18ccms_gmail_com   
-* @date ${date} ${time}
-* @version V1.0   
-*/
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**   </span>
+<span class="cm">* @Title: ${file_name}</span>
+<span class="cm">* @Package ${package_name}</span>
+<span class="cm">* @Description: ${todo}(用一句话描述该文件做什么)</span>
+<span class="cm">* @author A18ccms A18ccms_gmail_com   </span>
+<span class="cm">* @date ${date} ${time}</span>
+<span class="cm">* @version V1.0   </span>
+<span class="cm">*/</span>
+</code></pre></div>
 
 <h2 id="2types">2.类型(Types)注释标签（类的注释）：</h2>
-<pre class="codehilite"><code class="language-java">/**
-* @ClassName: ${type_name}
-* @Description: ${todo}(这里用一句话描述这个类的作用)
-* @author A18ccms a18ccms_gmail_com
-* @date ${date} ${time}
-* 
-* ${tags}
-*/
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm">* @ClassName: ${type_name}</span>
+<span class="cm">* @Description: ${todo}(这里用一句话描述这个类的作用)</span>
+<span class="cm">* @author A18ccms a18ccms_gmail_com</span>
+<span class="cm">* @date ${date} ${time}</span>
+<span class="cm">* </span>
+<span class="cm">* ${tags}</span>
+<span class="cm">*/</span>
+</code></pre></div>
 
 <h2 id="3fields">3.字段(Fields)注释标签：</h2>
-<pre class="codehilite"><code class="language-java">/**
-* @Fields ${field} : ${todo}(用一句话描述这个变量表示什么)
-*/
-构造函数标签：
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm">* @Fields ${field} : ${todo}(用一句话描述这个变量表示什么)</span>
+<span class="cm">*/</span>
+<span class="n">构造函数标签</span><span class="err">：</span>
 
-/**
-* &lt;p&gt;Title: &lt;/p&gt;
-* &lt;p&gt;Description: &lt;/p&gt;
-* ${tags}
-*/
-</code></pre>
+<span class="cm">/**</span>
+<span class="cm">* &lt;p&gt;Title: &lt;/p&gt;</span>
+<span class="cm">* &lt;p&gt;Description: &lt;/p&gt;</span>
+<span class="cm">* ${tags}</span>
+<span class="cm">*/</span>
+</code></pre></div>
 
 <h2 id="4constructor-methods">4.方法(Constructor &amp; Methods)标签：</h2>
-<pre class="codehilite"><code class="language-java">/**
-* @Title: ${enclosing_method}
-* @Description: ${todo}(这里用一句话描述这个方法的作用)
-* @param ${tags}    设定文件
-* @return ${return_type}    返回类型
-* @throws
-*/
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm">* @Title: ${enclosing_method}</span>
+<span class="cm">* @Description: ${todo}(这里用一句话描述这个方法的作用)</span>
+<span class="cm">* @param ${tags}    设定文件</span>
+<span class="cm">* @return ${return_type}    返回类型</span>
+<span class="cm">* @throws</span>
+<span class="cm">*/</span>
+</code></pre></div>
 
 <h2 id="5overriding-methods">5.覆盖方法(Overriding Methods)标签：</h2>
-<pre class="codehilite"><code class="language-java">/* (非 Javadoc)
-* &lt;p&gt;Title: ${enclosing_method}&lt;/p&gt;
-* &lt;p&gt;Description: &lt;/p&gt;
-* ${tags}
-* ${see_to_overridden}
-*/
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="cm">/* (非 Javadoc)</span>
+<span class="cm">* &lt;p&gt;Title: ${enclosing_method}&lt;/p&gt;</span>
+<span class="cm">* &lt;p&gt;Description: &lt;/p&gt;</span>
+<span class="cm">* ${tags}</span>
+<span class="cm">* ${see_to_overridden}</span>
+<span class="cm">*/</span>
+</code></pre></div>
 
 <h2 id="6-delegate-methods">6. 代表方法(Delegate Methods)标签：</h2>
-<pre class="codehilite"><code class="language-java">/**
-* ${tags}
-* ${see_to_target}
-*/
-getter方法标签：
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm">* ${tags}</span>
+<span class="cm">* ${see_to_target}</span>
+<span class="cm">*/</span>
+<span class="n">getter方法标签</span><span class="err">：</span>
 
-/**
-* @return ${bare_field_name}
-*/
+<span class="cm">/**</span>
+<span class="cm">* @return ${bare_field_name}</span>
+<span class="cm">*/</span>
 
-setter方法标签：
+<span class="n">setter方法标签</span><span class="err">：</span>
 
-/**
-* @param ${param} 要设置的 ${bare_field_name}
-*/
-</code></pre>
+<span class="cm">/**</span>
+<span class="cm">* @param ${param} 要设置的 ${bare_field_name}</span>
+<span class="cm">*/</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

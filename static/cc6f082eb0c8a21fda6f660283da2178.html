@@ -117,67 +117,67 @@
 <li>NTPDATE</li>
 <li>配置目录</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">scp -r zookeeper/ dscn$:/home/zookeeper
+<div class="codehilite"><pre><span></span><code>scp<span class="w"> </span>-r<span class="w"> </span>zookeeper/<span class="w"> </span>dscn$:/home/zookeeper
 
-scp -r hadoop/ dscn$:/home/hadoop
+scp<span class="w"> </span>-r<span class="w"> </span>hadoop/<span class="w"> </span>dscn$:/home/hadoop
 
-mkdir  -p /home/program/hadoop/  data logs pids  # hadoop 文件路径
+mkdir<span class="w">  </span>-p<span class="w"> </span>/home/program/hadoop/<span class="w">  </span>data<span class="w"> </span>logs<span class="w"> </span>pids<span class="w">  </span><span class="c1"># hadoop 文件路径</span>
 
-mkdir  -p  /home/program/zookeeper data logs pids # zookeeper 文件
-</code></pre>
+mkdir<span class="w">  </span>-p<span class="w">  </span>/home/program/zookeeper<span class="w"> </span>data<span class="w"> </span>logs<span class="w"> </span>pids<span class="w"> </span><span class="c1"># zookeeper 文件</span>
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-bash">hdfs haadmin -transitionToActive nn1 --forcemanual
-解决启动节点都为 `standby`
-</code></pre>
+<div class="codehilite"><pre><span></span><code>hdfs<span class="w"> </span>haadmin<span class="w"> </span>-transitionToActive<span class="w"> </span>nn1<span class="w"> </span>--forcemanual
+解决启动节点都为<span class="w"> </span><span class="sb">`</span>standby<span class="sb">`</span>
+</code></pre></div>
 
 <h1 id="hadoop">环境变量 Hadoop</h1>
-<pre class="codehilite"><code class="language-bash">  echo &quot;
-        export JAVA_HOME=/usr/java/jdk1.8.0_73
-        export HADOOP_HOME=/home/dscs/hadoop
-        export HADOOP_LOG_DIR=/home/program/hadoop/logs
-        export HADOOP_PID_DIR=/home/program/hadoop/pids
-        export HADOOP_IDENT_STRING=dscs
-        export YARN_LOG_DIR=/home/program/hadoop/logs
-        export YARN_PID_DIR=/home/program/hadoop/pids
-        export YARN_IDENT_STRING=dscs
-        export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
-        PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$JAVA_HOME/bin:$PATH
-        &quot; &gt;&gt;~/.bash_profile
-    source ~/.bash_profile
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">        export JAVA_HOME=/usr/java/jdk1.8.0_73</span>
+<span class="s2">        export HADOOP_HOME=/home/dscs/hadoop</span>
+<span class="s2">        export HADOOP_LOG_DIR=/home/program/hadoop/logs</span>
+<span class="s2">        export HADOOP_PID_DIR=/home/program/hadoop/pids</span>
+<span class="s2">        export HADOOP_IDENT_STRING=dscs</span>
+<span class="s2">        export YARN_LOG_DIR=/home/program/hadoop/logs</span>
+<span class="s2">        export YARN_PID_DIR=/home/program/hadoop/pids</span>
+<span class="s2">        export YARN_IDENT_STRING=dscs</span>
+<span class="s2">        export CLASSPATH=.:</span><span class="nv">$JAVA_HOME</span><span class="s2">/lib/dt.jar:</span><span class="nv">$JAVA_HOME</span><span class="s2">/lib/tools.jar</span>
+<span class="s2">        PATH=</span><span class="nv">$HADOOP_HOME</span><span class="s2">/bin:</span><span class="nv">$HADOOP_HOME</span><span class="s2">/sbin:</span><span class="nv">$JAVA_HOME</span><span class="s2">/bin:</span><span class="nv">$PATH</span>
+<span class="s2">        &quot;</span><span class="w"> </span>&gt;&gt;~/.bash_profile
+<span class="w">    </span><span class="nb">source</span><span class="w"> </span>~/.bash_profile
+</code></pre></div>
 
 <h1 id="java">环境变量 Java</h1>
-<pre class="codehilite"><code class="language-bash">    export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nb">export</span><span class="w"> </span><span class="nv">JAVA_HOME</span><span class="o">=</span><span class="k">$(</span>dirname<span class="w"> </span><span class="k">$(</span>dirname<span class="w"> </span><span class="k">$(</span>readlink<span class="w"> </span>-f<span class="w"> </span><span class="k">$(</span>which<span class="w"> </span>javac<span class="k">))))</span>
+</code></pre></div>
 
 <h1 id="zookeeper-config">zookeeper config</h1>
-<pre class="codehilite"><code class="language-bash">    dataDir=/usr/local/program/zookeeper/data
-    dataLogDir=/usr/local/program/zookeeper/logs
-    clientPort=2181
-    tickTime=2000
-    initLimit=5
-    syncLimit=2
-    server.1=dscn1:2888:3888
-    server.2=dscn2:2888:3888
-    server.3=dscn3:2888:3888
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">dataDir</span><span class="o">=</span>/usr/local/program/zookeeper/data
+<span class="w">    </span><span class="nv">dataLogDir</span><span class="o">=</span>/usr/local/program/zookeeper/logs
+<span class="w">    </span><span class="nv">clientPort</span><span class="o">=</span><span class="m">2181</span>
+<span class="w">    </span><span class="nv">tickTime</span><span class="o">=</span><span class="m">2000</span>
+<span class="w">    </span><span class="nv">initLimit</span><span class="o">=</span><span class="m">5</span>
+<span class="w">    </span><span class="nv">syncLimit</span><span class="o">=</span><span class="m">2</span>
+<span class="w">    </span>server.1<span class="o">=</span>dscn1:2888:3888
+<span class="w">    </span>server.2<span class="o">=</span>dscn2:2888:3888
+<span class="w">    </span>server.3<span class="o">=</span>dscn3:2888:3888
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-bash">    for i in 1 2 3
-    do 
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">3</span>
+<span class="w">    </span><span class="k">do</span><span class="w"> </span>
 
-        ssh dscn$i mkdir -p /home/program/zookeeper/data/ echo $i &gt; /home/program/zookeeper/data/myid
+<span class="w">        </span>ssh<span class="w"> </span>dscn<span class="nv">$i</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/home/program/zookeeper/data/<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$i</span><span class="w"> </span>&gt;<span class="w"> </span>/home/program/zookeeper/data/myid
 
-    done 
-</code></pre>
+<span class="w">    </span><span class="k">done</span><span class="w"> </span>
+</code></pre></div>
 
 <h1 id="hadoop_1">hadoop 启动流程</h1>
 <ul>
 <li>
 <p>启动 zookeeper (3个节点)</p>
-<pre class="codehilite"><code>```bash
+<div class="codehilite"><pre><span></span><code>```bash
     ./zkServer.sh start ../conf/zoo.cfg
 ```
-</code></pre>
+</code></pre></div>
 
 <ul>
 <li>启动 JournalNode (3个节点) 
@@ -232,26 +232,26 @@ mkdir  -p  /home/program/zookeeper data logs pids # zookeeper 文件
 <p>xfs_growfs /dev/mapper/VG00-lvroot</p>
 <p>```</p>
 <h1 id="_2">读取文件里面的文件路径参数【转译】</h1>
-<pre class="codehilite"><code class="language-bash">HBASE_TMP_DIR=$(cat $HBASE_PACKAGE_PATH/config | grep HBASE_TMP_DIR | awk -F &quot;=&quot; '{print$2}')
+<div class="codehilite"><pre><span></span><code><span class="nv">HBASE_TMP_DIR</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span><span class="nv">$HBASE_PACKAGE_PATH</span>/config<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>HBASE_TMP_DIR<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;=&quot;</span><span class="w"> </span><span class="s1">&#39;{print$2}&#39;</span><span class="k">)</span>
 
-HBASE_TMP_DIR_STR=$(echo $HBASE_TMP_DIR | sed 's#\/#\\\/#g')
+<span class="nv">HBASE_TMP_DIR_STR</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$HBASE_TMP_DIR</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;s#\/#\\\/#g&#39;</span><span class="k">)</span>
 
-sed -i &quot;s/HBASE_TMP_DIR/$HBASE_TMP_DIR_STR/&quot; $HBASE_HOME/conf/hbase-site.xml
-</code></pre>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s/HBASE_TMP_DIR/</span><span class="nv">$HBASE_TMP_DIR_STR</span><span class="s2">/&quot;</span><span class="w"> </span><span class="nv">$HBASE_HOME</span>/conf/hbase-site.xml
+</code></pre></div>
 
 <h1 id="_3">读取节点配置合理配置主从节点</h1>
-<pre class="codehilite"><code class="language-bash">OLD_IFS=&quot;$IFS&quot;
-IFS=&quot;,&quot;
-arr=($HBASE_REGION)
-IFS=&quot;$OLD_IFS&quot;
-for s in ${arr[@]}
-do
-    echo &quot;$s&quot; &gt;&gt;$HBASE_HOME/conf/regionservers
-done
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nv">OLD_IFS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$IFS</span><span class="s2">&quot;</span>
+<span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;,&quot;</span>
+<span class="nv">arr</span><span class="o">=(</span><span class="nv">$HBASE_REGION</span><span class="o">)</span>
+<span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OLD_IFS</span><span class="s2">&quot;</span>
+<span class="k">for</span><span class="w"> </span>s<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">arr</span><span class="p">[@]</span><span class="si">}</span>
+<span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$s</span><span class="s2">&quot;</span><span class="w"> </span>&gt;&gt;<span class="nv">$HBASE_HOME</span>/conf/regionservers
+<span class="k">done</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

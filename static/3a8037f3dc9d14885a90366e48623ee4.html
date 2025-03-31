@@ -141,216 +141,216 @@
 <h3 id="master">三、搭建公网 Master</h3>
 <h4 id="31-systemd">3.1、配置 Systemd</h4>
 <p>首先下载相关可执行文件并复制到 Path 目录下，然后创建一下配置目录等</p>
-<pre class="codehilite"><code class="language-sh">wget https://github.com/gravitational/teleport/releases/download/v2.3.5/teleport-v2.3.5-linux-amd64-bin.tar.gz
-tar -zxvf teleport-v2.3.5-linux-amd64-bin.tar.gz
-mv teleport/tctl teleport/teleport teleport/tsh /usr/local/bin
-mkdir -p /etc/teleport /data/teleport
-</code></pre>
+<div class="codehilite"><pre><span></span><code>wget<span class="w"> </span>https://github.com/gravitational/teleport/releases/download/v2.3.5/teleport-v2.3.5-linux-amd64-bin.tar.gz
+tar<span class="w"> </span>-zxvf<span class="w"> </span>teleport-v2.3.5-linux-amd64-bin.tar.gz
+mv<span class="w"> </span>teleport/tctl<span class="w"> </span>teleport/teleport<span class="w"> </span>teleport/tsh<span class="w"> </span>/usr/local/bin
+mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/teleport<span class="w"> </span>/data/teleport
+</code></pre></div>
 
 <p>然后为了让服务后台运行创建一个 systemd service 配置文件</p>
-<pre class="codehilite"><code class="language-sh">cat &gt; /etc/systemd/system/teleport.service &lt;&lt;EOF
-[Unit]
-Description=Teleport SSH Service
-After=network.target
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>&gt;<span class="w"> </span>/etc/systemd/system/teleport.service<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">[Unit]</span>
+<span class="s">Description=Teleport SSH Service</span>
+<span class="s">After=network.target</span>
 
-[Service]
-Type=simple
-Restart=always
-ExecStart=/usr/local/bin/teleport start -c /etc/teleport/teleport.yaml
+<span class="s">[Service]</span>
+<span class="s">Type=simple</span>
+<span class="s">Restart=always</span>
+<span class="s">ExecStart=/usr/local/bin/teleport start -c /etc/teleport/teleport.yaml</span>
 
-[Install]
-WantedBy=multi-user.target
-EOF
-</code></pre>
+<span class="s">[Install]</span>
+<span class="s">WantedBy=multi-user.target</span>
+<span class="s">EOF</span>
+</code></pre></div>
 
 <h4 id="32-teleport">3.2、配置 Teleport</h4>
 <p>Systemd 配置完成后，就需要写一个 Teleport 的配置文件来让 Teleport 启动，具体选项含义可以参考 <a href="https://gravitational.com/teleport/docs/2.3/admin-guide/">官方文档</a>；以下为我的配置样例</p>
-<pre class="codehilite"><code class="language-yaml"># By default, this file should be stored in /etc/teleport.yaml
+<div class="codehilite"><pre><span></span><code><span class="c1"># By default, this file should be stored in /etc/teleport.yaml</span>
 
-# This section of the configuration file applies to all teleport
-# services.
-teleport:
-    # nodename allows to assign an alternative name this node can be reached by.
-    # by default it's equal to hostname
-    nodename: mritd.master
+<span class="c1"># This section of the configuration file applies to all teleport</span>
+<span class="c1"># services.</span>
+<span class="nt">teleport</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># nodename allows to assign an alternative name this node can be reached by.</span>
+<span class="w">    </span><span class="c1"># by default it&#39;s equal to hostname</span>
+<span class="w">    </span><span class="nt">nodename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mritd.master</span>
 
-    # Data directory where Teleport keeps its data, like keys/users for
-    # authentication (if using the default BoltDB back-end)
-    data_dir: /data/teleport
+<span class="w">    </span><span class="c1"># Data directory where Teleport keeps its data, like keys/users for</span>
+<span class="w">    </span><span class="c1"># authentication (if using the default BoltDB back-end)</span>
+<span class="w">    </span><span class="nt">data_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/teleport</span>
 
-    # one-time invitation token used to join a cluster. it is not used on
-    # subsequent starts
-    auth_token: jYektagNTmhjv9Dh
+<span class="w">    </span><span class="c1"># one-time invitation token used to join a cluster. it is not used on</span>
+<span class="w">    </span><span class="c1"># subsequent starts</span>
+<span class="w">    </span><span class="nt">auth_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jYektagNTmhjv9Dh</span>
 
-    # when running in multi-homed or NATed environments Teleport nodes need
-    # to know which IP it will be reachable at by other nodes
-    advertise_ip: 92.223.67.84
+<span class="w">    </span><span class="c1"># when running in multi-homed or NATed environments Teleport nodes need</span>
+<span class="w">    </span><span class="c1"># to know which IP it will be reachable at by other nodes</span>
+<span class="w">    </span><span class="nt">advertise_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">92.223.67.84</span>
 
-    # list of auth servers in a cluster. you will have more than one auth server
-    # if you configure teleport auth to run in HA configuration
-    auth_servers:
-        - 0.0.0.0:3025
-        - 0.0.0.0:3025
+<span class="w">    </span><span class="c1"># list of auth servers in a cluster. you will have more than one auth server</span>
+<span class="w">    </span><span class="c1"># if you configure teleport auth to run in HA configuration</span>
+<span class="w">    </span><span class="nt">auth_servers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:3025</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:3025</span>
 
-    # Teleport throttles all connections to avoid abuse. These settings allow
-    # you to adjust the default limits
-    connection_limits:
-        max_connections: 1000
-        max_users: 250
+<span class="w">    </span><span class="c1"># Teleport throttles all connections to avoid abuse. These settings allow</span>
+<span class="w">    </span><span class="c1"># you to adjust the default limits</span>
+<span class="w">    </span><span class="nt">connection_limits</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">max_connections</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">        </span><span class="nt">max_users</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
 
-    # Logging configuration. Possible output values are 'stdout', 'stderr' and
-    # 'syslog'. Possible severity values are INFO, WARN and ERROR (default).
-    log:
-        output: stdout
-        severity: INFO
+<span class="w">    </span><span class="c1"># Logging configuration. Possible output values are &#39;stdout&#39;, &#39;stderr&#39; and</span>
+<span class="w">    </span><span class="c1"># &#39;syslog&#39;. Possible severity values are INFO, WARN and ERROR (default).</span>
+<span class="w">    </span><span class="nt">log</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">output</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stdout</span>
+<span class="w">        </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INFO</span>
 
-    # Type of storage used for keys. You need to configure this to use etcd
-    # backend if you want to run Teleport in HA configuration.
-    storage:
-        type: bolt
+<span class="w">    </span><span class="c1"># Type of storage used for keys. You need to configure this to use etcd</span>
+<span class="w">    </span><span class="c1"># backend if you want to run Teleport in HA configuration.</span>
+<span class="w">    </span><span class="nt">storage</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bolt</span>
 
-    # Cipher algorithms that the server supports. This section only needs to be
-    # set if you want to override the defaults.
-    ciphers:
-      - aes128-ctr
-      - aes192-ctr
-      - aes256-ctr
-      - aes128-gcm@openssh.com
-      - arcfour256
-      - arcfour128
+<span class="w">    </span><span class="c1"># Cipher algorithms that the server supports. This section only needs to be</span>
+<span class="w">    </span><span class="c1"># set if you want to override the defaults.</span>
+<span class="w">    </span><span class="nt">ciphers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aes128-ctr</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aes192-ctr</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aes256-ctr</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aes128-gcm@openssh.com</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arcfour256</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arcfour128</span>
 
-    # Key exchange algorithms that the server supports. This section only needs
-    # to be set if you want to override the defaults.
-    kex_algos:
-      - curve25519-sha256@libssh.org
-      - ecdh-sha2-nistp256
-      - ecdh-sha2-nistp384
-      - ecdh-sha2-nistp521
-      - diffie-hellman-group14-sha1
-      - diffie-hellman-group1-sha1
+<span class="w">    </span><span class="c1"># Key exchange algorithms that the server supports. This section only needs</span>
+<span class="w">    </span><span class="c1"># to be set if you want to override the defaults.</span>
+<span class="w">    </span><span class="nt">kex_algos</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">curve25519-sha256@libssh.org</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecdh-sha2-nistp256</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecdh-sha2-nistp384</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecdh-sha2-nistp521</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diffie-hellman-group14-sha1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diffie-hellman-group1-sha1</span>
 
-    # Message authentication code (MAC) algorithms that the server supports.
-    # This section only needs to be set if you want to override the defaults.
-    mac_algos:
-      - hmac-sha2-256-etm@openssh.com
-      - hmac-sha2-256
-      - hmac-sha1
-      - hmac-sha1-96
+<span class="w">    </span><span class="c1"># Message authentication code (MAC) algorithms that the server supports.</span>
+<span class="w">    </span><span class="c1"># This section only needs to be set if you want to override the defaults.</span>
+<span class="w">    </span><span class="nt">mac_algos</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hmac-sha2-256-etm@openssh.com</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hmac-sha2-256</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hmac-sha1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hmac-sha1-96</span>
 
-# This section configures the 'auth service':
-auth_service:
-    # Turns 'auth' role on. Default is 'yes'
-    enabled: yes
+<span class="c1"># This section configures the &#39;auth service&#39;:</span>
+<span class="nt">auth_service</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Turns &#39;auth&#39; role on. Default is &#39;yes&#39;</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
 
-    authentication:
-        # default authentication type. possible values are 'local', 'oidc' and 'saml'
-        # only local authentication (Teleport's own user DB) is supported in the open
-        # source version
-        type: local
-        # second_factor can be off, otp, or u2f
-        second_factor: otp
-        # this section is used if second_factor is set to 'u2f'
-        #u2f:
-        #    # app_id must point to the URL of the Teleport Web UI (proxy) accessible
-        #    # by the end users
-        #    app_id: https://localhost:3080
-        #    # facets must list all proxy servers if there are more than one deployed
-        #    facets:
-        #    - https://localhost:3080
+<span class="w">    </span><span class="nt">authentication</span><span class="p">:</span>
+<span class="w">        </span><span class="c1"># default authentication type. possible values are &#39;local&#39;, &#39;oidc&#39; and &#39;saml&#39;</span>
+<span class="w">        </span><span class="c1"># only local authentication (Teleport&#39;s own user DB) is supported in the open</span>
+<span class="w">        </span><span class="c1"># source version</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+<span class="w">        </span><span class="c1"># second_factor can be off, otp, or u2f</span>
+<span class="w">        </span><span class="nt">second_factor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otp</span>
+<span class="w">        </span><span class="c1"># this section is used if second_factor is set to &#39;u2f&#39;</span>
+<span class="w">        </span><span class="c1">#u2f:</span>
+<span class="w">        </span><span class="c1">#    # app_id must point to the URL of the Teleport Web UI (proxy) accessible</span>
+<span class="w">        </span><span class="c1">#    # by the end users</span>
+<span class="w">        </span><span class="c1">#    app_id: https://localhost:3080</span>
+<span class="w">        </span><span class="c1">#    # facets must list all proxy servers if there are more than one deployed</span>
+<span class="w">        </span><span class="c1">#    facets:</span>
+<span class="w">        </span><span class="c1">#    - https://localhost:3080</span>
 
-    # IP and the port to bind to. Other Teleport nodes will be connecting to
-    # this port (AKA &quot;Auth API&quot; or &quot;Cluster API&quot;) to validate client
-    # certificates
-    listen_addr: 0.0.0.0:3025
+<span class="w">    </span><span class="c1"># IP and the port to bind to. Other Teleport nodes will be connecting to</span>
+<span class="w">    </span><span class="c1"># this port (AKA &quot;Auth API&quot; or &quot;Cluster API&quot;) to validate client</span>
+<span class="w">    </span><span class="c1"># certificates</span>
+<span class="w">    </span><span class="nt">listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:3025</span>
 
-    # Pre-defined tokens for adding new nodes to a cluster. Each token specifies
-    # the role a new node will be allowed to assume. The more secure way to
-    # add nodes is to use `ttl node add --ttl` command to generate auto-expiring
-    # tokens.
-    #
-    # We recommend to use tools like `pwgen` to generate sufficiently random
-    # tokens of 32+ byte length.
-    tokens:
-        - &quot;proxy,node:jYektagNTmhjv9Dh&quot;
-        - &quot;auth:jYektagNTmhjv9Dh&quot;
+<span class="w">    </span><span class="c1"># Pre-defined tokens for adding new nodes to a cluster. Each token specifies</span>
+<span class="w">    </span><span class="c1"># the role a new node will be allowed to assume. The more secure way to</span>
+<span class="w">    </span><span class="c1"># add nodes is to use `ttl node add --ttl` command to generate auto-expiring</span>
+<span class="w">    </span><span class="c1"># tokens.</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># We recommend to use tools like `pwgen` to generate sufficiently random</span>
+<span class="w">    </span><span class="c1"># tokens of 32+ byte length.</span>
+<span class="w">    </span><span class="nt">tokens</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;proxy,node:jYektagNTmhjv9Dh&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;auth:jYektagNTmhjv9Dh&quot;</span>
 
-    # Optional &quot;cluster name&quot; is needed when configuring trust between multiple
-    # auth servers. A cluster name is used as part of a signature in certificates
-    # generated by this CA.
-    #
-    # By default an automatically generated GUID is used.
-    #
-    # IMPORTANT: if you change cluster_name, it will invalidate all generated
-    # certificates and keys (may need to wipe out /var/lib/teleport directory)
-    cluster_name: &quot;mritd&quot;
+<span class="w">    </span><span class="c1"># Optional &quot;cluster name&quot; is needed when configuring trust between multiple</span>
+<span class="w">    </span><span class="c1"># auth servers. A cluster name is used as part of a signature in certificates</span>
+<span class="w">    </span><span class="c1"># generated by this CA.</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># By default an automatically generated GUID is used.</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># IMPORTANT: if you change cluster_name, it will invalidate all generated</span>
+<span class="w">    </span><span class="c1"># certificates and keys (may need to wipe out /var/lib/teleport directory)</span>
+<span class="w">    </span><span class="nt">cluster_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mritd&quot;</span>
 
-# This section configures the 'node service':
-ssh_service:
-    # Turns 'ssh' role on. Default is 'yes'
-    enabled: yes
+<span class="c1"># This section configures the &#39;node service&#39;:</span>
+<span class="nt">ssh_service</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Turns &#39;ssh&#39; role on. Default is &#39;yes&#39;</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
 
-    # IP and the port for SSH service to bind to.
-    listen_addr: 0.0.0.0:3022
-    # See explanation of labels in &quot;Labeling Nodes&quot; section below
-    labels:
-        role: master
+<span class="w">    </span><span class="c1"># IP and the port for SSH service to bind to.</span>
+<span class="w">    </span><span class="nt">listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:3022</span>
+<span class="w">    </span><span class="c1"># See explanation of labels in &quot;Labeling Nodes&quot; section below</span>
+<span class="w">    </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">master</span>
 
-    # List of the commands to periodically execute. Their output will be used as node labels.
-    # See &quot;Labeling Nodes&quot; section below for more information.
-    commands:
-    - name: arch             # this command will add a label like 'arch=x86_64' to a node
-      command: [uname, -p]
-      period: 1h0m0s
+<span class="w">    </span><span class="c1"># List of the commands to periodically execute. Their output will be used as node labels.</span>
+<span class="w">    </span><span class="c1"># See &quot;Labeling Nodes&quot; section below for more information.</span>
+<span class="w">    </span><span class="nt">commands</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arch</span><span class="w">             </span><span class="c1"># this command will add a label like &#39;arch=x86_64&#39; to a node</span>
+<span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uname</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-p</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h0m0s</span>
 
-    # enables reading ~/.tsh/environment before creating a session. by default
-    # set to false, can be set true here or as a command line flag.
-    permit_user_env: false
+<span class="w">    </span><span class="c1"># enables reading ~/.tsh/environment before creating a session. by default</span>
+<span class="w">    </span><span class="c1"># set to false, can be set true here or as a command line flag.</span>
+<span class="w">    </span><span class="nt">permit_user_env</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 
-# This section configures the 'proxy servie'
-proxy_service:
-    # Turns 'proxy' role on. Default is 'yes'
-    enabled: yes
+<span class="c1"># This section configures the &#39;proxy servie&#39;</span>
+<span class="nt">proxy_service</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Turns &#39;proxy&#39; role on. Default is &#39;yes&#39;</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
 
-    # SSH forwarding/proxy address. Command line (CLI) clients always begin their
-    # SSH sessions by connecting to this port
-    listen_addr: 0.0.0.0:3023
+<span class="w">    </span><span class="c1"># SSH forwarding/proxy address. Command line (CLI) clients always begin their</span>
+<span class="w">    </span><span class="c1"># SSH sessions by connecting to this port</span>
+<span class="w">    </span><span class="nt">listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:3023</span>
 
-    # Reverse tunnel listening address. An auth server (CA) can establish an
-    # outbound (from behind the firewall) connection to this address.
-    # This will allow users of the outside CA to connect to behind-the-firewall
-    # nodes.
-    tunnel_listen_addr: 0.0.0.0:3024
+<span class="w">    </span><span class="c1"># Reverse tunnel listening address. An auth server (CA) can establish an</span>
+<span class="w">    </span><span class="c1"># outbound (from behind the firewall) connection to this address.</span>
+<span class="w">    </span><span class="c1"># This will allow users of the outside CA to connect to behind-the-firewall</span>
+<span class="w">    </span><span class="c1"># nodes.</span>
+<span class="w">    </span><span class="nt">tunnel_listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:3024</span>
 
-    # The HTTPS listen address to serve the Web UI and also to authenticate the
-    # command line (CLI) users via password+HOTP
-    web_listen_addr: 0.0.0.0:3080
+<span class="w">    </span><span class="c1"># The HTTPS listen address to serve the Web UI and also to authenticate the</span>
+<span class="w">    </span><span class="c1"># command line (CLI) users via password+HOTP</span>
+<span class="w">    </span><span class="nt">web_listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:3080</span>
 
-    # TLS certificate for the HTTPS connection. Configuring these properly is
-    # critical for Teleport security.
-    #https_key_file: /var/lib/teleport/webproxy_key.pem
-    #https_cert_file: /var/lib/teleport/webproxy_cert.pem
-</code></pre>
+<span class="w">    </span><span class="c1"># TLS certificate for the HTTPS connection. Configuring these properly is</span>
+<span class="w">    </span><span class="c1"># critical for Teleport security.</span>
+<span class="w">    </span><span class="c1">#https_key_file: /var/lib/teleport/webproxy_key.pem</span>
+<span class="w">    </span><span class="c1">#https_cert_file: /var/lib/teleport/webproxy_cert.pem</span>
+</code></pre></div>
 
 <p>然后启动 Teleport 即可</p>
-<pre class="codehilite"><code class="language-sh">systemctl enable teleport
-systemctl start teleport
-</code></pre>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>teleport
+systemctl<span class="w"> </span>start<span class="w"> </span>teleport
+</code></pre></div>
 
 <p>如果启动出现如下错误</p>
-<pre class="codehilite"><code class="language-sh">error: Could not load host key: /etc/ssh/ssh_host_ecdsa_key
-error: Could not load host key: /etc/ssh/ssh_host_ed25519_key
-</code></pre>
+<div class="codehilite"><pre><span></span><code>error:<span class="w"> </span>Could<span class="w"> </span>not<span class="w"> </span>load<span class="w"> </span>host<span class="w"> </span>key:<span class="w"> </span>/etc/ssh/ssh_host_ecdsa_key
+error:<span class="w"> </span>Could<span class="w"> </span>not<span class="w"> </span>load<span class="w"> </span>host<span class="w"> </span>key:<span class="w"> </span>/etc/ssh/ssh_host_ed25519_key
+</code></pre></div>
 
 <p>请执行 ssh-keygen 命令自行生成相关秘钥</p>
-<pre class="codehilite"><code class="language-sh">ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
-ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ecdsa<span class="w"> </span>-f<span class="w"> </span>/etc/ssh/ssh_host_ecdsa_key
+ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-f<span class="w"> </span>/etc/ssh/ssh_host_ed25519_key
+</code></pre></div>
 
 <h4 id="33">3.3、添加用户</h4>
 <p>公网这台 Teleport 将会作为主要的接入机器，所以在此节点内添加的用户将有权限登录所有集群，包括内网的另一个集群；所以为了方便以后操作先添加一个用户</p>
-<pre class="codehilite"><code class="language-sh"># 添加一个用户名为 mritd 的用户，该用户在所有集群具有 root 用户权限
-tctl --config /etc/teleport/teleport.yaml users add mritd root
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 添加一个用户名为 mritd 的用户，该用户在所有集群具有 root 用户权限</span>
+tctl<span class="w"> </span>--config<span class="w"> </span>/etc/teleport/teleport.yaml<span class="w"> </span>users<span class="w"> </span>add<span class="w"> </span>mritd<span class="w"> </span>root
+</code></pre></div>
 
 <p>添加成功后会返回一个 OTP 认证初始化地址，浏览器访问后可以使用 Google 扫描 OTP 二维码从而在登录时增加一层 OTP 认证</p>
 <p><img alt="OTP CMD" src="/static/markdown/chuyf.png" /></p>
@@ -358,260 +358,260 @@ tctl --config /etc/teleport/teleport.yaml users add mritd root
 <p><img alt="init OTP" src="/static/markdown/czwmd.png" /></p>
 <h3 id="master_1">四、搭建内网 Master</h3>
 <p>内网搭建 Master 和公网类似，只不过为了安全将所有 <code>0.0.0.0</code> 的地址全部换成内网 IP 即可，以下为内网的配置信息</p>
-<pre class="codehilite"><code class="language-yaml"># By default, this file should be stored in /etc/teleport.yaml
+<div class="codehilite"><pre><span></span><code><span class="c1"># By default, this file should be stored in /etc/teleport.yaml</span>
 
-# This section of the configuration file applies to all teleport
-# services.
-teleport:
-    # nodename allows to assign an alternative name this node can be reached by.
-    # by default it's equal to hostname
-    nodename: mritd.test1
+<span class="c1"># This section of the configuration file applies to all teleport</span>
+<span class="c1"># services.</span>
+<span class="nt">teleport</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># nodename allows to assign an alternative name this node can be reached by.</span>
+<span class="w">    </span><span class="c1"># by default it&#39;s equal to hostname</span>
+<span class="w">    </span><span class="nt">nodename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mritd.test1</span>
 
-    # Data directory where Teleport keeps its data, like keys/users for
-    # authentication (if using the default BoltDB back-end)
-    data_dir: /data/teleport
+<span class="w">    </span><span class="c1"># Data directory where Teleport keeps its data, like keys/users for</span>
+<span class="w">    </span><span class="c1"># authentication (if using the default BoltDB back-end)</span>
+<span class="w">    </span><span class="nt">data_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data/teleport</span>
 
-    # one-time invitation token used to join a cluster. it is not used on
-    # subsequent starts
-    auth_token: jYektagNTmhjv9Dh
+<span class="w">    </span><span class="c1"># one-time invitation token used to join a cluster. it is not used on</span>
+<span class="w">    </span><span class="c1"># subsequent starts</span>
+<span class="w">    </span><span class="nt">auth_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jYektagNTmhjv9Dh</span>
 
-    # when running in multi-homed or NATed environments Teleport nodes need
-    # to know which IP it will be reachable at by other nodes
-    advertise_ip: 172.16.0.80
+<span class="w">    </span><span class="c1"># when running in multi-homed or NATed environments Teleport nodes need</span>
+<span class="w">    </span><span class="c1"># to know which IP it will be reachable at by other nodes</span>
+<span class="w">    </span><span class="nt">advertise_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.0.80</span>
 
-    # list of auth servers in a cluster. you will have more than one auth server
-    # if you configure teleport auth to run in HA configuration
-    auth_servers:
-        - 172.16.0.80:3025
+<span class="w">    </span><span class="c1"># list of auth servers in a cluster. you will have more than one auth server</span>
+<span class="w">    </span><span class="c1"># if you configure teleport auth to run in HA configuration</span>
+<span class="w">    </span><span class="nt">auth_servers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.0.80:3025</span>
 
-    # Teleport throttles all connections to avoid abuse. These settings allow
-    # you to adjust the default limits
-    connection_limits:
-        max_connections: 1000
-        max_users: 250
+<span class="w">    </span><span class="c1"># Teleport throttles all connections to avoid abuse. These settings allow</span>
+<span class="w">    </span><span class="c1"># you to adjust the default limits</span>
+<span class="w">    </span><span class="nt">connection_limits</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">max_connections</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">        </span><span class="nt">max_users</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
 
-    # Logging configuration. Possible output values are 'stdout', 'stderr' and
-    # 'syslog'. Possible severity values are INFO, WARN and ERROR (default).
-    log:
-        output: stdout
-        severity: INFO
+<span class="w">    </span><span class="c1"># Logging configuration. Possible output values are &#39;stdout&#39;, &#39;stderr&#39; and</span>
+<span class="w">    </span><span class="c1"># &#39;syslog&#39;. Possible severity values are INFO, WARN and ERROR (default).</span>
+<span class="w">    </span><span class="nt">log</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">output</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stdout</span>
+<span class="w">        </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INFO</span>
 
-    # Type of storage used for keys. You need to configure this to use etcd
-    # backend if you want to run Teleport in HA configuration.
-    storage:
-        type: bolt
+<span class="w">    </span><span class="c1"># Type of storage used for keys. You need to configure this to use etcd</span>
+<span class="w">    </span><span class="c1"># backend if you want to run Teleport in HA configuration.</span>
+<span class="w">    </span><span class="nt">storage</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bolt</span>
 
-    # Cipher algorithms that the server supports. This section only needs to be
-    # set if you want to override the defaults. 
-    ciphers:
-      - aes128-ctr
-      - aes192-ctr
-      - aes256-ctr
-      - aes128-gcm@openssh.com
-      - arcfour256
-      - arcfour128
+<span class="w">    </span><span class="c1"># Cipher algorithms that the server supports. This section only needs to be</span>
+<span class="w">    </span><span class="c1"># set if you want to override the defaults. </span>
+<span class="w">    </span><span class="nt">ciphers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aes128-ctr</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aes192-ctr</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aes256-ctr</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aes128-gcm@openssh.com</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arcfour256</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arcfour128</span>
 
-    # Key exchange algorithms that the server supports. This section only needs
-    # to be set if you want to override the defaults.
-    kex_algos:
-      - curve25519-sha256@libssh.org
-      - ecdh-sha2-nistp256
-      - ecdh-sha2-nistp384
-      - ecdh-sha2-nistp521
-      - diffie-hellman-group14-sha1
-      - diffie-hellman-group1-sha1
+<span class="w">    </span><span class="c1"># Key exchange algorithms that the server supports. This section only needs</span>
+<span class="w">    </span><span class="c1"># to be set if you want to override the defaults.</span>
+<span class="w">    </span><span class="nt">kex_algos</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">curve25519-sha256@libssh.org</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecdh-sha2-nistp256</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecdh-sha2-nistp384</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecdh-sha2-nistp521</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diffie-hellman-group14-sha1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diffie-hellman-group1-sha1</span>
 
-    # Message authentication code (MAC) algorithms that the server supports.
-    # This section only needs to be set if you want to override the defaults.
-    mac_algos:
-      - hmac-sha2-256-etm@openssh.com
-      - hmac-sha2-256
-      - hmac-sha1
-      - hmac-sha1-96
+<span class="w">    </span><span class="c1"># Message authentication code (MAC) algorithms that the server supports.</span>
+<span class="w">    </span><span class="c1"># This section only needs to be set if you want to override the defaults.</span>
+<span class="w">    </span><span class="nt">mac_algos</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hmac-sha2-256-etm@openssh.com</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hmac-sha2-256</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hmac-sha1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hmac-sha1-96</span>
 
-# This section configures the 'auth service':
-auth_service:
-    # Turns 'auth' role on. Default is 'yes'
-    enabled: yes
+<span class="c1"># This section configures the &#39;auth service&#39;:</span>
+<span class="nt">auth_service</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Turns &#39;auth&#39; role on. Default is &#39;yes&#39;</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
 
-    authentication:
-        # default authentication type. possible values are 'local', 'oidc' and 'saml'
-        # only local authentication (Teleport's own user DB) is supported in the open
-        # source version
-        type: local
-        # second_factor can be off, otp, or u2f
-        second_factor: otp
-        # this section is used if second_factor is set to 'u2f'
-        #u2f:
-        #    # app_id must point to the URL of the Teleport Web UI (proxy) accessible
-        #    # by the end users
-        #    app_id: https://localhost:3080
-        #    # facets must list all proxy servers if there are more than one deployed
-        #    facets:
-        #    - https://localhost:3080
+<span class="w">    </span><span class="nt">authentication</span><span class="p">:</span>
+<span class="w">        </span><span class="c1"># default authentication type. possible values are &#39;local&#39;, &#39;oidc&#39; and &#39;saml&#39;</span>
+<span class="w">        </span><span class="c1"># only local authentication (Teleport&#39;s own user DB) is supported in the open</span>
+<span class="w">        </span><span class="c1"># source version</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+<span class="w">        </span><span class="c1"># second_factor can be off, otp, or u2f</span>
+<span class="w">        </span><span class="nt">second_factor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otp</span>
+<span class="w">        </span><span class="c1"># this section is used if second_factor is set to &#39;u2f&#39;</span>
+<span class="w">        </span><span class="c1">#u2f:</span>
+<span class="w">        </span><span class="c1">#    # app_id must point to the URL of the Teleport Web UI (proxy) accessible</span>
+<span class="w">        </span><span class="c1">#    # by the end users</span>
+<span class="w">        </span><span class="c1">#    app_id: https://localhost:3080</span>
+<span class="w">        </span><span class="c1">#    # facets must list all proxy servers if there are more than one deployed</span>
+<span class="w">        </span><span class="c1">#    facets:</span>
+<span class="w">        </span><span class="c1">#    - https://localhost:3080</span>
 
-    # IP and the port to bind to. Other Teleport nodes will be connecting to
-    # this port (AKA &quot;Auth API&quot; or &quot;Cluster API&quot;) to validate client
-    # certificates
-    listen_addr: 172.16.0.80:3025
+<span class="w">    </span><span class="c1"># IP and the port to bind to. Other Teleport nodes will be connecting to</span>
+<span class="w">    </span><span class="c1"># this port (AKA &quot;Auth API&quot; or &quot;Cluster API&quot;) to validate client</span>
+<span class="w">    </span><span class="c1"># certificates</span>
+<span class="w">    </span><span class="nt">listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.0.80:3025</span>
 
-    # Pre-defined tokens for adding new nodes to a cluster. Each token specifies
-    # the role a new node will be allowed to assume. The more secure way to
-    # add nodes is to use `ttl node add --ttl` command to generate auto-expiring
-    # tokens.
-    #
-    # We recommend to use tools like `pwgen` to generate sufficiently random
-    # tokens of 32+ byte length.
-    tokens:
-        - &quot;proxy,node:jYektagNTmhjv9Dh&quot;
-        - &quot;auth:jYektagNTmhjv9Dh&quot;
+<span class="w">    </span><span class="c1"># Pre-defined tokens for adding new nodes to a cluster. Each token specifies</span>
+<span class="w">    </span><span class="c1"># the role a new node will be allowed to assume. The more secure way to</span>
+<span class="w">    </span><span class="c1"># add nodes is to use `ttl node add --ttl` command to generate auto-expiring</span>
+<span class="w">    </span><span class="c1"># tokens.</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># We recommend to use tools like `pwgen` to generate sufficiently random</span>
+<span class="w">    </span><span class="c1"># tokens of 32+ byte length.</span>
+<span class="w">    </span><span class="nt">tokens</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;proxy,node:jYektagNTmhjv9Dh&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;auth:jYektagNTmhjv9Dh&quot;</span>
 
-    # Optional &quot;cluster name&quot; is needed when configuring trust between multiple
-    # auth servers. A cluster name is used as part of a signature in certificates
-    # generated by this CA.
-    #
-    # By default an automatically generated GUID is used.
-    #
-    # IMPORTANT: if you change cluster_name, it will invalidate all generated
-    # certificates and keys (may need to wipe out /var/lib/teleport directory)
-    cluster_name: &quot;nat&quot;
+<span class="w">    </span><span class="c1"># Optional &quot;cluster name&quot; is needed when configuring trust between multiple</span>
+<span class="w">    </span><span class="c1"># auth servers. A cluster name is used as part of a signature in certificates</span>
+<span class="w">    </span><span class="c1"># generated by this CA.</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># By default an automatically generated GUID is used.</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># IMPORTANT: if you change cluster_name, it will invalidate all generated</span>
+<span class="w">    </span><span class="c1"># certificates and keys (may need to wipe out /var/lib/teleport directory)</span>
+<span class="w">    </span><span class="nt">cluster_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;nat&quot;</span>
 
-# This section configures the 'node service':
-ssh_service:
-    # Turns 'ssh' role on. Default is 'yes'
-    enabled: yes
+<span class="c1"># This section configures the &#39;node service&#39;:</span>
+<span class="nt">ssh_service</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Turns &#39;ssh&#39; role on. Default is &#39;yes&#39;</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
 
-    # IP and the port for SSH service to bind to.
-    listen_addr: 172.16.0.80:3022
-    # See explanation of labels in &quot;Labeling Nodes&quot; section below
-    labels:
-        role: master
+<span class="w">    </span><span class="c1"># IP and the port for SSH service to bind to.</span>
+<span class="w">    </span><span class="nt">listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.0.80:3022</span>
+<span class="w">    </span><span class="c1"># See explanation of labels in &quot;Labeling Nodes&quot; section below</span>
+<span class="w">    </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">master</span>
 
-    # List of the commands to periodically execute. Their output will be used as node labels.
-    # See &quot;Labeling Nodes&quot; section below for more information.
-    commands:
-    - name: arch             # this command will add a label like 'arch=x86_64' to a node
-      command: [uname, -p]
-      period: 1h0m0s
+<span class="w">    </span><span class="c1"># List of the commands to periodically execute. Their output will be used as node labels.</span>
+<span class="w">    </span><span class="c1"># See &quot;Labeling Nodes&quot; section below for more information.</span>
+<span class="w">    </span><span class="nt">commands</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arch</span><span class="w">             </span><span class="c1"># this command will add a label like &#39;arch=x86_64&#39; to a node</span>
+<span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uname</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-p</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h0m0s</span>
 
-    # enables reading ~/.tsh/environment before creating a session. by default
-    # set to false, can be set true here or as a command line flag.
-    permit_user_env: false
+<span class="w">    </span><span class="c1"># enables reading ~/.tsh/environment before creating a session. by default</span>
+<span class="w">    </span><span class="c1"># set to false, can be set true here or as a command line flag.</span>
+<span class="w">    </span><span class="nt">permit_user_env</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 
-# This section configures the 'proxy servie'
-proxy_service:
-    # Turns 'proxy' role on. Default is 'yes'
-    enabled: yes
+<span class="c1"># This section configures the &#39;proxy servie&#39;</span>
+<span class="nt">proxy_service</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Turns &#39;proxy&#39; role on. Default is &#39;yes&#39;</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
 
-    # SSH forwarding/proxy address. Command line (CLI) clients always begin their
-    # SSH sessions by connecting to this port
-    listen_addr: 172.16.0.80:3023
+<span class="w">    </span><span class="c1"># SSH forwarding/proxy address. Command line (CLI) clients always begin their</span>
+<span class="w">    </span><span class="c1"># SSH sessions by connecting to this port</span>
+<span class="w">    </span><span class="nt">listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.0.80:3023</span>
 
-    # Reverse tunnel listening address. An auth server (CA) can establish an
-    # outbound (from behind the firewall) connection to this address.
-    # This will allow users of the outside CA to connect to behind-the-firewall
-    # nodes.
-    tunnel_listen_addr: 172.16.0.80:3024
+<span class="w">    </span><span class="c1"># Reverse tunnel listening address. An auth server (CA) can establish an</span>
+<span class="w">    </span><span class="c1"># outbound (from behind the firewall) connection to this address.</span>
+<span class="w">    </span><span class="c1"># This will allow users of the outside CA to connect to behind-the-firewall</span>
+<span class="w">    </span><span class="c1"># nodes.</span>
+<span class="w">    </span><span class="nt">tunnel_listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.0.80:3024</span>
 
-    # The HTTPS listen address to serve the Web UI and also to authenticate the
-    # command line (CLI) users via password+HOTP
-    web_listen_addr: 172.16.0.80:3080
+<span class="w">    </span><span class="c1"># The HTTPS listen address to serve the Web UI and also to authenticate the</span>
+<span class="w">    </span><span class="c1"># command line (CLI) users via password+HOTP</span>
+<span class="w">    </span><span class="nt">web_listen_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.16.0.80:3080</span>
 
-    # TLS certificate for the HTTPS connection. Configuring these properly is
-    # critical for Teleport security.
-    #https_key_file: /var/lib/teleport/webproxy_key.pem
-    #https_cert_file: /var/lib/teleport/webproxy_cert.pem
-</code></pre>
+<span class="w">    </span><span class="c1"># TLS certificate for the HTTPS connection. Configuring these properly is</span>
+<span class="w">    </span><span class="c1"># critical for Teleport security.</span>
+<span class="w">    </span><span class="c1">#https_key_file: /var/lib/teleport/webproxy_key.pem</span>
+<span class="w">    </span><span class="c1">#https_cert_file: /var/lib/teleport/webproxy_cert.pem</span>
+</code></pre></div>
 
 <p>配置完成后直接启动即可</p>
-<pre class="codehilite"><code class="language-sh">systemctl enable teleport
-systemctl start teleport
-</code></pre>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>teleport
+systemctl<span class="w"> </span>start<span class="w"> </span>teleport
+</code></pre></div>
 
 <h3 id="_2">五、将内网集群链接至公网</h3>
 <p>上文已经讲过，Teleport 通过公网链接内网主机的方式是让内网集群向公网打通一条 ssh 隧道，然后再进行通讯；具体配置如下</p>
 <h4 id="51-master">5.1、公网 Master 开启授信集群</h4>
 <p>在公网 Master 增加 Token 配置，以允许持有该 Token 的其他内网集群连接到此，修改 <code>/etc/teleport/teleport.yaml</code> 增加一个 token 即可</p>
-<pre class="codehilite"><code class="language-sh">tokens:
-    - &quot;proxy,node:jYektagNTmhjv9Dh&quot;
-    - &quot;auth:jYektagNTmhjv9Dh&quot;
-    - &quot;trusted_cluster:xiomwWcrKinFw4Vs&quot;
-</code></pre>
+<div class="codehilite"><pre><span></span><code>tokens:
+<span class="w">    </span>-<span class="w"> </span><span class="s2">&quot;proxy,node:jYektagNTmhjv9Dh&quot;</span>
+<span class="w">    </span>-<span class="w"> </span><span class="s2">&quot;auth:jYektagNTmhjv9Dh&quot;</span>
+<span class="w">    </span>-<span class="w"> </span><span class="s2">&quot;trusted_cluster:xiomwWcrKinFw4Vs&quot;</span>
+</code></pre></div>
 
 <p>然后重启 Teleport</p>
-<pre class="codehilite"><code class="language-sh">systemctl restart teleport
-</code></pre>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>restart<span class="w"> </span>teleport
+</code></pre></div>
 
 <h4 id="52-master-master">5.2、内网 Master 链接公网 Master</h4>
 <p>当公网集群开启了允许其他集群链接后，内网集群只需要创建配置进行连接即可，创建配置(cluster.yaml)如下</p>
-<pre class="codehilite"><code class="language-yaml"># cluster.yaml
-kind: trusted_cluster
-version: v2
-metadata:
-  # the trusted cluster name MUST match the 'cluster_name' setting of the
-  # cluster
-  name: local_cluster
-spec:
-  # this field allows to create tunnels that are disabled, but can be enabled later.
-  enabled: true
-  # the token expected by the &quot;main&quot; cluster:
-  token: xiomwWcrKinFw4Vs
-  # the address in 'host:port' form of the reverse tunnel listening port on the
-  # &quot;master&quot; proxy server:
-  tunnel_addr: 92.223.67.84:3024
-  # the address in 'host:port' form of the web listening port on the
-  # &quot;master&quot; proxy server:
-  web_proxy_addr: 92.223.67.84:3080
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="c1"># cluster.yaml</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trusted_cluster</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># the trusted cluster name MUST match the &#39;cluster_name&#39; setting of the</span>
+<span class="w">  </span><span class="c1"># cluster</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local_cluster</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># this field allows to create tunnels that are disabled, but can be enabled later.</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="c1"># the token expected by the &quot;main&quot; cluster:</span>
+<span class="w">  </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xiomwWcrKinFw4Vs</span>
+<span class="w">  </span><span class="c1"># the address in &#39;host:port&#39; form of the reverse tunnel listening port on the</span>
+<span class="w">  </span><span class="c1"># &quot;master&quot; proxy server:</span>
+<span class="w">  </span><span class="nt">tunnel_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">92.223.67.84:3024</span>
+<span class="w">  </span><span class="c1"># the address in &#39;host:port&#39; form of the web listening port on the</span>
+<span class="w">  </span><span class="c1"># &quot;master&quot; proxy server:</span>
+<span class="w">  </span><span class="nt">web_proxy_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">92.223.67.84:3080</span>
+</code></pre></div>
 
 <p>执行以下命令使内网集群通过 ssh 隧道连接到公网集群</p>
-<pre class="codehilite"><code class="language-sh">tctl --config /etc/teleport/teleport.yaml create /etc/teleport/cluster.yaml
-</code></pre>
+<div class="codehilite"><pre><span></span><code>tctl<span class="w"> </span>--config<span class="w"> </span>/etc/teleport/teleport.yaml<span class="w"> </span>create<span class="w"> </span>/etc/teleport/cluster.yaml
+</code></pre></div>
 
 <p><strong>注意，如果在启动公网和内网集群时没有指定受信的证书( <code>https_cert_file</code>、<code>https_key_file</code> )，那么默认 Teleport 将会生成一个自签名证书，此时在 create 受信集群时将会产生如下错误:</strong></p>
-<pre class="codehilite"><code class="language-sh">the trusted cluster uses misconfigured HTTP/TLS certificate
-</code></pre>
+<div class="codehilite"><pre><span></span><code>the<span class="w"> </span>trusted<span class="w"> </span>cluster<span class="w"> </span>uses<span class="w"> </span>misconfigured<span class="w"> </span>HTTP/TLS<span class="w"> </span>certificate
+</code></pre></div>
 
 <p>此时需要在 <strong>待添加集群(内网)</strong> 启动时增加 <code>--insecure</code> 参数，即 Systemd 配置修改如下</p>
-<pre class="codehilite"><code class="language-sh">[Unit]
-Description=Teleport SSH Service
-After=network.target
+<div class="codehilite"><pre><span></span><code><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Teleport<span class="w"> </span>SSH<span class="w"> </span>Service
+<span class="nv">After</span><span class="o">=</span>network.target
 
-[Service]
-Type=simple
-Restart=always
-ExecStart=/usr/local/bin/teleport start --insecure -c /etc/teleport/teleport.yaml
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="nv">Restart</span><span class="o">=</span>always
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/bin/teleport<span class="w"> </span>start<span class="w"> </span>--insecure<span class="w"> </span>-c<span class="w"> </span>/etc/teleport/teleport.yaml
 
-[Install]
-WantedBy=multi-user.target
-</code></pre>
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></div>
 
 <p>然后再进行 create 就不会报错</p>
 <h3 id="_3">六、添加其他节点</h3>
 <p>两台节点打通后，此时如果有其他机器则可以将其加入到对应集群中，以下以另一台内网机器为例</p>
 <p>由于在主节点 <code>auth_service</code> 中已经预先指定了一个 static Token 用于其他节点加入( <code>proxy,node:jYektagNTmhjv9Dh</code> )，所以其他节点只需要使用这个 Token 加入即可，在另一台内网主机上修改 Systemd 配置如下，然后启动即可</p>
-<pre class="codehilite"><code class="language-sh">[Unit]
-Description=Teleport SSH Service
-After=network.target
+<div class="codehilite"><pre><span></span><code><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Teleport<span class="w"> </span>SSH<span class="w"> </span>Service
+<span class="nv">After</span><span class="o">=</span>network.target
 
-[Service]
-Type=simple
-Restart=always
-ExecStart=/usr/local/bin/teleport start --roles=node,proxy \
-                                        --token=jYektagNTmhjv9Dh \
-                                        --auth-server=172.16.0.80
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="nv">Restart</span><span class="o">=</span>always
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/bin/teleport<span class="w"> </span>start<span class="w"> </span>--roles<span class="o">=</span>node,proxy<span class="w"> </span><span class="se">\</span>
+<span class="w">                                        </span>--token<span class="o">=</span>jYektagNTmhjv9Dh<span class="w"> </span><span class="se">\</span>
+<span class="w">                                        </span>--auth-server<span class="o">=</span><span class="m">172</span>.16.0.80
 
-[Install]
-WantedBy=multi-user.target
-</code></pre>
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></div>
 
 <p>此时在内网的 Master 上可以查看到 Node 已经加入</p>
-<pre class="codehilite"><code class="language-sh">test1.node ➜ tctl --config /etc/teleport/teleport.yaml nodes ls
-Hostname    UUID                                 Address          Labels
------------ ------------------------------------ ---------------- -----------------------
-test2.node  abc786fe-9a60-4480-80f7-8edc20710e58 172.16.0.81:3022
-mritd.test1 be9080fb-bdba-4823-9fb6-294e0b0dcce3 172.16.0.80:3022 arch=x86_64,role=master
-</code></pre>
+<div class="codehilite"><pre><span></span><code>test1.node<span class="w"> </span>➜<span class="w"> </span>tctl<span class="w"> </span>--config<span class="w"> </span>/etc/teleport/teleport.yaml<span class="w"> </span>nodes<span class="w"> </span>ls
+Hostname<span class="w">    </span>UUID<span class="w">                                 </span>Address<span class="w">          </span>Labels
+-----------<span class="w"> </span>------------------------------------<span class="w"> </span>----------------<span class="w"> </span>-----------------------
+test2.node<span class="w">  </span>abc786fe-9a60-4480-80f7-8edc20710e58<span class="w"> </span><span class="m">172</span>.16.0.81:3022
+mritd.test1<span class="w"> </span>be9080fb-bdba-4823-9fb6-294e0b0dcce3<span class="w"> </span><span class="m">172</span>.16.0.80:3022<span class="w"> </span><span class="nv">arch</span><span class="o">=</span>x86_64,role<span class="o">=</span>master
+</code></pre></div>
 
 <h3 id="_4">七、连接测试</h3>
 <h4 id="71web">7.1、Web 测试</h4>
@@ -626,30 +626,30 @@ mritd.test1 be9080fb-bdba-4823-9fb6-294e0b0dcce3 172.16.0.80:3022 arch=x86_64,ro
 <ul>
 <li>登录跳板机: 短时间内只需要登录一次即可，登录时需要输入密码及 OTP 口令</li>
 </ul>
-<pre class="codehilite"><code class="language-sh">export TELEPORT_PROXY=92.223.67.84
-export TELEPORT_USER=mritd
-tsh login --insecure
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">TELEPORT_PROXY</span><span class="o">=</span><span class="m">92</span>.223.67.84
+<span class="nb">export</span><span class="w"> </span><span class="nv">TELEPORT_USER</span><span class="o">=</span>mritd
+tsh<span class="w"> </span>login<span class="w"> </span>--insecure
+</code></pre></div>
 
 <ul>
 <li>登录主机: 完成上一步 login 后就可以免密码登录任意主机</li>
 </ul>
-<pre class="codehilite"><code class="language-sh"># cluster 名字是上面设置的，在 web 界面也能看到
-tsh ssh --cluster nat root@test2.node
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="c1"># cluster 名字是上面设置的，在 web 界面也能看到</span>
+tsh<span class="w"> </span>ssh<span class="w"> </span>--cluster<span class="w"> </span>nat<span class="w"> </span>root@test2.node
+</code></pre></div>
 
 <ul>
 <li>复制文件: <strong>复制文件时不显示进度，并非卡死</strong></li>
 </ul>
-<pre class="codehilite"><code class="language-sh">tsh scp --cluster nat teleport-v2.3.5-linux-amd64-bin.tar.gz root@test2.node:/
+<div class="codehilite"><pre><span></span><code>tsh<span class="w"> </span>scp<span class="w"> </span>--cluster<span class="w"> </span>nat<span class="w"> </span>teleport-v2.3.5-linux-amd64-bin.tar.gz<span class="w"> </span>root@test2.node:/
 
--&gt; teleport-v2.3.5-linux-amd64-bin.tar.gz (16797035)
-</code></pre>
+-&gt;<span class="w"> </span>teleport-v2.3.5-linux-amd64-bin.tar.gz<span class="w"> </span><span class="o">(</span><span class="m">16797035</span><span class="o">)</span>
+</code></pre></div>
 
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

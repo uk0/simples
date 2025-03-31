@@ -113,28 +113,28 @@
 <ul>
 <li>今天帮别人部署东西，远程连接服务器的时候发现发生了错误：。</li>
 </ul>
-<pre class="codehilite"><code class="language-bash"> Unable to negotiate with 182.158.68.5 port 22: no matching host key type found. Their offer: ssh-dss
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span>Unable<span class="w"> </span>to<span class="w"> </span>negotiate<span class="w"> </span>with<span class="w"> </span><span class="m">182</span>.158.68.5<span class="w"> </span>port<span class="w"> </span><span class="m">22</span>:<span class="w"> </span>no<span class="w"> </span>matching<span class="w"> </span>host<span class="w"> </span>key<span class="w"> </span><span class="nb">type</span><span class="w"> </span>found.<span class="w"> </span>Their<span class="w"> </span>offer:<span class="w"> </span>ssh-dss
+</code></pre></div>
 
 <h2 id="_2">解决方案</h2>
 <blockquote>
 <p>The version of OpenSSH included in 16.04 disables ssh-dss. There's a neat page with legacy information that includes this issue: http://www.openssh.com/legacy.html
 In a nutshell, you should add the option -oHostKeyAlgorithms=+ssh-dss to the SSH command:</p>
 </blockquote>
-<pre class="codehilite"><code class="language-bash">ssh -oHostKeyAlgorithms=+ssh-dss root@182.158.68.5
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>-oHostKeyAlgorithms<span class="o">=</span>+ssh-dss<span class="w"> </span>root@182.158.68.5
+</code></pre></div>
 
 <blockquote>
 <p>成功登录</p>
 </blockquote>
-<pre class="codehilite"><code class="language-bash">➜  ~ ssh -oHostKeyAlgorithms=+ssh-dss root@182.158.68.5
-The authenticity of host '182.158.68.55 (182.158.68.5)' can't be established.
-DSA key fingerprint is SHA256:LVWhbgb8q5TdW2QEsFjOVNp8ekW8UqPVE/KCbMOI4CM.
-Are you sure you want to continue connecting (yes/no)? 
-</code></pre>
+<div class="codehilite"><pre><span></span><code>➜<span class="w">  </span>~<span class="w"> </span>ssh<span class="w"> </span>-oHostKeyAlgorithms<span class="o">=</span>+ssh-dss<span class="w"> </span>root@182.158.68.5
+The<span class="w"> </span>authenticity<span class="w"> </span>of<span class="w"> </span>host<span class="w"> </span><span class="s1">&#39;182.158.68.55 (182.158.68.5)&#39;</span><span class="w"> </span>can<span class="err">&#39;</span>t<span class="w"> </span>be<span class="w"> </span>established.
+DSA<span class="w"> </span>key<span class="w"> </span>fingerprint<span class="w"> </span>is<span class="w"> </span>SHA256:LVWhbgb8q5TdW2QEsFjOVNp8ekW8UqPVE/KCbMOI4CM.
+Are<span class="w"> </span>you<span class="w"> </span>sure<span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span><span class="k">continue</span><span class="w"> </span>connecting<span class="w"> </span><span class="o">(</span>yes/no<span class="o">)</span>?<span class="w"> </span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

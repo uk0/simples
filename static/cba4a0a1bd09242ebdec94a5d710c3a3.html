@@ -135,47 +135,47 @@ author：zhangjianxin</p>
 <ul>
 <li>第一次没有插入SD卡的时候</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">➜  ~ df -h
-Filesystem                          Size   Used  Avail Capacity iused      ifree %iused  Mounted on
-/dev/disk1                         112Gi   93Gi   18Gi    84% 1444634 4293522645    0%   /
-devfs                              186Ki  186Ki    0Bi   100%     642          0  100%   /dev
-map -hosts                           0Bi    0Bi    0Bi   100%       0          0  100%   /net
-map auto_home                        0Bi    0Bi    0Bi   100%       0          0  100%   /home
-localhost:/fMn-YFzQfnHjvi04JpRLvc  112Gi  112Gi    0Bi   100%       0          0  100%   /Volumes/MobileBackups
-</code></pre>
+<div class="codehilite"><pre><span></span><code>➜<span class="w">  </span>~<span class="w"> </span>df<span class="w"> </span>-h
+Filesystem<span class="w">                          </span>Size<span class="w">   </span>Used<span class="w">  </span>Avail<span class="w"> </span>Capacity<span class="w"> </span>iused<span class="w">      </span>ifree<span class="w"> </span>%iused<span class="w">  </span>Mounted<span class="w"> </span>on
+/dev/disk1<span class="w">                         </span>112Gi<span class="w">   </span>93Gi<span class="w">   </span>18Gi<span class="w">    </span><span class="m">84</span>%<span class="w"> </span><span class="m">1444634</span><span class="w"> </span><span class="m">4293522645</span><span class="w">    </span><span class="m">0</span>%<span class="w">   </span>/
+devfs<span class="w">                              </span>186Ki<span class="w">  </span>186Ki<span class="w">    </span>0Bi<span class="w">   </span><span class="m">100</span>%<span class="w">     </span><span class="m">642</span><span class="w">          </span><span class="m">0</span><span class="w">  </span><span class="m">100</span>%<span class="w">   </span>/dev
+map<span class="w"> </span>-hosts<span class="w">                           </span>0Bi<span class="w">    </span>0Bi<span class="w">    </span>0Bi<span class="w">   </span><span class="m">100</span>%<span class="w">       </span><span class="m">0</span><span class="w">          </span><span class="m">0</span><span class="w">  </span><span class="m">100</span>%<span class="w">   </span>/net
+map<span class="w"> </span>auto_home<span class="w">                        </span>0Bi<span class="w">    </span>0Bi<span class="w">    </span>0Bi<span class="w">   </span><span class="m">100</span>%<span class="w">       </span><span class="m">0</span><span class="w">          </span><span class="m">0</span><span class="w">  </span><span class="m">100</span>%<span class="w">   </span>/home
+localhost:/fMn-YFzQfnHjvi04JpRLvc<span class="w">  </span>112Gi<span class="w">  </span>112Gi<span class="w">    </span>0Bi<span class="w">   </span><span class="m">100</span>%<span class="w">       </span><span class="m">0</span><span class="w">          </span><span class="m">0</span><span class="w">  </span><span class="m">100</span>%<span class="w">   </span>/Volumes/MobileBackups
+</code></pre></div>
 
 <ul>
 <li>插入sd卡的时候（多了一个/dev/disk2s1 ）</li>
 </ul>
 <p><img alt="" src="/static/images/df-h-sd-card.png" /></p>
-<pre class="codehilite"><code class="language-bash">➜  ~ df -h
-Filesystem                          Size   Used  Avail Capacity iused      ifree %iused  Mounted on
-/dev/disk1                         112Gi   93Gi   18Gi    84% 1444634 4293522645    0%   /
-devfs                              186Ki  186Ki    0Bi   100%     642          0  100%   /dev
-map -hosts                           0Bi    0Bi    0Bi   100%       0          0  100%   /net
-map auto_home                        0Bi    0Bi    0Bi   100%       0          0  100%   /home
-localhost:/fMn-YFzQfnHjvi04JpRLvc  112Gi  112Gi    0Bi   100%       0          0  100%   /Volumes/MobileBackups
-/dev/disk2s1                       7.4Gi  2.4Mi  7.4Gi     1%      76     243827    0%   /Volumes/usb
-</code></pre>
+<div class="codehilite"><pre><span></span><code>➜<span class="w">  </span>~<span class="w"> </span>df<span class="w"> </span>-h
+Filesystem<span class="w">                          </span>Size<span class="w">   </span>Used<span class="w">  </span>Avail<span class="w"> </span>Capacity<span class="w"> </span>iused<span class="w">      </span>ifree<span class="w"> </span>%iused<span class="w">  </span>Mounted<span class="w"> </span>on
+/dev/disk1<span class="w">                         </span>112Gi<span class="w">   </span>93Gi<span class="w">   </span>18Gi<span class="w">    </span><span class="m">84</span>%<span class="w"> </span><span class="m">1444634</span><span class="w"> </span><span class="m">4293522645</span><span class="w">    </span><span class="m">0</span>%<span class="w">   </span>/
+devfs<span class="w">                              </span>186Ki<span class="w">  </span>186Ki<span class="w">    </span>0Bi<span class="w">   </span><span class="m">100</span>%<span class="w">     </span><span class="m">642</span><span class="w">          </span><span class="m">0</span><span class="w">  </span><span class="m">100</span>%<span class="w">   </span>/dev
+map<span class="w"> </span>-hosts<span class="w">                           </span>0Bi<span class="w">    </span>0Bi<span class="w">    </span>0Bi<span class="w">   </span><span class="m">100</span>%<span class="w">       </span><span class="m">0</span><span class="w">          </span><span class="m">0</span><span class="w">  </span><span class="m">100</span>%<span class="w">   </span>/net
+map<span class="w"> </span>auto_home<span class="w">                        </span>0Bi<span class="w">    </span>0Bi<span class="w">    </span>0Bi<span class="w">   </span><span class="m">100</span>%<span class="w">       </span><span class="m">0</span><span class="w">          </span><span class="m">0</span><span class="w">  </span><span class="m">100</span>%<span class="w">   </span>/home
+localhost:/fMn-YFzQfnHjvi04JpRLvc<span class="w">  </span>112Gi<span class="w">  </span>112Gi<span class="w">    </span>0Bi<span class="w">   </span><span class="m">100</span>%<span class="w">       </span><span class="m">0</span><span class="w">          </span><span class="m">0</span><span class="w">  </span><span class="m">100</span>%<span class="w">   </span>/Volumes/MobileBackups
+/dev/disk2s1<span class="w">                       </span><span class="m">7</span>.4Gi<span class="w">  </span><span class="m">2</span>.4Mi<span class="w">  </span><span class="m">7</span>.4Gi<span class="w">     </span><span class="m">1</span>%<span class="w">      </span><span class="m">76</span><span class="w">     </span><span class="m">243827</span><span class="w">    </span><span class="m">0</span>%<span class="w">   </span>/Volumes/usb
+</code></pre></div>
 
 <ul>
 <li>通过diskutils工具进行umont这个SD卡(为了防止其他程序写入)</li>
 </ul>
 <p><img alt="" src="/static/images/umount-mac.png" /></p>
-<pre class="codehilite"><code>```bash
+<div class="codehilite"><pre><span></span><code>```bash
 ➜  ~ diskutil unmountDisk /dev/disk2s1
 Unmount of all volumes on disk2 was successful
 ```
-</code></pre>
+</code></pre></div>
 
 <ul>
 <li>通过dd 写入镜像到sd卡。(10min)</li>
 </ul>
 <p><img alt="" src="/static/images/dd-sd-car-success.png" /></p>
-<pre class="codehilite"><code>```bash
-➜  ~ sudo dd bs=512  if=2017-02-16-raspbian-jessie.img  of=/dev/disk2s1
+<div class="codehilite"><pre><span></span><code>```<span class="nv">bash</span>
+➜<span class="w">  </span><span class="o">~</span><span class="w"> </span><span class="nv">sudo</span><span class="w"> </span><span class="nv">dd</span><span class="w"> </span><span class="nv">bs</span><span class="o">=</span><span class="mi">512</span><span class="w">  </span><span class="k">if</span><span class="o">=</span><span class="mi">2017</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="nv">raspbian</span><span class="o">-</span><span class="nv">jessie</span>.<span class="nv">img</span><span class="w">  </span><span class="nv">of</span><span class="o">=/</span><span class="nv">dev</span><span class="o">/</span><span class="nv">disk2s1</span>
 ```
-</code></pre>
+</code></pre></div>
 
 <blockquote>
 <p>Ethernet Gadget模式即USB网卡模式，
@@ -277,8 +277,8 @@ sudo apt-get install git john</code></p>
 </ul>
 <p><code>bash
      git clone --recursive  http://github.com/mame82/P4wnP1</code></p>
-<pre class="codehilite"><code>![](/static/images/git-clone-bad-usb.png)
-</code></pre>
+<div class="codehilite"><pre><span></span><code>![](/static/images/git-clone-bad-usb.png)
+</code></pre></div>
 
 <ul>
 <li>
@@ -332,7 +332,7 @@ cd P4wnP1/
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

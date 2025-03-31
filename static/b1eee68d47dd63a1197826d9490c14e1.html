@@ -117,23 +117,23 @@ HDFS + Docker 采用集群主从模式。</p>
 <li>License: <code>MIT</code></li>
 </ul>
 <h1 id="start">start</h1>
-<pre class="codehilite"><code>* docker pull mdouchement/hdfs
-</code></pre>
+<div class="codehilite"><pre><span></span><code>* docker pull mdouchement/hdfs
+</code></pre></div>
 
 <h1 id="local-build">Local build</h1>
-<pre class="codehilite"><code class="language-bash">$ docker build -t mdouchement/hdfs .
-</code></pre>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>mdouchement/hdfs<span class="w"> </span>.
+</code></pre></div>
 
 <h1 id="running-hdfs-container">Running HDFS container</h1>
-<pre class="codehilite"><code class="language-bash"># Running and get a Bash interpreter
-$ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -it mdouchement/hdfs
+<div class="codehilite"><pre><span></span><code><span class="c1"># Running and get a Bash interpreter</span>
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">22022</span>:22<span class="w"> </span>-p<span class="w"> </span><span class="m">8020</span>:8020<span class="w"> </span>-p<span class="w"> </span><span class="m">50010</span>:50010<span class="w"> </span>-p<span class="w"> </span><span class="m">50020</span>:50020<span class="w"> </span>-p<span class="w"> </span><span class="m">50070</span>:50070<span class="w"> </span>-p<span class="w"> </span><span class="m">50075</span>:50075<span class="w"> </span>-it<span class="w"> </span>mdouchement/hdfs
 
-# With NFS
-$ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -p 111:111 -p 2049:2049 -it mdouchement/hdfs
+<span class="c1"># With NFS</span>
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">22022</span>:22<span class="w"> </span>-p<span class="w"> </span><span class="m">8020</span>:8020<span class="w"> </span>-p<span class="w"> </span><span class="m">50010</span>:50010<span class="w"> </span>-p<span class="w"> </span><span class="m">50020</span>:50020<span class="w"> </span>-p<span class="w"> </span><span class="m">50070</span>:50070<span class="w"> </span>-p<span class="w"> </span><span class="m">50075</span>:50075<span class="w"> </span>-p<span class="w"> </span><span class="m">111</span>:111<span class="w"> </span>-p<span class="w"> </span><span class="m">2049</span>:2049<span class="w"> </span>-it<span class="w"> </span>mdouchement/hdfs
 
-# Running as daemon
-$ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -d mdouchement/hdfs
-</code></pre>
+<span class="c1"># Running as daemon</span>
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">22022</span>:22<span class="w"> </span>-p<span class="w"> </span><span class="m">8020</span>:8020<span class="w"> </span>-p<span class="w"> </span><span class="m">50010</span>:50010<span class="w"> </span>-p<span class="w"> </span><span class="m">50020</span>:50020<span class="w"> </span>-p<span class="w"> </span><span class="m">50070</span>:50070<span class="w"> </span>-p<span class="w"> </span><span class="m">50075</span>:50075<span class="w"> </span>-d<span class="w"> </span>mdouchement/hdfs
+</code></pre></div>
 
 <ul>
 <li>Ports<ul>
@@ -161,9 +161,9 @@ $ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:500
 </li>
 </ul>
 <h1 id="dev">dev</h1>
-<pre class="codehilite"><code class="language-java"> /**HDFS Config*/
-  configuration.set(&quot;fs.default.name&quot;, &quot;hdfs://localhost:8020&quot;);
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="cm">/**HDFS Config*/</span>
+<span class="w">  </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;fs.default.name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hdfs://localhost:8020&quot;</span><span class="p">);</span>
+</code></pre></div>
 
 <h1 id="docker"><code>Docker</code>这个是为了快速测试代码，以及快速开发。</h1>
 <ul>
@@ -180,7 +180,7 @@ $ docker run -p 22022:22 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:500
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

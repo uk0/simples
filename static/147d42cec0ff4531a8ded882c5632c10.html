@@ -115,244 +115,244 @@
 <li>实现思路 调用Linux本身的接口 Java采用JNA实现</li>
 </ul>
 <h3 id="_2">具体方法调用</h3>
-<pre class="codehilite"><code class="language-java">    private native int open(String pathname, int flags, int mode);
-    private native int fcntl(int id, int cmd, int flags);
-    private native int write(int fd, Pointer buf, int count);
-    private native int posix_memalign(PointerByReference memptr, int alignment, int size);
-    private native int close(int fd);
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">pathname</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">mode</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">fcntl</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">cmd</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">Pointer</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">posix_memalign</span><span class="p">(</span><span class="n">PointerByReference</span><span class="w"> </span><span class="n">memptr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">);</span>
+</code></pre></div>
 
 <h3 id="_3">核心代码</h3>
-<pre class="codehilite"><code class="language-java">/*
- *    Copyright 2013 Matteo Catena (catena.matteo@gmail.com)
-      Release v1 Owner  zhangjianxinnet@gmail.com 
-   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+<div class="codehilite"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm"> *    Copyright 2013 Matteo Catena (catena.matteo@gmail.com)</span>
+<span class="cm">      Release v1 Owner  zhangjianxinnet@gmail.com </span>
+<span class="cm">   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="cm">   you may not use this file except in compliance with the License.</span>
+<span class="cm">   You may obtain a copy of the License at</span>
 
-       http://www.apache.org/licenses/LICENSE-2.0
+<span class="cm">       http://www.apache.org/licenses/LICENSE-2.0</span>
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
-package com.huadi.utils.directio.io;
+<span class="cm">   Unless required by applicable law or agreed to in writing, software</span>
+<span class="cm">   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="cm">   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm">   See the License for the specific language governing permissions and</span>
+<span class="cm">   limitations under the License.</span>
+<span class="cm"> */</span>
+<span class="kn">package</span><span class="w"> </span><span class="nn">com.huadi.utils.directio.io</span><span class="p">;</span>
 
-import java.io.IOException;
-import java.io.OutputStream;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.IOException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.OutputStream</span><span class="p">;</span>
 
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.sun.jna.Native</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.sun.jna.Pointer</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.sun.jna.ptr.PointerByReference</span><span class="p">;</span>
 
-public class JNAOutputStream extends OutputStream {
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">JNAOutputStream</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">OutputStream</span><span class="w"> </span><span class="p">{</span>
 
-    //just a couple of them are used, here for eventual future uses
-    protected static final int O_RDONLY = 00;
-    protected static final int O_WRONLY = 01;
-    protected static final int O_RDWR = 02;
-    protected static final int O_CREAT = 0100;
-    protected static final int O_EXCL = 0200;
-    protected static final int O_NOCTTY = 0400;
-    protected static final int O_TRUNC = 01000;
-    protected static final int O_APPEND = 02000;
-    protected static final int O_NONBLOCK = 04000;
-    protected static final int O_NDELAY = O_NONBLOCK;
-    protected static final int O_SYNC = 010000;
-    protected static final int O_ASYNC = 020000;
-    protected static final int O_DIRECT = 040000;
-    protected static final int O_DIRECTORY = 0200000;
-    protected static final int O_NOFOLLOW = 0400000;
-    protected static final int O_NOATIME = 01000000;
-    protected static final int O_CLOEXEC = 02000000;
+<span class="w">    </span><span class="c1">//just a couple of them are used, here for eventual future uses</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_RDONLY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">00</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_WRONLY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">01</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_RDWR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">02</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_CREAT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0100</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_EXCL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0200</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_NOCTTY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0400</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_TRUNC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">01000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_APPEND</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">02000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_NONBLOCK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">04000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_NDELAY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">O_NONBLOCK</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_SYNC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">010000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_ASYNC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">020000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_DIRECT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">040000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_DIRECTORY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0200000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_NOFOLLOW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0400000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_NOATIME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">01000000</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">O_CLOEXEC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">02000000</span><span class="p">;</span>
 
-    //fcntl has also other flags, not presented here
-    protected static final int F_SETFL = 4;
+<span class="w">    </span><span class="c1">//fcntl has also other flags, not presented here</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">F_SETFL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
 
-    public static final int BLOCK_SIZE = 512;    
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">512</span><span class="p">;</span><span class="w">    </span>
 
-    static {
-        Native.register(&quot;c&quot;);
-    }    
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Native</span><span class="p">.</span><span class="na">register</span><span class="p">(</span><span class="s">&quot;c&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w">    </span>
 
-    private native int open(String pathname, int flags, int mode);
-    private native int fcntl(int id, int cmd, int flags);
-    private native int write(int fd, Pointer buf, int count);
-    private native int posix_memalign(PointerByReference memptr, int alignment, int size);
-    private native int close(int fd);
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">pathname</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">mode</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">fcntl</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">cmd</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">Pointer</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">posix_memalign</span><span class="p">(</span><span class="n">PointerByReference</span><span class="w"> </span><span class="n">memptr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">native</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">);</span>
 
-    private int fd;
-    private Pointer bufPnt;
-    private byte[] buffer;
-    private int pos;
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Pointer</span><span class="w"> </span><span class="n">bufPnt</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">buffer</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">pos</span><span class="p">;</span>
 
-    public JNAOutputStream(String pathname, boolean direct) throws IOException {
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">JNAOutputStream</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">pathname</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">direct</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
 
-        if (!direct) {
-            fd = open(pathname, O_CREAT|O_TRUNC|O_WRONLY, 00755);
-        } else {
-//          fd = open(pathname, O_CREAT|O_TRUNC|O_WRONLY|O_DIRECT, 00755);
-            fd = open(pathname, O_CREAT|O_APPEND|O_WRONLY|O_DIRECT, 00755);
-        }
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">direct</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">pathname</span><span class="p">,</span><span class="w"> </span><span class="n">O_CREAT</span><span class="o">|</span><span class="n">O_TRUNC</span><span class="o">|</span><span class="n">O_WRONLY</span><span class="p">,</span><span class="w"> </span><span class="mo">00755</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="c1">//          fd = open(pathname, O_CREAT|O_TRUNC|O_WRONLY|O_DIRECT, 00755);</span>
+<span class="w">            </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="n">pathname</span><span class="p">,</span><span class="w"> </span><span class="n">O_CREAT</span><span class="o">|</span><span class="n">O_APPEND</span><span class="o">|</span><span class="n">O_WRONLY</span><span class="o">|</span><span class="n">O_DIRECT</span><span class="p">,</span><span class="w"> </span><span class="mo">00755</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
 
-        PointerByReference pntByRef = new PointerByReference();
-        posix_memalign(pntByRef, BLOCK_SIZE, BLOCK_SIZE);
-        bufPnt = pntByRef.getValue();       
-        buffer = new byte[BLOCK_SIZE];
-    }
+<span class="w">        </span><span class="n">PointerByReference</span><span class="w"> </span><span class="n">pntByRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PointerByReference</span><span class="p">();</span>
+<span class="w">        </span><span class="n">posix_memalign</span><span class="p">(</span><span class="n">pntByRef</span><span class="p">,</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="p">,</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="p">);</span>
+<span class="w">        </span><span class="n">bufPnt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pntByRef</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span><span class="w">       </span>
+<span class="w">        </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">byte</span><span class="o">[</span><span class="n">BLOCK_SIZE</span><span class="o">]</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    @Override
-    public void close() throws IOException {
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">close</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
 
-        if (pos % BLOCK_SIZE != 0) {
-            if (fcntl(fd, F_SETFL, ~O_DIRECT) &lt; 0) {
-                throw new IOException(&quot;Impossible to modify fd on close()&quot;);
-            }
-            bufPnt.write(0, buffer, 0, pos);
-            int rtn = write(fd,bufPnt,pos);
-            if (rtn != pos) {
-                throw new IOException(rtn+&quot;/&quot;+pos+&quot; bytes written to disk on close()&quot;);
-            }
-        }
-        if (close(fd)&lt; 0) {
-            throw new IOException(&quot;Problems occured while doing close()&quot;);
-        }
-    }   
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pos</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">F_SETFL</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="n">O_DIRECT</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IOException</span><span class="p">(</span><span class="s">&quot;Impossible to modify fd on close()&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">bufPnt</span><span class="p">.</span><span class="na">write</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">pos</span><span class="p">);</span>
+<span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">rtn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="n">bufPnt</span><span class="p">,</span><span class="n">pos</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rtn</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">pos</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IOException</span><span class="p">(</span><span class="n">rtn</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">pos</span><span class="o">+</span><span class="s">&quot; bytes written to disk on close()&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IOException</span><span class="p">(</span><span class="s">&quot;Problems occured while doing close()&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span><span class="w">   </span>
 
-    @Override
-    public void write(int b) throws IOException {
-        if (pos &lt; BLOCK_SIZE) {
-            buffer[pos++] = (byte)b;
-        }
-        if (pos == BLOCK_SIZE) {
-            bufPnt.write(0, buffer, 0, BLOCK_SIZE);
-            int rtn = write(fd, bufPnt, BLOCK_SIZE);
-            if (rtn != BLOCK_SIZE) {
-                throw new IOException(rtn+&quot;/&quot;+BLOCK_SIZE+&quot; bytes written to disk&quot;);
-            }
-            pos = 0;
-        }
-    }
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pos</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">buffer</span><span class="o">[</span><span class="n">pos</span><span class="o">++]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">byte</span><span class="p">)</span><span class="n">b</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pos</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">bufPnt</span><span class="p">.</span><span class="na">write</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="p">);</span>
+<span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">rtn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">bufPnt</span><span class="p">,</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rtn</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IOException</span><span class="p">(</span><span class="n">rtn</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">BLOCK_SIZE</span><span class="o">+</span><span class="s">&quot; bytes written to disk&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 
-}
-</code></pre>
+<span class="p">}</span>
+</code></pre></div>
 
 <h3 id="_4">使用方式</h3>
-<pre class="codehilite"><code class="language-java">/*
- *    Copyright 2013 Matteo Catena (catena.matteo@gmail.com)
+<div class="codehilite"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm"> *    Copyright 2013 Matteo Catena (catena.matteo@gmail.com)</span>
 
-   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+<span class="cm">   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="cm">   you may not use this file except in compliance with the License.</span>
+<span class="cm">   You may obtain a copy of the License at</span>
 
-       http://www.apache.org/licenses/LICENSE-2.0
+<span class="cm">       http://www.apache.org/licenses/LICENSE-2.0</span>
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
-package com.huadi.utils.directio.io;
+<span class="cm">   Unless required by applicable law or agreed to in writing, software</span>
+<span class="cm">   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="cm">   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm">   See the License for the specific language governing permissions and</span>
+<span class="cm">   limitations under the License.</span>
+<span class="cm"> */</span>
+<span class="kn">package</span><span class="w"> </span><span class="nn">com.huadi.utils.directio.io</span><span class="p">;</span>
 
-import java.io.*;
-import java.util.Random;
-
-
-public class Run {
-
-    /**
-     * @ower 张建新
-     * @param args
-     * @throws IOException 
-     */
-    private static final int BLOCK_SIZE = 4 * 1024;
-    public static void main(String[] args) throws IOException {
-        Random rand = new Random(System.nanoTime());
-        int runs = Integer.parseInt(args[0]);
-        int integers = Integer.parseInt(args[1]);
-        long[] sio = new long[2];
-        long[] jnaio = new long[2];
-        long[] djnaio = new long[2];
-        int[] data = new int[integers];
-        for (int i = 0; i &lt; integers; i++) {
-            data[i] = rand.nextInt();
-        }
-        for (int i = 0; i &lt; runs; i++) {
-            runStd(data, sio);
-            runJNA(data, jnaio, false);
-            runJNA(data, djnaio, true);
-        }
-        System.out.println(&quot;JNA I/O (ns): &quot;+jnaio[1]/(double)runs+&quot;/&quot;+jnaio[0]/(double)runs);
-        System.out.println(&quot;O_DIRECT JNA I/O (ns): &quot;+djnaio[1]/(double)runs+&quot;/&quot;+djnaio[0]/(double)runs);
-        System.out.println(&quot;Standard I/O (ns): &quot;+sio[1]/(double)runs+&quot;/&quot;+sio[0]/(double)runs);
-    }
-
-    public static void writeLineToFile2(byte[] data,String filename) throws IOException {
-        DataOutputStream out = new DataOutputStream(new JNAOutputStream(filename, true));
-        write(out, data);
-        out.close();
-    }
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.*</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Random</span><span class="p">;</span>
 
 
-    public static void runStd(int data[], long time[]) throws IOException {
-        String filename = &quot;/tmp/&quot;+System.nanoTime()+&quot;.bin&quot;;
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 512));
-        time[0] += write(out, data);    
-        out.close();
-        DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 512));
-        time[1] += read(in, data);
-        in.close();
-    }
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Run</span><span class="w"> </span><span class="p">{</span>
 
-    public static void runJNA(int data[], long time[], boolean o_direct) throws IOException {
-        String filename = &quot;/tmp/&quot;+System.nanoTime()+&quot;.bin&quot;;
-        DataOutputStream out = new DataOutputStream(new JNAOutputStream(filename, o_direct));
-        time[0] += write(out, data);    
-        out.close();
-        DataInputStream in = new DataInputStream(new JNAInputStream(filename, o_direct));
-        time[1] += read(in, data);
-        in.close();
-    }   
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * @ower 张建新</span>
+<span class="cm">     * @param args</span>
+<span class="cm">     * @throws IOException </span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">BLOCK_SIZE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Random</span><span class="w"> </span><span class="n">rand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Random</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">());</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">runs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">parseInt</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">integers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">parseInt</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">long</span><span class="o">[]</span><span class="w"> </span><span class="n">sio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">long</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">long</span><span class="o">[]</span><span class="w"> </span><span class="n">jnaio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">long</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">long</span><span class="o">[]</span><span class="w"> </span><span class="n">djnaio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">long</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">integers</span><span class="o">]</span><span class="p">;</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">integers</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">data</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rand</span><span class="p">.</span><span class="na">nextInt</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">runs</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">runStd</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">sio</span><span class="p">);</span>
+<span class="w">            </span><span class="n">runJNA</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">jnaio</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<span class="w">            </span><span class="n">runJNA</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">djnaio</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;JNA I/O (ns): &quot;</span><span class="o">+</span><span class="n">jnaio</span><span class="o">[</span><span class="mi">1</span><span class="o">]/</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">runs</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">jnaio</span><span class="o">[</span><span class="mi">0</span><span class="o">]/</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">runs</span><span class="p">);</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;O_DIRECT JNA I/O (ns): &quot;</span><span class="o">+</span><span class="n">djnaio</span><span class="o">[</span><span class="mi">1</span><span class="o">]/</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">runs</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">djnaio</span><span class="o">[</span><span class="mi">0</span><span class="o">]/</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">runs</span><span class="p">);</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Standard I/O (ns): &quot;</span><span class="o">+</span><span class="n">sio</span><span class="o">[</span><span class="mi">1</span><span class="o">]/</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">runs</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">sio</span><span class="o">[</span><span class="mi">0</span><span class="o">]/</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">runs</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public static long write(DataOutputStream out, int[] data) throws IOException {
-        long t = System.nanoTime();
-        for (int i = 0; i &lt; data.length; i++ ) {
-            out.writeInt(data[i]);
-        }
-        out.flush();
-        return System.nanoTime() - t;
-    }
-
-    public static long write(DataOutputStream out, byte[] data) throws IOException {
-        long t = System.nanoTime();
-        for (int i = 0; i &lt; data.length; i++ ) {
-            out.write(data[i]);
-        }
-        out.flush();
-        return System.nanoTime() - t;
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">writeLineToFile2</span><span class="p">(</span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="n">String</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">DataOutputStream</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DataOutputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JNAOutputStream</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">));</span>
+<span class="w">        </span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="n">out</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
 
 
-    public static long read(DataInputStream in, int[] data) throws IOException {
-        long t = System.nanoTime();
-        for (int i = 0; i &lt; data.length; i++) {
-            if (data[i] != in.readInt()) {
-                throw new IOException(&quot;wrong!&quot;);
-            }
-        }
-        return System.nanoTime() - t;
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">runStd</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">data</span><span class="o">[]</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">time</span><span class="o">[]</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/tmp/&quot;</span><span class="o">+</span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">()</span><span class="o">+</span><span class="s">&quot;.bin&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="n">DataOutputStream</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DataOutputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">BufferedOutputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">FileOutputStream</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span><span class="w"> </span><span class="mi">512</span><span class="p">));</span>
+<span class="w">        </span><span class="n">time</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span><span class="w">    </span>
+<span class="w">        </span><span class="n">out</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+<span class="w">        </span><span class="n">DataInputStream</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DataInputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">BufferedInputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">FileInputStream</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span><span class="w"> </span><span class="mi">512</span><span class="p">));</span>
+<span class="w">        </span><span class="n">time</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="n">in</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
 
-}
-</code></pre>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">runJNA</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">data</span><span class="o">[]</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">time</span><span class="o">[]</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">o_direct</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/tmp/&quot;</span><span class="o">+</span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">()</span><span class="o">+</span><span class="s">&quot;.bin&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="n">DataOutputStream</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DataOutputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JNAOutputStream</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">o_direct</span><span class="p">));</span>
+<span class="w">        </span><span class="n">time</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span><span class="w">    </span>
+<span class="w">        </span><span class="n">out</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+<span class="w">        </span><span class="n">DataInputStream</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DataInputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JNAInputStream</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">o_direct</span><span class="p">));</span>
+<span class="w">        </span><span class="n">time</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="n">in</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span><span class="w">   </span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">DataOutputStream</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">out</span><span class="p">.</span><span class="na">writeInt</span><span class="p">(</span><span class="n">data</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">out</span><span class="p">.</span><span class="na">flush</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">DataOutputStream</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">out</span><span class="p">.</span><span class="na">write</span><span class="p">(</span><span class="n">data</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">out</span><span class="p">.</span><span class="na">flush</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">DataInputStream</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="na">readInt</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IOException</span><span class="p">(</span><span class="s">&quot;wrong!&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
 
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

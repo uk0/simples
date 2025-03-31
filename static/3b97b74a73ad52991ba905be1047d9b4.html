@@ -115,69 +115,69 @@
 <h2 id="_1">安装配置</h2>
 <p>查询下载最新版本 kafka 
 http://kafka.apache.org/downloads.html</p>
-<pre class="codehilite"><code>wget http://mirror.bit.edu.cn/apache/kafka/0.8.2.0/kafka-0.8.2.0-src.tgz
+<div class="codehilite"><pre><span></span><code>wget http://mirror.bit.edu.cn/apache/kafka/0.8.2.0/kafka-0.8.2.0-src.tgz
 tar zxvf kafka-0.8.2.0-src.tgz
 mv kafka-0.8.2.0-src /opt/local/kafka
 cd /opt/local/kafka
 ./gradlew jar
-</code></pre>
+</code></pre></div>
 
 <p>提示: 
 错误: 找不到或无法加载主类 org.gradle.wrapper.GradleWrapperMain
 需要先安装 gradle</p>
-<pre class="codehilite"><code>http://www.scala-lang.org/files/archive/scala-2.10.4.tgz
+<div class="codehilite"><pre><span></span><code>http://www.scala-lang.org/files/archive/scala-2.10.4.tgz
 tar zxvf scala-2.10.4.tgz
 mv scala-2.10.4 /usr/lib64/scala
-</code></pre>
+</code></pre></div>
 
 <p>设置环境变量 </p>
-<pre class="codehilite"><code>vi /etc/profile
-</code></pre>
+<div class="codehilite"><pre><span></span><code>vi /etc/profile
+</code></pre></div>
 
-<pre class="codehilite"><code>export SACLA_HOME=/usr/lib64/scala/
-export PATH=$SACLA_HOME/bin:$PATH
-source /etc/profile
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">export</span><span class="w"> </span><span class="n">SACLA_HOME</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">scala</span><span class="o">/</span>
+<span class="k">export</span><span class="w"> </span><span class="n">PATH</span><span class="o">=$</span><span class="n">SACLA_HOME</span><span class="o">/</span><span class="n">bin</span><span class="p">:</span><span class="o">$</span><span class="n">PATH</span>
+<span class="n">source</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>
+</code></pre></div>
 
 <p>然后再执行 gradlew jar</p>
-<pre class="codehilite"><code>./gradlew jarAll
-</code></pre>
+<div class="codehilite"><pre><span></span><code>./gradlew jarAll
+</code></pre></div>
 
 <p>如果 jarAll 会报错，java 版本不能为1.8 不然会报不兼容的错误，请使用1.7版本</p>
 <p>./gradlew jar --stacktrace  --info --debug</p>
 <p>创建日志目录</p>
-<pre class="codehilite"><code>mkdir -p /opt/local/kafka/logs
-</code></pre>
+<div class="codehilite"><pre><span></span><code>mkdir -p /opt/local/kafka/logs
+</code></pre></div>
 
 <p>编辑配置文件</p>
-<pre class="codehilite"><code>vim config/server.properties
-</code></pre>
+<div class="codehilite"><pre><span></span><code>vim config/server.properties
+</code></pre></div>
 
 <p>将 log.dirs=/tmp/kafka-logs
 改为</p>
-<pre class="codehilite"><code>log.dirs=/opt/local/kafka/logs
-</code></pre>
+<div class="codehilite"><pre><span></span><code>log.dirs=/opt/local/kafka/logs
+</code></pre></div>
 
 <p>将 zookeeper.connect=localhost:2181
 改为</p>
-<pre class="codehilite"><code>zookeeper.connect=172.24.0.100:2181
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nv">zookeeper</span>.<span class="k">connect</span><span class="o">=</span><span class="mi">172</span>.<span class="mi">24</span>.<span class="mi">0</span>.<span class="mi">100</span>:<span class="mi">2181</span>
+</code></pre></div>
 
 <p>启动程序</p>
-<pre class="codehilite"><code>nohup /opt/local/kafka/bin/zookeeper-server-start.sh /opt/local/kafka/config/zookeeper.properties &amp;
+<div class="codehilite"><pre><span></span><code>nohup /opt/local/kafka/bin/zookeeper-server-start.sh /opt/local/kafka/config/zookeeper.properties &amp;
 nohup /opt/local/kafka/bin/kafka-server-start.sh /opt/local/kafka/config/server.properties &amp;
-</code></pre>
+</code></pre></div>
 
 <p>创建主题</p>
-<pre class="codehilite"><code>/opt/local/kafka/bin/kafka-topics.sh --create --zookeeper 192.168.20.200:2181 --replication-factor 1 --partitions 1 --topic LJ200
-</code></pre>
+<div class="codehilite"><pre><span></span><code>/opt/local/kafka/bin/kafka-topics.sh --create --zookeeper 192.168.20.200:2181 --replication-factor 1 --partitions 1 --topic LJ200
+</code></pre></div>
 
 <p>查看现有主题</p>
-<pre class="codehilite"><code>/opt/local/kafka/bin/kafka-topics.sh --list --zookeeper 192.168.20.200:2181
-</code></pre>
+<div class="codehilite"><pre><span></span><code>/opt/local/kafka/bin/kafka-topics.sh --list --zookeeper 192.168.20.200:2181
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

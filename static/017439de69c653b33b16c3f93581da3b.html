@@ -110,166 +110,166 @@
     <div class="content">
         <p>Java RESTfull 开发中利用枚举类来记录错误码和错误码对应的错误信息，效果很棒。</p>
 <h2 id="1-java">1. Java中枚举类可以用于记录错误码和错误码对应的错误信息，其实现的技巧如下：</h2>
-<pre class="codehilite"><code class="language-java">package todcloud.utils.Enum;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">todcloud.utils.Enum</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/6/29.
- */
-public enum ResponseInfo {
-    SERVER_ERROR(&quot;返回码异常&quot;, &quot;6666&quot;),
-    SUCCESS(&quot;success&quot;, &quot;200&quot;), ERROR(&quot;Not Fount&quot;, &quot;404&quot;), GATEWAY(&quot;Fuck Server&quot;, &quot;502&quot;), CREATE(&quot;Created&quot;, &quot;201&quot;);
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/6/29.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">ResponseInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SERVER_ERROR</span><span class="p">(</span><span class="s">&quot;返回码异常&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;6666&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">SUCCESS</span><span class="p">(</span><span class="s">&quot;success&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;200&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">ERROR</span><span class="p">(</span><span class="s">&quot;Not Fount&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;404&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">GATEWAY</span><span class="p">(</span><span class="s">&quot;Fuck Server&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;502&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">CREATE</span><span class="p">(</span><span class="s">&quot;Created&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;201&quot;</span><span class="p">);</span>
 
 
-    private String code;
-    private String msg;
-    private ResponseInfo(String code, String msg) {
-        this.code = code;
-        this.msg = msg;
-    }
-    public String getReturnCode() {
-        return code;
-    }
-    public String getReturnMsg() {
-        return msg;
-    }
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">code</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">msg</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">ResponseInfo</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">code</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">code</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">msg</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getReturnCode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">code</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getReturnMsg</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">msg</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public static String getResponseMsg(String code){
-        for(ResponseInfo responseInfo:ResponseInfo.values()){
-            if(code.equals(responseInfo.getReturnCode())){
-                return responseInfo.getReturnMsg();
-            }
-        }
-        return SERVER_ERROR.getReturnMsg();
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getResponseMsg</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">code</span><span class="p">){</span>
+<span class="w">        </span><span class="k">for</span><span class="p">(</span><span class="n">ResponseInfo</span><span class="w"> </span><span class="n">responseInfo</span><span class="p">:</span><span class="n">ResponseInfo</span><span class="p">.</span><span class="na">values</span><span class="p">()){</span>
+<span class="w">            </span><span class="k">if</span><span class="p">(</span><span class="n">code</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">responseInfo</span><span class="p">.</span><span class="na">getReturnCode</span><span class="p">())){</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">responseInfo</span><span class="p">.</span><span class="na">getReturnMsg</span><span class="p">();</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">SERVER_ERROR</span><span class="p">.</span><span class="na">getReturnMsg</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="2">2. 调用测试</h2>
-<pre class="codehilite"><code class="language-java">package todcloud.utils.Enum;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">todcloud.utils.Enum</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/6/29.
- */
-public class ResponseInfoTest {
-    public static void main(String[] args) {
-        System.out.println(ResponseInfo.SUCCESS.getReturnCode());
-        String code = ResponseInfo.SUCCESS.getReturnCode();
-        System.out.println(ResponseInfo.getResponseMsg(code));
-    }
-}
-</code></pre>
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/6/29.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ResponseInfoTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">ResponseInfo</span><span class="p">.</span><span class="na">SUCCESS</span><span class="p">.</span><span class="na">getReturnCode</span><span class="p">());</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ResponseInfo</span><span class="p">.</span><span class="na">SUCCESS</span><span class="p">.</span><span class="na">getReturnCode</span><span class="p">();</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">ResponseInfo</span><span class="p">.</span><span class="na">getResponseMsg</span><span class="p">(</span><span class="n">code</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <blockquote>
 <p>通过复习Java中的Enum来完成这个功能。</p>
 </blockquote>
 <h2 id="3">3.失败案例</h2>
-<pre class="codehilite"><code class="language-java">package todcloud.utils.Enum;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">todcloud.utils.Enum</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/6/29.
- */
-public enum ReturnCode {
-    SUCCESS(&quot;success&quot;, 200), ERROR(&quot;Not Fount&quot;, 404), GATEWAY(&quot;Fuck Server&quot;, 502), CREATE(&quot;Created&quot;, 201);
-     /** 成员变量 */
-    private String CodeData;
-    private int CodeIndex;
-    /**     构造方法*/
-    private ReturnCode(String CodeData, int CodeIndex) {
-        this.CodeData = CodeData;
-        this.CodeIndex = CodeIndex;
-    }
-     /** 普通方法*/
-    public static String getCodeData(int CodeIndex) {
-        for (ReturnCode c : ReturnCode.values()) {
-            if (c.getCodeIndex() == CodeIndex) {
-                return c.CodeData;
-            }
-        }
-        return null;
-    }
-     /** get set 方法*/
-    public String getCodeData() {
-        return CodeData;
-    }
-    public void setCodeData(String CodeData) {
-        this.CodeData = CodeData;
-    }
-    public int getCodeIndex() {
-        return CodeIndex;
-    }
-    public void setCodeIndex(int CodeIndex) {
-        this.CodeIndex = CodeIndex;
-    }
-}
-</code></pre>
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/6/29.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">ReturnCode</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SUCCESS</span><span class="p">(</span><span class="s">&quot;success&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">),</span><span class="w"> </span><span class="n">ERROR</span><span class="p">(</span><span class="s">&quot;Not Fount&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">404</span><span class="p">),</span><span class="w"> </span><span class="n">GATEWAY</span><span class="p">(</span><span class="s">&quot;Fuck Server&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">502</span><span class="p">),</span><span class="w"> </span><span class="n">CREATE</span><span class="p">(</span><span class="s">&quot;Created&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">201</span><span class="p">);</span>
+<span class="w">     </span><span class="cm">/** 成员变量 */</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">CodeData</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">CodeIndex</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/**     构造方法*/</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">ReturnCode</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">CodeData</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">CodeIndex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">CodeData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CodeData</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">CodeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CodeIndex</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">     </span><span class="cm">/** 普通方法*/</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getCodeData</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">CodeIndex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">ReturnCode</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ReturnCode</span><span class="p">.</span><span class="na">values</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="na">getCodeIndex</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CodeIndex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">CodeData</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">     </span><span class="cm">/** get set 方法*/</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getCodeData</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">CodeData</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setCodeData</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">CodeData</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">CodeData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CodeData</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getCodeIndex</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">CodeIndex</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setCodeIndex</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">CodeIndex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">CodeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CodeIndex</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-java">package todcloud.utils.Enum;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">todcloud.utils.Enum</span><span class="p">;</span>
 
-import com.alibaba.fastjson.JSONObject;
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.alibaba.fastjson.JSONObject</span><span class="p">;</span>
 
-import javax.print.attribute.standard.MediaSize;
+<span class="kn">import</span><span class="w"> </span><span class="nn">javax.print.attribute.standard.MediaSize</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/6/29.
- */
-public enum ReturnCode2 implements ReturnCodeIns{
-    SUCCESS(&quot;success&quot;, 200), ERROR(&quot;Not Fount&quot;, 404), GATEWAY(&quot;Fuck Server&quot;, 502), CREATE(&quot;Created&quot;, 201);
-    /** 成员变量*/
-    private String name;
-    private int index;
-     /** 构造方法*/
-    private ReturnCode2(String name, int index) {
-        this.name = name;
-        this.index = index;
-    }
-     /**接口方法*/
-    @Override
-    public JSONObject getInfo() {
-        return this.QueryData(this.name);
-    }
-     /**接口方法*/
-    @Override
-    public void print() {
-        System.out.println(this.index+&quot;:&quot;+this.name);
-    }
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/6/29.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">ReturnCode2</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">ReturnCodeIns</span><span class="p">{</span>
+<span class="w">    </span><span class="n">SUCCESS</span><span class="p">(</span><span class="s">&quot;success&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">),</span><span class="w"> </span><span class="n">ERROR</span><span class="p">(</span><span class="s">&quot;Not Fount&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">404</span><span class="p">),</span><span class="w"> </span><span class="n">GATEWAY</span><span class="p">(</span><span class="s">&quot;Fuck Server&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">502</span><span class="p">),</span><span class="w"> </span><span class="n">CREATE</span><span class="p">(</span><span class="s">&quot;Created&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">201</span><span class="p">);</span>
+<span class="w">    </span><span class="cm">/** 成员变量*/</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
+<span class="w">     </span><span class="cm">/** 构造方法*/</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">ReturnCode2</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">     </span><span class="cm">/**接口方法*/</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">JSONObject</span><span class="w"> </span><span class="nf">getInfo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">QueryData</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">name</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">     </span><span class="cm">/**接口方法*/</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">print</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">index</span><span class="o">+</span><span class="s">&quot;:&quot;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="na">name</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public static JSONObject QueryData(String Name){
-        System.out.println(Name);
-        return null;
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">JSONObject</span><span class="w"> </span><span class="nf">QueryData</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">Name</span><span class="p">){</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">Name</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-java">package todcloud.utils.Enum;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">todcloud.utils.Enum</span><span class="p">;</span>
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.alibaba.fastjson.JSON</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.alibaba.fastjson.JSONObject</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/6/29.
- */
-public interface ReturnCodeIns {
-    void print();
-    JSONObject getInfo();
-}
-</code></pre>
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/6/29.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">ReturnCodeIns</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">print</span><span class="p">();</span>
+<span class="w">    </span><span class="n">JSONObject</span><span class="w"> </span><span class="nf">getInfo</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-java">package todcloud.utils.Enum;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">todcloud.utils.Enum</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/6/29.
- */
-public class ReturnCodeMain {
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/6/29.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ReturnCodeMain</span><span class="w"> </span><span class="p">{</span>
 
-    public static void main(String[] args) {
-        System.out.println(ReturnCode.getCodeData(200));
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">ReturnCode</span><span class="p">.</span><span class="na">getCodeData</span><span class="p">(</span><span class="mi">200</span><span class="p">));</span>
 
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

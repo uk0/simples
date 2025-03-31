@@ -116,12 +116,12 @@
 - How To Install Docker on CentOS 6
 - Docker and docker-compose in CentOS 6</p>
 <h2 id="docker">一、安装 Docker</h2>
-<pre class="codehilite"><code>    这一节主要来自于：How To Install Docker on CentOS 6
+<div class="codehilite"><pre><span></span><code>    这一节主要来自于：How To Install Docker on CentOS 6
 
     以下 命令都是在 root 权限下运行的。
 
     Docker是Enterprise Linux（EPEL）的额外包的一部分，EPEL是用于RHEL发行版的非标准包的社区库。首先，我们将安装EPEL仓库：
-</code></pre>
+</code></pre></div>
 
 <p><code>bash
  rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</code></p>
@@ -155,51 +155,51 @@ service docker start</code></p>
 <p>Docker Compose 是 Python 写的一个可以同时管理多个 Docker容器 的工具。因为是 CentOS6.x，所以没办法直接安装该工具，要通过 Python 的 pip 管理器工具来安装。</p>
 <p>一般 CentOS6.5 都自带了 Pyhton2.6，所以要先安装 Python2.7。</p>
 <h3 id="21python27">2.1、安装开发工具和Python2.7</h3>
-<pre class="codehilite"><code class="language-bash"># yum groupinstall &quot;Development&quot;
-# yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel
-# wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tar.xz
-# tar -xvf Python-2.7.8.tar.xz
-# cd Python-2.7.8
-# ./configure --prefix=/usr/local
-# make &amp;&amp; make altinstall
-# mv /usr/bin/python /usr/bin/python2.6.6
-# ln -s /usr/local/bin/python2.7 /usr/bin/python
-vi /usr/bin/yum CHANGE to python2.6.6
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="c1"># yum groupinstall &quot;Development&quot;</span>
+<span class="c1"># yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel</span>
+<span class="c1"># wget https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tar.xz</span>
+<span class="c1"># tar -xvf Python-2.7.8.tar.xz</span>
+<span class="c1"># cd Python-2.7.8</span>
+<span class="c1"># ./configure --prefix=/usr/local</span>
+<span class="c1"># make &amp;&amp; make altinstall</span>
+<span class="c1"># mv /usr/bin/python /usr/bin/python2.6.6</span>
+<span class="c1"># ln -s /usr/local/bin/python2.7 /usr/bin/python</span>
+vi<span class="w"> </span>/usr/bin/yum<span class="w"> </span>CHANGE<span class="w"> </span>to<span class="w"> </span>python2.6.6
+</code></pre></div>
 
 <blockquote>
 <p>以上是通过源码方式安装了 Python2.7，倒数第三行的命令，把系统原有的 python 程序重命名成 python2.6.6；倒数第二行命令，把 python2.7 程序链接/替换到原有的 python 程序。倒数第一行并不是一个命令，只是说明要把 /usr/bin/yum yum 程序的第一行声明，改成原有的 python2.6.6。即：</p>
 </blockquote>
-<pre class="codehilite"><code class="language-bash">#!/usr/bin/python
-import sys
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/python</span>
+import<span class="w"> </span>sys
 ......
 
-#modify
+<span class="c1">#modify</span>
 
-#!/usr/bin/python2.6.6
-import sys
+<span class="c1">#!/usr/bin/python2.6.6</span>
+import<span class="w"> </span>sys
 ......
-</code></pre>
+</code></pre></div>
 
 <ul>
 <li>一句话来说就是：升级了 Python 版本，但是 yum 程序还是用回原来的 Python 版本。</li>
 </ul>
 <h3 id="22-pip">2.2、安装 pip</h3>
-<pre class="codehilite"><code class="language-bash">#原文里的 get-pip.py 这个下文件的下载地址过期了，新地址是https://bootstrap.pypa.io/get-pip.py所以命令改为如下：
+<div class="codehilite"><pre><span></span><code><span class="c1">#原文里的 get-pip.py 这个下文件的下载地址过期了，新地址是https://bootstrap.pypa.io/get-pip.py所以命令改为如下：</span>
 
-wget https://bootstrap.pypa.io/get-pip.py
-python get-pip.py 
-</code></pre>
+wget<span class="w"> </span>https://bootstrap.pypa.io/get-pip.py
+python<span class="w"> </span>get-pip.py<span class="w"> </span>
+</code></pre></div>
 
 <p>2.3、安装 docker-compose</p>
-<pre class="codehilite"><code class="language-bash"> pip install docker-compose
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>docker-compose
+</code></pre></div>
 
 <ul>
 <li>顺利的话，以上步骤走完，就完成了 docker-compose 的安装了，验证一下是否安装成功了，查看版本信息：</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">docker-compose version
-</code></pre>
+<div class="codehilite"><pre><span></span><code>docker-compose<span class="w"> </span>version
+</code></pre></div>
 
 <h2 id="_1">三、我遇到的坑</h2>
 <h3 id="31pip">3.1、pip 版本问题</h3>
@@ -210,29 +210,29 @@ python get-pip.py
 <p>pkg_resources.DistributionNotFound: The 'pip==8.1.0' distribution was not found and is required by the application
 经 关于pip安装时提示pkg_resources.DistributionNotFound 错误问题 和CentOS升级Python2.7启发，我运行 whereis pip 命令发现调用的是 /usr/bin/pip，查看其内容：</p>
 </blockquote>
-<pre class="codehilite"><code class="language-bash">cat /usr/bin/pip
-</code></pre>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/usr/bin/pip
+</code></pre></div>
 
 <p>打印出如下：</p>
-<pre class="codehilite"><code class="language-python">#!/usr/bin/python
-# EASY-INSTALL-ENTRY-SCRIPT: 'pip==8.1.0','console_scripts','pip'
-__requires__ = 'pip==8.1.0'
-import sys
-from pkg_resources import load_entry_point
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># EASY-INSTALL-ENTRY-SCRIPT: &#39;pip==8.1.0&#39;,&#39;console_scripts&#39;,&#39;pip&#39;</span>
+<span class="n">__requires__</span> <span class="o">=</span> <span class="s1">&#39;pip==8.1.0&#39;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">load_entry_point</span>
 
-if __name__ == '__main__':
-    sys.exit(
-        load_entry_point('pip==8.1.0', 'console_scripts', 'pip')()
-    )
-</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+        <span class="n">load_entry_point</span><span class="p">(</span><span class="s1">&#39;pip==8.1.0&#39;</span><span class="p">,</span> <span class="s1">&#39;console_scripts&#39;</span><span class="p">,</span> <span class="s1">&#39;pip&#39;</span><span class="p">)()</span>
+    <span class="p">)</span>
+</code></pre></div>
 
 <p>但是考虑到：</p>
-<pre class="codehilite"><code class="language-bash"> ll /usr/local/lib/python2.7/site-packages | grep pip
+<div class="codehilite"><pre><span></span><code><span class="w"> </span>ll<span class="w"> </span>/usr/local/lib/python2.7/site-packages<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>pip
 打印如下：
 
-# drwxr-xr-x 10 root root  4096 Jun 16 13:08 pip
-# drwxr-xr-x  2 root root  4096 Jun 16 13:08 pip-9.0.1.dist-info
-</code></pre>
+<span class="c1"># drwxr-xr-x 10 root root  4096 Jun 16 13:08 pip</span>
+<span class="c1"># drwxr-xr-x  2 root root  4096 Jun 16 13:08 pip-9.0.1.dist-info</span>
+</code></pre></div>
 
 <p>就把 /usr/bin/pip 里的所有 8.1.0 改为 9.0.1，然后 pip 就正常了。具体为啥，我也不太清楚了，不懂 Python 的路过。。</p>
 <p>我猜是因为，python get-pip.py 安装了 pip 之后，但是 /usr/bin/pip 里面调用的还是旧版本好的 pip 导致的。
@@ -242,21 +242,21 @@ if __name__ == '__main__':
 <ul>
 <li>先看一下我们已经安装的 Docker 版本：</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">docker -v
-</code></pre>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>-v
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-text">Docker version 1.7.1, build 786b29d/1.7.1
+<div class="codehilite"><pre><span></span><code>Docker version 1.7.1, build 786b29d/1.7.1
 Google 了一下，在 StackOverflow 上找到个降 docker-compose 版本的方法：ERROR: The Docker Engine version is less than the minimum required by Compose
 经查 Docker Compose Github Docs，发现 docker-compose 1.5.2 版本是兼容 Docker 1.7.1 的：Note that Compose 1.5.2 requires Docker 1.7.1 or later.。
 好了，开始降级 docker-compose，先卸载：
-</code></pre>
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-bash">pip uninstall docker-compose
-</code></pre>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>uninstall<span class="w"> </span>docker-compose
+</code></pre></div>
 
 <p>再安装指定版本：</p>
-<pre class="codehilite"><code class="language-bash"> pip install docker-compose==1.5.2
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>docker-compose<span class="o">==</span><span class="m">1</span>.5.2
+</code></pre></div>
 
 <ul>
 <li>至此，docker-compose 降版本成功！</li>
@@ -264,7 +264,7 @@ Google 了一下，在 StackOverflow 上找到个降 docker-compose 版本的方
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

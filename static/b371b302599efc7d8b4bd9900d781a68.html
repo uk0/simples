@@ -122,8 +122,8 @@ It's based on the excellent work of <a href="https://registry.hub.docker.com/u/w
 <p>To see command-line options, run <code>docker run --rm wernight/ngrok ngrok --help</code>.</p>
 <h2 id="usage">Usage</h2>
 <p>Supposing you've an Apache or Nginx Docker container named <code>web_service_container</code> listening on port 80:</p>
-<pre class="codehilite"><code>$ docker run --rm -it --link web_service_container wernight/ngrok ngrok http web_service_container:80
-</code></pre>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--link<span class="w"> </span>web_service_container<span class="w"> </span>wernight/ngrok<span class="w"> </span>ngrok<span class="w"> </span>http<span class="w"> </span>web_service_container:80
+</code></pre></div>
 
 <h3 id="environment-variables">Environment variables</h3>
 <p><em>Please consider using directly the command-line arguments of Ngrok.</em></p>
@@ -145,39 +145,39 @@ then you can use instead envrionment variables magic below.</p>
 <ol>
 <li>
 <p>We'll set up a simple example HTTP server in a docker container named <code>www</code>:</p>
-<pre class="codehilite"><code>$ docker run -v /usr/share/nginx/html --name www_data busybox true
-$ docker run --rm --volumes-from www_data busybox /bin/sh -c 'echo &quot;&lt;h1&gt;Yo&lt;/h1&gt;&quot; &gt; /usr/share/nginx/html/index.html'
-$ docker run -d -p 80 --volumes-from www_data --name www nginx
-$ curl $(docker port www 80)
-&lt;h1&gt;Yo&lt;/h1&gt;
-</code></pre>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/usr/share/nginx/html<span class="w"> </span>--name<span class="w"> </span>www_data<span class="w"> </span>busybox<span class="w"> </span>true
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--volumes-from<span class="w"> </span>www_data<span class="w"> </span>busybox<span class="w"> </span>/bin/sh<span class="w"> </span>-c<span class="w"> </span>&#39;echo<span class="w"> </span>&quot;<span class="nt">&lt;h1&gt;</span>Yo<span class="nt">&lt;/h1&gt;</span>&quot;<span class="w"> </span>&gt;<span class="w"> </span>/usr/share/nginx/html/index.html&#39;
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span>80<span class="w"> </span>--volumes-from<span class="w"> </span>www_data<span class="w"> </span>--name<span class="w"> </span>www<span class="w"> </span>nginx
+$<span class="w"> </span>curl<span class="w"> </span>$(docker<span class="w"> </span>port<span class="w"> </span>www<span class="w"> </span>80)
+<span class="nt">&lt;h1&gt;</span>Yo<span class="nt">&lt;/h1&gt;</span>
+</code></pre></div>
 
 </li>
 <li>
 <p>Now we'll link that HTTP server into an ngrok container to expose it on the internet:</p>
-<pre class="codehilite"><code>$ docker run -d -p 4040 --link www:http --name www_ngrok wernight/ngrok
-</code></pre>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">4040</span><span class="w"> </span>--link<span class="w"> </span>www:http<span class="w"> </span>--name<span class="w"> </span>www_ngrok<span class="w"> </span>wernight/ngrok
+</code></pre></div>
 
 </li>
 <li>
 <p>You can now access the <a href="https://ngrok.com/docs#client-api">API</a> to find the assigned domain:</p>
-<pre class="codehilite"><code>$ curl $(docker port www_ngrok 4040)/api/tunnels
-</code></pre>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>curl<span class="w"> </span><span class="k">$(</span>docker<span class="w"> </span>port<span class="w"> </span>www_ngrok<span class="w"> </span><span class="m">4040</span><span class="k">)</span>/api/tunnels
+</code></pre></div>
 
 <p>or access the web UI to see requests and responses:</p>
-<pre class="codehilite"><code>$ xdg-open http://$(docker port www_ngrok 4040)
-</code></pre>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>xdg-open<span class="w"> </span>http://<span class="k">$(</span>docker<span class="w"> </span>port<span class="w"> </span>www_ngrok<span class="w"> </span><span class="m">4040</span><span class="k">)</span>
+</code></pre></div>
 
 </li>
 </ol>
 <h3 id="helper">Helper</h3>
 <p>For common cases you may want to create an alias in your <code>~/.profile</code> (or <code>~/.bashrc</code>, <code>~/.zshrc</code>, or equivalent):</p>
-<pre class="codehilite"><code>function docker-ngrok() {
-  docker run --rm -it --link &quot;$1&quot;:http wernight/ngrok ngrok http http:80
+<div class="codehilite"><pre><span></span><code><span class="nv">function</span><span class="w"> </span><span class="nv">docker</span><span class="o">-</span><span class="nv">ngrok</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">  </span><span class="nv">docker</span><span class="w"> </span><span class="nv">run</span><span class="w"> </span><span class="o">--</span><span class="nv">rm</span><span class="w"> </span><span class="o">-</span><span class="nv">it</span><span class="w"> </span><span class="o">--</span><span class="nv">link</span><span class="w"> </span><span class="s2">&quot;$1&quot;</span>:<span class="nv">http</span><span class="w"> </span><span class="nv">wernight</span><span class="o">/</span><span class="nv">ngrok</span><span class="w"> </span><span class="nv">ngrok</span><span class="w"> </span><span class="nv">http</span><span class="w"> </span><span class="nv">http</span>:<span class="mi">80</span>
 }
-# For ZSH with Oh-My-Zsh! and 'docker' plugin enabled, you can also enable auto-completion:
-#compdef __docker_containers docker-ngrok
-</code></pre>
+#<span class="w"> </span><span class="k">For</span><span class="w"> </span><span class="nv">ZSH</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">Oh</span><span class="o">-</span><span class="nv">My</span><span class="o">-</span><span class="nv">Zsh</span><span class="o">!</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="s1">&#39;docker&#39;</span><span class="w"> </span><span class="nv">plugin</span><span class="w"> </span><span class="nv">enabled</span>,<span class="w"> </span><span class="nv">you</span><span class="w"> </span><span class="nv">can</span><span class="w"> </span><span class="nv">also</span><span class="w"> </span><span class="nv">enable</span><span class="w"> </span><span class="nv">auto</span><span class="o">-</span><span class="nv">completion</span>:
+#<span class="nv">compdef</span><span class="w"> </span><span class="nv">__docker_containers</span><span class="w"> </span><span class="nv">docker</span><span class="o">-</span><span class="nv">ngrok</span>
+</code></pre></div>
 
 <p>Then to the simple example just do <code>docker-ngrok web_service_container</code>.</p>
 <h2 id="feedbacks">Feedbacks</h2>
@@ -185,7 +185,7 @@ $ curl $(docker port www 80)
 <p>Pull requests are very welcome!</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

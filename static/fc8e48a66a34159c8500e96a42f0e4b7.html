@@ -113,84 +113,84 @@
 <ul>
 <li>serverless Python 操作hdfs</li>
 </ul>
-<pre class="codehilite"><code class="language-bash"># /usr/bin/env python
-# coding=utf-8
+<div class="codehilite"><pre><span></span><code><span class="c1"># /usr/bin/env python</span>
+<span class="c1"># coding=utf-8</span>
 
-import paramiko
-import os
-from hdfs import Client
-from bottle import route, run
-from bottle import request
+import<span class="w"> </span>paramiko
+import<span class="w"> </span>os
+from<span class="w"> </span>hdfs<span class="w"> </span>import<span class="w"> </span>Client
+from<span class="w"> </span>bottle<span class="w"> </span>import<span class="w"> </span>route,<span class="w"> </span>run
+from<span class="w"> </span>bottle<span class="w"> </span>import<span class="w"> </span>request
 
-client = Client(&quot;http://hdfs-web-svc.cloudera:50070&quot;, root=&quot;/&quot;, timeout=100, session=False)
-# 文件上传的HTML模板，这里没有额外去写html模板了，直接写在这里，方便点吧
-@route('/upload')
-def upload():
-    return '''
-        &lt;html&gt;
-            &lt;head&gt;
-            &lt;/head&gt;
-            &lt;body&gt;
-                &lt;form action&quot;/upload&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
-                    &lt;input type=&quot;file&quot; name=&quot;data&quot; /&gt;
-                    &lt;input type=&quot;submit&quot; value=&quot;Upload&quot; /&gt;
-                &lt;/form&gt;
-            &lt;/body&gt;
-        &lt;/html&gt;
-    '''
+<span class="nv">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Client<span class="o">(</span><span class="s2">&quot;http://hdfs-web-svc.cloudera:50070&quot;</span>,<span class="w"> </span><span class="nv">root</span><span class="o">=</span><span class="s2">&quot;/&quot;</span>,<span class="w"> </span><span class="nv">timeout</span><span class="o">=</span><span class="m">100</span>,<span class="w"> </span><span class="nv">session</span><span class="o">=</span>False<span class="o">)</span>
+<span class="c1"># 文件上传的HTML模板，这里没有额外去写html模板了，直接写在这里，方便点吧</span>
+@route<span class="o">(</span><span class="s1">&#39;/upload&#39;</span><span class="o">)</span>
+def<span class="w"> </span>upload<span class="o">()</span>:
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        &lt;html&gt;</span>
+<span class="s1">            &lt;head&gt;</span>
+<span class="s1">            &lt;/head&gt;</span>
+<span class="s1">            &lt;body&gt;</span>
+<span class="s1">                &lt;form action&quot;/upload&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;</span>
+<span class="s1">                    &lt;input type=&quot;file&quot; name=&quot;data&quot; /&gt;</span>
+<span class="s1">                    &lt;input type=&quot;submit&quot; value=&quot;Upload&quot; /&gt;</span>
+<span class="s1">                &lt;/form&gt;</span>
+<span class="s1">            &lt;/body&gt;</span>
+<span class="s1">        &lt;/html&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span>
 
 
-# 文件上传，overwrite=True为覆盖原有的文件，
-# 如果不加这参数，当服务器已存在同名文件时，将返回“IOError: File exists.”错误
-@route('/upload', method='POST')
-def doupload():
-    upload = request.files.getall('data')
-    for meta in upload:
-        buf = meta.file.read()
-        name, ext = os.path.splitext(meta.filename)
-        if ext not in ('.jar', '.tar'):
-            return 'File extension not allowed. type [JAR]'
-        path = '/task/mr/' + name + ext
-        # ssh root@agent-2.agent-svc.cloudera.svc.cluster.local
-        print(&quot;--------------save Task To&quot; + path)
-        with client.write(path, overwrite=True) as writer:
-            writer.write(buf);
+<span class="c1"># 文件上传，overwrite=True为覆盖原有的文件，</span>
+<span class="c1"># 如果不加这参数，当服务器已存在同名文件时，将返回“IOError: File exists.”错误</span>
+@route<span class="o">(</span><span class="s1">&#39;/upload&#39;</span>,<span class="w"> </span><span class="nv">method</span><span class="o">=</span><span class="s1">&#39;POST&#39;</span><span class="o">)</span>
+def<span class="w"> </span>doupload<span class="o">()</span>:
+<span class="w">    </span><span class="nv">upload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>request.files.getall<span class="o">(</span><span class="s1">&#39;data&#39;</span><span class="o">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span>meta<span class="w"> </span><span class="k">in</span><span class="w"> </span>upload:
+<span class="w">        </span><span class="nv">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>meta.file.read<span class="o">()</span>
+<span class="w">        </span>name,<span class="w"> </span><span class="nv">ext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>os.path.splitext<span class="o">(</span>meta.filename<span class="o">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span>ext<span class="w"> </span>not<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="o">(</span><span class="s1">&#39;.jar&#39;</span>,<span class="w"> </span><span class="s1">&#39;.tar&#39;</span><span class="o">)</span>:
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="s1">&#39;File extension not allowed. type [JAR]&#39;</span>
+<span class="w">        </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;/task/mr/&#39;</span><span class="w"> </span>+<span class="w"> </span>name<span class="w"> </span>+<span class="w"> </span>ext
+<span class="w">        </span><span class="c1"># ssh root@agent-2.agent-svc.cloudera.svc.cluster.local</span>
+<span class="w">        </span>print<span class="o">(</span><span class="s2">&quot;--------------save Task To&quot;</span><span class="w"> </span>+<span class="w"> </span>path<span class="o">)</span>
+<span class="w">        </span>with<span class="w"> </span>client.write<span class="o">(</span>path,<span class="w"> </span><span class="nv">overwrite</span><span class="o">=</span>True<span class="o">)</span><span class="w"> </span>as<span class="w"> </span>writer:
+<span class="w">            </span>writer.write<span class="o">(</span>buf<span class="o">)</span><span class="p">;</span>
 
-    return 'ok'
-</code></pre>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">&#39;ok&#39;</span>
+</code></pre></div>
 
 <ul>
 <li>serverless.yml</li>
 </ul>
-<pre class="codehilite"><code class="language-yaml"># Welcome to Serverless!
-#
-# For full config options, check the kubeless plugin docs:
-#    https://github.com/serverless/serverless-kubeless
-#
-# For documentation on kubeless itself:
-#    http://kubeless.io
+<div class="codehilite"><pre><span></span><code><span class="c1"># Welcome to Serverless!</span>
+<span class="c1">#</span>
+<span class="c1"># For full config options, check the kubeless plugin docs:</span>
+<span class="c1">#    https://github.com/serverless/serverless-kubeless</span>
+<span class="c1">#</span>
+<span class="c1"># For documentation on kubeless itself:</span>
+<span class="c1">#    http://kubeless.io</span>
 
-# Update the service name below with your own service name
-service: put-taskjar
+<span class="c1"># Update the service name below with your own service name</span>
+<span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">put-taskjar</span>
 
-# Please ensure the serverless-kubeless provider plugin is installed globally.
-# $ npm install -g serverless-kubeless
-#
-# ...before installing project dependencies to register this provider.
-# $ npm install
+<span class="c1"># Please ensure the serverless-kubeless provider plugin is installed globally.</span>
+<span class="c1"># $ npm install -g serverless-kubeless</span>
+<span class="c1">#</span>
+<span class="c1"># ...before installing project dependencies to register this provider.</span>
+<span class="c1"># $ npm install</span>
 
-provider:
-  name: kubeless
-  namespace: ${env:K8S_NAMESPACE, 'cloudera'}
-  runtime: python2.7
+<span class="nt">provider</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubeless</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${env:K8S_NAMESPACE, &#39;cloudera&#39;}</span>
+<span class="w">  </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python2.7</span>
 
-plugins:
-  - serverless-kubeless
+<span class="nt">plugins</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serverless-kubeless</span>
 
-functions:
-  upload:
-    handler: task.upload
-</code></pre>
+<span class="nt">functions</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">upload</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">handler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">task.upload</span>
+</code></pre></div>
 
 <ul>
 <li>具体信息看第一条关于 serverless 的文章。</li>
@@ -198,7 +198,7 @@ functions:
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

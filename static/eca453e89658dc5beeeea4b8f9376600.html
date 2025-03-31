@@ -117,33 +117,33 @@ author：zhangjianxin</p>
 <li><a href="#_1">先看代码</a></li>
 </ul>
 </div>
-<pre class="codehilite"><code class="language-python">#!/usr/bin/env python
-#encoding=utf-8
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
+<span class="c1">#encoding=utf-8</span>
 
-from smtplib import SMTP
-import subprocess
+<span class="kn">from</span> <span class="nn">smtplib</span> <span class="kn">import</span> <span class="n">SMTP</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 
-smtp = &quot;smtp.qq.com&quot;
-user = '1234567'
-password = 'xxxx'
+<span class="n">smtp</span> <span class="o">=</span> <span class="s2">&quot;smtp.qq.com&quot;</span>
+<span class="n">user</span> <span class="o">=</span> <span class="s1">&#39;1234567&#39;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;xxxx&#39;</span>
 
-run_comd = subprocess.Popen('w¦grep pts',shell=True,stdout=subprocess.PIPE)
-data = run_comd.stdout.read()
-mailb = [&quot;服务器有新用户登录&quot;,data]
-mailh = [&quot;From: 1234567@qq.com&quot;, &quot;To: xxxx@gmail.com&quot;, &quot;Subject: 用户登录监控&quot;]
-mailmsg = &quot;\r\n\r\n&quot;.join([&quot;\r\n&quot;.join(mailh), &quot;\r\n&quot;.join(mailb)])
+<span class="n">run_comd</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;w¦grep pts&#39;</span><span class="p">,</span><span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">run_comd</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">mailb</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;服务器有新用户登录&quot;</span><span class="p">,</span><span class="n">data</span><span class="p">]</span>
+<span class="n">mailh</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;From: 1234567@qq.com&quot;</span><span class="p">,</span> <span class="s2">&quot;To: xxxx@gmail.com&quot;</span><span class="p">,</span> <span class="s2">&quot;Subject: 用户登录监控&quot;</span><span class="p">]</span>
+<span class="n">mailmsg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mailh</span><span class="p">),</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mailb</span><span class="p">)])</span>
 
-#www.iplaypy.com
-def send_mail():
-    send = SMTP(smtp)
-    send.login(user,password)
-    result = send.sendmail(&quot;1234567@qq.com&quot;, (&quot;xxxx@gmail.com&quot;,), mailmsg)
-    send.quit()
-if data == '':
-    pass
-else:
-    send_mail()
-</code></pre>
+<span class="c1">#www.iplaypy.com</span>
+<span class="k">def</span> <span class="nf">send_mail</span><span class="p">():</span>
+    <span class="n">send</span> <span class="o">=</span> <span class="n">SMTP</span><span class="p">(</span><span class="n">smtp</span><span class="p">)</span>
+    <span class="n">send</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="n">password</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">send</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="s2">&quot;1234567@qq.com&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;xxxx@gmail.com&quot;</span><span class="p">,),</span> <span class="n">mailmsg</span><span class="p">)</span>
+    <span class="n">send</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">send_mail</span><span class="p">()</span>
+</code></pre></div>
 
 <ul>
 <li>以上操作经过验证可以直接拿去。</li>
@@ -152,7 +152,7 @@ else:
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:09
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

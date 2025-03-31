@@ -113,78 +113,78 @@
 <ul>
 <li>Python </li>
 </ul>
-<pre class="codehilite"><code class="language-python">from hdfs import Client
-from bottle import route,HTTPResponse
-client = Client(&quot;http://hdfs-web-svc.cloudera:50070&quot;, root=&quot;/&quot;, timeout=100, session=False)
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">hdfs</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span><span class="n">HTTPResponse</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;http://hdfs-web-svc.cloudera:50070&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-headers = {}
-headers[str(&quot;content-type&quot;)] = 'application/octet-stream'
-headers['Content-Disposition'] = 'attachment;filename=&quot;data.csv&quot;'
-@route('/download')
-def getfile():
-    with client.read(&quot;/public/csv/parking_ths_car_record/part-m-00000&quot;) as reader:
-        content = reader.read()
-        content = content.decode('utf-8', 'ignore').encode('gbk')
-        return HTTPResponse(body=content, status=200, headers=headers)
-</code></pre>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">headers</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;content-type&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="s1">&#39;application/octet-stream&#39;</span>
+<span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Disposition&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;attachment;filename=&quot;data.csv&quot;&#39;</span>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/download&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">getfile</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;/public/csv/parking_ths_car_record/part-m-00000&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">reader</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;gbk&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">HTTPResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</code></pre></div>
 
 <ul>
 <li>serverless.yml</li>
 </ul>
-<pre class="codehilite"><code class="language-yaml"># Welcome to Serverless!
-#
-# For full config options, check the kubeless plugin docs:
-#    https://github.com/serverless/serverless-kubeless
-#
-# For documentation on kubeless itself:
-#    http://kubeless.io
+<div class="codehilite"><pre><span></span><code><span class="c1"># Welcome to Serverless!</span>
+<span class="c1">#</span>
+<span class="c1"># For full config options, check the kubeless plugin docs:</span>
+<span class="c1">#    https://github.com/serverless/serverless-kubeless</span>
+<span class="c1">#</span>
+<span class="c1"># For documentation on kubeless itself:</span>
+<span class="c1">#    http://kubeless.io</span>
 
-# Update the service name below with your own service name
-service: getfile
+<span class="c1"># Update the service name below with your own service name</span>
+<span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getfile</span>
 
-# Please ensure the serverless-kubeless provider plugin is installed globally.
-# $ npm install -g serverless-kubeless
-#
-# ...before installing project dependencies to register this provider.
-# $ npm install
+<span class="c1"># Please ensure the serverless-kubeless provider plugin is installed globally.</span>
+<span class="c1"># $ npm install -g serverless-kubeless</span>
+<span class="c1">#</span>
+<span class="c1"># ...before installing project dependencies to register this provider.</span>
+<span class="c1"># $ npm install</span>
 
-provider:
-  name: kubeless
-  namespace: ${env:K8S_NAMESPACE, 'cloudera'}
-  runtime: python2.7
+<span class="nt">provider</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubeless</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${env:K8S_NAMESPACE, &#39;cloudera&#39;}</span>
+<span class="w">  </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python2.7</span>
 
-plugins:
-  - serverless-kubeless
+<span class="nt">plugins</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serverless-kubeless</span>
 
-functions:
-  getfile:
-    handler: handler.getfile
-</code></pre>
+<span class="nt">functions</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">getfile</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">handler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">handler.getfile</span>
+</code></pre></div>
 
 <ul>
 <li>requirements.txt</li>
 </ul>
-<pre class="codehilite"><code class="language-txt">bottle==0.12.13
+<div class="codehilite"><pre><span></span><code>bottle==0.12.13
 hdfs==2.1.0
-</code></pre>
+</code></pre></div>
 
 <ul>
 <li>kubernetes Ingress </li>
 </ul>
-<pre class="codehilite"><code class="language-yaml">apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: getfile-ing
-  namespace: cloudera
-spec:
-  rules:
-  - host: getfile.kube.ibm-testing.com
-    http:
-      paths:
-      - backend:
-          serviceName: getfile
-          servicePort: 8080
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extensions/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getfile-ing</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cloudera</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getfile.kube.ibm-testing.com</span>
+<span class="w">    </span><span class="nt">http</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">backend</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getfile</span>
+<span class="w">          </span><span class="nt">servicePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+</code></pre></div>
 
 <h3 id="_1">相关地址</h3>
 <blockquote>
@@ -195,7 +195,7 @@ spec:
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

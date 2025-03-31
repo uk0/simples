@@ -114,36 +114,36 @@
 <p>大家同是菜鸟的人可以看看，我是站在初学者的角度写这篇文章的，所以初学者应该比较容易理解。</p>
 <p>对于一些复杂的shellcodet我们暂且先不谈，我们先来看看自己编写一个打开cmd窗口的shellcode。其实黑客防线上有位大神执笔写了一系列exploit的编写，有兴趣的人自己去看看。</p>
 <h2 id="windowscmd">首先我们需要了解一下windows的运行机制。我们先写一个简单的开启本地cmd窗口的程序：</h2>
-<pre class="codehilite"><code class="language-c">#include&lt;windows.h&gt;  
-Void main()  
-{  
-   WinExec(&quot;cmd.exe&quot;,1);  
-} 
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="cpf">&lt;windows.h&gt;</span><span class="c1">  </span>
+<span class="n">Void</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w">  </span>
+<span class="p">{</span><span class="w">  </span>
+<span class="w">   </span><span class="n">WinExec</span><span class="p">(</span><span class="s">&quot;cmd.exe&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span><span class="w">  </span>
+<span class="p">}</span><span class="w"> </span>
+</code></pre></div>
 
 <h3 id="visual-cf10">在Visual C++上按F10进入反汇编代码:</h3>
-<pre class="codehilite"><code class="language-c">:#include”windows.h”  
-2:void main()  
-3:    {  
-00401010   push        ebp  
-00401011   mov         ebp,esp  
-00401013   sub         esp,40h  
-00401016   push        ebx  
-00401017   push        esi  
-00401018   push        edi  
-00401019   lea         edi,[ebp-40h]  
-0040101C   mov         ecx,10h  
-00401021   mov         eax,0CCCCCCCCh  
-00401026   rep stos    dword ptr [edi]  
-4:        WinExec(&quot;cmd.exe&quot;,1);  
-00401028   mov         esi,esp  
-0040102A   push        1  
-0040102C   push        offset string &quot;cmd.exe&quot; (0041f01c)  
-00401031   call        dword ptr [__imp__WinExec@8 (0042413c)]  
-00401037   cmp         esi,esp  
-00401039   call        __chkesp (00401070)  
-5:    }  
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="o">:</span><span class="err">#</span><span class="n">include</span><span class="err">”</span><span class="n">windows</span><span class="p">.</span><span class="n">h</span><span class="err">”</span><span class="w">  </span>
+<span class="mi">2</span><span class="o">:</span><span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w">  </span>
+<span class="mi">3</span><span class="o">:</span><span class="w">    </span><span class="p">{</span><span class="w">  </span>
+<span class="mo">00401010</span><span class="w">   </span><span class="n">push</span><span class="w">        </span><span class="n">ebp</span><span class="w">  </span>
+<span class="mo">00401011</span><span class="w">   </span><span class="n">mov</span><span class="w">         </span><span class="n">ebp</span><span class="p">,</span><span class="n">esp</span><span class="w">  </span>
+<span class="mo">00401013</span><span class="w">   </span><span class="n">sub</span><span class="w">         </span><span class="n">esp</span><span class="p">,</span><span class="mi">40</span><span class="n">h</span><span class="w">  </span>
+<span class="mo">00401016</span><span class="w">   </span><span class="n">push</span><span class="w">        </span><span class="n">ebx</span><span class="w">  </span>
+<span class="mo">00401017</span><span class="w">   </span><span class="n">push</span><span class="w">        </span><span class="n">esi</span><span class="w">  </span>
+<span class="mo">0040101</span><span class="mi">8</span><span class="w">   </span><span class="n">push</span><span class="w">        </span><span class="n">edi</span><span class="w">  </span>
+<span class="mo">0040101</span><span class="mi">9</span><span class="w">   </span><span class="n">lea</span><span class="w">         </span><span class="n">edi</span><span class="p">,[</span><span class="n">ebp</span><span class="mi">-40</span><span class="n">h</span><span class="p">]</span><span class="w">  </span>
+<span class="mo">0040101</span><span class="n">C</span><span class="w">   </span><span class="n">mov</span><span class="w">         </span><span class="n">ecx</span><span class="p">,</span><span class="mi">10</span><span class="n">h</span><span class="w">  </span>
+<span class="mo">00401021</span><span class="w">   </span><span class="n">mov</span><span class="w">         </span><span class="n">eax</span><span class="p">,</span><span class="mi">0</span><span class="n">CCCCCCCCh</span><span class="w">  </span>
+<span class="mo">00401026</span><span class="w">   </span><span class="n">rep</span><span class="w"> </span><span class="n">stos</span><span class="w">    </span><span class="n">dword</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="p">[</span><span class="n">edi</span><span class="p">]</span><span class="w">  </span>
+<span class="mi">4</span><span class="o">:</span><span class="w">        </span><span class="n">WinExec</span><span class="p">(</span><span class="s">&quot;cmd.exe&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span><span class="w">  </span>
+<span class="mo">0040102</span><span class="mi">8</span><span class="w">   </span><span class="n">mov</span><span class="w">         </span><span class="n">esi</span><span class="p">,</span><span class="n">esp</span><span class="w">  </span>
+<span class="mo">0040102</span><span class="n">A</span><span class="w">   </span><span class="n">push</span><span class="w">        </span><span class="mi">1</span><span class="w">  </span>
+<span class="mo">0040102</span><span class="n">C</span><span class="w">   </span><span class="n">push</span><span class="w">        </span><span class="n">offset</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="s">&quot;cmd.exe&quot;</span><span class="w"> </span><span class="p">(</span><span class="mf">0041f</span><span class="mo">01</span><span class="n">c</span><span class="p">)</span><span class="w">  </span>
+<span class="mo">00401031</span><span class="w">   </span><span class="n">call</span><span class="w">        </span><span class="n">dword</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="p">[</span><span class="n">__imp__WinExec</span><span class="err">@</span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="mo">0042413</span><span class="n">c</span><span class="p">)]</span><span class="w">  </span>
+<span class="mo">00401037</span><span class="w">   </span><span class="n">cmp</span><span class="w">         </span><span class="n">esi</span><span class="p">,</span><span class="n">esp</span><span class="w">  </span>
+<span class="mo">0040103</span><span class="mi">9</span><span class="w">   </span><span class="n">call</span><span class="w">        </span><span class="n">__chkesp</span><span class="w"> </span><span class="p">(</span><span class="mo">00401070</span><span class="p">)</span><span class="w">  </span>
+<span class="mi">5</span><span class="o">:</span><span class="w">    </span><span class="p">}</span><span class="w">  </span>
+</code></pre></div>
 
 <p>通过这个程序我们可以清楚的看到计算机在调用WinExec函数的时候是先把两个参数从右至左一次压入栈，然后调用call函数转到WinExec的地址去。但是要注意的是call函数除了实现地址的跳转还有一点就是把当前的EIP压入栈。</p>
 <p>对于shellcode是机器码，大多数人看到都会晕乎乎的，但是不用怕，我们所要做的工作不是用机器码写这一大堆东西，这些计算机已经为我们做的很好了，我们所要做的就是用汇编甚至是高级语言写下我们要实现的代码。</p>
@@ -151,81 +151,81 @@ Void main()
 <p><img alt="" src="/static/demos/feb1aef7-5ae0-43d1-bdbf-b234589fa766.jpeg" /></p>
 <p>我们可以看到KERNEL.DLL的入口地址是0x7c800000而WinExec的入口地址是0x0006250D那么WinExec的地址就出来了两个相加得到0x7C86250D，这个方法是不是很简单？另外本菜鸟使用的是windows XP sp3不同的系统可能有所不同。</p>
 <p>有了入口地址，我们可以用汇编来编写我们的shellcode，</p>
-<pre class="codehilite"><code class="language-c">#include&lt;windows.h&gt;  
-void main()  
-{  
-    _asm  
-    {  
-        push ebp  
-        mov ebp,esp  
-        xor edi,edi  
-        push edi  
-        sub esp,04h  
-        mov [ebp-08h],63h  
-        mov [ebp-07h],6Dh  
-        mov [ebp-06h],64h  
-        mov [ebp-05h],2Eh  
-        mov [ebp-04h],65h  
-        mov [ebp-03h],78h  
-        mov [ebp-02h],65h  
-        push 1         //压入第一个参数  
-        lea eax,[ebp-08h]           
-        push eax           //压入第二个参数  
-        mov edx,0x7C86250D  
-        call edx            //调用WinExec  
-        leave  
-    };  
-}  
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="cpf">&lt;windows.h&gt;</span><span class="c1">  </span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w">  </span>
+<span class="p">{</span><span class="w">  </span>
+<span class="w">    </span><span class="n">_asm</span><span class="w">  </span>
+<span class="w">    </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">push</span><span class="w"> </span><span class="n">ebp</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="n">ebp</span><span class="p">,</span><span class="n">esp</span><span class="w">  </span>
+<span class="w">        </span><span class="n">xor</span><span class="w"> </span><span class="n">edi</span><span class="p">,</span><span class="n">edi</span><span class="w">  </span>
+<span class="w">        </span><span class="n">push</span><span class="w"> </span><span class="n">edi</span><span class="w">  </span>
+<span class="w">        </span><span class="n">sub</span><span class="w"> </span><span class="n">esp</span><span class="p">,</span><span class="mo">04</span><span class="n">h</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="p">[</span><span class="n">ebp</span><span class="mi">-08</span><span class="n">h</span><span class="p">],</span><span class="mi">63</span><span class="n">h</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="p">[</span><span class="n">ebp</span><span class="mo">-07</span><span class="n">h</span><span class="p">],</span><span class="mi">6</span><span class="n">Dh</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="p">[</span><span class="n">ebp</span><span class="mo">-06</span><span class="n">h</span><span class="p">],</span><span class="mi">64</span><span class="n">h</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="p">[</span><span class="n">ebp</span><span class="mo">-05</span><span class="n">h</span><span class="p">],</span><span class="mi">2</span><span class="n">Eh</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="p">[</span><span class="n">ebp</span><span class="mo">-04</span><span class="n">h</span><span class="p">],</span><span class="mi">65</span><span class="n">h</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="p">[</span><span class="n">ebp</span><span class="mo">-03</span><span class="n">h</span><span class="p">],</span><span class="mi">78</span><span class="n">h</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="p">[</span><span class="n">ebp</span><span class="mo">-02</span><span class="n">h</span><span class="p">],</span><span class="mi">65</span><span class="n">h</span><span class="w">  </span>
+<span class="w">        </span><span class="n">push</span><span class="w"> </span><span class="mi">1</span><span class="w">         </span><span class="c1">//压入第一个参数  </span>
+<span class="w">        </span><span class="n">lea</span><span class="w"> </span><span class="n">eax</span><span class="p">,[</span><span class="n">ebp</span><span class="mi">-08</span><span class="n">h</span><span class="p">]</span><span class="w">           </span>
+<span class="w">        </span><span class="n">push</span><span class="w"> </span><span class="n">eax</span><span class="w">           </span><span class="c1">//压入第二个参数  </span>
+<span class="w">        </span><span class="n">mov</span><span class="w"> </span><span class="n">edx</span><span class="p">,</span><span class="mh">0x7C86250D</span><span class="w">  </span>
+<span class="w">        </span><span class="n">call</span><span class="w"> </span><span class="n">edx</span><span class="w">            </span><span class="c1">//调用WinExec  </span>
+<span class="w">        </span><span class="n">leave</span><span class="w">  </span>
+<span class="w">    </span><span class="p">};</span><span class="w">  </span>
+<span class="p">}</span><span class="w">  </span>
+</code></pre></div>
 
 <p>按F10进入反汇编调试器中，在按Alt+8看到汇编代码，此时并没有机器码啊，别着急，在空白的地方右击出现的下拉菜单中选中Code Byte一项。看看出现了什么？在每一行汇编代码前出现了机器码！如下图</p>
 <p><img alt="" src="/static/demos/0d6ce28d-d9c8-47b8-b21b-1eeb923c9754.bmp" /></p>
 <p>下面要做的工作就是把这些机器码抄下来了，这个是体力活。直接抄在一起比如：558BEC83EC……那么我们还要在每两个字母前手动添加/x么？当然不用，写一个小程序，一劳永逸：</p>
-<pre class="codehilite"><code class="language-c">#include &quot;stdio.h&quot;  
-#include &quot;stdlib.h&quot;  
-int main()  
-{  
-    FILE *fp1=NULL,*fp2=NULL;  
-    char ch,filename[20]={0};  
-    printf(&quot;请输入文件路径：(注意字符转义)/n&quot;);  
-    scanf(&quot;%s&quot;,filename);  
-    if((fp1=fopen(filename,&quot;rb&quot;))==NULL)  
-    {  
-        printf(&quot;不能读取文件！/n&quot;);  
-        exit(0);  
-    }  
-    if((fp2=fopen(&quot;shellcode.txt&quot;,&quot;w+&quot;))==NULL)  
-    {  
-        printf(&quot;不能写入文件！/n&quot;);  
-        exit(0);  
-    }  
-    while (!feof(fp1))  
-    {  
-        ch=fgetc(fp1);  
-        fputc('//',fp2);  
-        fputc('x',fp2);  
-        fputc(ch,fp2);  
-        ch=fgetc(fp1);  
-        fputc(ch,fp2);  
-    }  
-    printf(&quot;转换成功！&quot;);  
-    fclose(fp1);  
-    fclose(fp2);  
-    return 0;  
+<div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdio.h&quot;</span><span class="c1">  </span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdlib.h&quot;</span><span class="c1">  </span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w">  </span>
+<span class="p">{</span><span class="w">  </span>
+<span class="w">    </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">fp1</span><span class="o">=</span><span class="nb">NULL</span><span class="p">,</span><span class="o">*</span><span class="n">fp2</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span><span class="w">  </span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">ch</span><span class="p">,</span><span class="n">filename</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">  </span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;请输入文件路径：(注意字符转义)/n&quot;</span><span class="p">);</span><span class="w">  </span>
+<span class="w">    </span><span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span><span class="n">filename</span><span class="p">);</span><span class="w">  </span>
+<span class="w">    </span><span class="k">if</span><span class="p">((</span><span class="n">fp1</span><span class="o">=</span><span class="n">fopen</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&quot;rb&quot;</span><span class="p">))</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span><span class="w">  </span>
+<span class="w">    </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;不能读取文件！/n&quot;</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<span class="w">    </span><span class="k">if</span><span class="p">((</span><span class="n">fp2</span><span class="o">=</span><span class="n">fopen</span><span class="p">(</span><span class="s">&quot;shellcode.txt&quot;</span><span class="p">,</span><span class="s">&quot;w+&quot;</span><span class="p">))</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span><span class="w">  </span>
+<span class="w">    </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;不能写入文件！/n&quot;</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">feof</span><span class="p">(</span><span class="n">fp1</span><span class="p">))</span><span class="w">  </span>
+<span class="w">    </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">ch</span><span class="o">=</span><span class="n">fgetc</span><span class="p">(</span><span class="n">fp1</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">fputc</span><span class="p">(</span><span class="err">&#39;</span><span class="c1">//&#39;,fp2);  </span>
+<span class="w">        </span><span class="n">fputc</span><span class="p">(</span><span class="sc">&#39;x&#39;</span><span class="p">,</span><span class="n">fp2</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">fputc</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span><span class="n">fp2</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">ch</span><span class="o">=</span><span class="n">fgetc</span><span class="p">(</span><span class="n">fp1</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">fputc</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span><span class="n">fp2</span><span class="p">);</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;转换成功！&quot;</span><span class="p">);</span><span class="w">  </span>
+<span class="w">    </span><span class="n">fclose</span><span class="p">(</span><span class="n">fp1</span><span class="p">);</span><span class="w">  </span>
+<span class="w">    </span><span class="n">fclose</span><span class="p">(</span><span class="n">fp2</span><span class="p">);</span><span class="w">  </span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span>
 
-}  
-</code></pre>
+<span class="p">}</span><span class="w">  </span>
+</code></pre></div>
 
 <p>最终转换的shellcode就是</p>
-<pre class="codehilite"><code class="language-c">/x55/x8B/xEX/x83/xEC/x40/x53/x56/x57/x8D/x7D/xC0/xB9/x10/x11/x11/x11/xB8/xCC/xCC/xCC/xCC/xF3/x1B/x55/x8B/xEC/x33/xFF/x57/x83/xEC/x04/xC6/x45/xF8/x63/xC6/x45/xF9/x6D/xC6/x45/xFA/x64/xC6/x45/xFB/x2E/xC6/x45/xFC/x65/xC6/x45/xFD/x78/xC6/x45/xFE/x65/x6A/x01/x8D/x45/xF8/x50/xBA/x0D/x25/x86/x7C/xFF/xD2/xC9
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="o">/</span><span class="n">x55</span><span class="o">/</span><span class="n">x8B</span><span class="o">/</span><span class="n">xEX</span><span class="o">/</span><span class="n">x83</span><span class="o">/</span><span class="n">xEC</span><span class="o">/</span><span class="n">x40</span><span class="o">/</span><span class="n">x53</span><span class="o">/</span><span class="n">x56</span><span class="o">/</span><span class="n">x57</span><span class="o">/</span><span class="n">x8D</span><span class="o">/</span><span class="n">x7D</span><span class="o">/</span><span class="n">xC0</span><span class="o">/</span><span class="n">xB9</span><span class="o">/</span><span class="n">x10</span><span class="o">/</span><span class="n">x11</span><span class="o">/</span><span class="n">x11</span><span class="o">/</span><span class="n">x11</span><span class="o">/</span><span class="n">xB8</span><span class="o">/</span><span class="n">xCC</span><span class="o">/</span><span class="n">xCC</span><span class="o">/</span><span class="n">xCC</span><span class="o">/</span><span class="n">xCC</span><span class="o">/</span><span class="n">xF3</span><span class="o">/</span><span class="n">x1B</span><span class="o">/</span><span class="n">x55</span><span class="o">/</span><span class="n">x8B</span><span class="o">/</span><span class="n">xEC</span><span class="o">/</span><span class="n">x33</span><span class="o">/</span><span class="n">xFF</span><span class="o">/</span><span class="n">x57</span><span class="o">/</span><span class="n">x83</span><span class="o">/</span><span class="n">xEC</span><span class="o">/</span><span class="n">x04</span><span class="o">/</span><span class="n">xC6</span><span class="o">/</span><span class="n">x45</span><span class="o">/</span><span class="n">xF8</span><span class="o">/</span><span class="n">x63</span><span class="o">/</span><span class="n">xC6</span><span class="o">/</span><span class="n">x45</span><span class="o">/</span><span class="n">xF9</span><span class="o">/</span><span class="n">x6D</span><span class="o">/</span><span class="n">xC6</span><span class="o">/</span><span class="n">x45</span><span class="o">/</span><span class="n">xFA</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">xC6</span><span class="o">/</span><span class="n">x45</span><span class="o">/</span><span class="n">xFB</span><span class="o">/</span><span class="n">x2E</span><span class="o">/</span><span class="n">xC6</span><span class="o">/</span><span class="n">x45</span><span class="o">/</span><span class="n">xFC</span><span class="o">/</span><span class="n">x65</span><span class="o">/</span><span class="n">xC6</span><span class="o">/</span><span class="n">x45</span><span class="o">/</span><span class="n">xFD</span><span class="o">/</span><span class="n">x78</span><span class="o">/</span><span class="n">xC6</span><span class="o">/</span><span class="n">x45</span><span class="o">/</span><span class="n">xFE</span><span class="o">/</span><span class="n">x65</span><span class="o">/</span><span class="n">x6A</span><span class="o">/</span><span class="n">x01</span><span class="o">/</span><span class="n">x8D</span><span class="o">/</span><span class="n">x45</span><span class="o">/</span><span class="n">xF8</span><span class="o">/</span><span class="n">x50</span><span class="o">/</span><span class="n">xBA</span><span class="o">/</span><span class="n">x0D</span><span class="o">/</span><span class="n">x25</span><span class="o">/</span><span class="n">x86</span><span class="o">/</span><span class="n">x7C</span><span class="o">/</span><span class="n">xFF</span><span class="o">/</span><span class="n">xD2</span><span class="o">/</span><span class="n">xC9</span>
+</code></pre></div>
 
 <p>到这里该讲的都讲完了，还是那一句话，菜鸟言论，大牛飘过。。。</p>
 <h3 id="httpsblogcsdnnetyiyefangzhou24articledetails6440239">原文：https://blog.csdn.net/yiyefangzhou24/article/details/6440239</h3>
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

@@ -121,59 +121,59 @@ author：zhangjianxin</p>
     error_log  /var/log/nginx/error.log warn;
     pid        /var/run/nginx.pid;
     worker_rlimit_nofile 1024;</p>
-<pre class="codehilite"><code>events {
-  worker_connections  1024;
-}
+<div class="codehilite"><pre><span></span><code><span class="nx">events</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">worker_connections</span><span class="w">  </span><span class="mi">1024</span><span class="p">;</span>
+<span class="p">}</span>
 
-http {
-    include       mime.types;
-    default_type  application/octet-stream;
+<span class="nx">http</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">include</span><span class="w">       </span><span class="nx">mime</span><span class="p">.</span><span class="nx">types</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">default_type</span><span class="w">  </span><span class="nx">application</span><span class="o">/</span><span class="nx">octet</span><span class="o">-</span><span class="nx">stream</span><span class="p">;</span>
 
-    log_format  main  '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '
-                     '$status $body_bytes_sent &quot;$http_referer&quot; '
-                      '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';
+<span class="w">    </span><span class="nx">log_format</span><span class="w">  </span><span class="nx">main</span><span class="w">  </span><span class="err">&#39;$</span><span class="nx">remote_addr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="err">$</span><span class="nx">remote_user</span><span class="w"> </span><span class="p">[</span><span class="err">$</span><span class="nx">time_local</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;$request&quot;</span><span class="w"> </span><span class="err">&#39;</span>
+<span class="w">                     </span><span class="err">&#39;$</span><span class="nx">status</span><span class="w"> </span><span class="err">$</span><span class="nx">body_bytes_sent</span><span class="w"> </span><span class="s">&quot;$http_referer&quot;</span><span class="w"> </span><span class="err">&#39;</span>
+<span class="w">                      </span><span class="err">&#39;</span><span class="s">&quot;$http_user_agent&quot;</span><span class="w"> </span><span class="s">&quot;$http_x_forwarded_for&quot;</span><span class="err">&#39;</span><span class="p">;</span>
 
-    log_format  error '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '
-                     '$status $body_bytes_sent &quot;$http_referer&quot; '
-                      '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';
+<span class="w">    </span><span class="nx">log_format</span><span class="w">  </span><span class="nx">error</span><span class="w"> </span><span class="err">&#39;$</span><span class="nx">remote_addr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="err">$</span><span class="nx">remote_user</span><span class="w"> </span><span class="p">[</span><span class="err">$</span><span class="nx">time_local</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;$request&quot;</span><span class="w"> </span><span class="err">&#39;</span>
+<span class="w">                     </span><span class="err">&#39;$</span><span class="nx">status</span><span class="w"> </span><span class="err">$</span><span class="nx">body_bytes_sent</span><span class="w"> </span><span class="s">&quot;$http_referer&quot;</span><span class="w"> </span><span class="err">&#39;</span>
+<span class="w">                      </span><span class="err">&#39;</span><span class="s">&quot;$http_user_agent&quot;</span><span class="w"> </span><span class="s">&quot;$http_x_forwarded_for&quot;</span><span class="err">&#39;</span><span class="p">;</span>
 
-    access_log  logs/access.log  main;
+<span class="w">    </span><span class="nx">access_log</span><span class="w">  </span><span class="nx">logs</span><span class="o">/</span><span class="nx">access</span><span class="p">.</span><span class="nx">log</span><span class="w">  </span><span class="nx">main</span><span class="p">;</span>
 
-    sendfile        on;
+<span class="w">    </span><span class="nx">sendfile</span><span class="w">        </span><span class="nx">on</span><span class="p">;</span>
 
-    keepalive_timeout  65;
+<span class="w">    </span><span class="nx">keepalive_timeout</span><span class="w">  </span><span class="mi">65</span><span class="p">;</span>
 
-    gzip  on;
-    include /etc/nginx/conf.d/upstream/*.conf;
-    include /etc/nginx/conf.d/vhost/*.conf;
-}
-</code></pre>
+<span class="w">    </span><span class="nx">gzip</span><span class="w">  </span><span class="nx">on</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">include</span><span class="w"> </span><span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">nginx</span><span class="o">/</span><span class="nx">conf</span><span class="p">.</span><span class="nx">d</span><span class="o">/</span><span class="nx">upstream</span><span class="o">/*</span><span class="p">.</span><span class="nx">conf</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">include</span><span class="w"> </span><span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">nginx</span><span class="o">/</span><span class="nx">conf</span><span class="p">.</span><span class="nx">d</span><span class="o">/</span><span class="nx">vhost</span><span class="o">/*</span><span class="p">.</span><span class="nx">conf</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>```</p>
 <h1 id="nginx-upstream-config">nginx upstream config</h1>
-<pre class="codehilite"><code>```bash
+<div class="codehilite"><pre><span></span><code><span class="err">```</span><span class="nt">bash</span>
 
-upstream post_servers {
-    ip_hash;
-    server dscn01:80 weight=5 backup;
-    server dscn02:80 weight=10 max_fails=3 fail_timeout=30s;
-}
+<span class="nt">upstream</span><span class="w"> </span><span class="nt">post_servers</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="err">ip_hash</span><span class="p">;</span>
+<span class="w">    </span><span class="err">server</span><span class="w"> </span><span class="n">dscn01</span><span class="p">:</span><span class="mi">80</span><span class="w"> </span><span class="kc">weight</span><span class="o">=</span><span class="mi">5</span><span class="w"> </span><span class="n">backup</span><span class="p">;</span>
+<span class="w">    </span><span class="err">server</span><span class="w"> </span><span class="n">dscn02</span><span class="p">:</span><span class="mi">80</span><span class="w"> </span><span class="kc">weight</span><span class="o">=</span><span class="mi">10</span><span class="w"> </span><span class="n">max_fails</span><span class="o">=</span><span class="mi">3</span><span class="w"> </span><span class="n">fail_timeout</span><span class="o">=</span><span class="mi">30</span><span class="kt">s</span><span class="p">;</span>
+<span class="p">}</span>
 
-```
-</code></pre>
+<span class="err">```</span>
+</code></pre></div>
 
 <h1 id="nginx-vhost-config">nginx vhost  config</h1>
-<pre class="codehilite"><code class="language-bash">server {
-    listen       80;      #监听80端口
-    access_log   logs/post.access.log main;  #使用main等级配置访问日志。
-    error_log    logs/post.error.log error;          #使用error等级配置错误日志。
+<div class="codehilite"><pre><span></span><code>server<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>listen<span class="w">       </span><span class="m">80</span><span class="p">;</span><span class="w">      </span><span class="c1">#监听80端口</span>
+<span class="w">    </span>access_log<span class="w">   </span>logs/post.access.log<span class="w"> </span>main<span class="p">;</span><span class="w">  </span><span class="c1">#使用main等级配置访问日志。</span>
+<span class="w">    </span>error_log<span class="w">    </span>logs/post.error.log<span class="w"> </span>error<span class="p">;</span><span class="w">          </span><span class="c1">#使用error等级配置错误日志。</span>
 
-    set $post_servers_upstream   &quot;post_servers&quot;;   #使用set指令配置upstream为：'post_servers'
-    location / {  #将所有的请求代理到post_servers_upstream中。
-      proxy_pass      http://$post_servers_upstream;
-    }
-  }
-</code></pre>
+<span class="w">    </span><span class="nb">set</span><span class="w"> </span><span class="nv">$post_servers_upstream</span><span class="w">   </span><span class="s2">&quot;post_servers&quot;</span><span class="p">;</span><span class="w">   </span><span class="c1">#使用set指令配置upstream为：&#39;post_servers&#39;</span>
+<span class="w">    </span>location<span class="w"> </span>/<span class="w"> </span><span class="o">{</span><span class="w">  </span><span class="c1">#将所有的请求代理到post_servers_upstream中。</span>
+<span class="w">      </span>proxy_pass<span class="w">      </span>http://<span class="nv">$post_servers_upstream</span><span class="p">;</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">}</span>
+</code></pre></div>
 
 <p><img alt="" src="/static/images/WX20171106-142733@2x.png" /></p>
 <ul>
@@ -183,7 +183,7 @@ upstream post_servers {
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

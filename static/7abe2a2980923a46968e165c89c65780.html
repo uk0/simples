@@ -120,9 +120,9 @@
 <ul>
 <li>配置Docker 代理下载镜像速度能快一点。</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">minikube start --docker-env HTTP_PROXY=http://192.168.155.2:8118 \
-                 --docker-env HTTPS_PROXY=https://192.168.155.2:8118
-</code></pre>
+<div class="codehilite"><pre><span></span><code>minikube<span class="w"> </span>start<span class="w"> </span>--docker-env<span class="w"> </span><span class="nv">HTTP_PROXY</span><span class="o">=</span>http://192.168.155.2:8118<span class="w"> </span><span class="se">\</span>
+<span class="w">                 </span>--docker-env<span class="w"> </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span>https://192.168.155.2:8118
+</code></pre></div>
 
 <ul>
 <li>检查kubernetes 是否已经启动完成。</li>
@@ -164,25 +164,25 @@
 <p>执行创建命令</p>
 </li>
 </ul>
-<pre class="codehilite"><code class="language-bash">    serverless create --template kubeless-python
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span>serverless<span class="w"> </span>create<span class="w"> </span>--template<span class="w"> </span>kubeless-python
+</code></pre></div>
 
 <ul>
 <li>结果 </li>
 </ul>
-<pre class="codehilite"><code class="language-bash">➜  demo2 serverless create --template kubeless-python
-    Serverless: Generating boilerplate...
-    _______                             __
-    |   _   .-----.----.--.--.-----.----|  .-----.-----.-----.
-    |   |___|  -__|   _|  |  |  -__|   _|  |  -__|__ --|__ --|
-    |____   |_____|__|  \___/|_____|__| |__|_____|_____|_____|
-    |   |   |             The Serverless Application Framework
-    |       |                           serverless.com, v1.25.0
-    -------'
+<div class="codehilite"><pre><span></span><code>➜<span class="w">  </span>demo2<span class="w"> </span>serverless<span class="w"> </span>create<span class="w"> </span>--template<span class="w"> </span>kubeless-python
+<span class="w">    </span>Serverless:<span class="w"> </span>Generating<span class="w"> </span>boilerplate...
+<span class="w">    </span>_______<span class="w">                             </span>__
+<span class="w">    </span><span class="p">|</span><span class="w">   </span>_<span class="w">   </span>.-----.----.--.--.-----.----<span class="p">|</span><span class="w">  </span>.-----.-----.-----.
+<span class="w">    </span><span class="p">|</span><span class="w">   </span><span class="p">|</span>___<span class="p">|</span><span class="w">  </span>-__<span class="p">|</span><span class="w">   </span>_<span class="p">|</span><span class="w">  </span><span class="p">|</span><span class="w">  </span><span class="p">|</span><span class="w">  </span>-__<span class="p">|</span><span class="w">   </span>_<span class="p">|</span><span class="w">  </span><span class="p">|</span><span class="w">  </span>-__<span class="p">|</span>__<span class="w"> </span>--<span class="p">|</span>__<span class="w"> </span>--<span class="p">|</span>
+<span class="w">    </span><span class="p">|</span>____<span class="w">   </span><span class="p">|</span>_____<span class="p">|</span>__<span class="p">|</span><span class="w">  </span><span class="se">\_</span>__/<span class="p">|</span>_____<span class="p">|</span>__<span class="p">|</span><span class="w"> </span><span class="p">|</span>__<span class="p">|</span>_____<span class="p">|</span>_____<span class="p">|</span>_____<span class="p">|</span>
+<span class="w">    </span><span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">             </span>The<span class="w"> </span>Serverless<span class="w"> </span>Application<span class="w"> </span>Framework
+<span class="w">    </span><span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                           </span>serverless.com,<span class="w"> </span>v1.25.0
+<span class="w">    </span>-------<span class="err">&#39;</span>
 
-    Serverless: Successfully generated boilerplate for template: &quot;kubeless-python&quot;
-    Serverless: NOTE: Please update the &quot;service&quot; property in serverless.yml with your service name
-</code></pre>
+<span class="w">    </span>Serverless:<span class="w"> </span>Successfully<span class="w"> </span>generated<span class="w"> </span>boilerplate<span class="w"> </span><span class="k">for</span><span class="w"> </span>template:<span class="w"> </span><span class="s2">&quot;kubeless-python&quot;</span>
+<span class="w">    </span>Serverless:<span class="w"> </span>NOTE:<span class="w"> </span>Please<span class="w"> </span>update<span class="w"> </span>the<span class="w"> </span><span class="s2">&quot;service&quot;</span><span class="w"> </span>property<span class="w"> </span><span class="k">in</span><span class="w"> </span>serverless.yml<span class="w"> </span>with<span class="w"> </span>your<span class="w"> </span>service<span class="w"> </span>name
+</code></pre></div>
 
 <ul>
 <li>目录介绍</li>
@@ -196,50 +196,50 @@
 <ul>
 <li>handler.py</li>
 </ul>
-<pre class="codehilite"><code class="language-python">import json
-def hello(request):
-    body = {
-        &quot;message&quot;: &quot;Go Serverless v1.0! Your function executed successfully!&quot;,
-        &quot;input&quot;: request.json
-    }
-    response = {
-        &quot;statusCode&quot;: 200,
-        &quot;body&quot;: json.dumps(body)
-    }
-    return response
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">json</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Go Serverless v1.0! Your function executed successfully!&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
+    <span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;statusCode&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">response</span>
+</code></pre></div>
 
 <ul>
 <li>serverless.yml</li>
 </ul>
-<pre class="codehilite"><code class="language-yaml">    # Welcome to Serverless!
-    #
-    # For full config options, check the kubeless plugin docs:
-    #    https://github.com/serverless/serverless-kubeless
-    #
-    # For documentation on kubeless itself:
-    #    http://kubeless.io
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1"># Welcome to Serverless!</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># For full config options, check the kubeless plugin docs:</span>
+<span class="w">    </span><span class="c1">#    https://github.com/serverless/serverless-kubeless</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># For documentation on kubeless itself:</span>
+<span class="w">    </span><span class="c1">#    http://kubeless.io</span>
 
-    # Update the service name below with your own service name
-    service: hello-world
+<span class="w">    </span><span class="c1"># Update the service name below with your own service name</span>
+<span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span>
 
-    # Please ensure the serverless-kubeless provider plugin is installed globally.
-    # $ npm install -g serverless-kubeless
-    #
-    # ...before installing project dependencies to register this provider.
-    # $ npm install
+<span class="w">    </span><span class="c1"># Please ensure the serverless-kubeless provider plugin is installed globally.</span>
+<span class="w">    </span><span class="c1"># $ npm install -g serverless-kubeless</span>
+<span class="w">    </span><span class="c1">#</span>
+<span class="w">    </span><span class="c1"># ...before installing project dependencies to register this provider.</span>
+<span class="w">    </span><span class="c1"># $ npm install</span>
 
-    provider:
-    name: kubeless
-    runtime: python2.7
+<span class="w">    </span><span class="nt">provider</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubeless</span>
+<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python2.7</span>
 
-    plugins:
-    - serverless-kubeless
+<span class="w">    </span><span class="nt">plugins</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serverless-kubeless</span>
 
-    functions:
-    demo2:  # 有重名 hello 所以改成demo2
-        handler: handler.hello
-</code></pre>
+<span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">demo2</span><span class="p">:</span><span class="w">  </span><span class="c1"># 有重名 hello 所以改成demo2</span>
+<span class="w">        </span><span class="nt">handler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">handler.hello</span>
+</code></pre></div>
 
 <ul>
 <li>
@@ -255,12 +255,12 @@ def hello(request):
 <p>提示 <code>serverless</code> 可以简写  <code>sls</code></p>
 </li>
 </ul>
-<pre class="codehilite"><code class="language-bash">    ➜  demo2 serverless deploy
-    Serverless: Packaging service...
-    Serverless: Excluding development dependencies...
-    Serverless: Deploying function demo2...
-    Serverless: Function demo2 successfully deployed
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span>➜<span class="w">  </span>demo2<span class="w"> </span>serverless<span class="w"> </span>deploy
+<span class="w">    </span>Serverless:<span class="w"> </span>Packaging<span class="w"> </span>service...
+<span class="w">    </span>Serverless:<span class="w"> </span>Excluding<span class="w"> </span>development<span class="w"> </span>dependencies...
+<span class="w">    </span>Serverless:<span class="w"> </span>Deploying<span class="w"> </span><span class="k">function</span><span class="w"> </span>demo2...
+<span class="w">    </span>Serverless:<span class="w"> </span>Function<span class="w"> </span>demo2<span class="w"> </span>successfully<span class="w"> </span>deployed
+</code></pre></div>
 
 <ul>
 <li>查看是否部署成功</li>
@@ -269,25 +269,25 @@ def hello(request):
 <ul>
 <li>创建<code>Ingress</code></li>
 </ul>
-<pre class="codehilite"><code class="language-bash">kubeless ingress create ingress-demo2  -n default --function demo2
-# 参数介绍
-# ingress-demo 是ingress 的名字
-# -n 是kubernetes 的命名空间
-# --function 是你要绑定到那个 function
-</code></pre>
+<div class="codehilite"><pre><span></span><code>kubeless<span class="w"> </span>ingress<span class="w"> </span>create<span class="w"> </span>ingress-demo2<span class="w">  </span>-n<span class="w"> </span>default<span class="w"> </span>--function<span class="w"> </span>demo2
+<span class="c1"># 参数介绍</span>
+<span class="c1"># ingress-demo 是ingress 的名字</span>
+<span class="c1"># -n 是kubernetes 的命名空间</span>
+<span class="c1"># --function 是你要绑定到那个 function</span>
+</code></pre></div>
 
 <ul>
 <li>执行命令 没有错误即可，检查 ingress 是否创建</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">    kubeless ingress list
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span>kubeless<span class="w"> </span>ingress<span class="w"> </span>list
+</code></pre></div>
 
 <p><img alt="" src="/static/demos/e2839acc-e728-4f81-99e1-97474ec53a40.png" /></p>
 <ul>
 <li>找到我们的链接</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">    demo2.192.168.64.2.nip.io
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span>demo2.192.168.64.2.nip.io
+</code></pre></div>
 
 <ul>
 <li>用postman进行测试。</li>
@@ -305,7 +305,7 @@ def hello(request):
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

@@ -117,109 +117,109 @@ author：zhangjianxin</p>
 <li><a href="#_1">先看代码</a></li>
 </ul>
 </div>
-<pre class="codehilite"><code class="language-python">import socket,asyncore
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span><span class="nn">asyncore</span>
 
-class forwarder(asyncore.dispatcher):
-    def __init__(self, ip, port, remoteip,remoteport,backlog=5):
-        asyncore.dispatcher.__init__(self)
-        self.remoteip=remoteip
-        self.remoteport=remoteport
-        self.create_socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.set_reuse_addr()
-        self.bind((ip,port))
-        self.listen(backlog)
+<span class="k">class</span> <span class="nc">forwarder</span><span class="p">(</span><span class="n">asyncore</span><span class="o">.</span><span class="n">dispatcher</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">remoteip</span><span class="p">,</span><span class="n">remoteport</span><span class="p">,</span><span class="n">backlog</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">asyncore</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remoteip</span><span class="o">=</span><span class="n">remoteip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remoteport</span><span class="o">=</span><span class="n">remoteport</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span><span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_reuse_addr</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">ip</span><span class="p">,</span><span class="n">port</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">backlog</span><span class="p">)</span>
 
-    def handle_accept(self):
-        conn, addr = self.accept()
-        # print '--- Connect --- '
-        sender(receiver(conn),self.remoteip,self.remoteport)
+    <span class="k">def</span> <span class="nf">handle_accept</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="c1"># print &#39;--- Connect --- &#39;</span>
+        <span class="n">sender</span><span class="p">(</span><span class="n">receiver</span><span class="p">(</span><span class="n">conn</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">remoteip</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">remoteport</span><span class="p">)</span>
 
-class receiver(asyncore.dispatcher):
-    def __init__(self,conn):
-        asyncore.dispatcher.__init__(self,conn)
-        self.from_remote_buffer=''
-        self.to_remote_buffer=''
-        self.sender=None
+<span class="k">class</span> <span class="nc">receiver</span><span class="p">(</span><span class="n">asyncore</span><span class="o">.</span><span class="n">dispatcher</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">conn</span><span class="p">):</span>
+        <span class="n">asyncore</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_remote_buffer</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_remote_buffer</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="o">=</span><span class="kc">None</span>
 
-    def handle_connect(self):
-        pass
+    <span class="k">def</span> <span class="nf">handle_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 
-    def handle_read(self):
-        read = self.recv(4096)
-        # print '%04i --&gt;'%len(read)
-        self.from_remote_buffer += read
+    <span class="k">def</span> <span class="nf">handle_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">read</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+        <span class="c1"># print &#39;%04i --&gt;&#39;%len(read)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_remote_buffer</span> <span class="o">+=</span> <span class="n">read</span>
 
-    def writable(self):
-        return (len(self.to_remote_buffer) &gt; 0)
+    <span class="k">def</span> <span class="nf">writable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_remote_buffer</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 
-    def handle_write(self):
-        sent = self.send(self.to_remote_buffer)
-        # print '%04i &lt;--'%sent
-        self.to_remote_buffer = self.to_remote_buffer[sent:]
+    <span class="k">def</span> <span class="nf">handle_write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_remote_buffer</span><span class="p">)</span>
+        <span class="c1"># print &#39;%04i &lt;--&#39;%sent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_remote_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_remote_buffer</span><span class="p">[</span><span class="n">sent</span><span class="p">:]</span>
 
-    def handle_close(self):
-        self.close()
-        if self.sender:
-            self.sender.close()
+    <span class="k">def</span> <span class="nf">handle_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-class sender(asyncore.dispatcher):
-    def __init__(self, receiver, remoteaddr,remoteport):
-        asyncore.dispatcher.__init__(self)
-        self.receiver=receiver
-        receiver.sender=self
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect((remoteaddr, remoteport))
+<span class="k">class</span> <span class="nc">sender</span><span class="p">(</span><span class="n">asyncore</span><span class="o">.</span><span class="n">dispatcher</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">remoteaddr</span><span class="p">,</span><span class="n">remoteport</span><span class="p">):</span>
+        <span class="n">asyncore</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span>
+        <span class="n">receiver</span><span class="o">.</span><span class="n">sender</span><span class="o">=</span><span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">remoteaddr</span><span class="p">,</span> <span class="n">remoteport</span><span class="p">))</span>
 
-    def handle_connect(self):
-        pass  #www.iplaypy.com
+    <span class="k">def</span> <span class="nf">handle_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>  <span class="c1">#www.iplaypy.com</span>
 
-    def handle_read(self):
-        read = self.recv(4096)
-        # print '&lt;-- %04i'%len(read)
-        self.receiver.to_remote_buffer += read
+    <span class="k">def</span> <span class="nf">handle_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">read</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+        <span class="c1"># print &#39;&lt;-- %04i&#39;%len(read)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="o">.</span><span class="n">to_remote_buffer</span> <span class="o">+=</span> <span class="n">read</span>
 
-    def writable(self):
-        return (len(self.receiver.from_remote_buffer) &gt; 0)
+    <span class="k">def</span> <span class="nf">writable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="o">.</span><span class="n">from_remote_buffer</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 
-    def handle_write(self):
-        sent = self.send(self.receiver.from_remote_buffer)
-        # print '--&gt; %04i'%sent
-        self.receiver.from_remote_buffer = self.receiver.from_remote_buffer[sent:]
+    <span class="k">def</span> <span class="nf">handle_write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="o">.</span><span class="n">from_remote_buffer</span><span class="p">)</span>
+        <span class="c1"># print &#39;--&gt; %04i&#39;%sent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="o">.</span><span class="n">from_remote_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="o">.</span><span class="n">from_remote_buffer</span><span class="p">[</span><span class="n">sent</span><span class="p">:]</span>
 
-    def handle_close(self):
-        self.close()
-        self.receiver.close()
+    <span class="k">def</span> <span class="nf">handle_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-if __name__=='__main__':
-    import optparse
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">optparse</span>
 
-    parser = optparse.OptionParser()
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
 
-    parser.add_option(
-        '-l','--local-ip',
-        dest='local_ip',default='127.0.0.1',
-        help='Local IP address to bind to')
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span>
+        <span class="s1">&#39;-l&#39;</span><span class="p">,</span><span class="s1">&#39;--local-ip&#39;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;local_ip&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Local IP address to bind to&#39;</span><span class="p">)</span>
 
-    parser.add_option(
-        '-p','--local-port',
-        type='int',dest='local_port',default=80,
-        help='Local port to bind to')
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span>
+        <span class="s1">&#39;-p&#39;</span><span class="p">,</span><span class="s1">&#39;--local-port&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;local_port&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Local port to bind to&#39;</span><span class="p">)</span>
 
-    parser.add_option(
-        '-r','--remote-ip',dest='remote_ip',
-        help='Local IP address to bind to')
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span>
+        <span class="s1">&#39;-r&#39;</span><span class="p">,</span><span class="s1">&#39;--remote-ip&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;remote_ip&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Local IP address to bind to&#39;</span><span class="p">)</span>
 
-    parser.add_option(
-        '-P','--remote-port',
-        type='int',dest='remote_port',default=80,
-        help='Remote port to bind to')
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span>
+        <span class="s1">&#39;-P&#39;</span><span class="p">,</span><span class="s1">&#39;--remote-port&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;remote_port&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Remote port to bind to&#39;</span><span class="p">)</span>
 
-    options, args = parser.parse_args()
+    <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
-    forwarder(options.local_ip,options.local_port,options.remote_ip,options.remote_port)
+    <span class="n">forwarder</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">local_ip</span><span class="p">,</span><span class="n">options</span><span class="o">.</span><span class="n">local_port</span><span class="p">,</span><span class="n">options</span><span class="o">.</span><span class="n">remote_ip</span><span class="p">,</span><span class="n">options</span><span class="o">.</span><span class="n">remote_port</span><span class="p">)</span>
 
-    asyncore.loop()
-</code></pre>
+    <span class="n">asyncore</span><span class="o">.</span><span class="n">loop</span><span class="p">()</span>
+</code></pre></div>
 
 <ul>
 <li>以上操作经过验证可以直接拿去。</li>
@@ -228,7 +228,7 @@ if __name__=='__main__':
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

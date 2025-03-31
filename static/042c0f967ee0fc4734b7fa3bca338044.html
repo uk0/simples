@@ -134,21 +134,21 @@ EOF</p>
 <ul>
 <li>用<code>,</code>劈分数据。</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">HBASE_REGION=dscn1,dscn2,dscn3
+<div class="codehilite"><pre><span></span><code><span class="nv">HBASE_REGION</span><span class="o">=</span>dscn1,dscn2,dscn3
 
-#用 `,` split
-OLD_IFS=&quot;$IFS&quot;
-IFS=&quot;,&quot;
-arr=($HBASE_REGION)
-IFS=&quot;$OLD_IFS&quot;
-for s in ${arr[@]}
-do
-   ssh &quot;$s&quot; ls
-done
-</code></pre>
+<span class="c1">#用 `,` split</span>
+<span class="nv">OLD_IFS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$IFS</span><span class="s2">&quot;</span>
+<span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;,&quot;</span>
+<span class="nv">arr</span><span class="o">=(</span><span class="nv">$HBASE_REGION</span><span class="o">)</span>
+<span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OLD_IFS</span><span class="s2">&quot;</span>
+<span class="k">for</span><span class="w"> </span>s<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">arr</span><span class="p">[@]</span><span class="si">}</span>
+<span class="k">do</span>
+<span class="w">   </span>ssh<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$s</span><span class="s2">&quot;</span><span class="w"> </span>ls
+<span class="k">done</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

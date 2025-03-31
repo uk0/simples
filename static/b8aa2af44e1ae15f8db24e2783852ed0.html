@@ -113,8 +113,8 @@
 <p>ffmpeg除了在音视频方面牛叉之外，在转换gif动态图片方面也是不弱的，修改分辨率，改变帧率，颜色模式，添加水印字幕等等均不在话下；</p>
 <p>下面几个操作命令是我这几天一一测试过，有需要的拿去，ffmpeg真的超级强大，轻而易举就能实现想要的效果；</p>
 <h2 id="2">2. 从视频第三十秒处开始截取视频，截取十秒钟片段</h2>
-<pre class="codehilite"><code class="language-bash">ffmpeg -ss 0 -t 150 -i Flinkdemo.mov  -s 800x600 -f gif -r 1 b.gif
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ffmpeg<span class="w"> </span>-ss<span class="w"> </span><span class="m">0</span><span class="w"> </span>-t<span class="w"> </span><span class="m">150</span><span class="w"> </span>-i<span class="w"> </span>Flinkdemo.mov<span class="w">  </span>-s<span class="w"> </span>800x600<span class="w"> </span>-f<span class="w"> </span>gif<span class="w"> </span>-r<span class="w"> </span><span class="m">1</span><span class="w"> </span>b.gif
+</code></pre></div>
 
 <p><img alt="描述" src="/static/posts/ffmpeg/QQ20170629-151034@2x.png" /></p>
 <h2 id="3">3.频率限制</h2>
@@ -122,19 +122,19 @@
 <p>直接输出的gif体积会相对比较大，压缩不是很厉害，像在QQ中发送gif体积不能大于6M，所以要使用参数来降低gif图片体积大小；</p>
 <p>-s 输出分辨率
 -r 帧率</p>
-<pre class="codehilite"><code class="language-bash">ffmpeg -i A.wmv -s 320x240  -r 10 B.gif
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ffmpeg<span class="w"> </span>-i<span class="w"> </span>A.wmv<span class="w"> </span>-s<span class="w"> </span>320x240<span class="w">  </span>-r<span class="w"> </span><span class="m">10</span><span class="w"> </span>B.gif
+</code></pre></div>
 
 <h2 id="4rgbrgb24gif">4.RGB颜色限制,输出RGB24位颜色gif图片</h2>
-<pre class="codehilite"><code class="language-bash">ffmpeg -i A.wmv -pix_fmt rgb24   B.gif
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ffmpeg<span class="w"> </span>-i<span class="w"> </span>A.wmv<span class="w"> </span>-pix_fmt<span class="w"> </span>rgb24<span class="w">   </span>B.gif
+</code></pre></div>
 
 <h2 id="5gif">5.给gif动态图片添加字幕</h2>
-<pre class="codehilite"><code class="language-bash">ffmpeg -i A.gif   -vf &quot;ass=test.ass&quot;   B.gif
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ffmpeg<span class="w"> </span>-i<span class="w"> </span>A.gif<span class="w">   </span>-vf<span class="w"> </span><span class="s2">&quot;ass=test.ass&quot;</span><span class="w">   </span>B.gif
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

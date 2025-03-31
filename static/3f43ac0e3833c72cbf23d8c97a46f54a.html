@@ -114,408 +114,408 @@ Mongodb 采用集群主从模式。</p>
 <ul>
 <li>继承RichSinkFunction，重写<code>open</code> 和 <code>invoke</code>方法，还有<code>close</code>。</li>
 </ul>
-<pre class="codehilite"><code class="language-java">package com.e.firsh.spb.sink;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.e.firsh.spb.sink</span><span class="p">;</span>
 
-import com.alibaba.fastjson.JSON;
-import com.e.firs.spb.utils.Mongo.MongoService;
-import org.apache.flink.configuration.Configuration;
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.alibaba.fastjson.JSON</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.e.firs.spb.utils.Mongo.MongoService</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.flink.configuration.Configuration</span><span class="p">;</span>
 
-import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.flink.streaming.api.functions.sink.RichSinkFunction</span><span class="p">;</span>
 
-import java.net.UnknownHostException;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.net.UnknownHostException</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/7/31.
- */
-public  class MongoSink extends RichSinkFunction&lt;String&gt; {
-    public static  String CollectionName = &quot;collection-a&quot;;
-    private MongoService mongoService;
-    @Override
-    public void invoke(String t) {
-        try {
-            this.mongoService.saveJson(JSON.parseObject(t),CollectionName);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
-    @Override
-    public void open(Configuration config) {
-        mongoService = new MongoService();
-        try {
-            super.open(config);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-};
-</code></pre>
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/7/31.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w">  </span><span class="kd">class</span> <span class="nc">MongoSink</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">RichSinkFunction</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w">  </span><span class="n">String</span><span class="w"> </span><span class="n">CollectionName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;collection-a&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">MongoService</span><span class="w"> </span><span class="n">mongoService</span><span class="p">;</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">mongoService</span><span class="p">.</span><span class="na">saveJson</span><span class="p">(</span><span class="n">JSON</span><span class="p">.</span><span class="na">parseObject</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">CollectionName</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">UnknownHostException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="n">Configuration</span><span class="w"> </span><span class="n">config</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">mongoService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MongoService</span><span class="p">();</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">super</span><span class="p">.</span><span class="na">open</span><span class="p">(</span><span class="n">config</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
 
 <h1 id="mongoservicejava">MongoService.Java</h1>
 <ul>
 <li>MongoDB Service 处理工具</li>
 </ul>
-<pre class="codehilite"><code class="language-java">package com.e.firsh.spb.utils.Mongo;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.e.firsh.spb.utils.Mongo</span><span class="p">;</span>
 
-import com.alibaba.fastjson.JSONObject;
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.alibaba.fastjson.JSONObject</span><span class="p">;</span>
 
-import java.net.UnknownHostException;
-import java.util.List;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.net.UnknownHostException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/7/31.
- */
-public class MongoService {
-
-
-
-    private EntryDao EntryDao = new EntryDao();
-
-    /**
-     * 保存
-     * @param saveJson
-     * @throws UnknownHostException
-     */
-    public void saveJson(JSONObject saveJson, String CollectionName) throws UnknownHostException {
-        this.EntryDao.save(CollectionName,saveJson,true);
-    }
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/7/31.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MongoService</span><span class="w"> </span><span class="p">{</span>
 
 
 
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">EntryDao</span><span class="w"> </span><span class="n">EntryDao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EntryDao</span><span class="p">();</span>
 
-    /**
-     * 更新
-     * @param Entry
-     * @throws UnknownHostException
-     */
-    public void update(Entry Entry,String CollectionName) throws UnknownHostException {
-        this.EntryDao.update(Entry,CollectionName);
-    }
-
-    /**
-     * 查询所有
-     * @return
-     * @throws UnknownHostException
-     */
-    public List&lt;Entry&gt; findAll(String CollectionName) throws UnknownHostException{
-        return this.EntryDao.findAll(CollectionName);
-    }
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 保存</span>
+<span class="cm">     * @param saveJson</span>
+<span class="cm">     * @throws UnknownHostException</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">saveJson</span><span class="p">(</span><span class="n">JSONObject</span><span class="w"> </span><span class="n">saveJson</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">CollectionName</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">UnknownHostException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">EntryDao</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">CollectionName</span><span class="p">,</span><span class="n">saveJson</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
 
-    /**
-     * 删除操作
-     * @param id
-     * @throws UnknownHostException
-     */
-    public void remove(int id,String CollectionName) throws UnknownHostException{
-        this.EntryDao.remove(id,CollectionName);
-    }
-}
-</code></pre>
+
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 更新</span>
+<span class="cm">     * @param Entry</span>
+<span class="cm">     * @throws UnknownHostException</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">Entry</span><span class="w"> </span><span class="n">Entry</span><span class="p">,</span><span class="n">String</span><span class="w"> </span><span class="n">CollectionName</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">UnknownHostException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">EntryDao</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="n">Entry</span><span class="p">,</span><span class="n">CollectionName</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 查询所有</span>
+<span class="cm">     * @return</span>
+<span class="cm">     * @throws UnknownHostException</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Entry</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findAll</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">CollectionName</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">UnknownHostException</span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">EntryDao</span><span class="p">.</span><span class="na">findAll</span><span class="p">(</span><span class="n">CollectionName</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 删除操作</span>
+<span class="cm">     * @param id</span>
+<span class="cm">     * @throws UnknownHostException</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="n">String</span><span class="w"> </span><span class="n">CollectionName</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">UnknownHostException</span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">EntryDao</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">CollectionName</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h1 id="mongomanagerjava">MongoManager.Java</h1>
 <ul>
 <li>获得mongodb链接池的工具类，获得某个DB的链接。</li>
 </ul>
-<pre class="codehilite"><code class="language-java">package com.e.firsh.spb.utils.Mongo;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.e.firsh.spb.utils.Mongo</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/7/31.
- */
-import com.mongodb.*;
-import com.mongodb.client.MongoDatabase;
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/7/31.</span>
+<span class="cm"> */</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.mongodb.*</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.mongodb.client.MongoDatabase</span><span class="p">;</span>
 
-import java.util.Arrays;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Arrays</span><span class="p">;</span>
 
-public class MongoManager {
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MongoManager</span><span class="w"> </span><span class="p">{</span>
 
-    private static Mongo mongo = null;
-    private static MongoClient mongoClient= null;
-    private MongoManager() { }
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Mongo</span><span class="w"> </span><span class="n">mongo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">MongoClient</span><span class="w"> </span><span class="n">mongoClient</span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">MongoManager</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
 
-    static {
-        initDBPrompties();
-    }
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">initDBPrompties</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public static DB getDB(String dbName) {
-        return mongo.getDB(dbName);
-    }
-    public static MongoDatabase getDatabase(String dbName) {
-        return mongoClient.getDatabase(dbName);
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">DB</span><span class="w"> </span><span class="nf">getDB</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">dbName</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mongo</span><span class="p">.</span><span class="na">getDB</span><span class="p">(</span><span class="n">dbName</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">MongoDatabase</span><span class="w"> </span><span class="nf">getDatabase</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">dbName</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mongoClient</span><span class="p">.</span><span class="na">getDatabase</span><span class="p">(</span><span class="n">dbName</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    /**
-     * 初始化连接池
-     */
-    private static void initDBPrompties() {
-        try {
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 初始化连接池</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">initDBPrompties</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
 
-            MongoClientOptions.Builder mcob = MongoClientOptions.builder();
-            mcob.connectionsPerHost(1000);
-            mcob.socketKeepAlive(true);
-            mcob.readPreference(ReadPreference.secondaryPreferred());
-            MongoClientOptions mco = mcob.build();
+<span class="w">            </span><span class="n">MongoClientOptions</span><span class="p">.</span><span class="na">Builder</span><span class="w"> </span><span class="n">mcob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MongoClientOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">();</span>
+<span class="w">            </span><span class="n">mcob</span><span class="p">.</span><span class="na">connectionsPerHost</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+<span class="w">            </span><span class="n">mcob</span><span class="p">.</span><span class="na">socketKeepAlive</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">            </span><span class="n">mcob</span><span class="p">.</span><span class="na">readPreference</span><span class="p">(</span><span class="n">ReadPreference</span><span class="p">.</span><span class="na">secondaryPreferred</span><span class="p">());</span>
+<span class="w">            </span><span class="n">MongoClientOptions</span><span class="w"> </span><span class="n">mco</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mcob</span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
-            mongoClient = new MongoClient(Arrays.asList(
-                    new ServerAddress(&quot;127.0.0.1&quot;, 27017),
-                    new ServerAddress(&quot;127.0.0.1&quot;, 27017),
-                    new ServerAddress(&quot;127.0.0.1&quot;, 27017)), mco);
+<span class="w">            </span><span class="n">mongoClient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MongoClient</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span>
+<span class="w">                    </span><span class="k">new</span><span class="w"> </span><span class="n">ServerAddress</span><span class="p">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">27017</span><span class="p">),</span>
+<span class="w">                    </span><span class="k">new</span><span class="w"> </span><span class="n">ServerAddress</span><span class="p">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">27017</span><span class="p">),</span>
+<span class="w">                    </span><span class="k">new</span><span class="w"> </span><span class="n">ServerAddress</span><span class="p">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">27017</span><span class="p">)),</span><span class="w"> </span><span class="n">mco</span><span class="p">);</span>
 
 
-            mongo = new Mongo(MongoDBConstant.HOST, MongoDBConstant.PORT);
-            MongoOptions opt = mongo.getMongoOptions();
-            opt.connectionsPerHost = MongoDBConstant.POOLSIZE;
-            opt.threadsAllowedToBlockForConnectionMultiplier = MongoDBConstant.BLOCKSIZE;
-        } catch (MongoException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
+<span class="w">            </span><span class="n">mongo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Mongo</span><span class="p">(</span><span class="n">MongoDBConstant</span><span class="p">.</span><span class="na">HOST</span><span class="p">,</span><span class="w"> </span><span class="n">MongoDBConstant</span><span class="p">.</span><span class="na">PORT</span><span class="p">);</span>
+<span class="w">            </span><span class="n">MongoOptions</span><span class="w"> </span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mongo</span><span class="p">.</span><span class="na">getMongoOptions</span><span class="p">();</span>
+<span class="w">            </span><span class="n">opt</span><span class="p">.</span><span class="na">connectionsPerHost</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MongoDBConstant</span><span class="p">.</span><span class="na">POOLSIZE</span><span class="p">;</span>
+<span class="w">            </span><span class="n">opt</span><span class="p">.</span><span class="na">threadsAllowedToBlockForConnectionMultiplier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MongoDBConstant</span><span class="p">.</span><span class="na">BLOCKSIZE</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">MongoException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h1 id="entrydaojava">EntryDao.java</h1>
 <ul>
 <li>用来操作实体的工具类</li>
 </ul>
-<pre class="codehilite"><code class="language-java">package com.e.firsh.spb.utils.Mongo;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.e.firsh.spb.utils.Mongo</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.net.UnknownHostException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.ArrayList</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.UUID</span><span class="p">;</span>
 
-import com.alibaba.fastjson.JSONObject;
-import com.mongodb.*;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.util.JSON;
-import org.bson.Document;
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.alibaba.fastjson.JSONObject</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.mongodb.*</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.mongodb.client.FindIterable</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.mongodb.client.MongoCollection</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.mongodb.client.MongoCursor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.mongodb.client.MongoDatabase</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.mongodb.util.JSON</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.bson.Document</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/7/31.
- */
-public class EntryDao {
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/7/31.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">EntryDao</span><span class="w"> </span><span class="p">{</span>
 
-    /**
-     * 删除操作
-     * @param id
-     * @throws UnknownHostException
-     */
-    public void remove(int id,String CollectionName) throws UnknownHostException{
-        MongoDatabase mongo = MongoManager.getDatabase(MongoDBConstant.DB);
-        MongoCollection coll = mongo.getCollection(CollectionName);
-
-
-        Document baseDBO =new Document();
-        baseDBO.put(&quot;id&quot;, id);
-
-        //删除某一条记录
-        coll.deleteOne(baseDBO);
-    }
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 删除操作</span>
+<span class="cm">     * @param id</span>
+<span class="cm">     * @throws UnknownHostException</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="n">String</span><span class="w"> </span><span class="n">CollectionName</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">UnknownHostException</span><span class="p">{</span>
+<span class="w">        </span><span class="n">MongoDatabase</span><span class="w"> </span><span class="n">mongo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MongoManager</span><span class="p">.</span><span class="na">getDatabase</span><span class="p">(</span><span class="n">MongoDBConstant</span><span class="p">.</span><span class="na">DB</span><span class="p">);</span>
+<span class="w">        </span><span class="n">MongoCollection</span><span class="w"> </span><span class="n">coll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mongo</span><span class="p">.</span><span class="na">getCollection</span><span class="p">(</span><span class="n">CollectionName</span><span class="p">);</span>
 
 
-    /**
-     *
-     * @param CollectionName 集合名
-     * @param saveJson  待存入JSON
-     * @param useDefaultId  未传入_id时，若为true则使用MongoDB自动生成的_id。若为false则生成UUID作为主键
-     * @return
-     */
-    public JSONObject save(String CollectionName, JSONObject saveJson, boolean useDefaultId) {
-        JSONObject resp = new JSONObject();
-        try {
-            MongoDatabase mongo = MongoManager.getDatabase(MongoDBConstant.DB);
-            MongoCollection coll = mongo.getCollection(CollectionName);
-            Object _id = null;
-           if (!saveJson.containsKey(&quot;_id&quot;)){
-                if (!useDefaultId) {
-                    _id = UUID.randomUUID().toString();
-                    saveJson.put(&quot;Data&quot;, _id);
-                }
-            } else if(saveJson.containsKey(&quot;_id&quot;))  {
-                _id = saveJson.get(&quot;_id&quot;);
-            }
-            Document doc = Document.parse(saveJson.toString());
-            coll.insertOne(doc);
-            resp.put(&quot;Data&quot;, _id);
-        } catch (MongoTimeoutException e1) {
-            e1.printStackTrace();
-            resp.put(&quot;ReasonMessage&quot;,e1.getClass() + &quot;:&quot; + e1.getMessage());
-            return resp;
-        } catch (Exception e) {
-            e.printStackTrace();
-            resp.put(&quot;ReasonMessage&quot;,e.getClass() + &quot;:&quot; + e.getMessage());
-        }
-        return resp;
-    }
+<span class="w">        </span><span class="n">Document</span><span class="w"> </span><span class="n">baseDBO</span><span class="w"> </span><span class="o">=</span><span class="k">new</span><span class="w"> </span><span class="n">Document</span><span class="p">();</span>
+<span class="w">        </span><span class="n">baseDBO</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
 
-}
-</code></pre>
+<span class="w">        </span><span class="c1">//删除某一条记录</span>
+<span class="w">        </span><span class="n">coll</span><span class="p">.</span><span class="na">deleteOne</span><span class="p">(</span><span class="n">baseDBO</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param CollectionName 集合名</span>
+<span class="cm">     * @param saveJson  待存入JSON</span>
+<span class="cm">     * @param useDefaultId  未传入_id时，若为true则使用MongoDB自动生成的_id。若为false则生成UUID作为主键</span>
+<span class="cm">     * @return</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">JSONObject</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">CollectionName</span><span class="p">,</span><span class="w"> </span><span class="n">JSONObject</span><span class="w"> </span><span class="n">saveJson</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">useDefaultId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">JSONObject</span><span class="w"> </span><span class="n">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JSONObject</span><span class="p">();</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">MongoDatabase</span><span class="w"> </span><span class="n">mongo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MongoManager</span><span class="p">.</span><span class="na">getDatabase</span><span class="p">(</span><span class="n">MongoDBConstant</span><span class="p">.</span><span class="na">DB</span><span class="p">);</span>
+<span class="w">            </span><span class="n">MongoCollection</span><span class="w"> </span><span class="n">coll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mongo</span><span class="p">.</span><span class="na">getCollection</span><span class="p">(</span><span class="n">CollectionName</span><span class="p">);</span>
+<span class="w">            </span><span class="n">Object</span><span class="w"> </span><span class="n">_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">           </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">saveJson</span><span class="p">.</span><span class="na">containsKey</span><span class="p">(</span><span class="s">&quot;_id&quot;</span><span class="p">)){</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">useDefaultId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">();</span>
+<span class="w">                    </span><span class="n">saveJson</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;Data&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">_id</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">saveJson</span><span class="p">.</span><span class="na">containsKey</span><span class="p">(</span><span class="s">&quot;_id&quot;</span><span class="p">))</span><span class="w">  </span><span class="p">{</span>
+<span class="w">                </span><span class="n">_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saveJson</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;_id&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Document</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="n">saveJson</span><span class="p">.</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">            </span><span class="n">coll</span><span class="p">.</span><span class="na">insertOne</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+<span class="w">            </span><span class="n">resp</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;Data&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">_id</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">MongoTimeoutException</span><span class="w"> </span><span class="n">e1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e1</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">            </span><span class="n">resp</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;ReasonMessage&quot;</span><span class="p">,</span><span class="n">e1</span><span class="p">.</span><span class="na">getClass</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">e1</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">resp</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">            </span><span class="n">resp</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;ReasonMessage&quot;</span><span class="p">,</span><span class="n">e</span><span class="p">.</span><span class="na">getClass</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">resp</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
 
 <h1 id="jsonutilsjava">JsonUtils.java</h1>
 <ul>
 <li>JSON的小工具类</li>
 </ul>
-<pre class="codehilite"><code class="language-java">package com.tod.spb.utils.Mongo;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.tod.spb.utils.Mongo</span><span class="p">;</span>
 
-import java.io.OutputStream;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.OutputStream</span><span class="p">;</span>
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.codehaus.jackson.map.ObjectMapper</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.codehaus.jackson.type.TypeReference</span><span class="p">;</span>
 
 
-/**
- * Json转化工具，可以实现java对象和json字符串之间的互相转化&lt;br /&gt;
- * Created by zhangjianxin on 2017/7/31.
- */
-public class JsonUtils {
-    static ObjectMapper objectMapper = new ObjectMapper();
+<span class="cm">/**</span>
+<span class="cm"> * Json转化工具，可以实现java对象和json字符串之间的互相转化&lt;br /&gt;</span>
+<span class="cm"> * Created by zhangjianxin on 2017/7/31.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">JsonUtils</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
 
-    /**
-     * java 对象转换为json 存入流中
-     *
-     * @param obj
-     * @return  s
-     */
-    public static String toJson(Object obj) {
-        String s = &quot;&quot;;
-        try {
-            s = objectMapper.writeValueAsString(obj);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return s;
-    }
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * java 对象转换为json 存入流中</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param obj</span>
+<span class="cm">     * @return  s</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">toJson</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectMapper</span><span class="p">.</span><span class="na">writeValueAsString</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    /**
-     * java 对象转换为json 存入流中
-     *
-     * @param obj
-     * @param out
-     */
-    public static void toJson(Object obj, OutputStream out) {
-        try {
-            objectMapper.writeValue(out, obj);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * java 对象转换为json 存入流中</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param obj</span>
+<span class="cm">     * @param out</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">toJson</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">OutputStream</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">objectMapper</span><span class="p">.</span><span class="na">writeValue</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">obj</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 
-    /**
-     * json 转为java对象
-     *
-     * @param json
-     * @param obj
-     */
-    @SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-    public static void fromJson(String json, Object obj, Class valueType) {
-        try {
-            obj = objectMapper.readValue(json, valueType);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * json 转为java对象</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param json</span>
+<span class="cm">     * @param obj</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nd">@SuppressWarnings</span><span class="p">({</span><span class="w"> </span><span class="s">&quot;rawtypes&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;unchecked&quot;</span><span class="w"> </span><span class="p">})</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">fromJson</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">Class</span><span class="w"> </span><span class="n">valueType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectMapper</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">valueType</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 
-    /**
-     * json 转为java对象
-     * @param json
-     * @param obj
-     * @param valueTypeRef
-     */
-    @SuppressWarnings(&quot;rawtypes&quot;)
-    public static void fromJson(String json, Object obj, TypeReference valueTypeRef) {
-        try {
-            obj = objectMapper.readValue(json, valueTypeRef);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * json 转为java对象</span>
+<span class="cm">     * @param json</span>
+<span class="cm">     * @param obj</span>
+<span class="cm">     * @param valueTypeRef</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&quot;rawtypes&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">fromJson</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">TypeReference</span><span class="w"> </span><span class="n">valueTypeRef</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectMapper</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">valueTypeRef</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 
-    /**
-     * json 转为java对象
-     *
-     * @param json
-     * @return obj
-     */
-    @SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-    public static Object fromJson(String json, Class valueType) {
-        Object obj = null;
-        try {
-            obj = objectMapper.readValue(json, valueType);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return obj;
-    }
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * json 转为java对象</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param json</span>
+<span class="cm">     * @return obj</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nd">@SuppressWarnings</span><span class="p">({</span><span class="w"> </span><span class="s">&quot;rawtypes&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;unchecked&quot;</span><span class="w"> </span><span class="p">})</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">fromJson</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">Class</span><span class="w"> </span><span class="n">valueType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectMapper</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">valueType</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    /**
-     * json 转为java对象
-     *
-     * @param json
-     * @return obj
-     * @param valueTypeRef
-     */
-    @SuppressWarnings({ &quot;rawtypes&quot;, &quot;hiding&quot; })
-    public static &lt;Object&gt; Object fromJson(String json, TypeReference valueTypeRef) {
-        Object obj = null;
-        try {
-            obj = objectMapper.readValue(json, valueTypeRef);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return obj;
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * json 转为java对象</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param json</span>
+<span class="cm">     * @return obj</span>
+<span class="cm">     * @param valueTypeRef</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nd">@SuppressWarnings</span><span class="p">({</span><span class="w"> </span><span class="s">&quot;rawtypes&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hiding&quot;</span><span class="w"> </span><span class="p">})</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">fromJson</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">TypeReference</span><span class="w"> </span><span class="n">valueTypeRef</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectMapper</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">valueTypeRef</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h1 id="mongodbhelperjava">MongoDBHelper.java</h1>
 <ul>
 <li>用来测试MongoDB链接成功</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">package com.tod.spb.utils.Mongo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import java.net.UnknownHostException;
+<div class="codehilite"><pre><span></span><code>package<span class="w"> </span>com.tod.spb.utils.Mongo<span class="p">;</span>
+import<span class="w"> </span>com.alibaba.fastjson.JSON<span class="p">;</span>
+import<span class="w"> </span>com.alibaba.fastjson.JSONObject<span class="p">;</span>
+import<span class="w"> </span>com.mongodb.DB<span class="p">;</span>
+import<span class="w"> </span>com.mongodb.DBCollection<span class="p">;</span>
+import<span class="w"> </span>com.mongodb.DBObject<span class="p">;</span>
+import<span class="w"> </span>java.net.UnknownHostException<span class="p">;</span>
 
 
 /**
- * Created by zhangjianxin on 2017/7/31.
- */
-public class MongoDBHelper {
+<span class="w"> </span>*<span class="w"> </span>Created<span class="w"> </span>by<span class="w"> </span>zhangjianxin<span class="w"> </span>on<span class="w"> </span><span class="m">2017</span>/7/31.
+<span class="w"> </span>*/
+public<span class="w"> </span>class<span class="w"> </span>MongoDBHelper<span class="w"> </span><span class="o">{</span>
 
-    public static  String CollectionName = &quot;collection-a&quot;;
-    /**
-     * 保存
-     * @param null
-     * @throws UnknownHostException
-     */
-    private MongoService mongoService = new MongoService();
-
-
-    public void save() throws UnknownHostException{
-        JSONObject data = new JSONObject();
-        data.put(&quot;tableName&quot;,&quot;1&quot;);
-        data.put(&quot;body&quot;,&quot;jsonobject&quot;);
-        data.put(&quot;number&quot;,&quot;12345&quot;);
-        this.mongoService.saveJson(data,CollectionName);
-    }
+<span class="w">    </span>public<span class="w"> </span>static<span class="w">  </span>String<span class="w"> </span><span class="nv">CollectionName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;collection-a&quot;</span><span class="p">;</span>
+<span class="w">    </span>/**
+<span class="w">     </span>*<span class="w"> </span>保存
+<span class="w">     </span>*<span class="w"> </span>@param<span class="w"> </span>null
+<span class="w">     </span>*<span class="w"> </span>@throws<span class="w"> </span>UnknownHostException
+<span class="w">     </span>*/
+<span class="w">    </span>private<span class="w"> </span>MongoService<span class="w"> </span><span class="nv">mongoService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>new<span class="w"> </span>MongoService<span class="o">()</span><span class="p">;</span>
 
 
+<span class="w">    </span>public<span class="w"> </span>void<span class="w"> </span>save<span class="o">()</span><span class="w"> </span>throws<span class="w"> </span>UnknownHostException<span class="o">{</span>
+<span class="w">        </span>JSONObject<span class="w"> </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>new<span class="w"> </span>JSONObject<span class="o">()</span><span class="p">;</span>
+<span class="w">        </span>data.put<span class="o">(</span><span class="s2">&quot;tableName&quot;</span>,<span class="s2">&quot;1&quot;</span><span class="o">)</span><span class="p">;</span>
+<span class="w">        </span>data.put<span class="o">(</span><span class="s2">&quot;body&quot;</span>,<span class="s2">&quot;jsonobject&quot;</span><span class="o">)</span><span class="p">;</span>
+<span class="w">        </span>data.put<span class="o">(</span><span class="s2">&quot;number&quot;</span>,<span class="s2">&quot;12345&quot;</span><span class="o">)</span><span class="p">;</span>
+<span class="w">        </span>this.mongoService.saveJson<span class="o">(</span>data,CollectionName<span class="o">)</span><span class="p">;</span>
+<span class="w">    </span><span class="o">}</span>
 
-    public static void main(String[] args) {
 
-        try {
-            MongoDBHelper mongoDBHelper = new MongoDBHelper();
-            mongoDBHelper.save();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
+
+<span class="w">    </span>public<span class="w"> </span>static<span class="w"> </span>void<span class="w"> </span>main<span class="o">(</span>String<span class="o">[]</span><span class="w"> </span>args<span class="o">)</span><span class="w"> </span><span class="o">{</span>
+
+<span class="w">        </span>try<span class="w"> </span><span class="o">{</span>
+<span class="w">            </span>MongoDBHelper<span class="w"> </span><span class="nv">mongoDBHelper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>new<span class="w"> </span>MongoDBHelper<span class="o">()</span><span class="p">;</span>
+<span class="w">            </span>mongoDBHelper.save<span class="o">()</span><span class="p">;</span>
+<span class="w">        </span><span class="o">}</span><span class="w"> </span>catch<span class="w"> </span><span class="o">(</span>UnknownHostException<span class="w"> </span>e<span class="o">)</span><span class="w"> </span><span class="o">{</span>
+<span class="w">            </span>e.printStackTrace<span class="o">()</span><span class="p">;</span>
+<span class="w">        </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
 
 <ul>
 <li>Owner <code>breakEval13</code></li>
@@ -523,7 +523,7 @@ public class MongoDBHelper {
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

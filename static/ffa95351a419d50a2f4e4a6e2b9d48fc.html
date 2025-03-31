@@ -110,122 +110,122 @@
     <div class="content">
         <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
 <h2 id="_1">代码</h2>
-<pre class="codehilite"><code class="language-javascript">/**
- * divId:插入表格的divId
- * listTitle:插入表格标题
- * listData:插入表格数据
- */
-function addTable(divId, listTitle, listData,n) {
-    var num = parseInt(Math.random()*100);
-    var tableDivId = &quot;table&quot;+num.toString();
-    var div = document.getElementById(divId);
-    div.innerHTML = &quot;&quot;;
-    var strTitle = &quot;&quot;;
-    var scendTitle = &quot;&quot;;
-    var strDate = &quot;&quot;;
-    for (var i = 0; i &lt; listTitle.length; i++) {
-        if (listTitle[i].indexOf(&quot;:&quot;) != -1) {
-            var strs = listTitle[i].split(&quot;:&quot;);
-            strTitle += '&lt;th&gt;' + strs[0] + '&lt;/th&gt;';
-        } else {
-            strTitle += '&lt;th&gt;' + listTitle[i] + '&lt;/th&gt;';
-        }
-    }
-    for (var i = 0; i &lt; listTitle.length; i++) {
-        if (listTitle[i].indexOf(&quot;:&quot;) != -1) {
-            var strs = listTitle[i].split(&quot;:&quot;);
-            scendTitle += '&lt;th&gt;' + strs[1] + '&lt;/th&gt;';
-        } else {
-            scendTitle += '&lt;th&gt;' + listTitle[i] + '&lt;/th&gt;';
-        }
-    }
-    /**alert(listData.length);*/
-    for (i = 0; i &lt; listData.length; i++) {
-        strDate += '&lt;tr&gt;';
-        for (j = 0; j &lt; listData[0].length; j++) {
-            strDate += '&lt;td&gt;' + listData[i][j] + '&lt;/td&gt;';
-        }
-        strDate += '&lt;/tr&gt;';
-    }
-    var table = '&lt;table class=&quot;t1&quot; id='+tableDivId+' width=&quot;100%&quot;  cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; &gt;&lt;thead&gt;' + '&lt;tr&gt;' + strTitle + '&lt;/tr&gt;&lt;tr&gt;' + scendTitle + '&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;' + strDate + '&lt;/tbody&gt;&lt;/table&gt;';
-    div.innerHTML = table;
-    uniteTdCells(tableDivId,n);
-    uniteTdRells(tableDivId);
-}
-/*
- * 合并行
- * tableId:需要操作表格的Id
- */
-function uniteTdCells(tableDivId,n) {
-    var table = document.getElementById(tableDivId);
-    var nLeftCol = n;
-    for (var r = 0; r &lt; table.rows.length; r++) {
-        for (var c = 0; c &lt; table.rows[r].cells.length; c++) {
-            /**选择要合并的列序数，去掉默认全部合并*/
-            if (r &gt;= 2 &amp;&amp; c &gt;= nLeftCol) {
-                continue;
-            }
-            for (j = r + 1; j &lt; table.rows.length; j++) {
-                var cell1 = table.rows[r].cells[c].innerHTML;
-                var cell2 = table.rows[j].cells[c].innerHTML;
-                if (cell1 == cell2) {
-                    table.rows[j].cells[c].style.display = 'none';
-                    table.rows[r].cells[c].rowSpan++;
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-}
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * divId:插入表格的divId</span>
+<span class="cm"> * listTitle:插入表格标题</span>
+<span class="cm"> * listData:插入表格数据</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">addTable</span><span class="p">(</span><span class="nx">divId</span><span class="p">,</span><span class="w"> </span><span class="nx">listTitle</span><span class="p">,</span><span class="w"> </span><span class="nx">listData</span><span class="p">,</span><span class="nx">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">parseInt</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="mf">100</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">tableDivId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;table&quot;</span><span class="o">+</span><span class="nx">num</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">div</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">divId</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">strTitle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">scendTitle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">strDate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">listTitle</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">listTitle</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">var</span><span class="w"> </span><span class="nx">strs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">listTitle</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="nx">strTitle</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s1">&#39;&lt;th&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">strs</span><span class="p">[</span><span class="mf">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;/th&gt;&#39;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">strTitle</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s1">&#39;&lt;th&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">listTitle</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;/th&gt;&#39;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">listTitle</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">listTitle</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">var</span><span class="w"> </span><span class="nx">strs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">listTitle</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="nx">scendTitle</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s1">&#39;&lt;th&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">strs</span><span class="p">[</span><span class="mf">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;/th&gt;&#39;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">scendTitle</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s1">&#39;&lt;th&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">listTitle</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;/th&gt;&#39;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="cm">/**alert(listData.length);*/</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">listData</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">strDate</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s1">&#39;&lt;tr&gt;&#39;</span><span class="p">;</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="nx">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">listData</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">strDate</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s1">&#39;&lt;td&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">listData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;/td&gt;&#39;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nx">strDate</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s1">&#39;&lt;/tr&gt;&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&lt;table class=&quot;t1&quot; id=&#39;</span><span class="o">+</span><span class="nx">tableDivId</span><span class="o">+</span><span class="s1">&#39; width=&quot;100%&quot;  cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; &gt;&lt;thead&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;tr&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">strTitle</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;/tr&gt;&lt;tr&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">scendTitle</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">strDate</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&lt;/tbody&gt;&lt;/table&gt;&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">uniteTdCells</span><span class="p">(</span><span class="nx">tableDivId</span><span class="p">,</span><span class="nx">n</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">uniteTdRells</span><span class="p">(</span><span class="nx">tableDivId</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cm">/*</span>
+<span class="cm"> * 合并行</span>
+<span class="cm"> * tableId:需要操作表格的Id</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">uniteTdCells</span><span class="p">(</span><span class="nx">tableDivId</span><span class="p">,</span><span class="nx">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">tableDivId</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">nLeftCol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">n</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">r</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">r</span><span class="p">].</span><span class="nx">cells</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="cm">/**选择要合并的列序数，去掉默认全部合并*/</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nx">nLeftCol</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="nx">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">cell1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">r</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">innerHTML</span><span class="p">;</span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">cell2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">innerHTML</span><span class="p">;</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">cell1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">cell2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;none&#39;</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">r</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">rowSpan</span><span class="o">++</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 
-/*
- *合并列
- *tableId：操作表格ID
- */
-function uniteTdRells(tableDivId) {
-    var table = document.getElementById(tableDivId);
-    for (var c = 0; c &lt; table.rows[0].cells.length; c++) {
-        for (j = c + 1; j &lt; table.rows[0].cells.length; j++) {
-            var strOne = table.rows[0].cells[c].innerHTML;
-            var strTwo = table.rows[0].cells[j].innerHTML;
-            if (strOne == strTwo) {
-                table.rows[0].cells[j].style.display = 'none';
-                table.rows[0].cells[c].colSpan++;
-            }
-        }
-    }
-}
+<span class="cm">/*</span>
+<span class="cm"> *合并列</span>
+<span class="cm"> *tableId：操作表格ID</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">uniteTdRells</span><span class="p">(</span><span class="nx">tableDivId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">tableDivId</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">cells</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="nx">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">cells</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">var</span><span class="w"> </span><span class="nx">strOne</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">innerHTML</span><span class="p">;</span>
+<span class="w">            </span><span class="kd">var</span><span class="w"> </span><span class="nx">strTwo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">innerHTML</span><span class="p">;</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">strOne</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">strTwo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;none&#39;</span><span class="p">;</span>
+<span class="w">                </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">colSpan</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 
 
 
-function uniteTdCellsOne( n) {
-    var table = document.getElementById(tableId);
-    var nLeftCol = n;
-    for (var r = 0; r &lt; table.rows.length; r++) {
-        for (var c = 7; c &lt; table.rows[r].cells.length; c++) {
-            /**                 /**选择要合并的列序数，去掉默认全部合并*/
-            /**                 if (r &gt;= 2 &amp;&amp; c &gt;= nLeftCol)*/
-            /**                 {*/
-            /**                     continue; */
-            /**                 }*/
-            for (j = r + 1; j &lt; table.rows.length; j++) {
-                var cell1 = table.rows[r].cells[c].innerHTML;
-                var cell2 = table.rows[j].cells[c].innerHTML;
-                if (cell1 == cell2) {
-                    table.rows[j].cells[c].style.display = 'none';
-                    table.rows[r].cells[c].rowSpan++;
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-}
-</code></pre>
+<span class="kd">function</span><span class="w"> </span><span class="nx">uniteTdCellsOne</span><span class="p">(</span><span class="w"> </span><span class="nx">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">tableId</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">nLeftCol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">n</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">r</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">7</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">r</span><span class="p">].</span><span class="nx">cells</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="cm">/**                 /**选择要合并的列序数，去掉默认全部合并*/</span>
+<span class="w">            </span><span class="cm">/**                 if (r &gt;= 2 &amp;&amp; c &gt;= nLeftCol)*/</span>
+<span class="w">            </span><span class="cm">/**                 {*/</span>
+<span class="w">            </span><span class="cm">/**                     continue; */</span>
+<span class="w">            </span><span class="cm">/**                 }*/</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="nx">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">cell1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">r</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">innerHTML</span><span class="p">;</span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">cell2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">innerHTML</span><span class="p">;</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">cell1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">cell2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;none&#39;</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">table</span><span class="p">.</span><span class="nx">rows</span><span class="p">[</span><span class="nx">r</span><span class="p">].</span><span class="nx">cells</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">rowSpan</span><span class="o">++</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:09
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

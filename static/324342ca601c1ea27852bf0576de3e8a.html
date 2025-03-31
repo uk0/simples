@@ -110,156 +110,156 @@
     <div class="content">
         <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
 <h2 id="_1">代码</h2>
-<pre class="codehilite"><code class="language-javascript">/**
- * @author 张建新
- * @数据表格加载
- * @callback 无
- * @DataType tableTools.init(@Coulnms) &lt;-调用方式
- * @Coulnms List&lt;Map[CID,TYPE]&gt; result
- * (@所在div,@列数据(以及类型),@表格装载数据,@表头数据(中文),@是否激活右键菜单(右键可以开启只读模式),@是否表格只读)
- **/
-var HandtableTools = {
-    /**
-     * HandtableTools 工具初始化方法
-     * @param {Object} tableContainerDiv 表格载体Div
-     * @param {Object} tableColumnInfo 表格列信息
-     * @param {Object} contextMenuFlag 是否显示右键列表
-     * @param {Object} readOnlyFlag 表格是否只读
-     */
-    initColumnsType: function(tableContainerDiv, tableColumnInfo, contextMenuFlag, readOnlyFlag) {
-        /*初始化表格基本信息*/
-        HandtableTools.tableContainerDiv = tableContainerDiv;
-        HandtableTools.tableColumnInfo = tableColumnInfo;
-        HandtableTools.contextMenuFlag = contextMenuFlag;
-        HandtableTools.readOnlyFlag = readOnlyFlag;
-    },
-    /**
-     * 当前表格容器Div
-     */
-    tableContainerDiv: null,
-    /**
-     * 当前表格列基本信息
-     */
-    tableColumnInfo: null,
-    /**
-     * 是否显示右键列表
-     */
-    contextMenuFlag: null,
-    /**
-     * 表是否只读
-     */
-    readOnlyFlag: null,
-    /*
-     * 最终插入的数据 
-     */
-    insertData: null,
-    /**
-     * 表格控制器
-     */
-    handsontableControl: null,
-    /**
-     *初始化表格数据 
-     * @param {Object} gridData
-     */
-    initTableData: function(gridData) {
-        /**
-         * 表格列信息
-         */
-        var columnsInfo = [];
-        /**
-         * 表头中文信息
-         */
-        var columnsHeadersInfo = [];
-        /**
-         * 初始化插入数据
-         */
-        HandtableTools.insertData = new Array();
-        /**
-         * 遍历表格数据 加载到插入数据
-         */
-        for (var i = 0; i &lt; gridData.length; i++) {
-            HandtableTools.insertData[i] = new Object();
-            for (var j = 0; j &lt; HandtableTools.tableColumnInfo.length; j++) {
-                /**eval('HandtableTools.insertData[' + i +'].' + HandtableTools.tableColumnInfo[j].fieid + &quot;=null&quot;);*/
-                HandtableTools.insertData[i][HandtableTools.tableColumnInfo[j].fieid.toUpperCase()] = 0;
-            }
-        }
-        /**
-         * 设置表格列信息
-         */
-        for (var i = 0; i &lt; HandtableTools.tableColumnInfo.length; i++) {
-            columnsInfo.push({
-                data: '',/**真实列名*/
-                type: '',/**数据类型*/
-                readOnly: '',/**列只读*/
-                comment:''/**注释*/
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * @author 张建新</span>
+<span class="cm"> * @数据表格加载</span>
+<span class="cm"> * @callback 无</span>
+<span class="cm"> * @DataType tableTools.init(@Coulnms) &lt;-调用方式</span>
+<span class="cm"> * @Coulnms List&lt;Map[CID,TYPE]&gt; result</span>
+<span class="cm"> * (@所在div,@列数据(以及类型),@表格装载数据,@表头数据(中文),@是否激活右键菜单(右键可以开启只读模式),@是否表格只读)</span>
+<span class="cm"> **/</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * HandtableTools 工具初始化方法</span>
+<span class="cm">     * @param {Object} tableContainerDiv 表格载体Div</span>
+<span class="cm">     * @param {Object} tableColumnInfo 表格列信息</span>
+<span class="cm">     * @param {Object} contextMenuFlag 是否显示右键列表</span>
+<span class="cm">     * @param {Object} readOnlyFlag 表格是否只读</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nx">initColumnsType</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">tableContainerDiv</span><span class="p">,</span><span class="w"> </span><span class="nx">tableColumnInfo</span><span class="p">,</span><span class="w"> </span><span class="nx">contextMenuFlag</span><span class="p">,</span><span class="w"> </span><span class="nx">readOnlyFlag</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/*初始化表格基本信息*/</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableContainerDiv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">tableContainerDiv</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">tableColumnInfo</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">contextMenuFlag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">contextMenuFlag</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">readOnlyFlag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">readOnlyFlag</span><span class="p">;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 当前表格容器Div</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nx">tableContainerDiv</span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 当前表格列基本信息</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nx">tableColumnInfo</span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 是否显示右键列表</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nx">contextMenuFlag</span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 表是否只读</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nx">readOnlyFlag</span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/*</span>
+<span class="cm">     * 最终插入的数据 </span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nx">insertData</span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * 表格控制器</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nx">handsontableControl</span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     *初始化表格数据 </span>
+<span class="cm">     * @param {Object} gridData</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="nx">initTableData</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">gridData</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/**</span>
+<span class="cm">         * 表格列信息</span>
+<span class="cm">         */</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">columnsInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+<span class="w">        </span><span class="cm">/**</span>
+<span class="cm">         * 表头中文信息</span>
+<span class="cm">         */</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">columnsHeadersInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+<span class="w">        </span><span class="cm">/**</span>
+<span class="cm">         * 初始化插入数据</span>
+<span class="cm">         */</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">insertData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Array</span><span class="p">();</span>
+<span class="w">        </span><span class="cm">/**</span>
+<span class="cm">         * 遍历表格数据 加载到插入数据</span>
+<span class="cm">         */</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">gridData</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">insertData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Object</span><span class="p">();</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="cm">/**eval(&#39;HandtableTools.insertData[&#39; + i +&#39;].&#39; + HandtableTools.tableColumnInfo[j].fieid + &quot;=null&quot;);*/</span>
+<span class="w">                </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">insertData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">fieid</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="cm">/**</span>
+<span class="cm">         * 设置表格列信息</span>
+<span class="cm">         */</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">columnsInfo</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+<span class="w">                </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="cm">/**真实列名*/</span>
+<span class="w">                </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="cm">/**数据类型*/</span>
+<span class="w">                </span><span class="nx">readOnly</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="cm">/**列只读*/</span>
+<span class="w">                </span><span class="nx">comment</span><span class="o">:</span><span class="s1">&#39;&#39;</span><span class="cm">/**注释*/</span>
 
-            });
-        }
-        /**清空数据*/
-        columnsHeadersInfo.length = 0;
-        /**解析表格列信息 标注中文列名*/
-        for (var c = 0; c &lt; HandtableTools.tableColumnInfo.length; c++) {
-            /**标注中文列名*/
-            columnsHeadersInfo.push(HandtableTools.tableColumnInfo[c].alias);
-        }
+<span class="w">            </span><span class="p">});</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="cm">/**清空数据*/</span>
+<span class="w">        </span><span class="nx">columnsHeadersInfo</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">        </span><span class="cm">/**解析表格列信息 标注中文列名*/</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="cm">/**标注中文列名*/</span>
+<span class="w">            </span><span class="nx">columnsHeadersInfo</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">alias</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
 
-        for (var c = 0; c &lt; HandtableTools.tableColumnInfo.length; c++) {
-            /**设置列真实Data*/
-            columnsInfo[c]['data'] = HandtableTools.tableColumnInfo[c].fieid.toUpperCase();
-            /**设置列类型*/
-            columnsInfo[c]['type'] = &quot;&quot; + HandtableTools.tableColumnInfo[c].genre + &quot;&quot;;
-            /**设置comments*/
-            columnsInfo[c]['comment'] = &quot;&quot; + HandtableTools.tableColumnInfo[c].comat + &quot;&quot;;
-            /**判断是否是主键 如果是主键不允许修改*/
-            if (HandtableTools.tableColumnInfo[c].ispk == &quot;t&quot; &amp;&amp; HandtableTools.tableColumnInfo[c].ispk != &quot;&quot;) {
-                columnsInfo[c]['readOnly'] = true; /**可以修改列*/
-            } else {
-                columnsInfo[c]['readOnly'] = false; /**列不能修改*/
-            }
-        }
-        console.log(HandtableTools.tableContainerDiv);
-        HandtableTools.obs = columnsInfo;
-        HandtableTools.handsontableControl = new Handsontable(HandtableTools.tableContainerDiv, {
-            colHeaders: columnsHeadersInfo, /**显示列数据中文列名*/
-            rowHeaders: true, /**显示行号*/
-            /**minSpareRows: 1,/**预留行*/
-            stretchH: 'all', /**自适应*/
-            columnSorting: true, /**序列化*/
-            /**contextMenu: contextMenu_flag,/**是否开启右键*/
-            contextMenu:HandtableTools.contextMenuFlag,
-            comments: false, /**开启单个表格注解*/
-            readOnly: HandtableTools.readOnlyFlag, /**表格是否只读*/
-            className: &quot;htCenter htMiddle&quot;, /**基本样式*/
-            removeRowPlugin: false, /**删除行插件*/
-            fixedColumnsLeft: 3,/**设置固定列*/
-            autoColumnSize:true, /**自适应列*/
-            manualColumnMove: true, /**左右移动*/
-            manualRowMove: false,   /**数据跟随移动*/
-            columns: columnsInfo/**表格列信息*/
-        });
-        HandtableTools.handsontableControl.clear;/**清除数据*/
-        HandtableTools.handsontableControl.destroy;/**清除DOM对象*/
-        HandtableTools.handsontableControl.loadData(gridData); /**表格加载数据*/
-    },
-    obs: [],
-    objData: function() {
-        var tempData = HandtableTools.handsontableControl.getData();
-        for (var i = 0; i &lt; tempData.length; i++) {
-            for (var j = 0; j &lt; HandtableTools.obs.length; j++) {
-                if(tempData[i][j]==null||tempData[i][j]==''){
-                    HandtableTools.insertData[i][HandtableTools.obs[j][&quot;data&quot;].toUpperCase()] = 0.0;
-                }else{
-                    HandtableTools.insertData[i][HandtableTools.obs[j][&quot;data&quot;].toUpperCase()] = tempData[i][j];
-                }
-            }
-        }
-    }
-}
-</code></pre>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">c</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="cm">/**设置列真实Data*/</span>
+<span class="w">            </span><span class="nx">columnsInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">fieid</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
+<span class="w">            </span><span class="cm">/**设置列类型*/</span>
+<span class="w">            </span><span class="nx">columnsInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">genre</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="w">            </span><span class="cm">/**设置comments*/</span>
+<span class="w">            </span><span class="nx">columnsInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">][</span><span class="s1">&#39;comment&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">comat</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="w">            </span><span class="cm">/**判断是否是主键 如果是主键不允许修改*/</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">ispk</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;t&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableColumnInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">].</span><span class="nx">ispk</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">columnsInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">][</span><span class="s1">&#39;readOnly&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w"> </span><span class="cm">/**可以修改列*/</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">columnsInfo</span><span class="p">[</span><span class="nx">c</span><span class="p">][</span><span class="s1">&#39;readOnly&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w"> </span><span class="cm">/**列不能修改*/</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableContainerDiv</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">columnsInfo</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">handsontableControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Handsontable</span><span class="p">(</span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">tableContainerDiv</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">colHeaders</span><span class="o">:</span><span class="w"> </span><span class="nx">columnsHeadersInfo</span><span class="p">,</span><span class="w"> </span><span class="cm">/**显示列数据中文列名*/</span>
+<span class="w">            </span><span class="nx">rowHeaders</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="cm">/**显示行号*/</span>
+<span class="w">            </span><span class="cm">/**minSpareRows: 1,/**预留行*/</span>
+<span class="w">            </span><span class="nx">stretchH</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;all&#39;</span><span class="p">,</span><span class="w"> </span><span class="cm">/**自适应*/</span>
+<span class="w">            </span><span class="nx">columnSorting</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="cm">/**序列化*/</span>
+<span class="w">            </span><span class="cm">/**contextMenu: contextMenu_flag,/**是否开启右键*/</span>
+<span class="w">            </span><span class="nx">contextMenu</span><span class="o">:</span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">contextMenuFlag</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">comments</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="cm">/**开启单个表格注解*/</span>
+<span class="w">            </span><span class="nx">readOnly</span><span class="o">:</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">readOnlyFlag</span><span class="p">,</span><span class="w"> </span><span class="cm">/**表格是否只读*/</span>
+<span class="w">            </span><span class="nx">className</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;htCenter htMiddle&quot;</span><span class="p">,</span><span class="w"> </span><span class="cm">/**基本样式*/</span>
+<span class="w">            </span><span class="nx">removeRowPlugin</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="cm">/**删除行插件*/</span>
+<span class="w">            </span><span class="nx">fixedColumnsLeft</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="cm">/**设置固定列*/</span>
+<span class="w">            </span><span class="nx">autoColumnSize</span><span class="o">:</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="cm">/**自适应列*/</span>
+<span class="w">            </span><span class="nx">manualColumnMove</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="cm">/**左右移动*/</span>
+<span class="w">            </span><span class="nx">manualRowMove</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">   </span><span class="cm">/**数据跟随移动*/</span>
+<span class="w">            </span><span class="nx">columns</span><span class="o">:</span><span class="w"> </span><span class="nx">columnsInfo</span><span class="cm">/**表格列信息*/</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">handsontableControl</span><span class="p">.</span><span class="nx">clear</span><span class="p">;</span><span class="cm">/**清除数据*/</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">handsontableControl</span><span class="p">.</span><span class="nx">destroy</span><span class="p">;</span><span class="cm">/**清除DOM对象*/</span>
+<span class="w">        </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">handsontableControl</span><span class="p">.</span><span class="nx">loadData</span><span class="p">(</span><span class="nx">gridData</span><span class="p">);</span><span class="w"> </span><span class="cm">/**表格加载数据*/</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">obs</span><span class="o">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nx">objData</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">tempData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">handsontableControl</span><span class="p">.</span><span class="nx">getData</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">tempData</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">obs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">if</span><span class="p">(</span><span class="nx">tempData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span><span class="o">==</span><span class="kc">null</span><span class="o">||</span><span class="nx">tempData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">){</span>
+<span class="w">                    </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">insertData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">obs</span><span class="p">[</span><span class="nx">j</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">].</span><span class="nx">toUpperCase</span><span class="p">()]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">insertData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">HandtableTools</span><span class="p">.</span><span class="nx">obs</span><span class="p">[</span><span class="nx">j</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">].</span><span class="nx">toUpperCase</span><span class="p">()]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">tempData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">];</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

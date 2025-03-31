@@ -112,83 +112,83 @@
 <p>date：2017-11-11
 author：张建新</p>
 <h1 id="_1">查看硬盘分配情况</h1>
-<pre class="codehilite"><code class="language-bash">    [root@dscn022 mongodb]# lsblk
-    NAME             MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-    sda                8:0    0 278.5G  0 disk
-    ├─sda1             8:1    0   500M  0 part /boot
-    └─sda2             8:2    0 224.9G  0 part
-      ├─rhel-root    253:0    0    50G  0 lvm  /
-      ├─rhel-swap    253:1    0     4G  0 lvm  [SWAP]
-      ├─rhel-home    253:2    0 100.9G  0 lvm  /home
-      ├─rhel-var     253:3    0    20G  0 lvm  /var
-      └─rhel-var_log 253:4    0    50G  0 lvm  /var/log
-    sdb                8:16   0   3.7T  0 disk
-    └─sdb1             8:17   0   3.7T  0 part /home/hadmin/logs
-    sdc                8:32   0   3.7T  0 disk
-    └─sdc1             8:33   0   3.7T  0 part
-    sdd                8:48   0   3.7T  0 disk
-    └─sdd1             8:49   0   3.7T  0 part
-    sde                8:64   0   3.7T  0 disk
-    └─sde1             8:65   0   3.7T  0 part
-    sdf                8:80   0   3.7T  0 disk
-    └─sdf1             8:81   0   3.7T  0 part /home/hadmin/data/mongodb/prev
-    sdg                8:96   0   3.7T  0 disk
-    └─sdg1             8:97   0   3.7T  0 part /home/hadmin/data/mongodb/curr
-    sdh                8:112  0   3.7T  0 disk
-    └─sdh1             8:113  0   3.7T  0 part /home/hadmin/data/mongodb/next
-    sdi                8:128  0   3.7T  0 disk
-    └─sdi1             8:129  0   3.7T  0 part
-    sdj                8:144  0   3.7T  0 disk
-    └─sdj1             8:145  0   3.7T  0 part
-    sdk                8:160  0   3.7T  0 disk
-    └─sdk1             8:161  0   3.7T  0 part
-    sdl                8:176  0   3.7T  0 disk
-    └─sdl1             8:177  0   3.7T  0 part
-    sdm                8:192  0   3.7T  0 disk
-    └─sdm1             8:193  0   3.7T  0 part
-    loop0              7:0    0   3.8G  0 loop /mnt
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="o">[</span>root@dscn022<span class="w"> </span>mongodb<span class="o">]</span><span class="c1"># lsblk</span>
+<span class="w">    </span>NAME<span class="w">             </span>MAJ:MIN<span class="w"> </span>RM<span class="w">   </span>SIZE<span class="w"> </span>RO<span class="w"> </span>TYPE<span class="w"> </span>MOUNTPOINT
+<span class="w">    </span>sda<span class="w">                </span><span class="m">8</span>:0<span class="w">    </span><span class="m">0</span><span class="w"> </span><span class="m">278</span>.5G<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>├─sda1<span class="w">             </span><span class="m">8</span>:1<span class="w">    </span><span class="m">0</span><span class="w">   </span>500M<span class="w">  </span><span class="m">0</span><span class="w"> </span>part<span class="w"> </span>/boot
+<span class="w">    </span>└─sda2<span class="w">             </span><span class="m">8</span>:2<span class="w">    </span><span class="m">0</span><span class="w"> </span><span class="m">224</span>.9G<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">      </span>├─rhel-root<span class="w">    </span><span class="m">253</span>:0<span class="w">    </span><span class="m">0</span><span class="w">    </span>50G<span class="w">  </span><span class="m">0</span><span class="w"> </span>lvm<span class="w">  </span>/
+<span class="w">      </span>├─rhel-swap<span class="w">    </span><span class="m">253</span>:1<span class="w">    </span><span class="m">0</span><span class="w">     </span>4G<span class="w">  </span><span class="m">0</span><span class="w"> </span>lvm<span class="w">  </span><span class="o">[</span>SWAP<span class="o">]</span>
+<span class="w">      </span>├─rhel-home<span class="w">    </span><span class="m">253</span>:2<span class="w">    </span><span class="m">0</span><span class="w"> </span><span class="m">100</span>.9G<span class="w">  </span><span class="m">0</span><span class="w"> </span>lvm<span class="w">  </span>/home
+<span class="w">      </span>├─rhel-var<span class="w">     </span><span class="m">253</span>:3<span class="w">    </span><span class="m">0</span><span class="w">    </span>20G<span class="w">  </span><span class="m">0</span><span class="w"> </span>lvm<span class="w">  </span>/var
+<span class="w">      </span>└─rhel-var_log<span class="w"> </span><span class="m">253</span>:4<span class="w">    </span><span class="m">0</span><span class="w">    </span>50G<span class="w">  </span><span class="m">0</span><span class="w"> </span>lvm<span class="w">  </span>/var/log
+<span class="w">    </span>sdb<span class="w">                </span><span class="m">8</span>:16<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdb1<span class="w">             </span><span class="m">8</span>:17<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part<span class="w"> </span>/home/hadmin/logs
+<span class="w">    </span>sdc<span class="w">                </span><span class="m">8</span>:32<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdc1<span class="w">             </span><span class="m">8</span>:33<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">    </span>sdd<span class="w">                </span><span class="m">8</span>:48<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdd1<span class="w">             </span><span class="m">8</span>:49<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">    </span>sde<span class="w">                </span><span class="m">8</span>:64<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sde1<span class="w">             </span><span class="m">8</span>:65<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">    </span>sdf<span class="w">                </span><span class="m">8</span>:80<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdf1<span class="w">             </span><span class="m">8</span>:81<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part<span class="w"> </span>/home/hadmin/data/mongodb/prev
+<span class="w">    </span>sdg<span class="w">                </span><span class="m">8</span>:96<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdg1<span class="w">             </span><span class="m">8</span>:97<span class="w">   </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part<span class="w"> </span>/home/hadmin/data/mongodb/curr
+<span class="w">    </span>sdh<span class="w">                </span><span class="m">8</span>:112<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdh1<span class="w">             </span><span class="m">8</span>:113<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part<span class="w"> </span>/home/hadmin/data/mongodb/next
+<span class="w">    </span>sdi<span class="w">                </span><span class="m">8</span>:128<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdi1<span class="w">             </span><span class="m">8</span>:129<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">    </span>sdj<span class="w">                </span><span class="m">8</span>:144<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdj1<span class="w">             </span><span class="m">8</span>:145<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">    </span>sdk<span class="w">                </span><span class="m">8</span>:160<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdk1<span class="w">             </span><span class="m">8</span>:161<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">    </span>sdl<span class="w">                </span><span class="m">8</span>:176<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdl1<span class="w">             </span><span class="m">8</span>:177<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">    </span>sdm<span class="w">                </span><span class="m">8</span>:192<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+<span class="w">    </span>└─sdm1<span class="w">             </span><span class="m">8</span>:193<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.7T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+<span class="w">    </span>loop0<span class="w">              </span><span class="m">7</span>:0<span class="w">    </span><span class="m">0</span><span class="w">   </span><span class="m">3</span>.8G<span class="w">  </span><span class="m">0</span><span class="w"> </span>loop<span class="w"> </span>/mnt
+</code></pre></div>
 
 <h1 id="_2">进行配置</h1>
-<pre class="codehilite"><code>| ------- | ------ | ------- |
-| :------| ------: | :------: |
-| curr | 1 | 2 | 3 |  4  | 5 |
-| prev | 5 | 1 | 2 |  3  | 4 |
-| next | 2 | 3 | 4 |  5  | 1 |
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="p">|</span> <span class="s s-Atom">-------</span> <span class="p">|</span> <span class="s s-Atom">------</span> <span class="p">|</span> <span class="s s-Atom">-------</span> <span class="p">|</span>
+<span class="p">|</span> <span class="o">:-</span><span class="s s-Atom">-----</span><span class="p">|</span> <span class="s s-Atom">------:</span> <span class="p">|</span> <span class="o">:-</span><span class="s s-Atom">-----:</span> <span class="p">|</span>
+<span class="p">|</span> <span class="s s-Atom">curr</span> <span class="p">|</span> <span class="mi">1</span> <span class="p">|</span> <span class="mi">2</span> <span class="p">|</span> <span class="mi">3</span> <span class="p">|</span>  <span class="mi">4</span>  <span class="p">|</span> <span class="mi">5</span> <span class="p">|</span>
+<span class="p">|</span> <span class="s s-Atom">prev</span> <span class="p">|</span> <span class="mi">5</span> <span class="p">|</span> <span class="mi">1</span> <span class="p">|</span> <span class="mi">2</span> <span class="p">|</span>  <span class="mi">3</span>  <span class="p">|</span> <span class="mi">4</span> <span class="p">|</span>
+<span class="p">|</span> <span class="s s-Atom">next</span> <span class="p">|</span> <span class="mi">2</span> <span class="p">|</span> <span class="mi">3</span> <span class="p">|</span> <span class="mi">4</span> <span class="p">|</span>  <span class="mi">5</span>  <span class="p">|</span> <span class="mi">1</span> <span class="p">|</span>
+</code></pre></div>
 
 <h1 id="mongodb">分配mongoDB 目录</h1>
-<pre class="codehilite"><code class="language-bash">    mkdir -p  /home/hadmin/data/mongodb/prev
-    mkdir -p  /home/hadmin/data/mongodb/curr
-    mkdir -p  /home/hadmin/data/mongodb/next
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w">  </span>/home/hadmin/data/mongodb/prev
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w">  </span>/home/hadmin/data/mongodb/curr
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w">  </span>/home/hadmin/data/mongodb/next
+</code></pre></div>
 
 <h1 id="mount">进行mount</h1>
-<pre class="codehilite"><code class="language-bash"> mount    /dev/sdf1      /home/hadmin/data/mongodb/prev
- mount    /dev/sdg1     /home/hadmin/data/mongodb/curr
- mount   /dev/sdh1     /home/hadmin/data/mongodb/next
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span>mount<span class="w">    </span>/dev/sdf1<span class="w">      </span>/home/hadmin/data/mongodb/prev
+<span class="w"> </span>mount<span class="w">    </span>/dev/sdg1<span class="w">     </span>/home/hadmin/data/mongodb/curr
+<span class="w"> </span>mount<span class="w">   </span>/dev/sdh1<span class="w">     </span>/home/hadmin/data/mongodb/next
+</code></pre></div>
 
 <h1 id="_3">查看硬盘大小</h1>
-<pre class="codehilite"><code class="language-bash">    [root@dscn022 mongodb]# df -h
-    Filesystem                Size  Used Avail Use% Mounted on
-    /dev/mapper/rhel-root      50G  5.1G   45G  11% /
-    devtmpfs                  126G     0  126G   0% /dev
-    tmpfs                     126G     0  126G   0% /dev/shm
-    tmpfs                     126G   50M  126G   1% /run
-    tmpfs                     126G     0  126G   0% /sys/fs/cgroup
-    /dev/sda1                 494M  127M  368M  26% /boot
-    /dev/mapper/rhel-var       20G  101M   20G   1% /var
-    /dev/mapper/rhel-home     101G  1.5G  100G   2% /home
-    /dev/mapper/rhel-var_log   50G   58M   50G   1% /var/log
-    /dev/loop0                3.8G  3.8G     0 100% /mnt
-    tmpfs                     126G   64K  126G   1% /tmp
-    tmpfs                      26G     0   26G   0% /run/user/0
-    /dev/sdb1                 3.6T   89M  3.4T   1% /home/hadmin/logs
-    /dev/sdf1                 3.6T  390M  3.4T   1% /home/hadmin/data/mongodb/prev
-    /dev/sdg1                 3.6T  390M  3.4T   1% /home/hadmin/data/mongodb/curr
-    /dev/sdh1                 3.6T  390M  3.4T   1% /home/hadmin/data/mongodb/next
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="o">[</span>root@dscn022<span class="w"> </span>mongodb<span class="o">]</span><span class="c1"># df -h</span>
+<span class="w">    </span>Filesystem<span class="w">                </span>Size<span class="w">  </span>Used<span class="w"> </span>Avail<span class="w"> </span>Use%<span class="w"> </span>Mounted<span class="w"> </span>on
+<span class="w">    </span>/dev/mapper/rhel-root<span class="w">      </span>50G<span class="w">  </span><span class="m">5</span>.1G<span class="w">   </span>45G<span class="w">  </span><span class="m">11</span>%<span class="w"> </span>/
+<span class="w">    </span>devtmpfs<span class="w">                  </span>126G<span class="w">     </span><span class="m">0</span><span class="w">  </span>126G<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/dev
+<span class="w">    </span>tmpfs<span class="w">                     </span>126G<span class="w">     </span><span class="m">0</span><span class="w">  </span>126G<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/dev/shm
+<span class="w">    </span>tmpfs<span class="w">                     </span>126G<span class="w">   </span>50M<span class="w">  </span>126G<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run
+<span class="w">    </span>tmpfs<span class="w">                     </span>126G<span class="w">     </span><span class="m">0</span><span class="w">  </span>126G<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/sys/fs/cgroup
+<span class="w">    </span>/dev/sda1<span class="w">                 </span>494M<span class="w">  </span>127M<span class="w">  </span>368M<span class="w">  </span><span class="m">26</span>%<span class="w"> </span>/boot
+<span class="w">    </span>/dev/mapper/rhel-var<span class="w">       </span>20G<span class="w">  </span>101M<span class="w">   </span>20G<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/var
+<span class="w">    </span>/dev/mapper/rhel-home<span class="w">     </span>101G<span class="w">  </span><span class="m">1</span>.5G<span class="w">  </span>100G<span class="w">   </span><span class="m">2</span>%<span class="w"> </span>/home
+<span class="w">    </span>/dev/mapper/rhel-var_log<span class="w">   </span>50G<span class="w">   </span>58M<span class="w">   </span>50G<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/var/log
+<span class="w">    </span>/dev/loop0<span class="w">                </span><span class="m">3</span>.8G<span class="w">  </span><span class="m">3</span>.8G<span class="w">     </span><span class="m">0</span><span class="w"> </span><span class="m">100</span>%<span class="w"> </span>/mnt
+<span class="w">    </span>tmpfs<span class="w">                     </span>126G<span class="w">   </span>64K<span class="w">  </span>126G<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/tmp
+<span class="w">    </span>tmpfs<span class="w">                      </span>26G<span class="w">     </span><span class="m">0</span><span class="w">   </span>26G<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/run/user/0
+<span class="w">    </span>/dev/sdb1<span class="w">                 </span><span class="m">3</span>.6T<span class="w">   </span>89M<span class="w">  </span><span class="m">3</span>.4T<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/home/hadmin/logs
+<span class="w">    </span>/dev/sdf1<span class="w">                 </span><span class="m">3</span>.6T<span class="w">  </span>390M<span class="w">  </span><span class="m">3</span>.4T<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/home/hadmin/data/mongodb/prev
+<span class="w">    </span>/dev/sdg1<span class="w">                 </span><span class="m">3</span>.6T<span class="w">  </span>390M<span class="w">  </span><span class="m">3</span>.4T<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/home/hadmin/data/mongodb/curr
+<span class="w">    </span>/dev/sdh1<span class="w">                 </span><span class="m">3</span>.6T<span class="w">  </span>390M<span class="w">  </span><span class="m">3</span>.4T<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/home/hadmin/data/mongodb/next
+</code></pre></div>
 
 <h1 id="_4">脚本 （傻瓜模式）</h1>
 <ul>
@@ -197,162 +197,162 @@ author：张建新</p>
 <li>配置Mongodb用到的文件夹都要<code>mkdir</code></li>
 <li>common.sh</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
 
-    # $1就是shard几
-    # $2目录，重新规划磁盘后可以修改此处
-    # $3是关闭位，启动不传，关闭传 --shutdown
+<span class="w">    </span><span class="c1"># $1就是shard几</span>
+<span class="w">    </span><span class="c1"># $2目录，重新规划磁盘后可以修改此处</span>
+<span class="w">    </span><span class="c1"># $3是关闭位，启动不传，关闭传 --shutdown</span>
 
-    INDEX=$1
+<span class="w">    </span><span class="nv">INDEX</span><span class="o">=</span><span class="nv">$1</span>
 
-    PORT=$(( 27018 + $INDEX ))
-    HOSTNAME=`cat /etc/hostname`
-    SHARD=&quot;TOD-Shard-$INDEX&quot;
-    DB_PATH=&quot; /home/hadmin/data/mongodb/&quot;$2
-    PID_FILE=&quot;/home/hadmin/data/pids/mongodb/$SHARD.pid&quot;
-    LOG_FILE=&quot;/home/hadmin/data/logs/mongodb/$SHARD.log&quot;
+<span class="w">    </span><span class="nv">PORT</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="m">27018</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$INDEX</span><span class="w"> </span><span class="k">))</span>
+<span class="w">    </span><span class="nv">HOSTNAME</span><span class="o">=</span><span class="sb">`</span>cat<span class="w"> </span>/etc/hostname<span class="sb">`</span>
+<span class="w">    </span><span class="nv">SHARD</span><span class="o">=</span><span class="s2">&quot;TOD-Shard-</span><span class="nv">$INDEX</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="nv">DB_PATH</span><span class="o">=</span><span class="s2">&quot; /home/hadmin/data/mongodb/&quot;</span><span class="nv">$2</span>
+<span class="w">    </span><span class="nv">PID_FILE</span><span class="o">=</span><span class="s2">&quot;/home/hadmin/data/pids/mongodb/</span><span class="nv">$SHARD</span><span class="s2">.pid&quot;</span>
+<span class="w">    </span><span class="nv">LOG_FILE</span><span class="o">=</span><span class="s2">&quot;/home/hadmin/data/logs/mongodb/</span><span class="nv">$SHARD</span><span class="s2">.log&quot;</span>
 
-    numactl --interleave=all /home/hadmin/mongodb/bin/mongod --logpath $LOG_FILE --logappend --logRotate rename --timeStampFormat ctime --fork --pidfilepath $PID_FILE --port $PORT --bind_ip $HOSTNAME --dbpath $DB_PATH --journalCommitInterval 100 --storageEngine wiredTiger --wiredTigerCacheSizeGB 4 --replSet $SHARD --enableMajorityReadConcern --shardsvr --oplogSize 10240 $3
-</code></pre>
+<span class="w">    </span>numactl<span class="w"> </span>--interleave<span class="o">=</span>all<span class="w"> </span>/home/hadmin/mongodb/bin/mongod<span class="w"> </span>--logpath<span class="w"> </span><span class="nv">$LOG_FILE</span><span class="w"> </span>--logappend<span class="w"> </span>--logRotate<span class="w"> </span>rename<span class="w"> </span>--timeStampFormat<span class="w"> </span>ctime<span class="w"> </span>--fork<span class="w"> </span>--pidfilepath<span class="w"> </span><span class="nv">$PID_FILE</span><span class="w"> </span>--port<span class="w"> </span><span class="nv">$PORT</span><span class="w"> </span>--bind_ip<span class="w"> </span><span class="nv">$HOSTNAME</span><span class="w"> </span>--dbpath<span class="w"> </span><span class="nv">$DB_PATH</span><span class="w"> </span>--journalCommitInterval<span class="w"> </span><span class="m">100</span><span class="w"> </span>--storageEngine<span class="w"> </span>wiredTiger<span class="w"> </span>--wiredTigerCacheSizeGB<span class="w"> </span><span class="m">4</span><span class="w"> </span>--replSet<span class="w"> </span><span class="nv">$SHARD</span><span class="w"> </span>--enableMajorityReadConcern<span class="w"> </span>--shardsvr<span class="w"> </span>--oplogSize<span class="w"> </span><span class="m">10240</span><span class="w"> </span><span class="nv">$3</span>
+</code></pre></div>
 
 <h1 id="cfgsvrstart">cfgsvr.start</h1>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
 
-    numactl --interleave=all /home/hadmin/mongodb/bin/mongod -f /home/hadmin/mongodb/conf/configserver.conf
-</code></pre>
+<span class="w">    </span>numactl<span class="w"> </span>--interleave<span class="o">=</span>all<span class="w"> </span>/home/hadmin/mongodb/bin/mongod<span class="w"> </span>-f<span class="w"> </span>/home/hadmin/mongodb/conf/configserver.conf
+</code></pre></div>
 
 <h1 id="route">route</h1>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
 
-    /home/hadmin/mongodb/bin/mongos -f /home/hadmin/mongodb/conf/router.conf
-</code></pre>
+<span class="w">    </span>/home/hadmin/mongodb/bin/mongos<span class="w"> </span>-f<span class="w"> </span>/home/hadmin/mongodb/conf/router.conf
+</code></pre></div>
 
 <h1 id="shard_currstart">shard_curr.start</h1>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
 
-    /home/hadmin/mongodb/sbin/common.sh 1 curr
-</code></pre>
+<span class="w">    </span>/home/hadmin/mongodb/sbin/common.sh<span class="w"> </span><span class="m">1</span><span class="w"> </span>curr
+</code></pre></div>
 
 <h1 id="shard_nextstart">shard_next.start</h1>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
 
-    /home/hadmin/mongodb/sbin/common.sh 2 next
-</code></pre>
+<span class="w">    </span>/home/hadmin/mongodb/sbin/common.sh<span class="w"> </span><span class="m">2</span><span class="w"> </span>next
+</code></pre></div>
 
 <h1 id="shard_prevstart">shard_prev.start</h1>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
 
-    /home/hadmin/mongodb/sbin/common.sh 5 prev
-</code></pre>
+<span class="w">    </span>/home/hadmin/mongodb/sbin/common.sh<span class="w"> </span><span class="m">5</span><span class="w"> </span>prev
+</code></pre></div>
 
 <h1 id="initconfigsh">initConfig.sh</h1>
 <ul>
 <li>初始化副本</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
-    /home/hadmin/mongodb/bin/mongo dscn022:27018 &lt;&lt;EOF
-    config={
-        _id:&quot;ConfigServer&quot;,
-        configsvr:true,
-        members:[
-            {_id:0,host:&quot;dscn022:27018&quot;,priority:2},
-            {_id:1,host:&quot;dscn023:27018&quot;},
-            {_id:2,host:&quot;dscn024:27018&quot;}],
-        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}
-    };
-    rs.initiate(config);
-    exit;
-    EOF
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
+<span class="w">    </span>/home/hadmin/mongodb/bin/mongo<span class="w"> </span>dscn022:27018<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">    config={</span>
+<span class="s">        _id:&quot;ConfigServer&quot;,</span>
+<span class="s">        configsvr:true,</span>
+<span class="s">        members:[</span>
+<span class="s">            {_id:0,host:&quot;dscn022:27018&quot;,priority:2},</span>
+<span class="s">            {_id:1,host:&quot;dscn023:27018&quot;},</span>
+<span class="s">            {_id:2,host:&quot;dscn024:27018&quot;}],</span>
+<span class="s">        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}</span>
+<span class="s">    };</span>
+<span class="s">    rs.initiate(config);</span>
+<span class="s">    exit;</span>
+<span class="s">    EOF</span>
+</code></pre></div>
 
 <h1 id="initshardsh">initShard.sh</h1>
 <ul>
 <li>初始化Shard</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
-        /home/hadmin/mongodb/bin/mongo dscn022:27017 &lt;&lt;EOF
-    sh.addShard(&quot;TOD-Shard-1/dscn022:27019,dscn023:27019,dscn026:27019&quot;);
-    sh.addShard(&quot;TOD-Shard-2/dscn023:27020,dscn024:27020,dscn022:27020&quot;);
-    sh.addShard(&quot;TOD-Shard-3/dscn024:27021,dscn025:27021,dscn023:27021&quot;);
-    sh.addShard(&quot;TOD-Shard-4/dscn025:27022,dscn026:27022,dscn024:27022&quot;);
-    sh.addShard(&quot;TOD-Shard-5/dscn025:27023,dscn026:27023,dscn022:27023&quot;);
-    sh.setBalancerState(false);
-    exit;
-    EOF
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
+<span class="w">        </span>/home/hadmin/mongodb/bin/mongo<span class="w"> </span>dscn022:27017<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">    sh.addShard(&quot;TOD-Shard-1/dscn022:27019,dscn023:27019,dscn026:27019&quot;);</span>
+<span class="s">    sh.addShard(&quot;TOD-Shard-2/dscn023:27020,dscn024:27020,dscn022:27020&quot;);</span>
+<span class="s">    sh.addShard(&quot;TOD-Shard-3/dscn024:27021,dscn025:27021,dscn023:27021&quot;);</span>
+<span class="s">    sh.addShard(&quot;TOD-Shard-4/dscn025:27022,dscn026:27022,dscn024:27022&quot;);</span>
+<span class="s">    sh.addShard(&quot;TOD-Shard-5/dscn025:27023,dscn026:27023,dscn022:27023&quot;);</span>
+<span class="s">    sh.setBalancerState(false);</span>
+<span class="s">    exit;</span>
+<span class="s">    EOF</span>
+</code></pre></div>
 
 <h1 id="initrssh">initRS.sh</h1>
-<pre class="codehilite"><code class="language-bash">    #!/bin/bash
-    ############
-    # init rs1 #
-    ############
-    /home/hadmin/mongodb/bin/mongo dscn022:27019 &lt;&lt;EOF
-    config={_id:&quot;TOD-Shard-1&quot;,
-        members:[
-            {_id:0,host:&quot;dscn022:27019&quot;,priority:2},
-            {_id:1,host:&quot;dscn026:27019&quot;},
-            {_id:2,host:&quot;dscn023:27019&quot;}],
-        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};
-    rs.initiate(config);
-    exit;
-    EOF
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="c1">#!/bin/bash</span>
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span><span class="c1"># init rs1 #</span>
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span>/home/hadmin/mongodb/bin/mongo<span class="w"> </span>dscn022:27019<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">    config={_id:&quot;TOD-Shard-1&quot;,</span>
+<span class="s">        members:[</span>
+<span class="s">            {_id:0,host:&quot;dscn022:27019&quot;,priority:2},</span>
+<span class="s">            {_id:1,host:&quot;dscn026:27019&quot;},</span>
+<span class="s">            {_id:2,host:&quot;dscn023:27019&quot;}],</span>
+<span class="s">        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};</span>
+<span class="s">    rs.initiate(config);</span>
+<span class="s">    exit;</span>
+<span class="s">    EOF</span>
 
-    ############
-    # init rs2 #
-    ############
-    /home/hadmin/mongodb/bin/mongo dscn022:27020 &lt;&lt;EOF
-    config={_id:&quot;TOD-Shard-2&quot;,
-        members:[
-            {_id:0,host:&quot;dscn023:27020&quot;,priority:2},
-            {_id:1,host:&quot;dscn022:27020&quot;},
-            {_id:2,host:&quot;dscn024:27020&quot;}],
-        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};
-    rs.initiate(config);
-    exit;
-    EOF
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span><span class="c1"># init rs2 #</span>
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span>/home/hadmin/mongodb/bin/mongo<span class="w"> </span>dscn022:27020<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">    config={_id:&quot;TOD-Shard-2&quot;,</span>
+<span class="s">        members:[</span>
+<span class="s">            {_id:0,host:&quot;dscn023:27020&quot;,priority:2},</span>
+<span class="s">            {_id:1,host:&quot;dscn022:27020&quot;},</span>
+<span class="s">            {_id:2,host:&quot;dscn024:27020&quot;}],</span>
+<span class="s">        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};</span>
+<span class="s">    rs.initiate(config);</span>
+<span class="s">    exit;</span>
+<span class="s">    EOF</span>
 
-    ############
-    # init rs3 #
-    ############
-    /home/hadmin/mongodb/bin/mongo dscn024:27021 &lt;&lt;EOF
-    config={_id:&quot;TOD-Shard-3&quot;,
-        members:[
-            {_id:0,host:&quot;dscn024:27021&quot;,priority:2},
-            {_id:1,host:&quot;dscn023:27021&quot;},
-            {_id:2,host:&quot;dscn025:27021&quot;}],
-        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};
-    rs.initiate(config);
-    exit;
-    EOF
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span><span class="c1"># init rs3 #</span>
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span>/home/hadmin/mongodb/bin/mongo<span class="w"> </span>dscn024:27021<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">    config={_id:&quot;TOD-Shard-3&quot;,</span>
+<span class="s">        members:[</span>
+<span class="s">            {_id:0,host:&quot;dscn024:27021&quot;,priority:2},</span>
+<span class="s">            {_id:1,host:&quot;dscn023:27021&quot;},</span>
+<span class="s">            {_id:2,host:&quot;dscn025:27021&quot;}],</span>
+<span class="s">        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};</span>
+<span class="s">    rs.initiate(config);</span>
+<span class="s">    exit;</span>
+<span class="s">    EOF</span>
 
-    ############
-    # init rs4 #
-    ############
-    /home/hadmin/mongodb/bin/mongo dscn025:27022 &lt;&lt;EOF
-    config={_id:&quot;TOD-Shard-4&quot;,
-        members:[
-            {_id:0,host:&quot;dscn025:27022&quot;,priority:2},
-            {_id:1,host:&quot;dscn024:27022&quot;},
-            {_id:2,host:&quot;dscn026:27022&quot;}],
-        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};
-    rs.initiate(config);
-    exit;
-    EOF
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span><span class="c1"># init rs4 #</span>
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span>/home/hadmin/mongodb/bin/mongo<span class="w"> </span>dscn025:27022<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">    config={_id:&quot;TOD-Shard-4&quot;,</span>
+<span class="s">        members:[</span>
+<span class="s">            {_id:0,host:&quot;dscn025:27022&quot;,priority:2},</span>
+<span class="s">            {_id:1,host:&quot;dscn024:27022&quot;},</span>
+<span class="s">            {_id:2,host:&quot;dscn026:27022&quot;}],</span>
+<span class="s">        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};</span>
+<span class="s">    rs.initiate(config);</span>
+<span class="s">    exit;</span>
+<span class="s">    EOF</span>
 
-    ############
-    # init rs5 #
-    ############
-    /home/hadmin/mongodb/bin/mongo dscn026:27023 &lt;&lt;EOF
-    config={_id:&quot;TOD-Shard-5&quot;,
-        members:[
-            {_id:0,host:&quot;dscn026:27023&quot;,priority:2},
-            {_id:1,host:&quot;dscn025:27023&quot;},
-            {_id:2,host:&quot;dscn022:27023&quot;}],
-        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};
-    rs.initiate(config);
-    exit;
-    EOF
-</code></pre>
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span><span class="c1"># init rs5 #</span>
+<span class="w">    </span><span class="c1">############</span>
+<span class="w">    </span>/home/hadmin/mongodb/bin/mongo<span class="w"> </span>dscn026:27023<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">    config={_id:&quot;TOD-Shard-5&quot;,</span>
+<span class="s">        members:[</span>
+<span class="s">            {_id:0,host:&quot;dscn026:27023&quot;,priority:2},</span>
+<span class="s">            {_id:1,host:&quot;dscn025:27023&quot;},</span>
+<span class="s">            {_id:2,host:&quot;dscn022:27023&quot;}],</span>
+<span class="s">        settings:{getLastErrorDefaults:{w:&quot;majority&quot;,wtimeout:5000}}};</span>
+<span class="s">    rs.initiate(config);</span>
+<span class="s">    exit;</span>
+<span class="s">    EOF</span>
+</code></pre></div>
 
 <h1 id="_5">总结（总体流程）</h1>
 <ul>
@@ -396,7 +396,7 @@ author：张建新</p>
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

@@ -116,571 +116,571 @@
 <p>由于这里我们使用 RBD 所以我们使用到的组件为 Ceph.mon, Ceph.osd, 这两个组件就可以了。 Ceph.mds 为 cephfs 所需组件</p>
 </blockquote>
 <h2 id="_1">部署环境</h2>
-<pre class="codehilite"><code># Ceph.Mon = 2n+1 个 ，3个的情况下只能掉线一个，如果同时2个掉线
+<div class="codehilite"><pre><span></span><code># Ceph.Mon = 2n+1 个 ，3个的情况下只能掉线一个，如果同时2个掉线
 # 集群会出现无法仲裁，集群会一直等待 Ceph.Mon 恢复超过半数。
 
 172.16.1.37  Ceph.admin + Ceph.Mon
 172.16.1.38  Ceph.Mon + Ceph.osd
 172.16.1.39  Ceph.Mon + Ceph.osd
 172.16.1.40  Ceph.osd
-</code></pre>
+</code></pre></div>
 
 <h2 id="_2">初始化环境</h2>
-<pre class="codehilite"><code># 1. ceph 对时间要求很严格， 一定要同步所有的服务器时间
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="mf">1.</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="n">对时间要求很严格</span><span class="err">，</span><span class="w"> </span><span class="n">一定要同步所有的服务器时间</span>
 
-# 2. 配置 hosts
+<span class="err">#</span><span class="w"> </span><span class="mf">2.</span><span class="w"> </span><span class="n">配置</span><span class="w"> </span><span class="n">hosts</span>
 
-cat &lt;&lt; &quot;EOF&quot; &gt;&gt; /etc/hosts
-# --- Ceph Hosts -----
-172.16.1.37  ceph-node-1
-172.16.1.38  ceph-node-2
-172.16.1.39  ceph-node-3
-172.16.1.40  ceph-node-4
-# --- Ceph Hosts -----
-EOF
-
-
-# 3. 配置 hostname
-
-hostnamectl --static set-hostname ceph-node-1
-hostnamectl --static set-hostname ceph-node-2
-hostnamectl --static set-hostname ceph-node-3
-hostnamectl --static set-hostname ceph-node-4
+<span class="n">cat</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="ss">&quot;EOF&quot;</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hosts</span>
+<span class="err">#</span><span class="w"> </span><span class="o">---</span><span class="w"> </span><span class="n">Ceph</span><span class="w"> </span><span class="n">Hosts</span><span class="w"> </span><span class="o">-----</span>
+<span class="mf">172.16.1.37</span><span class="w">  </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span>
+<span class="mf">172.16.1.38</span><span class="w">  </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span>
+<span class="mf">172.16.1.39</span><span class="w">  </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span>
+<span class="mf">172.16.1.40</span><span class="w">  </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span>
+<span class="err">#</span><span class="w"> </span><span class="o">---</span><span class="w"> </span><span class="n">Ceph</span><span class="w"> </span><span class="n">Hosts</span><span class="w"> </span><span class="o">-----</span>
+<span class="n">EOF</span>
 
 
-# 4. Ceph.admin 节点 配置无密码ssh
+<span class="err">#</span><span class="w"> </span><span class="mf">3.</span><span class="w"> </span><span class="n">配置</span><span class="w"> </span><span class="n">hostname</span>
 
-ssh-keygen
-ssh-copy-id ceph-node-1 -p33
-ssh-copy-id ceph-node-2 -p33
-ssh-copy-id ceph-node-3 -p33
-ssh-copy-id ceph-node-4 -p33
-
-Now try logging into the machine, with:   &quot;ssh -p '33' 'ceph-node-2'&quot;
+<span class="n">hostnamectl</span><span class="w"> </span><span class="o">--</span><span class="k">static</span><span class="w"> </span><span class="k">set</span><span class="o">-</span><span class="n">hostname</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span>
+<span class="n">hostnamectl</span><span class="w"> </span><span class="o">--</span><span class="k">static</span><span class="w"> </span><span class="k">set</span><span class="o">-</span><span class="n">hostname</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span>
+<span class="n">hostnamectl</span><span class="w"> </span><span class="o">--</span><span class="k">static</span><span class="w"> </span><span class="k">set</span><span class="o">-</span><span class="n">hostname</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span>
+<span class="n">hostnamectl</span><span class="w"> </span><span class="o">--</span><span class="k">static</span><span class="w"> </span><span class="k">set</span><span class="o">-</span><span class="n">hostname</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span>
 
 
+<span class="err">#</span><span class="w"> </span><span class="mf">4.</span><span class="w"> </span><span class="n">Ceph</span><span class="p">.</span><span class="k">admin</span><span class="w"> </span><span class="n">节点</span><span class="w"> </span><span class="n">配置无密码ssh</span>
 
-# 5. 增加 ~/.ssh/config 文件, 否则 ceph-deploy 创建集群 报端口错误
-[root@ceph-node-1 ~]# vi ~/.ssh/config
+<span class="n">ssh</span><span class="o">-</span><span class="n">keygen</span>
+<span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="n">id</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="n">p33</span>
+<span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="n">id</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="o">-</span><span class="n">p33</span>
+<span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="n">id</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span><span class="w"> </span><span class="o">-</span><span class="n">p33</span>
+<span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="n">id</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span><span class="w"> </span><span class="o">-</span><span class="n">p33</span>
 
-Host ceph-node-1
-    Hostname ceph-node-1
-    Port 33
-Host ceph-node-2
-    Hostname ceph-node-2
-    Port 33
-Host ceph-node-3
-    Hostname ceph-node-3
-    Port 33
-Host ceph-node-4
-    Hostname ceph-node-4
-    Port 33
-</code></pre>
+<span class="n">Now</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">logging</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">machine</span><span class="p">,</span><span class="w"> </span><span class="k">with</span><span class="err">:</span><span class="w">   </span><span class="ss">&quot;ssh -p &#39;33&#39; &#39;ceph-node-2&#39;&quot;</span>
+
+
+
+<span class="err">#</span><span class="w"> </span><span class="mf">5.</span><span class="w"> </span><span class="n">增加</span><span class="w"> </span><span class="o">~/</span><span class="p">.</span><span class="n">ssh</span><span class="o">/</span><span class="n">config</span><span class="w"> </span><span class="n">文件</span><span class="p">,</span><span class="w"> </span><span class="n">否则</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">deploy</span><span class="w"> </span><span class="n">创建集群</span><span class="w"> </span><span class="n">报端口错误</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ~</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">vi</span><span class="w"> </span><span class="o">~/</span><span class="p">.</span><span class="n">ssh</span><span class="o">/</span><span class="n">config</span>
+
+<span class="k">Host</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span>
+<span class="w">    </span><span class="n">Hostname</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span>
+<span class="w">    </span><span class="n">Port</span><span class="w"> </span><span class="mi">33</span>
+<span class="k">Host</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span>
+<span class="w">    </span><span class="n">Hostname</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span>
+<span class="w">    </span><span class="n">Port</span><span class="w"> </span><span class="mi">33</span>
+<span class="k">Host</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span>
+<span class="w">    </span><span class="n">Hostname</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span>
+<span class="w">    </span><span class="n">Port</span><span class="w"> </span><span class="mi">33</span>
+<span class="k">Host</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span>
+<span class="w">    </span><span class="n">Hostname</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span>
+<span class="w">    </span><span class="n">Port</span><span class="w"> </span><span class="mi">33</span>
+</code></pre></div>
 
 <h2 id="ceph-deploy">安装 Ceph-deploy</h2>
-<pre class="codehilite"><code># 管理节点 安装 ceph-deploy 管理工具
-# 配置 官方 的 Ceph 源
+<div class="codehilite"><pre><span></span><code><span class="c1"># 管理节点 安装 ceph-deploy 管理工具</span>
+<span class="c1"># 配置 官方 的 Ceph 源</span>
 
-rpm --import https://download.ceph.com/keys/release.asc
-rpm -Uvh --replacepkgs https://download.ceph.com/rpm-jewel/el7/noarch/ceph-release-1-0.el7.noarch.rpm
+<span class="n">rpm</span> <span class="o">--</span><span class="kn">import</span> <span class="nn">https</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">ceph</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">keys</span><span class="o">/</span><span class="n">release</span><span class="o">.</span><span class="n">asc</span>
+<span class="n">rpm</span> <span class="o">-</span><span class="n">Uvh</span> <span class="o">--</span><span class="n">replacepkgs</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">ceph</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">rpm</span><span class="o">-</span><span class="n">jewel</span><span class="o">/</span><span class="n">el7</span><span class="o">/</span><span class="n">noarch</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">release</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mf">0.</span><span class="n">el7</span><span class="o">.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
 
-# 安装 epel 源
-rpm -Uvh http://mirrors.ustc.edu.cn/centos/7/extras/x86_64/Packages/epel-release-7-9.noarch.rpm
+<span class="c1"># 安装 epel 源</span>
+<span class="n">rpm</span> <span class="o">-</span><span class="n">Uvh</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirrors</span><span class="o">.</span><span class="n">ustc</span><span class="o">.</span><span class="n">edu</span><span class="o">.</span><span class="n">cn</span><span class="o">/</span><span class="n">centos</span><span class="o">/</span><span class="mi">7</span><span class="o">/</span><span class="n">extras</span><span class="o">/</span><span class="n">x86_64</span><span class="o">/</span><span class="n">Packages</span><span class="o">/</span><span class="n">epel</span><span class="o">-</span><span class="n">release</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mf">9.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
 
 
-[root@ceph-node-1 ~]# yum makecache
+<span class="p">[</span><span class="n">root</span><span class="nd">@ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span> <span class="o">~</span><span class="p">]</span><span class="c1"># yum makecache</span>
 
-[root@ceph-node-1 ~]# yum -y install ceph-deploy ntpdate
-</code></pre>
+<span class="p">[</span><span class="n">root</span><span class="nd">@ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span> <span class="o">~</span><span class="p">]</span><span class="c1"># yum -y install ceph-deploy ntpdate</span>
+</code></pre></div>
 
 <h2 id="ceph-mon">创建 Ceph-Mon</h2>
-<pre class="codehilite"><code># 创建集群目录，用于存放配置文件，证书等信息
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">创建集群目录</span><span class="err">，</span><span class="n">用于存放配置文件</span><span class="err">，</span><span class="n">证书等信息</span>
 
-mkdir -p /opt/ceph-cluster
+<span class="n">mkdir</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">cluster</span>
 
-cd /opt/ceph-cluster/
+<span class="n">cd</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">cluster</span><span class="o">/</span>
 
-# 创建ceph-mon 节点
-[root@ceph-node-1 ceph-cluster]# ceph-deploy new ceph-node-1 ceph-node-2 ceph-node-3
-
-
-Monitor initial members are ['ceph-node-1', 'ceph-node-2', 'ceph-node-3']
+<span class="err">#</span><span class="w"> </span><span class="n">创建ceph</span><span class="o">-</span><span class="n">mon</span><span class="w"> </span><span class="n">节点</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">deploy</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span>
 
 
-# 查看配置文件
-
-[root@ceph-node-1 ceph-cluster]# cat ceph.conf 
-[global]
-fsid = 211a5d26-0377-4d1c-8555-c4793cef83c1
-mon_initial_members = ceph-node-1, ceph-node-2, ceph-node-3
-mon_host = 172.16.1.37,172.16.1.38,172.16.1.39
-auth_cluster_required = cephx
-auth_service_required = cephx
-auth_client_required = cephx
+<span class="n">Monitor</span><span class="w"> </span><span class="n">initial</span><span class="w"> </span><span class="n">members</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="o">[</span><span class="n">&#39;ceph-node-1&#39;, &#39;ceph-node-2&#39;, &#39;ceph-node-3&#39;</span><span class="o">]</span>
 
 
-# 修改 osd 的副本数，既数据保存N份。
+<span class="err">#</span><span class="w"> </span><span class="n">查看配置文件</span>
 
-echo 'osd_pool_default_size = 2' &gt;&gt; ./ceph.conf
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">cat</span><span class="w"> </span><span class="n">ceph</span><span class="p">.</span><span class="n">conf</span><span class="w"> </span>
+<span class="o">[</span><span class="n">global</span><span class="o">]</span>
+<span class="n">fsid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">211</span><span class="n">a5d26</span><span class="o">-</span><span class="mi">0377</span><span class="o">-</span><span class="mi">4</span><span class="n">d1c</span><span class="o">-</span><span class="mi">8555</span><span class="o">-</span><span class="n">c4793cef83c1</span>
+<span class="n">mon_initial_members</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span>
+<span class="n">mon_host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">172.16.1.37</span><span class="p">,</span><span class="mf">172.16.1.38</span><span class="p">,</span><span class="mf">172.16.1.39</span>
+<span class="n">auth_cluster_required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cephx</span>
+<span class="n">auth_service_required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cephx</span>
+<span class="n">auth_client_required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cephx</span>
 
 
-# 注: 如果文件系统为 ext4 请添加
+<span class="err">#</span><span class="w"> </span><span class="n">修改</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">的副本数</span><span class="err">，</span><span class="n">既数据保存N份</span><span class="err">。</span>
 
-echo 'osd max object name len = 256' &gt;&gt; ./ceph.conf
-echo 'osd max object namespace len = 64' &gt;&gt; ./ceph.conf
-</code></pre>
+<span class="n">echo</span><span class="w"> </span><span class="s1">&#39;osd_pool_default_size = 2&#39;</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">.</span><span class="o">/</span><span class="n">ceph</span><span class="p">.</span><span class="n">conf</span>
+
+
+<span class="err">#</span><span class="w"> </span><span class="nl">注</span><span class="p">:</span><span class="w"> </span><span class="n">如果文件系统为</span><span class="w"> </span><span class="n">ext4</span><span class="w"> </span><span class="n">请添加</span>
+
+<span class="n">echo</span><span class="w"> </span><span class="s1">&#39;osd max object name len = 256&#39;</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">.</span><span class="o">/</span><span class="n">ceph</span><span class="p">.</span><span class="n">conf</span>
+<span class="n">echo</span><span class="w"> </span><span class="s1">&#39;osd max object namespace len = 64&#39;</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">.</span><span class="o">/</span><span class="n">ceph</span><span class="p">.</span><span class="n">conf</span>
+</code></pre></div>
 
 <h2 id="ceph_1">安装 Ceph</h2>
-<pre class="codehilite"><code># 可通过 ceph-deploy 安装，也可以登陆node 本地安装
-# 命令: ceph-deploy install {ceph-node}[{ceph-node} ...]
+<div class="codehilite"><pre><span></span><code><span class="c1"># 可通过 ceph-deploy 安装，也可以登陆node 本地安装</span>
+<span class="c1"># 命令: ceph-deploy install {ceph-node}[{ceph-node} ...]</span>
 
-[root@ceph-node-1 ceph-cluster]# ceph-deploy install ceph-node-1 ceph-node-2 ceph-node-3 ceph-node-4
+<span class="p">[</span><span class="n">root</span><span class="err">@</span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">cluster</span><span class="p">]</span><span class="c1"># ceph-deploy install ceph-node-1 ceph-node-2 ceph-node-3 ceph-node-4</span>
 
-# 使用 cpeh-deploy 安装，会一直使用官方源下载，超级慢
-# 如果出现超时，请自行在每个服务器中使用 yum 安装
+<span class="c1"># 使用 cpeh-deploy 安装，会一直使用官方源下载，超级慢</span>
+<span class="c1"># 如果出现超时，请自行在每个服务器中使用 yum 安装</span>
 
-# 替换 ceph 源 为 163 源
-sed -i 's/download\.ceph\.com/mirrors\.163\.com\/ceph/g' /etc/yum.repos.d/ceph.repo
-
-
-yum -y install ceph ceph-radosgw
+<span class="c1"># 替换 ceph 源 为 163 源</span>
+<span class="n">sed</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="s1">&#39;s/download\.ceph\.com/mirrors\.163\.com\/ceph/g&#39;</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ceph</span><span class="o">.</span><span class="n">repo</span>
 
 
-# 检测 安装
+<span class="n">yum</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">radosgw</span>
 
-[root@ceph-node-1 ceph-cluster]# ceph --version
-ceph version 10.2.7 (50e863e0f4bc8f4b9e31156de690d765af245185)
-</code></pre>
+
+<span class="c1"># 检测 安装</span>
+
+<span class="p">[</span><span class="n">root</span><span class="err">@</span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">cluster</span><span class="p">]</span><span class="c1"># ceph --version</span>
+<span class="n">ceph</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="mf">10.2</span><span class="o">.</span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="mf">50e863</span><span class="n">e0f4bc8f4b9e31156de690d765af245185</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="ceph-mon_1">初始化 ceph-mon 节点</h2>
-<pre class="codehilite"><code># 请务必在 ceph-cluster 目录下
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">请务必在</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">cluster</span><span class="w"> </span><span class="n">目录下</span>
 
-[root@ceph-node-1 ceph-cluster]# ceph-deploy mon create-initial
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">deploy</span><span class="w"> </span><span class="n">mon</span><span class="w"> </span><span class="k">create</span><span class="o">-</span><span class="n">initial</span>
 
 
 
-[ceph_deploy.gatherkeys][INFO  ] Storing ceph.client.admin.keyring
-[ceph_deploy.gatherkeys][INFO  ] Storing ceph.bootstrap-mds.keyring
-[ceph_deploy.gatherkeys][INFO  ] keyring 'ceph.mon.keyring' already exists
-[ceph_deploy.gatherkeys][INFO  ] Storing ceph.bootstrap-osd.keyring
-[ceph_deploy.gatherkeys][INFO  ] Storing ceph.bootstrap-rgw.keyring
-[ceph_deploy.gatherkeys][INFO  ] Destroy temp directory /tmp/tmpNfXVDA
-</code></pre>
+<span class="o">[</span><span class="n">ceph_deploy.gatherkeys</span><span class="o">][</span><span class="n">INFO  </span><span class="o">]</span><span class="w"> </span><span class="n">Storing</span><span class="w"> </span><span class="n">ceph</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="k">admin</span><span class="p">.</span><span class="n">keyring</span>
+<span class="o">[</span><span class="n">ceph_deploy.gatherkeys</span><span class="o">][</span><span class="n">INFO  </span><span class="o">]</span><span class="w"> </span><span class="n">Storing</span><span class="w"> </span><span class="n">ceph</span><span class="p">.</span><span class="n">bootstrap</span><span class="o">-</span><span class="n">mds</span><span class="p">.</span><span class="n">keyring</span>
+<span class="o">[</span><span class="n">ceph_deploy.gatherkeys</span><span class="o">][</span><span class="n">INFO  </span><span class="o">]</span><span class="w"> </span><span class="n">keyring</span><span class="w"> </span><span class="s1">&#39;ceph.mon.keyring&#39;</span><span class="w"> </span><span class="n">already</span><span class="w"> </span><span class="ow">exists</span>
+<span class="o">[</span><span class="n">ceph_deploy.gatherkeys</span><span class="o">][</span><span class="n">INFO  </span><span class="o">]</span><span class="w"> </span><span class="n">Storing</span><span class="w"> </span><span class="n">ceph</span><span class="p">.</span><span class="n">bootstrap</span><span class="o">-</span><span class="n">osd</span><span class="p">.</span><span class="n">keyring</span>
+<span class="o">[</span><span class="n">ceph_deploy.gatherkeys</span><span class="o">][</span><span class="n">INFO  </span><span class="o">]</span><span class="w"> </span><span class="n">Storing</span><span class="w"> </span><span class="n">ceph</span><span class="p">.</span><span class="n">bootstrap</span><span class="o">-</span><span class="n">rgw</span><span class="p">.</span><span class="n">keyring</span>
+<span class="o">[</span><span class="n">ceph_deploy.gatherkeys</span><span class="o">][</span><span class="n">INFO  </span><span class="o">]</span><span class="w"> </span><span class="k">Destroy</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="n">directory</span><span class="w"> </span><span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">tmpNfXVDA</span>
+</code></pre></div>
 
 <h2 id="cephosd">初始化 ceph.osd 节点</h2>
-<pre class="codehilite"><code># 首先创建 存储空间, 如果使用分区，可略过
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">首先创建</span><span class="w"> </span><span class="n">存储空间</span><span class="p">,</span><span class="w"> </span><span class="n">如果使用分区</span><span class="err">，</span><span class="n">可略过</span>
 
-[root@ceph-node-2 ~]# mkdir -p /opt/ceph-osd-1 &amp;&amp; chown ceph:ceph /opt/ceph-osd-1
-[root@ceph-node-3 ~]# mkdir -p /opt/ceph-osd-2 &amp;&amp; chown ceph:ceph /opt/ceph-osd-2
-[root@ceph-node-4 ~]# mkdir -p /opt/ceph-osd-3 &amp;&amp; chown ceph:ceph /opt/ceph-osd-3
-
-
+<span class="o">[</span><span class="n">root@ceph-node-2 ~</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">chown</span><span class="w"> </span><span class="nl">ceph</span><span class="p">:</span><span class="n">ceph</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">1</span>
+<span class="o">[</span><span class="n">root@ceph-node-3 ~</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">chown</span><span class="w"> </span><span class="nl">ceph</span><span class="p">:</span><span class="n">ceph</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">2</span>
+<span class="o">[</span><span class="n">root@ceph-node-4 ~</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">3</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">chown</span><span class="w"> </span><span class="nl">ceph</span><span class="p">:</span><span class="n">ceph</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">3</span>
 
 
-# 启动 osd
 
-[root@ceph-node-1 ceph-cluster]# ceph-deploy osd prepare ceph-node-2:/opt/ceph-osd-1 ceph-node-3:/opt/ceph-osd-2 ceph-node-4:/opt/ceph-osd-3
-</code></pre>
 
-<pre class="codehilite"><code># 激活 所有 osd 节点
+<span class="err">#</span><span class="w"> </span><span class="n">启动</span><span class="w"> </span><span class="n">osd</span>
 
-[root@ceph-node-1 ceph-cluster]# ceph-deploy osd activate ceph-node-2:/opt/ceph-osd-1 ceph-node-3:/opt/ceph-osd-2 ceph-node-4:/opt/ceph-osd-3
-</code></pre>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">deploy</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="k">prepare</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="err">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span><span class="err">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span><span class="err">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">3</span>
+</code></pre></div>
 
-<pre class="codehilite"><code># 把管理节点的配置文件与keyring同步至其它节点
-[root@ceph-node-1 ceph-cluster]# ceph-deploy admin ceph-node-1 ceph-node-2 ceph-node-3 ceph-node-4
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">激活</span><span class="w"> </span><span class="n">所有</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">节点</span>
 
-<pre class="codehilite"><code># 没有出现 红色的 ERROR 
-# 查看状态
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">deploy</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">activate</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="err">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span><span class="err">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span><span class="err">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">-</span><span class="mi">3</span>
+</code></pre></div>
 
-[root@ceph-node-1 ceph-cluster]# ceph -s
-    cluster 7ab7e076-24e8-4236-bd4e-88675aab7365
-     health HEALTH_OK
-     monmap e1: 3 mons at {ceph-node-1=172.16.1.37:6789/0,ceph-node-2=172.16.1.38:6789/0,ceph-node-3=172.16.1.39:6789/0}
-            election epoch 6, quorum 0,1,2 ceph-node-1,ceph-node-2,ceph-node-3
-     osdmap e15: 3 osds: 3 up, 3 in
-            flags sortbitwise,require_jewel_osds
-      pgmap v24: 64 pgs, 1 pools, 0 bytes data, 0 objects
-            15628 MB used, 8957 GB / 9452 GB avail
-                  64 active+clean
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">把管理节点的配置文件与keyring同步至其它节点</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">deploy</span><span class="w"> </span><span class="k">admin</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span>
+</code></pre></div>
 
-<pre class="codehilite"><code># 查看 osd tree
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">没有出现</span><span class="w"> </span><span class="n">红色的</span><span class="w"> </span><span class="n">ERROR</span><span class="w"> </span>
+<span class="err">#</span><span class="w"> </span><span class="n">查看状态</span>
 
-[root@ceph-node-1 ceph-cluster]# ceph osd tree
-ID WEIGHT  TYPE NAME            UP/DOWN REWEIGHT PRIMARY-AFFINITY 
--1 9.23126 root default                                           
--2 3.07709     host ceph-node-2                                   
- 0 3.07709         osd.0             up  1.00000          1.00000 
--3 3.07709     host ceph-node-3                                   
- 1 3.07709         osd.1             up  1.00000          1.00000 
--4 3.07709     host ceph-node-4                                   
- 2 3.07709         osd.2             up  1.00000          1.00000 
-</code></pre>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="o">-</span><span class="n">s</span>
+<span class="w">    </span><span class="n">cluster</span><span class="w"> </span><span class="mi">7</span><span class="n">ab7e076</span><span class="o">-</span><span class="mf">24e8</span><span class="o">-</span><span class="mi">4236</span><span class="o">-</span><span class="n">bd4e</span><span class="o">-</span><span class="mi">88675</span><span class="n">aab7365</span>
+<span class="w">     </span><span class="n">health</span><span class="w"> </span><span class="n">HEALTH_OK</span>
+<span class="w">     </span><span class="n">monmap</span><span class="w"> </span><span class="nl">e1</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="n">mons</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="err">{</span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span><span class="o">=</span><span class="mf">172.16.1.37</span><span class="err">:</span><span class="mi">6789</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="o">=</span><span class="mf">172.16.1.38</span><span class="err">:</span><span class="mi">6789</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span><span class="o">=</span><span class="mf">172.16.1.39</span><span class="err">:</span><span class="mi">6789</span><span class="o">/</span><span class="mi">0</span><span class="err">}</span>
+<span class="w">            </span><span class="n">election</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="n">quorum</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span>
+<span class="w">     </span><span class="n">osdmap</span><span class="w"> </span><span class="nl">e15</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="nl">osds</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="n">up</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="ow">in</span>
+<span class="w">            </span><span class="n">flags</span><span class="w"> </span><span class="n">sortbitwise</span><span class="p">,</span><span class="n">require_jewel_osds</span>
+<span class="w">      </span><span class="n">pgmap</span><span class="w"> </span><span class="nl">v24</span><span class="p">:</span><span class="w"> </span><span class="mi">64</span><span class="w"> </span><span class="n">pgs</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">pools</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">data</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">objects</span>
+<span class="w">            </span><span class="mi">15628</span><span class="w"> </span><span class="n">MB</span><span class="w"> </span><span class="n">used</span><span class="p">,</span><span class="w"> </span><span class="mi">8957</span><span class="w"> </span><span class="n">GB</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">9452</span><span class="w"> </span><span class="n">GB</span><span class="w"> </span><span class="n">avail</span>
+<span class="w">                  </span><span class="mi">64</span><span class="w"> </span><span class="n">active</span><span class="o">+</span><span class="n">clean</span>
+</code></pre></div>
 
-<pre class="codehilite"><code># 设置所有开机启动
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">查看</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">tree</span>
+
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">tree</span>
+<span class="n">ID</span><span class="w"> </span><span class="n">WEIGHT</span><span class="w">  </span><span class="n">TYPE</span><span class="w"> </span><span class="n">NAME</span><span class="w">            </span><span class="n">UP</span><span class="o">/</span><span class="n">DOWN</span><span class="w"> </span><span class="n">REWEIGHT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="o">-</span><span class="n">AFFINITY</span><span class="w"> </span>
+<span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="mf">9.23126</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="k">default</span><span class="w">                                           </span>
+<span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="mf">3.07709</span><span class="w">     </span><span class="k">host</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">2</span><span class="w">                                   </span>
+<span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mf">3.07709</span><span class="w">         </span><span class="n">osd</span><span class="mf">.0</span><span class="w">             </span><span class="n">up</span><span class="w">  </span><span class="mf">1.00000</span><span class="w">          </span><span class="mf">1.00000</span><span class="w"> </span>
+<span class="o">-</span><span class="mi">3</span><span class="w"> </span><span class="mf">3.07709</span><span class="w">     </span><span class="k">host</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">3</span><span class="w">                                   </span>
+<span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mf">3.07709</span><span class="w">         </span><span class="n">osd</span><span class="mf">.1</span><span class="w">             </span><span class="n">up</span><span class="w">  </span><span class="mf">1.00000</span><span class="w">          </span><span class="mf">1.00000</span><span class="w"> </span>
+<span class="o">-</span><span class="mi">4</span><span class="w"> </span><span class="mf">3.07709</span><span class="w">     </span><span class="k">host</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">4</span><span class="w">                                   </span>
+<span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mf">3.07709</span><span class="w">         </span><span class="n">osd</span><span class="mf">.2</span><span class="w">             </span><span class="n">up</span><span class="w">  </span><span class="mf">1.00000</span><span class="w">          </span><span class="mf">1.00000</span><span class="w"> </span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code># 设置所有开机启动
 
 systemctl enable ceph-osd.target
 systemctl enable ceph-mon.target
-</code></pre>
+</code></pre></div>
 
-<pre class="codehilite"><code># 重启系统以后重启 osd
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">重启系统以后重启</span><span class="w"> </span><span class="n">osd</span>
 
-#查看处于down 的 osd
-ceph osd tree
+<span class="n">#查看处于down</span><span class="w"> </span><span class="n">的</span><span class="w"> </span><span class="n">osd</span>
+<span class="n">ceph</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">tree</span>
 
-# 登陆所在node 启动ceph-osd进程 [id 为 tree 查看的 id]
+<span class="err">#</span><span class="w"> </span><span class="n">登陆所在node</span><span class="w"> </span><span class="n">启动ceph</span><span class="o">-</span><span class="n">osd进程</span><span class="w"> </span><span class="o">[</span><span class="n">id 为 tree 查看的 id</span><span class="o">]</span>
 
-systemctl start ceph-osd@id
-</code></pre>
+<span class="n">systemctl</span><span class="w"> </span><span class="k">start</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="nv">@id</span>
+</code></pre></div>
 
 <h1 id="kubernetes-volume-ceph-rbd">Kubernetes Volume Ceph RBD</h1>
 <blockquote>
 <p>官方 RDB 的文件 https://github.com/kubernetes/kubernetes/tree/master/examples/volumes/rbd</p>
 </blockquote>
 <h2 id="k8s-ceph-common">k8s 安装 ceph-common</h2>
-<pre class="codehilite"><code># 1. 在所有的 k8s node 里面安装 ceph-common
-yum -y install ceph-common
+<div class="codehilite"><pre><span></span><code>#<span class="w"> </span><span class="mi">1</span>.<span class="w"> </span>在所有的<span class="w"> </span><span class="nv">k8s</span><span class="w"> </span><span class="nv">node</span><span class="w"> </span>里面安装<span class="w"> </span><span class="nv">ceph</span><span class="o">-</span><span class="nv">common</span>
+<span class="nv">yum</span><span class="w"> </span><span class="o">-</span><span class="nv">y</span><span class="w"> </span><span class="nv">install</span><span class="w"> </span><span class="nv">ceph</span><span class="o">-</span><span class="nv">common</span>
 
-# 2. 拷贝 ceph.conf 与 ceph.client.admin.keyring
-拷贝到 /etc/ceph/ 目录下
+#<span class="w"> </span><span class="mi">2</span>.<span class="w"> </span>拷贝<span class="w"> </span><span class="nv">ceph</span>.<span class="nv">conf</span><span class="w"> </span>与<span class="w"> </span><span class="nv">ceph</span>.<span class="nv">client</span>.<span class="nv">admin</span>.<span class="nv">keyring</span>
+拷贝到<span class="w"> </span><span class="o">/</span><span class="nv">etc</span><span class="o">/</span><span class="nv">ceph</span><span class="o">/</span><span class="w"> </span>目录下
 
-# 3. 配置 kubelet 增加ceph参数
-# 这里最好是在创建 k8s 集群的时候就添加好
+#<span class="w"> </span><span class="mi">3</span>.<span class="w"> </span>配置<span class="w"> </span><span class="nv">kubelet</span><span class="w"> </span>增加<span class="nv">ceph</span>参数
+#<span class="w"> </span>这里最好是在创建<span class="w"> </span><span class="nv">k8s</span><span class="w"> </span>集群的时候就添加好
 
-vim /usr/local/bin/kubelet
+<span class="nv">vim</span><span class="w"> </span><span class="o">/</span><span class="nv">usr</span><span class="o">/</span><span class="nv">local</span><span class="o">/</span><span class="nv">bin</span><span class="o">/</span><span class="nv">kubelet</span>
 
-# 增加 如下
+#<span class="w"> </span>增加<span class="w"> </span>如下
 
-  -v /etc/ceph:/etc/ceph:ro \
-  -v /sbin/modprobe:/sbin/modprobe:ro \
-  -v /usr/sbin/modprobe:/usr/sbin/modprobe:ro \
-  -v /lib/modules:/lib/modules:ro \
+<span class="w">  </span><span class="o">-</span><span class="nv">v</span><span class="w"> </span><span class="o">/</span><span class="nv">etc</span><span class="o">/</span><span class="nv">ceph</span>:<span class="o">/</span><span class="nv">etc</span><span class="o">/</span><span class="nv">ceph</span>:<span class="nv">ro</span><span class="w"> </span>\
+<span class="w">  </span><span class="o">-</span><span class="nv">v</span><span class="w"> </span><span class="o">/</span><span class="nv">sbin</span><span class="o">/</span><span class="nv">modprobe</span>:<span class="o">/</span><span class="nv">sbin</span><span class="o">/</span><span class="nv">modprobe</span>:<span class="nv">ro</span><span class="w"> </span>\
+<span class="w">  </span><span class="o">-</span><span class="nv">v</span><span class="w"> </span><span class="o">/</span><span class="nv">usr</span><span class="o">/</span><span class="nv">sbin</span><span class="o">/</span><span class="nv">modprobe</span>:<span class="o">/</span><span class="nv">usr</span><span class="o">/</span><span class="nv">sbin</span><span class="o">/</span><span class="nv">modprobe</span>:<span class="nv">ro</span><span class="w"> </span>\
+<span class="w">  </span><span class="o">-</span><span class="nv">v</span><span class="w"> </span><span class="o">/</span><span class="nv">lib</span><span class="o">/</span><span class="nv">modules</span>:<span class="o">/</span><span class="nv">lib</span><span class="o">/</span><span class="nv">modules</span>:<span class="nv">ro</span><span class="w"> </span>\
 
-# 重启 kubelet
+#<span class="w"> </span>重启<span class="w"> </span><span class="nv">kubelet</span>
 
-systemctl restart kubelet.service
+<span class="nv">systemctl</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">kubelet</span>.<span class="nv">service</span>
 
-# 否则创建 pod 的时候 报错
-with: rbd: failed to modprobe rbd error:exit status 1
-</code></pre>
+#<span class="w"> </span>否则创建<span class="w"> </span><span class="nv">pod</span><span class="w"> </span>的时候<span class="w"> </span>报错
+<span class="nv">with</span>:<span class="w"> </span><span class="nv">rbd</span>:<span class="w"> </span><span class="nv">failed</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">modprobe</span><span class="w"> </span><span class="nv">rbd</span><span class="w"> </span><span class="nv">error</span>:<span class="k">exit</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="mi">1</span>
+</code></pre></div>
 
 <h2 id="ceph_2">修改 ceph 配置</h2>
-<pre class="codehilite"><code># 修改配置
-# rbd image有4个 features，layering, exclusive-lock, object-map, fast-diff, deep-flatten
-因为目前内核仅支持layering，修改默认配置。
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">修改配置</span>
+<span class="err">#</span><span class="w"> </span><span class="n">rbd</span><span class="w"> </span><span class="n">image有4个</span><span class="w"> </span><span class="n">features</span><span class="err">，</span><span class="n">layering</span><span class="p">,</span><span class="w"> </span><span class="n">exclusive</span><span class="o">-</span><span class="n">lock</span><span class="p">,</span><span class="w"> </span><span class="k">object</span><span class="o">-</span><span class="k">map</span><span class="p">,</span><span class="w"> </span><span class="n">fast</span><span class="o">-</span><span class="n">diff</span><span class="p">,</span><span class="w"> </span><span class="n">deep</span><span class="o">-</span><span class="n">flatten</span>
+<span class="n">因为目前内核仅支持layering</span><span class="err">，</span><span class="n">修改默认配置</span><span class="err">。</span>
 
-[root@ceph-node-1 ceph-cluster]# echo 'rbd_default_features = 1' &gt;&gt; ./ceph.conf
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="s1">&#39;rbd_default_features = 1&#39;</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">.</span><span class="o">/</span><span class="n">ceph</span><span class="p">.</span><span class="n">conf</span>
 
-# 验证一下
-[root@ceph-node-1 ceph-cluster]# ceph --show-config|grep rbd|grep features
-rbd_default_features = 1
+<span class="err">#</span><span class="w"> </span><span class="n">验证一下</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">config</span><span class="o">|</span><span class="n">grep</span><span class="w"> </span><span class="n">rbd</span><span class="o">|</span><span class="n">grep</span><span class="w"> </span><span class="n">features</span>
+<span class="n">rbd_default_features</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
 
-# 把管理节点的配置文件与keyring同步至其它节点
-[root@ceph-node-1 ceph-cluster]# ceph-deploy --overwrite-conf admin ceph-node-1 ceph-node-2 ceph-node-3 ceph-node-4
-</code></pre>
+<span class="err">#</span><span class="w"> </span><span class="n">把管理节点的配置文件与keyring同步至其它节点</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">deploy</span><span class="w"> </span><span class="c1">--overwrite-conf admin ceph-node-1 ceph-node-2 ceph-node-3 ceph-node-4</span>
+</code></pre></div>
 
 <h2 id="ceph-secret">创建 ceph-secret</h2>
-<pre class="codehilite"><code># 获取 client.admin 的值
-[root@ceph-node-1 ceph-cluster]# ceph auth get-key client.admin
-AQBpUAxZGmDBBxAAVbgeRss9jv39dE0biTE7qQ==
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">获取</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="k">admin</span><span class="w"> </span><span class="n">的值</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="k">get</span><span class="o">-</span><span class="k">key</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="k">admin</span>
+<span class="n">AQBpUAxZGmDBBxAAVbgeRss9jv39dE0biTE7qQ</span><span class="o">==</span>
 
-# 转换成 base64 编码
-[root@ceph-node-1 ceph-cluster]# echo &quot;AQBpUAxZGmDBBxAAVbgeRss9jv39dE0biTE7qQ==&quot;|base64
-QVFCcFVBeFpHbURCQnhBQVZiZ2VSc3M5anYzOWRFMGJpVEU3cVE9PQo=
+<span class="err">#</span><span class="w"> </span><span class="n">转换成</span><span class="w"> </span><span class="n">base64</span><span class="w"> </span><span class="n">编码</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="ss">&quot;AQBpUAxZGmDBBxAAVbgeRss9jv39dE0biTE7qQ==&quot;</span><span class="o">|</span><span class="n">base64</span>
+<span class="n">QVFCcFVBeFpHbURCQnhBQVZiZ2VSc3M5anYzOWRFMGJpVEU3cVE9PQo</span><span class="o">=</span>
 
-# 创建ceph-secret.yaml文件
+<span class="err">#</span><span class="w"> </span><span class="n">创建ceph</span><span class="o">-</span><span class="n">secret</span><span class="p">.</span><span class="n">yaml文件</span>
 
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ceph-secret
-data:
-  key: QVFCcFVBeFpHbURCQnhBQVZiZ2VSc3M5anYzOWRFMGJpVEU3cVE9PQo=
+<span class="nl">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="n">v1</span>
+<span class="nl">kind</span><span class="p">:</span><span class="w"> </span><span class="n">Secret</span>
+<span class="nl">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">secret</span>
+<span class="k">data</span><span class="err">:</span>
+<span class="w">  </span><span class="k">key</span><span class="err">:</span><span class="w"> </span><span class="n">QVFCcFVBeFpHbURCQnhBQVZiZ2VSc3M5anYzOWRFMGJpVEU3cVE9PQo</span><span class="o">=</span>
 
 
-# 导入 yaml 文件
-[root@k8s-node-28 cephrbd]# kubectl apply -f ceph-secret.yaml
-secret &quot;ceph-secret&quot; created
+<span class="err">#</span><span class="w"> </span><span class="n">导入</span><span class="w"> </span><span class="n">yaml</span><span class="w"> </span><span class="n">文件</span>
+<span class="o">[</span><span class="n">root@k8s-node-28 cephrbd</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">apply</span><span class="w"> </span><span class="o">-</span><span class="n">f</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">secret</span><span class="p">.</span><span class="n">yaml</span>
+<span class="n">secret</span><span class="w"> </span><span class="ss">&quot;ceph-secret&quot;</span><span class="w"> </span><span class="n">created</span>
 
-# 查看 状态
-[root@k8s-node-28 cephrbd]# kubectl get secret |grep ceph
-ceph-secret           Opaque                                1         53s
-</code></pre>
+<span class="err">#</span><span class="w"> </span><span class="n">查看</span><span class="w"> </span><span class="n">状态</span>
+<span class="o">[</span><span class="n">root@k8s-node-28 cephrbd</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="n">secret</span><span class="w"> </span><span class="o">|</span><span class="n">grep</span><span class="w"> </span><span class="n">ceph</span>
+<span class="n">ceph</span><span class="o">-</span><span class="n">secret</span><span class="w">           </span><span class="n">Opaque</span><span class="w">                                </span><span class="mi">1</span><span class="w">         </span><span class="mi">53</span><span class="n">s</span>
+</code></pre></div>
 
 <h2 id="ceph-image">创建 ceph  image</h2>
-<pre class="codehilite"><code># 创建一个 1G 的 image
-[root@ceph-node-1 ceph-cluster]# rbd create test-image -s 1G
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">创建一个</span><span class="w"> </span><span class="mi">1</span><span class="n">G</span><span class="w"> </span><span class="n">的</span><span class="w"> </span><span class="nc">image</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">rbd</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="nc">image</span><span class="w"> </span><span class="o">-</span><span class="n">s</span><span class="w"> </span><span class="mi">1</span><span class="n">G</span>
 
-# 查看 image
-[root@ceph-node-1 ceph-cluster]# rbd list
-test-image
+<span class="err">#</span><span class="w"> </span><span class="n">查看</span><span class="w"> </span><span class="nc">image</span>
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">rbd</span><span class="w"> </span><span class="n">list</span>
+<span class="n">test</span><span class="o">-</span><span class="nc">image</span>
 
-[root@ceph-node-1 ceph-cluster]# rbd info test-image
-rbd image 'test-image':
-        size 1024 MB in 256 objects
-        order 22 (4096 kB objects)
-        block_name_prefix: rbd_data.373b2ae8944a
-        format: 2
-        features: layering
-        flags:
+<span class="o">[</span><span class="n">root@ceph-node-1 ceph-cluster</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">rbd</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="nc">image</span>
+<span class="n">rbd</span><span class="w"> </span><span class="nc">image</span><span class="w"> </span><span class="s1">&#39;test-image&#39;</span><span class="err">:</span>
+<span class="w">        </span><span class="k">size</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="n">MB</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="mi">256</span><span class="w"> </span><span class="n">objects</span>
+<span class="w">        </span><span class="k">order</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="p">(</span><span class="mi">4096</span><span class="w"> </span><span class="n">kB</span><span class="w"> </span><span class="n">objects</span><span class="p">)</span>
+<span class="w">        </span><span class="nl">block_name_prefix</span><span class="p">:</span><span class="w"> </span><span class="n">rbd_data</span><span class="mf">.373</span><span class="n">b2ae8944a</span>
+<span class="w">        </span><span class="nf">format</span><span class="err">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">        </span><span class="nl">features</span><span class="p">:</span><span class="w"> </span><span class="n">layering</span>
+<span class="w">        </span><span class="nl">flags</span><span class="p">:</span>
 
-# 这里 format 为 2 , 如果旧系统 不支持 format 2 ，可将 format 设置为 1 。
-</code></pre>
+<span class="err">#</span><span class="w"> </span><span class="n">这里</span><span class="w"> </span><span class="nf">format</span><span class="w"> </span><span class="n">为</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">如果旧系统</span><span class="w"> </span><span class="n">不支持</span><span class="w"> </span><span class="nf">format</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="err">，</span><span class="n">可将</span><span class="w"> </span><span class="nf">format</span><span class="w"> </span><span class="n">设置为</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="err">。</span>
+</code></pre></div>
 
 <h2 id="pv">创建一个 pv</h2>
-<pre class="codehilite"><code># 创建 test-pv.yaml
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">创建</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">pv</span><span class="p">.</span><span class="n">yaml</span>
 
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: test-pv
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  rbd:
-    monitors:
-      - 172.16.1.37:6789
-      - 172.16.1.38:6789
-      - 172.16.1.38:6789
-    pool: rbd
-    image: test-image
-    user: admin
-    secretRef:
-      name: ceph-secret
-    fsType: ext4
-    readOnly: false
-  persistentVolumeReclaimPolicy: Recycle
+<span class="nl">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="n">v1</span>
+<span class="nl">kind</span><span class="p">:</span><span class="w"> </span><span class="n">PersistentVolume</span>
+<span class="nl">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">pv</span>
+<span class="nl">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nl">capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nl">storage</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="n">Gi</span>
+<span class="w">  </span><span class="nl">accessModes</span><span class="p">:</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">ReadWriteOnce</span>
+<span class="w">  </span><span class="nl">rbd</span><span class="p">:</span>
+<span class="w">    </span><span class="nl">monitors</span><span class="p">:</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="mf">172.16.1.37</span><span class="err">:</span><span class="mi">6789</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="mf">172.16.1.38</span><span class="err">:</span><span class="mi">6789</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="mf">172.16.1.38</span><span class="err">:</span><span class="mi">6789</span>
+<span class="w">    </span><span class="nl">pool</span><span class="p">:</span><span class="w"> </span><span class="n">rbd</span>
+<span class="w">    </span><span class="nc">image</span><span class="err">:</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="nc">image</span>
+<span class="w">    </span><span class="k">user</span><span class="err">:</span><span class="w"> </span><span class="k">admin</span>
+<span class="w">    </span><span class="nl">secretRef</span><span class="p">:</span>
+<span class="w">      </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">secret</span>
+<span class="w">    </span><span class="nl">fsType</span><span class="p">:</span><span class="w"> </span><span class="n">ext4</span>
+<span class="w">    </span><span class="nl">readOnly</span><span class="p">:</span><span class="w"> </span><span class="k">false</span>
+<span class="w">  </span><span class="nl">persistentVolumeReclaimPolicy</span><span class="p">:</span><span class="w"> </span><span class="n">Recycle</span>
 
 
 
-# 导入 yaml 文件
+<span class="err">#</span><span class="w"> </span><span class="n">导入</span><span class="w"> </span><span class="n">yaml</span><span class="w"> </span><span class="n">文件</span>
 
-[root@k8s-node-28 cephrbd]# kubectl apply -f test-pv.yaml 
-persistentvolume &quot;test-pv&quot; created
+<span class="o">[</span><span class="n">root@k8s-node-28 cephrbd</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">apply</span><span class="w"> </span><span class="o">-</span><span class="n">f</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">pv</span><span class="p">.</span><span class="n">yaml</span><span class="w"> </span>
+<span class="n">persistentvolume</span><span class="w"> </span><span class="ss">&quot;test-pv&quot;</span><span class="w"> </span><span class="n">created</span>
 
-# 查看 pv
-[root@k8s-node-28 cephrbd]# kubectl get pv |grep test-pv
-test-pv   1Gi        RWO           Recycle         Available                                      33s
-</code></pre>
+<span class="err">#</span><span class="w"> </span><span class="n">查看</span><span class="w"> </span><span class="n">pv</span>
+<span class="o">[</span><span class="n">root@k8s-node-28 cephrbd</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="n">pv</span><span class="w"> </span><span class="o">|</span><span class="n">grep</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">pv</span>
+<span class="n">test</span><span class="o">-</span><span class="n">pv</span><span class="w">   </span><span class="mi">1</span><span class="n">Gi</span><span class="w">        </span><span class="n">RWO</span><span class="w">           </span><span class="n">Recycle</span><span class="w">         </span><span class="n">Available</span><span class="w">                                      </span><span class="mi">33</span><span class="n">s</span>
+</code></pre></div>
 
 <h2 id="pvc">创建一个 pvc</h2>
-<pre class="codehilite"><code># vi test-pvc.yaml
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">vi</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">pvc</span><span class="p">.</span><span class="n">yaml</span>
 
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: test-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-
-
-# 导入 yaml 文件
-
-[root@k8s-node-28 cephrbd]# kubectl apply -f test-pvc.yaml 
-persistentvolumeclaim &quot;test-claim&quot; created
+<span class="nl">kind</span><span class="p">:</span><span class="w"> </span><span class="n">PersistentVolumeClaim</span>
+<span class="nl">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="n">v1</span>
+<span class="nl">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">claim</span>
+<span class="nl">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nl">accessModes</span><span class="p">:</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">ReadWriteOnce</span>
+<span class="w">  </span><span class="nl">resources</span><span class="p">:</span>
+<span class="w">    </span><span class="nl">requests</span><span class="p">:</span>
+<span class="w">      </span><span class="nl">storage</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="n">Gi</span>
 
 
-# 查看 pvc
+<span class="err">#</span><span class="w"> </span><span class="n">导入</span><span class="w"> </span><span class="n">yaml</span><span class="w"> </span><span class="n">文件</span>
 
-[root@k8s-node-28 cephrbd]# kubectl get pvc |grep test
-test-claim   Bound     test-pv   1Gi        RWO                          31s
-</code></pre>
+<span class="o">[</span><span class="n">root@k8s-node-28 cephrbd</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">apply</span><span class="w"> </span><span class="o">-</span><span class="n">f</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">pvc</span><span class="p">.</span><span class="n">yaml</span><span class="w"> </span>
+<span class="n">persistentvolumeclaim</span><span class="w"> </span><span class="ss">&quot;test-claim&quot;</span><span class="w"> </span><span class="n">created</span>
+
+
+<span class="err">#</span><span class="w"> </span><span class="n">查看</span><span class="w"> </span><span class="n">pvc</span>
+
+<span class="o">[</span><span class="n">root@k8s-node-28 cephrbd</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="n">pvc</span><span class="w"> </span><span class="o">|</span><span class="n">grep</span><span class="w"> </span><span class="n">test</span>
+<span class="n">test</span><span class="o">-</span><span class="n">claim</span><span class="w">   </span><span class="n">Bound</span><span class="w">     </span><span class="n">test</span><span class="o">-</span><span class="n">pv</span><span class="w">   </span><span class="mi">1</span><span class="n">Gi</span><span class="w">        </span><span class="n">RWO</span><span class="w">                          </span><span class="mi">31</span><span class="n">s</span>
+</code></pre></div>
 
 <h2 id="deployment">创建一个 deployment</h2>
-<pre class="codehilite"><code>vi nginx-deplyment.yaml
+<div class="codehilite"><pre><span></span><code><span class="n">vi</span><span class="w"> </span><span class="n">nginx</span><span class="o">-</span><span class="n">deplyment</span><span class="p">.</span><span class="n">yaml</span>
 
 
-apiVersion: extensions/v1beta1 
-kind: Deployment 
-metadata: 
-  name: nginx-dm
-spec: 
-  replicas: 1
-  template: 
-    metadata: 
-      labels: 
-        name: nginx 
-    spec: 
-      containers: 
-        - name: nginx 
-          image: nginx:alpine 
-          imagePullPolicy: IfNotPresent
-          ports: 
-            - containerPort: 80
-          volumeMounts:
-            - name: ceph-rbd-volume
-              mountPath: &quot;/usr/share/nginx/html&quot;
-      volumes:
-      - name: ceph-rbd-volume
-        persistentVolumeClaim:
-          claimName: test-claim
+<span class="nl">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="n">extensions</span><span class="o">/</span><span class="n">v1beta1</span><span class="w"> </span>
+<span class="nl">kind</span><span class="p">:</span><span class="w"> </span><span class="n">Deployment</span><span class="w"> </span>
+<span class="nl">metadata</span><span class="p">:</span><span class="w"> </span>
+<span class="w">  </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">nginx</span><span class="o">-</span><span class="n">dm</span>
+<span class="nl">spec</span><span class="p">:</span><span class="w"> </span>
+<span class="w">  </span><span class="nl">replicas</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="nl">template</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="nl">metadata</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="nl">labels</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">nginx</span><span class="w"> </span>
+<span class="w">    </span><span class="nl">spec</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="nl">containers</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">nginx</span><span class="w"> </span>
+<span class="w">          </span><span class="nc">image</span><span class="err">:</span><span class="w"> </span><span class="nl">nginx</span><span class="p">:</span><span class="n">alpine</span><span class="w"> </span>
+<span class="w">          </span><span class="nl">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="n">IfNotPresent</span>
+<span class="w">          </span><span class="nl">ports</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="nl">containerPort</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span>
+<span class="w">          </span><span class="nl">volumeMounts</span><span class="p">:</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">rbd</span><span class="o">-</span><span class="n">volume</span>
+<span class="w">              </span><span class="nl">mountPath</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;/usr/share/nginx/html&quot;</span>
+<span class="w">      </span><span class="nl">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">rbd</span><span class="o">-</span><span class="n">volume</span>
+<span class="w">        </span><span class="nl">persistentVolumeClaim</span><span class="p">:</span>
+<span class="w">          </span><span class="nl">claimName</span><span class="p">:</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">claim</span>
 
 
-# 导入 yaml 文件
+<span class="err">#</span><span class="w"> </span><span class="n">导入</span><span class="w"> </span><span class="n">yaml</span><span class="w"> </span><span class="n">文件</span>
 
-[root@k8s-node-28 cephrbd]# kubectl apply -f nginx-deplyment.yaml 
-deployment &quot;nginx-dm&quot; configured
+<span class="o">[</span><span class="n">root@k8s-node-28 cephrbd</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">apply</span><span class="w"> </span><span class="o">-</span><span class="n">f</span><span class="w"> </span><span class="n">nginx</span><span class="o">-</span><span class="n">deplyment</span><span class="p">.</span><span class="n">yaml</span><span class="w"> </span>
+<span class="n">deployment</span><span class="w"> </span><span class="ss">&quot;nginx-dm&quot;</span><span class="w"> </span><span class="n">configured</span>
 
 
-# 查看 pods
+<span class="err">#</span><span class="w"> </span><span class="n">查看</span><span class="w"> </span><span class="n">pods</span>
 
-[root@k8s-node-28 cephrbd]# kubectl get pods
-NAME                        READY     STATUS    RESTARTS   AGE
-nginx-dm-1697116629-j4m1g   1/1       Running   0          8m
-</code></pre>
+<span class="o">[</span><span class="n">root@k8s-node-28 cephrbd</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="n">pods</span>
+<span class="n">NAME</span><span class="w">                        </span><span class="n">READY</span><span class="w">     </span><span class="n">STATUS</span><span class="w">    </span><span class="n">RESTARTS</span><span class="w">   </span><span class="n">AGE</span>
+<span class="n">nginx</span><span class="o">-</span><span class="n">dm</span><span class="o">-</span><span class="mi">1697116629</span><span class="o">-</span><span class="n">j4m1g</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">       </span><span class="n">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">8</span><span class="n">m</span>
+</code></pre></div>
 
 <h2 id="_3">测试</h2>
-<pre class="codehilite"><code># 查看 分区文件
+<div class="codehilite"><pre><span></span><code><span class="c1"># 查看 分区文件</span>
 
-[root@k8s-node-28 cephrbd]# kubectl exec -it nginx-dm-1697116629-j4m1g -- df -h
-Filesystem                Size      Used Available Use% Mounted on
-overlay                 115.2G      4.9G    104.4G   4% /
-tmpfs                    62.8G         0     62.8G   0% /dev
-tmpfs                    62.8G         0     62.8G   0% /sys/fs/cgroup
-/dev/mapper/centos-root
-                        115.2G      4.9G    104.4G   4% /dev/termination-log
-/dev/mapper/centos-root
-                        115.2G      4.9G    104.4G   4% /etc/resolv.conf
-/dev/mapper/centos-root
-                        115.2G      4.9G    104.4G   4% /etc/hostname
-/dev/mapper/centos-root
-                        115.2G      4.9G    104.4G   4% /etc/hosts
-shm                      64.0M         0     64.0M   0% /dev/shm
-/dev/rbd0               975.9M      1.3M    907.4M   0% /usr/share/nginx/html
-tmpfs                    62.8G     12.0K     62.8G   0% /var/run/secrets/kubernetes.io/serviceaccount
-tmpfs                    62.8G         0     62.8G   0% /proc/kcore
-tmpfs                    62.8G         0     62.8G   0% /proc/timer_list
-tmpfs                    62.8G         0     62.8G   0% /proc/timer_stats
-tmpfs                    62.8G         0     62.8G   0% /proc/sched_debug
-tmpfs                    62.8G         0     62.8G   0% /sys/firmware
+<span class="p">[</span><span class="n">root</span><span class="err">@</span><span class="n">k8s</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">28</span><span class="w"> </span><span class="n">cephrbd</span><span class="p">]</span><span class="c1"># kubectl exec -it nginx-dm-1697116629-j4m1g -- df -h</span>
+<span class="n">Filesystem</span><span class="w">                </span><span class="n">Size</span><span class="w">      </span><span class="n">Used</span><span class="w"> </span><span class="n">Available</span><span class="w"> </span><span class="n">Use</span><span class="o">%</span><span class="w"> </span><span class="n">Mounted</span><span class="w"> </span><span class="n">on</span>
+<span class="n">overlay</span><span class="w">                 </span><span class="mf">115.2</span><span class="n">G</span><span class="w">      </span><span class="mf">4.9</span><span class="n">G</span><span class="w">    </span><span class="mf">104.4</span><span class="n">G</span><span class="w">   </span><span class="mi">4</span><span class="o">%</span><span class="w"> </span><span class="o">/</span>
+<span class="n">tmpfs</span><span class="w">                    </span><span class="mf">62.8</span><span class="n">G</span><span class="w">         </span><span class="mi">0</span><span class="w">     </span><span class="mf">62.8</span><span class="n">G</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span>
+<span class="n">tmpfs</span><span class="w">                    </span><span class="mf">62.8</span><span class="n">G</span><span class="w">         </span><span class="mi">0</span><span class="w">     </span><span class="mf">62.8</span><span class="n">G</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">fs</span><span class="o">/</span><span class="n">cgroup</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">mapper</span><span class="o">/</span><span class="n">centos</span><span class="o">-</span><span class="n">root</span>
+<span class="w">                        </span><span class="mf">115.2</span><span class="n">G</span><span class="w">      </span><span class="mf">4.9</span><span class="n">G</span><span class="w">    </span><span class="mf">104.4</span><span class="n">G</span><span class="w">   </span><span class="mi">4</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">termination</span><span class="o">-</span><span class="nb">log</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">mapper</span><span class="o">/</span><span class="n">centos</span><span class="o">-</span><span class="n">root</span>
+<span class="w">                        </span><span class="mf">115.2</span><span class="n">G</span><span class="w">      </span><span class="mf">4.9</span><span class="n">G</span><span class="w">    </span><span class="mf">104.4</span><span class="n">G</span><span class="w">   </span><span class="mi">4</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">resolv</span><span class="o">.</span><span class="n">conf</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">mapper</span><span class="o">/</span><span class="n">centos</span><span class="o">-</span><span class="n">root</span>
+<span class="w">                        </span><span class="mf">115.2</span><span class="n">G</span><span class="w">      </span><span class="mf">4.9</span><span class="n">G</span><span class="w">    </span><span class="mf">104.4</span><span class="n">G</span><span class="w">   </span><span class="mi">4</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hostname</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">mapper</span><span class="o">/</span><span class="n">centos</span><span class="o">-</span><span class="n">root</span>
+<span class="w">                        </span><span class="mf">115.2</span><span class="n">G</span><span class="w">      </span><span class="mf">4.9</span><span class="n">G</span><span class="w">    </span><span class="mf">104.4</span><span class="n">G</span><span class="w">   </span><span class="mi">4</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hosts</span>
+<span class="n">shm</span><span class="w">                      </span><span class="mf">64.0</span><span class="n">M</span><span class="w">         </span><span class="mi">0</span><span class="w">     </span><span class="mf">64.0</span><span class="n">M</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">shm</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">rbd0</span><span class="w">               </span><span class="mf">975.9</span><span class="n">M</span><span class="w">      </span><span class="mf">1.3</span><span class="n">M</span><span class="w">    </span><span class="mf">907.4</span><span class="n">M</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">html</span>
+<span class="n">tmpfs</span><span class="w">                    </span><span class="mf">62.8</span><span class="n">G</span><span class="w">     </span><span class="mf">12.0</span><span class="n">K</span><span class="w">     </span><span class="mf">62.8</span><span class="n">G</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">secrets</span><span class="o">/</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">serviceaccount</span>
+<span class="n">tmpfs</span><span class="w">                    </span><span class="mf">62.8</span><span class="n">G</span><span class="w">         </span><span class="mi">0</span><span class="w">     </span><span class="mf">62.8</span><span class="n">G</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">kcore</span>
+<span class="n">tmpfs</span><span class="w">                    </span><span class="mf">62.8</span><span class="n">G</span><span class="w">         </span><span class="mi">0</span><span class="w">     </span><span class="mf">62.8</span><span class="n">G</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">timer_list</span>
+<span class="n">tmpfs</span><span class="w">                    </span><span class="mf">62.8</span><span class="n">G</span><span class="w">         </span><span class="mi">0</span><span class="w">     </span><span class="mf">62.8</span><span class="n">G</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">timer_stats</span>
+<span class="n">tmpfs</span><span class="w">                    </span><span class="mf">62.8</span><span class="n">G</span><span class="w">         </span><span class="mi">0</span><span class="w">     </span><span class="mf">62.8</span><span class="n">G</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sched_debug</span>
+<span class="n">tmpfs</span><span class="w">                    </span><span class="mf">62.8</span><span class="n">G</span><span class="w">         </span><span class="mi">0</span><span class="w">     </span><span class="mf">62.8</span><span class="n">G</span><span class="w">   </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">firmware</span>
 
 
-## 写入测试
-[root@k8s-node-28 cephrbd]# kubectl exec -it nginx-dm-1697116629-j4m1g -- touch /usr/share/nginx/html/jicki.html
+<span class="c1">## 写入测试</span>
+<span class="p">[</span><span class="n">root</span><span class="err">@</span><span class="n">k8s</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">28</span><span class="w"> </span><span class="n">cephrbd</span><span class="p">]</span><span class="c1"># kubectl exec -it nginx-dm-1697116629-j4m1g -- touch /usr/share/nginx/html/jicki.html</span>
 
-# 删除 pod
-[root@k8s-node-28 cephrbd]# kubectl delete pod/nginx-dm-1697116629-j4m1g
-pod &quot;nginx-dm-1697116629-j4m1g&quot; deleted
+<span class="c1"># 删除 pod</span>
+<span class="p">[</span><span class="n">root</span><span class="err">@</span><span class="n">k8s</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">28</span><span class="w"> </span><span class="n">cephrbd</span><span class="p">]</span><span class="c1"># kubectl delete pod/nginx-dm-1697116629-j4m1g</span>
+<span class="n">pod</span><span class="w"> </span><span class="s2">&quot;nginx-dm-1697116629-j4m1g&quot;</span><span class="w"> </span><span class="n">deleted</span>
 
-# 新的 pod
-[root@k8s-node-28 cephrbd]# kubectl get pods
-NAME                        READY     STATUS    RESTARTS   AGE
-nginx-dm-1697116629-v2n52   1/1       Running   0          11s
+<span class="c1"># 新的 pod</span>
+<span class="p">[</span><span class="n">root</span><span class="err">@</span><span class="n">k8s</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">28</span><span class="w"> </span><span class="n">cephrbd</span><span class="p">]</span><span class="c1"># kubectl get pods</span>
+<span class="n">NAME</span><span class="w">                        </span><span class="n">READY</span><span class="w">     </span><span class="n">STATUS</span><span class="w">    </span><span class="n">RESTARTS</span><span class="w">   </span><span class="n">AGE</span>
+<span class="n">nginx</span><span class="o">-</span><span class="n">dm</span><span class="o">-</span><span class="mi">1697116629</span><span class="o">-</span><span class="n">v2n52</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">       </span><span class="n">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">11</span><span class="n">s</span>
 
-# 查看文件
-[root@k8s-node-28 cephrbd]# kubectl exec -it nginx-dm-1697116629-v2n52 -- ls -lt /usr/share/nginx/html
-total 16
--rw-r--r--    1 root     root             0 May  9 07:53 jicki.html
-</code></pre>
+<span class="c1"># 查看文件</span>
+<span class="p">[</span><span class="n">root</span><span class="err">@</span><span class="n">k8s</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="mi">28</span><span class="w"> </span><span class="n">cephrbd</span><span class="p">]</span><span class="c1"># kubectl exec -it nginx-dm-1697116629-v2n52 -- ls -lt /usr/share/nginx/html</span>
+<span class="n">total</span><span class="w"> </span><span class="mi">16</span>
+<span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span><span class="w">    </span><span class="mi">1</span><span class="w"> </span><span class="n">root</span><span class="w">     </span><span class="n">root</span><span class="w">             </span><span class="mi">0</span><span class="w"> </span><span class="n">May</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">07</span><span class="p">:</span><span class="mi">53</span><span class="w"> </span><span class="n">jicki</span><span class="o">.</span><span class="n">html</span>
+</code></pre></div>
 
 <h1 id="faq-and-error">FAQ and Error</h1>
 <h2 id="faq-1">FAQ 1</h2>
-<pre class="codehilite"><code># ceph 挂载关于 namespace != default 的情况下
+<div class="codehilite"><pre><span></span><code>#<span class="w"> </span><span class="nv">ceph</span><span class="w"> </span>挂载关于<span class="w"> </span><span class="nv">namespace</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nv">default</span><span class="w"> </span>的情况下
 
 
-1. 需要配置 secret = namespace
+<span class="mi">1</span>.<span class="w"> </span>需要配置<span class="w"> </span><span class="nv">secret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">namespace</span>
 
-kubectl get secret  可以看到只存在 default 的 认证
-
-
-2. 需要配置 pv = namespace ，虽然pv 是全局的，但是最好还是配置一下
-
-kubectl get pv --namespace=
+<span class="nv">kubectl</span><span class="w"> </span><span class="nv">get</span><span class="w"> </span><span class="nv">secret</span><span class="w">  </span>可以看到只存在<span class="w"> </span><span class="nv">default</span><span class="w"> </span>的<span class="w"> </span>认证
 
 
-3. 需要配置 pvc = namespace 。
+<span class="mi">2</span>.<span class="w"> </span>需要配置<span class="w"> </span><span class="nv">pv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">namespace</span><span class="w"> </span>，虽然<span class="nv">pv</span><span class="w"> </span>是全局的，但是最好还是配置一下
 
-kubectl get pvc --namespace=
+<span class="nv">kubectl</span><span class="w"> </span><span class="nv">get</span><span class="w"> </span><span class="nv">pv</span><span class="w"> </span><span class="o">--</span><span class="nv">namespace</span><span class="o">=</span>
 
 
-# 确认以上3点，否则在挂载namespace 的时候会报错
+<span class="mi">3</span>.<span class="w"> </span>需要配置<span class="w"> </span><span class="nv">pvc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">namespace</span><span class="w"> </span>。
 
-ceph timeout expired waiting for volumes to attach/mount for pod
-</code></pre>
+<span class="nv">kubectl</span><span class="w"> </span><span class="nv">get</span><span class="w"> </span><span class="nv">pvc</span><span class="w"> </span><span class="o">--</span><span class="nv">namespace</span><span class="o">=</span>
+
+
+#<span class="w"> </span>确认以上<span class="mi">3</span>点，否则在挂载<span class="nv">namespace</span><span class="w"> </span>的时候会报错
+
+<span class="nv">ceph</span><span class="w"> </span><span class="nb">timeout</span><span class="w"> </span><span class="nv">expired</span><span class="w"> </span><span class="nv">waiting</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">volumes</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">attach</span><span class="o">/</span><span class="nv">mount</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">pod</span>
+</code></pre></div>
 
 <h2 id="error-1">Error 1</h2>
-<pre class="codehilite"><code># 删除 osd 如果创建出错，请删除 osd
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">删除</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">如果创建出错</span><span class="err">，</span><span class="n">请删除</span><span class="w"> </span><span class="n">osd</span>
 
-# 使用 ceph osd tree 查看出错的 osd.id
+<span class="err">#</span><span class="w"> </span><span class="n">使用</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">tree</span><span class="w"> </span><span class="n">查看出错的</span><span class="w"> </span><span class="n">osd</span><span class="p">.</span><span class="n">id</span>
 
-ceph osd out id   提出集群
+<span class="n">ceph</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">id</span><span class="w">   </span><span class="n">提出集群</span>
 
-# 登陆所在 服务器 停止服务
+<span class="err">#</span><span class="w"> </span><span class="n">登陆所在</span><span class="w"> </span><span class="n">服务器</span><span class="w"> </span><span class="n">停止服务</span>
 
-systemctl stop ceph-osd@id
+<span class="n">systemctl</span><span class="w"> </span><span class="n">stop</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="nv">@id</span>
 
-# 然后再执行  crush remove 删除 tree
+<span class="err">#</span><span class="w"> </span><span class="n">然后再执行</span><span class="w">  </span><span class="n">crush</span><span class="w"> </span><span class="n">remove</span><span class="w"> </span><span class="n">删除</span><span class="w"> </span><span class="n">tree</span>
 
-ceph osd crush remove osd.id
+<span class="n">ceph</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">crush</span><span class="w"> </span><span class="n">remove</span><span class="w"> </span><span class="n">osd</span><span class="p">.</span><span class="n">id</span>
 
-# 最后 执行 auth del 和 rm 删除
+<span class="err">#</span><span class="w"> </span><span class="n">最后</span><span class="w"> </span><span class="n">执行</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="n">del</span><span class="w"> </span><span class="n">和</span><span class="w"> </span><span class="n">rm</span><span class="w"> </span><span class="n">删除</span>
 
-ceph auth del osd.id 
+<span class="n">ceph</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="n">del</span><span class="w"> </span><span class="n">osd</span><span class="p">.</span><span class="n">id</span><span class="w"> </span>
 
-ceph osd rm id
+<span class="n">ceph</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">rm</span><span class="w"> </span><span class="n">id</span>
 
-# 在运行 tree 已经不存在了
-# 如果使用分区挂载 还需要 登陆 osd 节点中 umount 分区
-# 使用 lsblk 查看挂载
-# 如: /dev/sdb 被挂载
+<span class="err">#</span><span class="w"> </span><span class="n">在运行</span><span class="w"> </span><span class="n">tree</span><span class="w"> </span><span class="n">已经不存在了</span>
+<span class="err">#</span><span class="w"> </span><span class="n">如果使用分区挂载</span><span class="w"> </span><span class="n">还需要</span><span class="w"> </span><span class="n">登陆</span><span class="w"> </span><span class="n">osd</span><span class="w"> </span><span class="n">节点中</span><span class="w"> </span><span class="n">umount</span><span class="w"> </span><span class="n">分区</span>
+<span class="err">#</span><span class="w"> </span><span class="n">使用</span><span class="w"> </span><span class="n">lsblk</span><span class="w"> </span><span class="n">查看挂载</span>
+<span class="err">#</span><span class="w"> </span><span class="nl">如</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb</span><span class="w"> </span><span class="n">被挂载</span>
 
-umount /dev/sdb
-ceph-disk zap /dev/sdb
-</code></pre>
+<span class="n">umount</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb</span>
+<span class="n">ceph</span><span class="o">-</span><span class="k">disk</span><span class="w"> </span><span class="n">zap</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb</span>
+</code></pre></div>
 
 <h2 id="error-2">Error 2</h2>
-<pre class="codehilite"><code># 如果暴力删除了 osd 然后重建了 osd
+<div class="codehilite"><pre><span></span><code><span class="c1"># 如果暴力删除了 osd 然后重建了 osd</span>
 
-ceph -s
+<span class="n">ceph</span><span class="w"> </span><span class="o">-</span><span class="n">s</span>
 
-报错 stale+active+undersized+degraded+remapped
+<span class="err">报错</span><span class="w"> </span><span class="n">stale</span><span class="o">+</span><span class="n">active</span><span class="o">+</span><span class="n">undersized</span><span class="o">+</span><span class="n">degraded</span><span class="o">+</span><span class="n">remapped</span>
 
-# 执行 ceph health detail 查看所有报错的信息
+<span class="c1"># 执行 ceph health detail 查看所有报错的信息</span>
 
-# 执行 ceph pg &lt;pgid&gt; query  查看具体信息
-# 如果执行 query 报错
-# 使用 ceph pg force_create_pg &lt;pgid&gt;  覆盖错误
+<span class="c1"># 执行 ceph pg &lt;pgid&gt; query  查看具体信息</span>
+<span class="c1"># 如果执行 query 报错</span>
+<span class="c1"># 使用 ceph pg force_create_pg &lt;pgid&gt;  覆盖错误</span>
 
-# 如果 datail 有很多 pgid 出错 使用 for 循环去跑
+<span class="c1"># 如果 datail 有很多 pgid 出错 使用 for 循环去跑</span>
 
-for pg in `ceph health detail | grep &quot;stale+active+undersized+degraded&quot; | awk '{print $2}' | sort | uniq`; 
-do 
-  ceph pg force_create_pg $pg
-done
+<span class="k">for</span><span class="w"> </span><span class="n">pg</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="err">`</span><span class="n">ceph</span><span class="w"> </span><span class="n">health</span><span class="w"> </span><span class="n">detail</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">grep</span><span class="w"> </span><span class="s2">&quot;stale+active+undersized+degraded&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">awk</span><span class="w"> </span><span class="s1">&#39;{print $2}&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">uniq</span><span class="err">`</span><span class="p">;</span><span class="w"> </span>
+<span class="n">do</span><span class="w"> </span>
+<span class="w">  </span><span class="n">ceph</span><span class="w"> </span><span class="n">pg</span><span class="w"> </span><span class="n">force_create_pg</span><span class="w"> </span><span class="o">$</span><span class="n">pg</span>
+<span class="n">done</span>
 
-# 如果仍然不能解决问题，那么请使用暴力方法
-# 重建ceph 集群 删除集群所有文件,重新部署
+<span class="c1"># 如果仍然不能解决问题，那么请使用暴力方法</span>
+<span class="c1"># 重建ceph 集群 删除集群所有文件,重新部署</span>
 
-systemctl stop ceph-osd.target
-systemctl stop ceph-mon.target
+<span class="n">systemctl</span><span class="w"> </span><span class="n">stop</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">osd</span><span class="o">.</span><span class="n">target</span>
+<span class="n">systemctl</span><span class="w"> </span><span class="n">stop</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">mon</span><span class="o">.</span><span class="n">target</span>
 
 
-rm -rf /etc/ceph/*
-rm -rf /var/log/ceph/*
-rm -rf /var/lib/ceph/*
+<span class="n">rm</span><span class="w"> </span><span class="o">-</span><span class="n">rf</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">ceph</span><span class="o">/*</span>
+<span class="n">rm</span><span class="w"> </span><span class="o">-</span><span class="n">rf</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">ceph</span><span class="o">/*</span>
+<span class="n">rm</span><span class="w"> </span><span class="o">-</span><span class="n">rf</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">ceph</span><span class="o">/*</span>
 
-# osd 清除挂载 目录的里的所有内容
+<span class="c1"># osd 清除挂载 目录的里的所有内容</span>
 
-# 卸载 ceph
-yum -y remove ceph ceph-radosgw
+<span class="c1"># 卸载 ceph</span>
+<span class="n">yum</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span><span class="n">remove</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">radosgw</span>
 
-# 重新安装 
-yum -y install ceph ceph-radosgw
+<span class="c1"># 重新安装 </span>
+<span class="n">yum</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">ceph</span><span class="w"> </span><span class="n">ceph</span><span class="o">-</span><span class="n">radosgw</span>
 
-# 在 osd 节点 创建目录
-mkdir -p /var/lib/ceph/osd/
-</code></pre>
+<span class="c1"># 在 osd 节点 创建目录</span>
+<span class="n">mkdir</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">ceph</span><span class="o">/</span><span class="n">osd</span><span class="o">/</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

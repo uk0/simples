@@ -111,147 +111,147 @@
         <p>因工作需求，学习了Hdfs分布式文件存储系统，所整合Flink + HDFS 作为一个Demo 帮助大家跳坑。
 HDFS 采用NS高可用模式。</p>
 <h1 id="hdfsmanagerjava">HDFSManager.Java</h1>
-<pre class="codehilite"><code>* 初始化HDFS链接。
-</code></pre>
+<div class="codehilite"><pre><span></span><code>* 初始化HDFS链接。
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-java">package com.e.firsh.spb.utils.hdfs;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.e.firsh.spb.utils.hdfs</span><span class="p">;</span>
 
-import com.alibaba.fastjson.JSONObject;
-import com.e.firsh.base.esb.BO;
-import com.e.firsh.base.utils.Registry;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.io.IOException;
-import java.util.Set;
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.alibaba.fastjson.JSONObject</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.e.firsh.base.esb.BO</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.e.firsh.base.utils.Registry</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.hadoop.conf.Configuration</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.hadoop.fs.FSDataOutputStream</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.hadoop.fs.FileSystem</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.hadoop.fs.Path</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.slf4j.Logger</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.slf4j.LoggerFactory</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.IOException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Set</span><span class="p">;</span>
 
-/**
- * The type Hdfs manager.
- */
-public class HDFSManager {
-    private static Logger logger = LoggerFactory.getLogger(HDFSManager.class);
-    private static Configuration configuration;
-    private static FileSystem fs;
+<span class="cm">/**</span>
+<span class="cm"> * The type Hdfs manager.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">HDFSManager</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoggerFactory</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="n">HDFSManager</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Configuration</span><span class="w"> </span><span class="n">configuration</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">FileSystem</span><span class="w"> </span><span class="n">fs</span><span class="p">;</span>
 
-    public HDFSManager() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(&quot;fs.defaultFS&quot;, &quot;hdfs://ns&quot;);
-        jsonObject.put(&quot;dfs.nameservices&quot;, &quot;ns&quot;);
-        jsonObject.put(&quot;dfs.ha.namenodes.ns&quot;,&quot;nn1,nn2&quot;);
-        jsonObject.put(&quot;dfs.namenode.rpc-address.ns.nn1&quot;, &quot;10.11.0.12:9000&quot;);
-        jsonObject.put(&quot;dfs.namenode.rpc-address.ns.nn2&quot;, &quot;10.11.0.13:9000&quot;);
-        jsonObject.put(&quot;dfs.client.failover.proxy.provider.ns&quot;, &quot;org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider&quot;);
-        init(jsonObject);
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">HDFSManager</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">JSONObject</span><span class="w"> </span><span class="n">jsonObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JSONObject</span><span class="p">();</span>
+<span class="w">        </span><span class="n">jsonObject</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;fs.defaultFS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hdfs://ns&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">jsonObject</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;dfs.nameservices&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ns&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">jsonObject</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;dfs.ha.namenodes.ns&quot;</span><span class="p">,</span><span class="s">&quot;nn1,nn2&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">jsonObject</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;dfs.namenode.rpc-address.ns.nn1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;10.11.0.12:9000&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">jsonObject</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;dfs.namenode.rpc-address.ns.nn2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;10.11.0.13:9000&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">jsonObject</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;dfs.client.failover.proxy.provider.ns&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">init</span><span class="p">(</span><span class="n">jsonObject</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public boolean init(JSONObject args) {
-        Configuration conf = new Configuration();
-        Set&lt;String&gt; itr = args.keySet();
-        if (itr != null) {
-            for (String pname : itr) {
-                String pvalue = args.getString(pname);
-                conf.set(pname, pvalue);
-            }
-        }
-        try {
-            fs = FileSystem.get(conf);
-            return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage() + &quot;:{}&quot;, e);
-        }
-        return false;
-    }
-
-
-    public BO appendToFile(String destPath, String line) throws IOException {
-        BO respBO = BO.createResponseBO();
-        Path path = new Path(destPath);
-        FSDataOutputStream dos = null;
-        try {
-            if (!fs.exists(path)) {
-                dos = fs.create(path);
-            } else {
-                dos = fs.append(path);
-            }
-            byte[] readBuf = line.getBytes(&quot;UTF-8&quot;);
-            dos.write(readBuf, 0, readBuf.length);
-            dos.close();
-            respBO.setDataNameValue(&quot;length&quot;, readBuf.length);
-        } catch (Exception e) {
-            logger.error(e.getMessage() + &quot;:{}&quot;, e);
-            respBO.setCompleteCode(BO.BO_V_CC_FAILED);
-        } finally {
-            if (dos != null) {
-                dos.close();
-            }
-        }
-        return respBO;
-    }
-
-    public static void main(String[] args) {
-        HDFSManager hdfsManager = new HDFSManager();
-        try {
-            hdfsManager.appendToFile(&quot;/testmq&quot;,&quot;hello w&quot;);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void init2(){
-         configuration = new Configuration();
-        /**TODO 添加Hadoop配置内容*/
-        configuration.set(&quot;dfs.namenode.name.dir&quot;, &quot;file:///home/admin/data/hadoop/hdfs/name&quot;);
-        configuration.set(&quot;dfs.nameservices&quot;, &quot;ns&quot;);
-        configuration.set(&quot;dfs.ha.namenodes.ns&quot;, &quot;nn1,nn2&quot;);
-        configuration.set(&quot;dfs.namenode.rpc-address.ns.nn1&quot;, &quot;10.11.0.12:9000&quot;);
-        configuration.set(&quot;dfs.namenode.rpc-address.ns.nn2&quot;, &quot;10.11.0.13:9000&quot;);
-        configuration.set(&quot;dfs.namenode.shared.edits.dir&quot;, &quot;qjournal://10.11.0.12:8485;10.11.0.13:8485;10.11.0.14:8485/ns&quot;);
-        configuration.set(&quot;hadoop.tmp.dir&quot;, &quot;/home/admin/data/hadoop/tmp&quot;);
-        configuration.set(&quot;fs.defaultFS&quot;, &quot;hdfs://ns&quot;);
-        configuration.set(&quot;dfs.journalnode.edits.dir&quot;, &quot;/home/admin/data/hadoop/journal&quot;);
-        configuration.set(&quot;dfs.client.failover.proxy.provider.ns&quot;, &quot;org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider&quot;);
-        configuration.set(&quot;ha.zookeeper.quorum&quot;, &quot;10.11.0.12:2181,10.11.0.13:2181,10.11.0.14:2181&quot;);
-        configuration.set(&quot;mapreduce.input.fileinputformat.split.minsize&quot;, &quot;10&quot;);
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="n">JSONObject</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Configuration</span><span class="w"> </span><span class="n">conf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Configuration</span><span class="p">();</span>
+<span class="w">        </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="na">keySet</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">itr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">pname</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">itr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">String</span><span class="w"> </span><span class="n">pvalue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="na">getString</span><span class="p">(</span><span class="n">pname</span><span class="p">);</span>
+<span class="w">                </span><span class="n">conf</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">pname</span><span class="p">,</span><span class="w"> </span><span class="n">pvalue</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">fs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FileSystem</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">conf</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">logger</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">getMessage</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
 
-        try {
-            fs = FileSystem.get(configuration);
-        } catch (Exception e) {
-            logger.error(e.getMessage() + &quot;:{}&quot;, e);
-        }
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">BO</span><span class="w"> </span><span class="nf">appendToFile</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">destPath</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">line</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">BO</span><span class="w"> </span><span class="n">respBO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BO</span><span class="p">.</span><span class="na">createResponseBO</span><span class="p">();</span>
+<span class="w">        </span><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Path</span><span class="p">(</span><span class="n">destPath</span><span class="p">);</span>
+<span class="w">        </span><span class="n">FSDataOutputStream</span><span class="w"> </span><span class="n">dos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">fs</span><span class="p">.</span><span class="na">exists</span><span class="p">(</span><span class="n">path</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">dos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fs</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">dos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fs</span><span class="p">.</span><span class="na">append</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">readBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">line</span><span class="p">.</span><span class="na">getBytes</span><span class="p">(</span><span class="s">&quot;UTF-8&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="n">dos</span><span class="p">.</span><span class="na">write</span><span class="p">(</span><span class="n">readBuf</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">readBuf</span><span class="p">.</span><span class="na">length</span><span class="p">);</span>
+<span class="w">            </span><span class="n">dos</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+<span class="w">            </span><span class="n">respBO</span><span class="p">.</span><span class="na">setDataNameValue</span><span class="p">(</span><span class="s">&quot;length&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">readBuf</span><span class="p">.</span><span class="na">length</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">logger</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">getMessage</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+<span class="w">            </span><span class="n">respBO</span><span class="p">.</span><span class="na">setCompleteCode</span><span class="p">(</span><span class="n">BO</span><span class="p">.</span><span class="na">BO_V_CC_FAILED</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dos</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">dos</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">respBO</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">HDFSManager</span><span class="w"> </span><span class="n">hdfsManager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HDFSManager</span><span class="p">();</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">hdfsManager</span><span class="p">.</span><span class="na">appendToFile</span><span class="p">(</span><span class="s">&quot;/testmq&quot;</span><span class="p">,</span><span class="s">&quot;hello w&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">IOException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">init2</span><span class="p">(){</span>
+<span class="w">         </span><span class="n">configuration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Configuration</span><span class="p">();</span>
+<span class="w">        </span><span class="cm">/**TODO 添加Hadoop配置内容*/</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;dfs.namenode.name.dir&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;file:///home/admin/data/hadoop/hdfs/name&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;dfs.nameservices&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ns&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;dfs.ha.namenodes.ns&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;nn1,nn2&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;dfs.namenode.rpc-address.ns.nn1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;10.11.0.12:9000&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;dfs.namenode.rpc-address.ns.nn2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;10.11.0.13:9000&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;dfs.namenode.shared.edits.dir&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;qjournal://10.11.0.12:8485;10.11.0.13:8485;10.11.0.14:8485/ns&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;hadoop.tmp.dir&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/home/admin/data/hadoop/tmp&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;fs.defaultFS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hdfs://ns&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;dfs.journalnode.edits.dir&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/home/admin/data/hadoop/journal&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;dfs.client.failover.proxy.provider.ns&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;ha.zookeeper.quorum&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;10.11.0.12:2181,10.11.0.13:2181,10.11.0.14:2181&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">configuration</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;mapreduce.input.fileinputformat.split.minsize&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;10&quot;</span><span class="p">);</span>
+
+
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">fs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FileSystem</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">configuration</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">logger</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">getMessage</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:{}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h1 id="hdfssinkjava">HDFSSink.Java</h1>
 <ul>
 <li>继承<code>RichSinkFunction</code>，重写<code>open</code> 和 <code>invoke</code>方法，还有<code>close</code>。</li>
 </ul>
-<pre class="codehilite"><code class="language-java">package com.e.firsh.spb.sink;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.e.firsh.spb.sink</span><span class="p">;</span>
 
-import com.e.firsh.spb.utils.hdfs.HDFSManager;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+<span class="kn">import</span><span class="w"> </span><span class="nn">com.e.firsh.spb.utils.hdfs.HDFSManager</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.flink.configuration.Configuration</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.flink.streaming.api.functions.sink.RichSinkFunction</span><span class="p">;</span>
 
-/**
- * Created by zhangjianxin on 2017/8/1.
- */
-public class HDFSSink extends RichSinkFunction&lt;String&gt; {
-    private HDFSManager hdfsManager;
-    private final static  String  HDFS_PATH =&quot;/testmq&quot;;
-    @Override
-    public void invoke(String t) throws Exception {
-        hdfsManager.appendToFile(HDFS_PATH,t);
-    }
-    @Override
-    public void open(Configuration config) {
-        hdfsManager = new HDFSManager();
-    }
-}
-</code></pre>
+<span class="cm">/**</span>
+<span class="cm"> * Created by zhangjianxin on 2017/8/1.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">HDFSSink</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">RichSinkFunction</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">HDFSManager</span><span class="w"> </span><span class="n">hdfsManager</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">static</span><span class="w">  </span><span class="n">String</span><span class="w">  </span><span class="n">HDFS_PATH</span><span class="w"> </span><span class="o">=</span><span class="s">&quot;/testmq&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">hdfsManager</span><span class="p">.</span><span class="na">appendToFile</span><span class="p">(</span><span class="n">HDFS_PATH</span><span class="p">,</span><span class="n">t</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="n">Configuration</span><span class="w"> </span><span class="n">config</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">hdfsManager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HDFSManager</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h1 id="flinkhdfs">以上代码为简易版经过修改，思路清晰，（Flink自带一种HDFS的链接方式详情见链接：）</h1>
 <ul>
@@ -259,7 +259,7 @@ public class HDFSSink extends RichSinkFunction&lt;String&gt; {
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

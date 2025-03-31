@@ -110,8 +110,8 @@
     <div class="content">
         <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
 <h2 id="_1">错误描述</h2>
-<pre class="codehilite"><code class="language-text">  因为项目中用到ActorDB所以有了以下的故事，当maven中引入多个jar包，那么避免不了会发生重复的包存在。
-</code></pre>
+<div class="codehilite"><pre><span></span><code>  因为项目中用到ActorDB所以有了以下的故事，当maven中引入多个jar包，那么避免不了会发生重复的包存在。
+</code></pre></div>
 
 <ul>
 <li>如图所示，成功的倒入了·<code>org.apache.thrift</code>
@@ -151,21 +151,21 @@
 </ul>
 <h2 id="_2">总结</h2>
 <p>学习了Mavne的加载顺序，以及排错方式：</p>
-<pre class="codehilite"><code class="language-bash">#查找依赖所在的地方
- mvn dependency:tree -Dverbose -Dincludes=org.apache.thrift:libthrift
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="c1">#查找依赖所在的地方</span>
+<span class="w"> </span>mvn<span class="w"> </span>dependency:tree<span class="w"> </span>-Dverbose<span class="w"> </span>-Dincludes<span class="o">=</span>org.apache.thrift:libthrift
+</code></pre></div>
 
-<pre class="codehilite"><code class="language-xml">&lt;!--去除依赖，在外部加载--&gt;
-&lt;exclusions&gt;
-      &lt;exclusion&gt;
-          &lt;artifactId&gt;libthrift&lt;/artifactId&gt;
-          &lt;groupId&gt;org.apache.thrift&lt;/groupId&gt;
-      &lt;/exclusion&gt;
-  &lt;/exclusions&gt;
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="cm">&lt;!--去除依赖，在外部加载--&gt;</span>
+<span class="nt">&lt;exclusions&gt;</span>
+<span class="w">      </span><span class="nt">&lt;exclusion&gt;</span>
+<span class="w">          </span><span class="nt">&lt;artifactId&gt;</span>libthrift<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">          </span><span class="nt">&lt;groupId&gt;</span>org.apache.thrift<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/exclusion&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/exclusions&gt;</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

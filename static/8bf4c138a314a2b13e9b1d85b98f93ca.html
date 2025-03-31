@@ -109,20 +109,20 @@
     </div>
     <div class="content">
         <h1 id="quick-start">quick  start</h1>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-ZK_IP=&quot;192.168.1.1&quot;
-cat ${template_path} |
-awk '$0 !~ /^\s*#.*$/' |
-sed 's/[ &quot;]/\\&amp;/g' |
-while read -r line;do
-    eval echo ${line}
-done &gt;${dst_path}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="nv">ZK_IP</span><span class="o">=</span><span class="s2">&quot;192.168.1.1&quot;</span>
+cat<span class="w"> </span><span class="si">${</span><span class="nv">template_path</span><span class="si">}</span><span class="w"> </span><span class="p">|</span>
+awk<span class="w"> </span><span class="s1">&#39;$0 !~ /^\s*#.*$/&#39;</span><span class="w"> </span><span class="p">|</span>
+sed<span class="w"> </span><span class="s1">&#39;s/[ &quot;]/\\&amp;/g&#39;</span><span class="w"> </span><span class="p">|</span>
+<span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="p">;</span><span class="k">do</span>
+<span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">line</span><span class="si">}</span>
+<span class="k">done</span><span class="w"> </span>&gt;<span class="si">${</span><span class="nv">dst_path</span><span class="si">}</span>
+</code></pre></div>
 
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

@@ -111,52 +111,52 @@
         <h2 id="lv">LV扩容</h2>
 <p>### 过程如下：</p>
 <ul>
-<li>挂载一块硬盘4T<pre class="codehilite"><code>```bash
-    fdisk /dev/sdb
+<li>挂载一块硬盘4T<div class="codehilite"><pre><span></span><code><span class="err">```</span><span class="n">bash</span>
+<span class="w">    </span><span class="n">fdisk</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb</span>
 
-    send n
+<span class="w">    </span><span class="n">send</span><span class="w"> </span><span class="n">n</span>
 
-    send p
+<span class="w">    </span><span class="n">send</span><span class="w"> </span><span class="n">p</span>
 
-    send w;
+<span class="w">    </span><span class="n">send</span><span class="w"> </span><span class="n">w</span><span class="p">;</span>
 
-    mkfs -t ext4 -c /dev/sdb1
+<span class="w">    </span><span class="n">mkfs</span><span class="w"> </span><span class="o">-</span><span class="n">t</span><span class="w"> </span><span class="n">ext4</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb1</span>
 
-    wrating....
+<span class="w">    </span><span class="n">wrating</span><span class="p">....</span>
 
-    pvcreate /dev/sdb1
+<span class="w">    </span><span class="n">pvcreate</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb1</span>
 
-    vgextend rhel /dev/sdb1
+<span class="w">    </span><span class="n">vgextend</span><span class="w"> </span><span class="n">rhel</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb1</span>
 
-    lvextend -L +2000G  /dev/mapper/lvs-home
+<span class="w">    </span><span class="n">lvextend</span><span class="w"> </span><span class="o">-</span><span class="n">L</span><span class="w"> </span><span class="o">+</span><span class="mi">2000</span><span class="n">G</span><span class="w">  </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">mapper</span><span class="o">/</span><span class="n">lvs</span><span class="o">-</span><span class="n">home</span>
 
-    #根据文件格式进行重置home大小
+<span class="w">    </span><span class="err">#根据文件格式进行重置</span><span class="n">home大小</span>
 
-    xfs_growfs /dev/mapper/lvs-home
+<span class="w">    </span><span class="n">xfs_growfs</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">mapper</span><span class="o">/</span><span class="n">lvs</span><span class="o">-</span><span class="n">home</span>
 
-        or
+<span class="w">        </span><span class="kr">or</span>
 
-    resize2fs -p /dev/mapper/lvs-home
+<span class="w">    </span><span class="n">resize2fs</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">mapper</span><span class="o">/</span><span class="n">lvs</span><span class="o">-</span><span class="n">home</span>
 
-    其中遇到的问题如下：
+<span class="w">    </span><span class="err">其中遇到的问题如下：</span>
 
-    创建完成PV--&gt;mkfs(格盘)--&gt;vgs(warning Device with uuid XXXXXX-xxxxxx-xxx-xxxx-xxxxx)
+<span class="w">    </span><span class="err">创建完成</span><span class="n">PV</span><span class="o">--&gt;</span><span class="n">mkfs</span><span class="p">(</span><span class="err">格盘</span><span class="p">)</span><span class="o">--&gt;</span><span class="n">vgs</span><span class="p">(</span><span class="n">warning</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">uuid</span><span class="w"> </span><span class="n">XXXXXX</span><span class="o">-</span><span class="n">xxxxxx</span><span class="o">-</span><span class="n">xxx</span><span class="o">-</span><span class="n">xxxx</span><span class="o">-</span><span class="n">xxxxx</span><span class="p">)</span>
 
-    解决办法：
-    pvcreate --uuid &quot;UUID&quot; --restorefile /etc/lvm/archie/rhel_000001-1511980835.vg  /dev/sdb1 -ff
+<span class="w">    </span><span class="err">解决办法：</span>
+<span class="w">    </span><span class="n">pvcreate</span><span class="w"> </span><span class="o">--</span><span class="n">uuid</span><span class="w"> </span><span class="s">&quot;UUID&quot;</span><span class="w"> </span><span class="o">--</span><span class="n">restorefile</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">lvm</span><span class="o">/</span><span class="n">archie</span><span class="o">/</span><span class="n">rhel_000001</span><span class="o">-</span><span class="mf">1511980835.</span><span class="n">vg</span><span class="w">  </span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb1</span><span class="w"> </span><span class="o">-</span><span class="n">ff</span>
 
-    如果解决不了用第二种方式：
-    vgreduce --removemissing --verbose myVG_NAME
+<span class="w">    </span><span class="err">如果解决不了用第二种方式：</span>
+<span class="w">    </span><span class="n">vgreduce</span><span class="w"> </span><span class="o">--</span><span class="n">removemissing</span><span class="w"> </span><span class="o">--</span><span class="n">verbose</span><span class="w"> </span><span class="n">myVG_NAME</span>
 
-```
-</code></pre>
+<span class="err">```</span>
+</code></pre></div>
 
 </li>
 </ul>
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

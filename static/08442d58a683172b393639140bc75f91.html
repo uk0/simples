@@ -109,143 +109,143 @@
     </div>
     <div class="content">
         <h3 id="python">代码Python可以使用</h3>
-<pre class="codehilite"><code class="language-python">from pymysqlreplication import BinLogStreamReader
-from pymysqlreplication.row_event import (
-    DeleteRowsEvent,
-    UpdateRowsEvent,
-    WriteRowsEvent,
-)
-import threading
-import paramiko
-import logging.handlers
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pymysqlreplication</span> <span class="kn">import</span> <span class="n">BinLogStreamReader</span>
+<span class="kn">from</span> <span class="nn">pymysqlreplication.row_event</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DeleteRowsEvent</span><span class="p">,</span>
+    <span class="n">UpdateRowsEvent</span><span class="p">,</span>
+    <span class="n">WriteRowsEvent</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">paramiko</span>
+<span class="kn">import</span> <span class="nn">logging.handlers</span>
 
-LOG_FILE = r'hue_auto_create_user.log'
+<span class="n">LOG_FILE</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;hue_auto_create_user.log&#39;</span>
 
-handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=5, encoding='utf-8')  # 实例化handler
-fmt = '%(asctime)s - %(levelname)s - %(message)s'
+<span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="n">LOG_FILE</span><span class="p">,</span> <span class="n">maxBytes</span><span class="o">=</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span> <span class="n">backupCount</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>  <span class="c1"># 实例化handler</span>
+<span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
 
-formatter = logging.Formatter(fmt)  # 实例化formatter
-handler.setFormatter(formatter)  # 为handler添加formatter
+<span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>  <span class="c1"># 实例化formatter</span>
+<span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>  <span class="c1"># 为handler添加formatter</span>
 
-logger = logging.getLogger('hue_auto_create_user')  # 获取名为hue_auto_create_user的logger
-logger.addHandler(handler)  # 为logger添加handler
-logger.setLevel(logging.DEBUG)
-
-
-MYSQL_SETTINGS = {
-    &quot;host&quot;: &quot;cdh-m1.temp.online&quot;,
-    &quot;port&quot;: 3306,
-    &quot;user&quot;: &quot;root&quot;,
-    &quot;passwd&quot;: &quot;12345&quot;
-}
-
-HOST_ARRAY = [
-    '10.50.40.1',
-    '10.50.40.2',
-    '10.50.40.3',
-    '10.50.40.4',
-    '10.50.40.5',
-    '10.50.40.6',
-    '10.50.40.7',
-    '10.50.40.8',
-    '10.50.40.9',
-    '10.50.40.10',
-]
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;hue_auto_create_user&#39;</span><span class="p">)</span>  <span class="c1"># 获取名为hue_auto_create_user的logger</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>  <span class="c1"># 为logger添加handler</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
 
-def ssh_host_createUserAndGroup(ip, username, passwd, cmd):
-    try:
-        # 指定本地的RSA私钥文件,如果建立密钥对时设置的有密码，password为设定的密码，如无不用指定password参数
-        # pkey = paramiko.RSAKey.from_private_key_file('/home/super/.ssh/id_rsa')
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(ip, 22, username, passwd, timeout=5)
-        for m in cmd:
-            stdin, stdout, stderr = ssh.exec_command(m)
-            out = stdout.readlines()
-            # 屏幕输出
-            for o in out:
-                print(o)
-        logger.info(u&quot;ssh 远程执行 {} Success&quot;.format(ip))
-        ssh.close()
-    except:
-        logger.error(u&quot;ssh 远程执行 {} Error&quot;.format(ip))
+<span class="n">MYSQL_SETTINGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;cdh-m1.temp.online&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">3306</span><span class="p">,</span>
+    <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;passwd&quot;</span><span class="p">:</span> <span class="s2">&quot;12345&quot;</span>
+<span class="p">}</span>
+
+<span class="n">HOST_ARRAY</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;10.50.40.1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.3&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.4&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.5&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.6&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.7&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.8&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.9&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.50.40.10&#39;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
-def startTask(user):
-    cmd = ['useradd {}'.format(user), 'groupadd {}'.format(user),
-           'usermod  -a  -G {} {}'.format(user, user)]  # 你要执行的命令列表
-    username = &quot;root&quot;  # 用户名
-    passwd = &quot;123456&quot;  # 密码
-
-    for ip in HOST_ARRAY:
-        a = threading.Thread(target=ssh_host_createUserAndGroup, args=(ip, username, passwd, cmd))
-        logger.info(u&quot;Host {} 执行命令 {}&quot;.format(ip,cmd))
-        a.start()
-
-
-def updateMysql(uid,userName):
-    import pymysql
-    cnx = pymysql.connect(user='root',
-                          password='123456',
-                          host='cdh-m1.temop.online',
-                          database='hue',
-                          port=3306,
-                          charset='utf8'
-                          )
-    cursor = cnx.cursor()
-    try:
-        cursor.execute(&quot;update auth_user set is_superuser=0 where id={}&quot;.format(uid))
-        #INSERT IGNORE INTO
-        cursor.execute(&quot;insert INTO hue.auth_group ( id, name) SELECT  (auth_group.id+1), '{}' FROM hue.auth_group order by id DESC limit 1&quot;.format(userName))
-    except Exception:
-        logger.error(&quot;已经存在 Group {}&quot;.format(userName))
-        print(&quot;已经存在 Group {}&quot;.format(userName))
+<span class="k">def</span> <span class="nf">ssh_host_createUserAndGroup</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 指定本地的RSA私钥文件,如果建立密钥对时设置的有密码，password为设定的密码，如无不用指定password参数</span>
+        <span class="c1"># pkey = paramiko.RSAKey.from_private_key_file(&#39;/home/super/.ssh/id_rsa&#39;)</span>
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">:</span>
+            <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">stdout</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="c1"># 屏幕输出</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;ssh 远程执行 </span><span class="si">{}</span><span class="s2"> Success&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;ssh 远程执行 </span><span class="si">{}</span><span class="s2"> Error&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span>
 
 
-    cursor.execute(&quot;insert INTO hue.auth_user_groups(user_id,group_id)  SELECT {},auth_group.id FROM hue.auth_group where hue.auth_group.name='{}'&quot;.format(uid, userName))
-    cnx.commit()
-    cnx.close()
+<span class="k">def</span> <span class="nf">startTask</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;useradd </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">),</span> <span class="s1">&#39;groupadd </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">),</span>
+           <span class="s1">&#39;usermod  -a  -G </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">user</span><span class="p">)]</span>  <span class="c1"># 你要执行的命令列表</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;root&quot;</span>  <span class="c1"># 用户名</span>
+    <span class="n">passwd</span> <span class="o">=</span> <span class="s2">&quot;123456&quot;</span>  <span class="c1"># 密码</span>
 
-def main():
-    stream = BinLogStreamReader(
-        connection_settings=MYSQL_SETTINGS,
-        server_id=100,
-        blocking=True,
-        resume_stream=True,
-        only_events=[DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent])
-
-    for binlogevent in stream:
-        e_start_pos, last_pos = stream.log_pos, stream.log_pos
-        for row in binlogevent.rows:
-            event = {&quot;schema&quot;: binlogevent.schema,
-                     &quot;table&quot;: binlogevent.table,
-                     &quot;type&quot;: type(binlogevent).__name__,
-                     &quot;row&quot;: row
-                     };
-            if binlogevent.table == &quot;auth_user&quot; and type(binlogevent).__name__ == &quot;DeleteRowsEvent&quot;:
-                logger.info(u&quot;DELETE User &quot; + row['values']['username'])
-                print(u&quot;DELETE User &quot; + row['values']['username'])
-
-            if binlogevent.table == &quot;auth_user&quot; and type(binlogevent).__name__ == &quot;WriteRowsEvent&quot;:
-                userName = row['values']['username'];
-                uid = row['values']['id'];
-                print(u&quot;INSERT User {} Uid {}&quot;.format(row['values']['username'],uid))
-
-                startTask(userName)
-                logger.info(u&quot;[INFO] 添加用户到集群所有节点 -&gt; {}&quot;.format(userName) + &quot;\n&quot;)
-                updateMysql(uid,userName)
-                logger.info(u&quot;[INFO] 去掉Hue SuperUser {} Uid={}&quot;.format(userName, uid) + &quot;\n&quot;)
+    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">HOST_ARRAY</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">ssh_host_createUserAndGroup</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">cmd</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;Host </span><span class="si">{}</span><span class="s2"> 执行命令 </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span><span class="n">cmd</span><span class="p">))</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
-if __name__ == &quot;__main__&quot;:
-    main()
-</code></pre>
+<span class="k">def</span> <span class="nf">updateMysql</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span><span class="n">userName</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pymysql</span>
+    <span class="n">cnx</span> <span class="o">=</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">,</span>
+                          <span class="n">password</span><span class="o">=</span><span class="s1">&#39;123456&#39;</span><span class="p">,</span>
+                          <span class="n">host</span><span class="o">=</span><span class="s1">&#39;cdh-m1.temop.online&#39;</span><span class="p">,</span>
+                          <span class="n">database</span><span class="o">=</span><span class="s1">&#39;hue&#39;</span><span class="p">,</span>
+                          <span class="n">port</span><span class="o">=</span><span class="mi">3306</span><span class="p">,</span>
+                          <span class="n">charset</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span>
+                          <span class="p">)</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">cnx</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;update auth_user set is_superuser=0 where id=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uid</span><span class="p">))</span>
+        <span class="c1">#INSERT IGNORE INTO</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert INTO hue.auth_group ( id, name) SELECT  (auth_group.id+1), &#39;</span><span class="si">{}</span><span class="s2">&#39; FROM hue.auth_group order by id DESC limit 1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">userName</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;已经存在 Group </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">userName</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;已经存在 Group </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">userName</span><span class="p">))</span>
+
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert INTO hue.auth_user_groups(user_id,group_id)  SELECT </span><span class="si">{}</span><span class="s2">,auth_group.id FROM hue.auth_group where hue.auth_group.name=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span> <span class="n">userName</span><span class="p">))</span>
+    <span class="n">cnx</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="n">cnx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">BinLogStreamReader</span><span class="p">(</span>
+        <span class="n">connection_settings</span><span class="o">=</span><span class="n">MYSQL_SETTINGS</span><span class="p">,</span>
+        <span class="n">server_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">resume_stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">only_events</span><span class="o">=</span><span class="p">[</span><span class="n">DeleteRowsEvent</span><span class="p">,</span> <span class="n">WriteRowsEvent</span><span class="p">,</span> <span class="n">UpdateRowsEvent</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">binlogevent</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="n">e_start_pos</span><span class="p">,</span> <span class="n">last_pos</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">log_pos</span><span class="p">,</span> <span class="n">stream</span><span class="o">.</span><span class="n">log_pos</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">binlogevent</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">binlogevent</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span>
+                     <span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="n">binlogevent</span><span class="o">.</span><span class="n">table</span><span class="p">,</span>
+                     <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">binlogevent</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                     <span class="s2">&quot;row&quot;</span><span class="p">:</span> <span class="n">row</span>
+                     <span class="p">};</span>
+            <span class="k">if</span> <span class="n">binlogevent</span><span class="o">.</span><span class="n">table</span> <span class="o">==</span> <span class="s2">&quot;auth_user&quot;</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">binlogevent</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;DeleteRowsEvent&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;DELETE User &quot;</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">][</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;DELETE User &quot;</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">][</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">binlogevent</span><span class="o">.</span><span class="n">table</span> <span class="o">==</span> <span class="s2">&quot;auth_user&quot;</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">binlogevent</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;WriteRowsEvent&quot;</span><span class="p">:</span>
+                <span class="n">userName</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">][</span><span class="s1">&#39;username&#39;</span><span class="p">];</span>
+                <span class="n">uid</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">];</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;INSERT User </span><span class="si">{}</span><span class="s2"> Uid </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">][</span><span class="s1">&#39;username&#39;</span><span class="p">],</span><span class="n">uid</span><span class="p">))</span>
+
+                <span class="n">startTask</span><span class="p">(</span><span class="n">userName</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;[INFO] 添加用户到集群所有节点 -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">userName</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">updateMysql</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span><span class="n">userName</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;[INFO] 去掉Hue SuperUser </span><span class="si">{}</span><span class="s2"> Uid=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">userName</span><span class="p">,</span> <span class="n">uid</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
 
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

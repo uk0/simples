@@ -115,33 +115,33 @@
 <li>锐速 https://www.91yun.co/serverspeeder91yun</li>
 </ul>
 <h2 id="quick-start">quick start</h2>
-<pre class="codehilite"><code class="language-bash">#检查系统虚拟化支持
-yum install virt-what -y
-# 例如返回 kvm
+<div class="codehilite"><pre><span></span><code><span class="c1">#检查系统虚拟化支持</span>
+yum<span class="w"> </span>install<span class="w"> </span>virt-what<span class="w"> </span>-y
+<span class="c1"># 例如返回 kvm</span>
 virt-what
-# 安装新的内核
-wget --no-check-certificate -O rskernel.sh https://raw.githubusercontent.com/uxh/shadowsocks_bash/master/rskernel.sh &amp;&amp; bash rskernel.sh
+<span class="c1"># 安装新的内核</span>
+wget<span class="w"> </span>--no-check-certificate<span class="w"> </span>-O<span class="w"> </span>rskernel.sh<span class="w"> </span>https://raw.githubusercontent.com/uxh/shadowsocks_bash/master/rskernel.sh<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>bash<span class="w"> </span>rskernel.sh
 
-# 安装锐速
+<span class="c1"># 安装锐速</span>
 
-wget -N --no-check-certificate https://github.com/91yun/serverspeeder/raw/master/serverspeeder-v.sh &amp;&amp; bash serverspeeder-v.sh CentOS 7.1 3.10.0-229.1.2.el7.x86_64 x64 3.11.20.4 serverspeeder_3283
+wget<span class="w"> </span>-N<span class="w"> </span>--no-check-certificate<span class="w"> </span>https://github.com/91yun/serverspeeder/raw/master/serverspeeder-v.sh<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>bash<span class="w"> </span>serverspeeder-v.sh<span class="w"> </span>CentOS<span class="w"> </span><span class="m">7</span>.1<span class="w"> </span><span class="m">3</span>.10.0-229.1.2.el7.x86_64<span class="w"> </span>x64<span class="w"> </span><span class="m">3</span>.11.20.4<span class="w"> </span>serverspeeder_3283
 
-#重启锐速
-/serverspeeder/bin/serverSpeeder.sh restart
-#启动锐速
-/serverspeeder/bin/serverSpeeder.sh start
-#停止锐速
-/serverspeeder/bin/serverSpeeder.sh stop
-#查看锐速运行情况
-/serverspeeder/bin/serverSpeeder.sh status
-# 卸载
-chattr -i /serverspeeder/etc/apx* &amp;&amp; /serverspeeder/bin/serverSpeeder.sh uninstall -f
-</code></pre>
+<span class="c1">#重启锐速</span>
+/serverspeeder/bin/serverSpeeder.sh<span class="w"> </span>restart
+<span class="c1">#启动锐速</span>
+/serverspeeder/bin/serverSpeeder.sh<span class="w"> </span>start
+<span class="c1">#停止锐速</span>
+/serverspeeder/bin/serverSpeeder.sh<span class="w"> </span>stop
+<span class="c1">#查看锐速运行情况</span>
+/serverspeeder/bin/serverSpeeder.sh<span class="w"> </span>status
+<span class="c1"># 卸载</span>
+chattr<span class="w"> </span>-i<span class="w"> </span>/serverspeeder/etc/apx*<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>/serverspeeder/bin/serverSpeeder.sh<span class="w"> </span>uninstall<span class="w"> </span>-f
+</code></pre></div>
 
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

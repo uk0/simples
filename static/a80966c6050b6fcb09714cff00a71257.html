@@ -110,54 +110,54 @@
     <div class="content">
         <p>Xgboost install by cluster yarn</p>
 <h2 id="yum">yum 安装基础的依赖</h2>
-<pre class="codehilite"><code class="language-bash">yum install gcc-c++ fuse-devel git  hadoop-libhdfs-devel
-</code></pre>
+<div class="codehilite"><pre><span></span><code>yum<span class="w"> </span>install<span class="w"> </span>gcc-c++<span class="w"> </span>fuse-devel<span class="w"> </span>git<span class="w">  </span>hadoop-libhdfs-devel
+</code></pre></div>
 
 <h2 id="_1">配置环境变量</h2>
-<pre class="codehilite"><code class="language-bash">export MVN_HOME=/opt/soft/apache-maven-3.6.0
-export PATH=$MVN_HOME/bin:$PATH
-export XGB_HOME=/home/download
-export PATH=$XGB_HOME:$PATH
-export HDFS_LIB_PATH=${XGB_HOME}/xgboost-packages/libhdfs
-export LD_LIBRARY_PATH=${XGB_HOME}/xgboost-packages/lib64:$JAVA_HOME/jre/lib/amd64/server:/${XGB_HOME}/xgboost-packages/libhdfs:$LD_LIBRARY_PATH
-export HADOOP_HOME=/opt/cloudera/parcels/CDH/lib/hadoop
-export HADOOP_COMMON_HOME=$HADOOP_HOME
-export HADOOP_HDFS_HOME=/opt/cloudera/parcels/CDH/lib/hadoop-hdfs
-export HADOOP_MAPRED_HOME=/opt/cloudera/parcels/CDH/lib/hadoop-yarn
-export HADOOP_YARN_HOME=$HADOOP_MAPRED_HOME
-export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">MVN_HOME</span><span class="o">=</span>/opt/soft/apache-maven-3.6.0
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$MVN_HOME</span>/bin:<span class="nv">$PATH</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">XGB_HOME</span><span class="o">=</span>/home/download
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$XGB_HOME</span>:<span class="nv">$PATH</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HDFS_LIB_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">XGB_HOME</span><span class="si">}</span>/xgboost-packages/libhdfs
+<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">XGB_HOME</span><span class="si">}</span>/xgboost-packages/lib64:<span class="nv">$JAVA_HOME</span>/jre/lib/amd64/server:/<span class="si">${</span><span class="nv">XGB_HOME</span><span class="si">}</span>/xgboost-packages/libhdfs:<span class="nv">$LD_LIBRARY_PATH</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/opt/cloudera/parcels/CDH/lib/hadoop
+<span class="nb">export</span><span class="w"> </span><span class="nv">HADOOP_COMMON_HOME</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HADOOP_HDFS_HOME</span><span class="o">=</span>/opt/cloudera/parcels/CDH/lib/hadoop-hdfs
+<span class="nb">export</span><span class="w"> </span><span class="nv">HADOOP_MAPRED_HOME</span><span class="o">=</span>/opt/cloudera/parcels/CDH/lib/hadoop-yarn
+<span class="nb">export</span><span class="w"> </span><span class="nv">HADOOP_YARN_HOME</span><span class="o">=</span><span class="nv">$HADOOP_MAPRED_HOME</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HADOOP_CONF_DIR</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>/etc/hadoop
+</code></pre></div>
 
 <h2 id="xgboost-git-clone-and-install">xgboost git clone  and install</h2>
-<pre class="codehilite"><code class="language-bash">mkdir -p xgboost-packages/lib64
+<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>xgboost-packages/lib64
 
-cd xgboost-packages
+<span class="nb">cd</span><span class="w"> </span>xgboost-packages
 
 
-git clone --recursive https://github.com/dmlc/xgboost
-cd xgboost
-cp make/config.mk ./
-vim config.mk
-add line # HADOOP_HOME = /usr/lib/hadoop
+git<span class="w"> </span>clone<span class="w"> </span>--recursive<span class="w"> </span>https://github.com/dmlc/xgboost
+<span class="nb">cd</span><span class="w"> </span>xgboost
+cp<span class="w"> </span>make/config.mk<span class="w"> </span>./
+vim<span class="w"> </span>config.mk
+add<span class="w"> </span>line<span class="w"> </span><span class="c1"># HADOOP_HOME = /usr/lib/hadoop</span>
 
-mkdir build
-cd build
-cmake .. USE_HDFS=ON # 开启HDFS
-make -j4
-</code></pre>
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..<span class="w"> </span><span class="nv">USE_HDFS</span><span class="o">=</span>ON<span class="w"> </span><span class="c1"># 开启HDFS</span>
+make<span class="w"> </span>-j4
+</code></pre></div>
 
 <h2 id="install-python-package-on-env">install python package on env</h2>
-<pre class="codehilite"><code class="language-bash">cd python-package/ &amp;&amp; python setup.py install 
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>python-package/<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>
+</code></pre></div>
 
 <h2 id="install-jvm-package-on-env">install jvm-package on env</h2>
-<pre class="codehilite"><code class="language-bash">cd jvm-packages/ &amp;&amp; mvn install:install-file -Dfile=xgboost4j-spark-0.83-jar-with-dependencies.jar -DgroupId=ml.dmlc -DartifactId=xgboost4j-spark -Dversion=0.7 -Dpackaging=jar
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>jvm-packages/<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mvn<span class="w"> </span>install:install-file<span class="w"> </span>-Dfile<span class="o">=</span>xgboost4j-spark-0.83-jar-with-dependencies.jar<span class="w"> </span>-DgroupId<span class="o">=</span>ml.dmlc<span class="w"> </span>-DartifactId<span class="o">=</span>xgboost4j-spark<span class="w"> </span>-Dversion<span class="o">=</span><span class="m">0</span>.7<span class="w"> </span>-Dpackaging<span class="o">=</span>jar
+</code></pre></div>
 
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

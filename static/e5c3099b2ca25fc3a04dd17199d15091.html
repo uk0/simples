@@ -110,116 +110,116 @@
     <div class="content">
         <p>Kubernetes命名空间资源限制主要是为了多个团队一起开发来区分资源使用情况。</p>
 <h2 id="1-resourcequota">1. ResourceQuota</h2>
-<pre class="codehilite"><code class="language-yaml">apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: compute-resources
-  namespace: test
-spec:
-  hard:
-    requests.cpu: &quot;1&quot;
-    requests.memory: 2Gi
-    limits.cpu: &quot;4&quot;
-    limits.memory: 12Gi
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ResourceQuota</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compute-resources</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hard</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">requests.cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1&quot;</span>
+<span class="w">    </span><span class="nt">requests.memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2Gi</span>
+<span class="w">    </span><span class="nt">limits.cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;4&quot;</span>
+<span class="w">    </span><span class="nt">limits.memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12Gi</span>
+</code></pre></div>
 
 <h2 id="2-limitrange">2. LimitRange</h2>
-<pre class="codehilite"><code class="language-yaml">apiVersion: v1
-kind: LimitRange
-metadata:
-  name: limits
-spec:
-  limits:
-  - max:
-      cpu: &quot;4&quot;
-      memory: 2Gi
-    min:
-      cpu: 200m
-      memory: 6Mi
-    maxLimitRequestRatio:
-      cpu: 3
-      memory: 2
-    type: Pod
-  - default:
-      cpu: 300m
-      memory: 200Mi
-    defaultRequest:
-      cpu: 200m
-      memory: 100Mi
-    max:
-      cpu: &quot;2&quot;
-      memory: 1Gi
-    min:
-      cpu: 100m
-      memory: 3Mi
-    maxLimitRequestRatio:
-      cpu: 5
-      memory: 4
-    type: Container
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LimitRange</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">limits</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;4&quot;</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2Gi</span>
+<span class="w">    </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200m</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6Mi</span>
+<span class="w">    </span><span class="nt">maxLimitRequestRatio</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">default</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300m</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200Mi</span>
+<span class="w">    </span><span class="nt">defaultRequest</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200m</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100Mi</span>
+<span class="w">    </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2&quot;</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1Gi</span>
+<span class="w">    </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100m</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3Mi</span>
+<span class="w">    </span><span class="nt">maxLimitRequestRatio</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Container</span>
+</code></pre></div>
 
 <h2 id="3ceph-rbd">3.映射方案Ceph RBD</h2>
-<pre class="codehilite"><code class="language-yaml">apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: demo-app-server
-  namespace: [namespace]
-spec:
-  replicas: 1
-  selector:
-    app: demo-app-server
-  template:
-    metadata:
-      labels:
-        app: demo-app-server
-    spec:
-      containers:
-        - name: demo-app-server-container
-          image: image.firsh.io/demo-base/appserver:latest
-          imagePullPolicy: Always
-          ports:
-          - containerPort: 8080
-          env:
-            - name: APP_HOME_CONF_DIR
-              value: /home/demo-app/conf
-          command: [&quot;java&quot;,&quot;-jar&quot;,&quot;/home/demo-app/demoapp.jar&quot;]
-          volumeMounts:
-                - name: config-volume
-                  mountPath: /home/demo-app/conf
-                - name: app-log
-                  mountPath: /var/log/development
-      volumes:
-        - name: config-volume
-          configMap:
-            name: demo-app-server
-        - name: app-log
-          hostPath:
-            path: /kube/demo-apiserver/logs
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReplicationController</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app-server</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">namespace</span><span class="p p-Indicator">]</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app-server</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app-server</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app-server-container</span>
+<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image.firsh.io/demo-base/appserver:latest</span>
+<span class="w">          </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Always</span>
+<span class="w">          </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">          </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">APP_HOME_CONF_DIR</span>
+<span class="w">              </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/demo-app/conf</span>
+<span class="w">          </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;java&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;-jar&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;/home/demo-app/demoapp.jar&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">          </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-volume</span>
+<span class="w">                  </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/demo-app/conf</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-log</span>
+<span class="w">                  </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/development</span>
+<span class="w">      </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-volume</span>
+<span class="w">          </span><span class="nt">configMap</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app-server</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-log</span>
+<span class="w">          </span><span class="nt">hostPath</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/kube/demo-apiserver/logs</span>
 
----
-apiVersion: v1
-kind: Service
-metadata:
- name: demo-app-service
- namespace: demo
-spec:
-   #type: ClusterIP
-   ports:
-   - name: demo-app-out-in
-     port: 1000
-     targetPort: 8080
-   externalIPs:
-   - [192.168.1.100]
-   selector:
-     app: demo-app-server
-</code></pre>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app-service</span>
+<span class="w"> </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">   </span><span class="c1">#type: ClusterIP</span>
+<span class="w">   </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app-out-in</span>
+<span class="w">     </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">     </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">   </span><span class="nt">externalIPs</span><span class="p">:</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">192.168.1.100</span><span class="p p-Indicator">]</span>
+<span class="w">   </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app-server</span>
+</code></pre></div>
 
 <blockquote>
 <p>感谢企业服务部牛总提供的解决方案</p>
 </blockquote>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

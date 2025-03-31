@@ -114,21 +114,21 @@ author：杨然儿</p>
 <h1 id="_1">公钥认证的基本思想：</h1>
 <p>对信息的加密和解密采用不同的key，这对key分别称作private key和public key，其中，public key存放在欲登录的服务器上，而private key为特定的客户机所持有。当客户机向服务器发出建立安全连接的请求时，首先发送自己的public key，如果这个public key是被服务器所允许的，服务器就发送一个经过public key加密的随机数据给客户机，这个数据只能通过private key解密，客户机将解密后的信息发还给服务器，服务器验证正确后即确认客户机是可信任的，从而建立起一条安全的信息通道。通过这种方式，客户机不需要向外发送自己的身份标志“private key”即可达到校验的目的，并且private key是不能通过public key反向推断出来的。这避免了网络窃听可能造成的密码泄露。客户机需要小心的保存自己的private key，以免被其他人窃取，一旦这样的事情发生，就需要各服务器更换受信的public key列表。</p>
 <p>配置ssh互信的步骤如下：</p>
-<pre class="codehilite"><code>1. 首先，在要配置互信的机器上，生成各自的经过认证的key文件；
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">首先</span><span class="err">，</span><span class="n">在要配置互信的机器上</span><span class="err">，</span><span class="n">生成各自的经过认证的key文件</span><span class="err">；</span>
 
-2. 其次，将所有的key文件汇总到一个总的认证文件中；
+<span class="mf">2.</span><span class="w"> </span><span class="n">其次</span><span class="err">，</span><span class="n">将所有的key文件汇总到一个总的认证文件中</span><span class="err">；</span>
 
-3. 将这个包含了所有互信机器认证key的认证文件，分发到各个机器中去；
+<span class="mf">3.</span><span class="w"> </span><span class="n">将这个包含了所有互信机器认证key的认证文件</span><span class="err">，</span><span class="n">分发到各个机器中去</span><span class="err">；</span>
 
-4. 验证互信。
+<span class="mf">4.</span><span class="w"> </span><span class="n">验证互信</span><span class="err">。</span>
 
-在主机名为node1,node2,node3上以相同的用户test(root用户也行，经过测试了)创建ssh互信；
+<span class="n">在主机名为node1</span><span class="p">,</span><span class="n">node2</span><span class="p">,</span><span class="n">node3上以相同的用户test</span><span class="p">(</span><span class="n">root用户也行</span><span class="err">，</span><span class="n">经过测试了</span><span class="p">)</span><span class="n">创建ssh互信</span><span class="err">；</span>
 
-注意：以下所有，主机名都可以换成IP；
-</code></pre>
+<span class="n">注意</span><span class="err">：</span><span class="n">以下所有</span><span class="err">，</span><span class="n">主机名都可以换成IP</span><span class="err">；</span>
+</code></pre></div>
 
 <p>1.在每个节点上创建 RSA密钥和公钥</p>
-<pre class="codehilite"><code>使用test(或者root)用户登陆
+<div class="codehilite"><pre><span></span><code>使用test(或者root)用户登陆
 
 mkdir ~/.ssh
 
@@ -141,35 +141,35 @@ cd ~/.ssh
 ssh-keygen -t rsa
 
 #需要输入一些信息，全部回车，可以不用输入
-</code></pre>
+</code></pre></div>
 
 <p>2.整合公钥文件</p>
 <p>在node1上执行以下命令</p>
 <h1 id="_2">以下命令可能提示需要输入密码，应该是各节点的密码(我的机器所有密码都一样，这是我的猜测)；</h1>
-<pre class="codehilite"><code>ssh node1 cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+<div class="codehilite"><pre><span></span><code>ssh node1 cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
 
 ssh node2 cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
 
 ssh node3 cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
 
 chmod 600 ~/.ssh/authorized_keys
-</code></pre>
+</code></pre></div>
 
 <p>3.分发整合后的公钥文件</p>
 <p>在node1上执行以下命令</p>
-<pre class="codehilite"><code>scp ~/.ssh/authorized_keys  node2:~/.ssh/
+<div class="codehilite"><pre><span></span><code>scp ~/.ssh/authorized_keys  node2:~/.ssh/
 
 scp ~/.ssh/authorized_keys  node3:~/.ssh/
-</code></pre>
+</code></pre></div>
 
 <p>4.测试ssh互信</p>
 <p>在各个节点上运行以下命令，若不需要输入密码就显示系统当前日期，就说明SSH互信已经配置成功了。</p>
-<pre class="codehilite"><code>ssh node1 date
+<div class="codehilite"><pre><span></span><code>ssh node1 date
 
 ssh node2 date
 
 ssh node3 date
-</code></pre>
+</code></pre></div>
 
 <ul>
 <li>以上操作经过验证可以直接拿去。</li>
@@ -178,7 +178,7 @@ ssh node3 date
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

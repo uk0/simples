@@ -113,162 +113,162 @@
 author：杨然儿</p>
 <h1 id="_1">操作系统日常巡检</h1>
 <h1 id="0">0.查询是否被攻击</h1>
-<pre class="codehilite"><code>统计登录成功的IP
-        last | awk '{ print $3}' | sort | uniq -c | sort -n
-登录失败的IP
-        lastb | awk '{ print $3}' | sort | uniq -c | sort -n
-查看是否被攻击
-        grep :x:0: /etc/passwd  --只返回一行
-是否存在可疑登录
-    登录成功的
-        grep &quot;Accept&quot; /var/log/secure*|awk '{print $9 '=' $11}'|sort|uniq -c
-    登录失败的
-        grep &quot;Failed&quot; /var/log/secure*|awk '{print $9 '=' $11}'|sort|uniq -c
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="err">统计登录成功的</span><span class="n">IP</span>
+<span class="w">        </span><span class="n">last</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">awk</span><span class="w"> </span><span class="s1">&#39;{ print $3}&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">uniq</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="o">-</span><span class="n">n</span>
+<span class="err">登录失败的</span><span class="n">IP</span>
+<span class="w">        </span><span class="n">lastb</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">awk</span><span class="w"> </span><span class="s1">&#39;{ print $3}&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">uniq</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="o">-</span><span class="n">n</span>
+<span class="err">查看是否被攻击</span>
+<span class="w">        </span><span class="n">grep</span><span class="w"> </span><span class="p">:</span><span class="n">x</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">passwd</span><span class="w">  </span><span class="o">--</span><span class="err">只返回一行</span>
+<span class="err">是否存在可疑登录</span>
+<span class="w">    </span><span class="err">登录成功的</span>
+<span class="w">        </span><span class="n">grep</span><span class="w"> </span><span class="s2">&quot;Accept&quot;</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">secure</span><span class="o">*|</span><span class="n">awk</span><span class="w"> </span><span class="s1">&#39;{print $9 &#39;</span><span class="o">=</span><span class="s1">&#39; $11}&#39;</span><span class="o">|</span><span class="n">sort</span><span class="o">|</span><span class="n">uniq</span><span class="w"> </span><span class="o">-</span><span class="n">c</span>
+<span class="w">    </span><span class="err">登录失败的</span>
+<span class="w">        </span><span class="n">grep</span><span class="w"> </span><span class="s2">&quot;Failed&quot;</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">secure</span><span class="o">*|</span><span class="n">awk</span><span class="w"> </span><span class="s1">&#39;{print $9 &#39;</span><span class="o">=</span><span class="s1">&#39; $11}&#39;</span><span class="o">|</span><span class="n">sort</span><span class="o">|</span><span class="n">uniq</span><span class="w"> </span><span class="o">-</span><span class="n">c</span>
+</code></pre></div>
 
 <h1 id="1">1.查操作系统日志是否存在错误:</h1>
-<pre class="codehilite"><code>more /var/log/messages|grep -E '[Ee]erro|fail|[Ww]arning'
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="n">more</span><span class="w"> </span><span class="o">/</span><span class="nf">var</span><span class="o">/</span><span class="nf">log</span><span class="o">/</span><span class="n">messages</span><span class="o">|</span><span class="n">grep</span><span class="w"> </span><span class="o">-</span><span class="n">E</span><span class="w"> </span><span class="s1">&#39;[Ee]erro|fail|[Ww]arning&#39;</span>
+</code></pre></div>
 
 <h1 id="2">2.查主机是否存在硬件错误</h1>
-<pre class="codehilite"><code>dmesg|more
-</code></pre>
+<div class="codehilite"><pre><span></span><code>dmesg|more
+</code></pre></div>
 
 <h1 id="3">3.文件使用率</h1>
-<pre class="codehilite"><code>df -h
-</code></pre>
+<div class="codehilite"><pre><span></span><code>df -h
+</code></pre></div>
 
 <h1 id="4">4.检查是否存在僵尸进程</h1>
-<pre class="codehilite"><code>ps -ef|grep defunct
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ps -ef|grep defunct
+</code></pre></div>
 
 <h1 id="5">5.检查网关是否正确</h1>
-<pre class="codehilite"><code>netstat -nr
+<div class="codehilite"><pre><span></span><code>netstat -nr
 ping  网关
-</code></pre>
+</code></pre></div>
 
 <h1 id="6">6.检查网络通信是否正常</h1>
-<pre class="codehilite"><code>netstat -ni
+<div class="codehilite"><pre><span></span><code>netstat -ni
 RX-DRP 值为0或者保持稳定
-</code></pre>
+</code></pre></div>
 
 <h1 id="7">7.查网络连接状态</h1>
-<pre class="codehilite"><code>netstat -an|egrep 'ESTABLISHED|FIN_WAIT_1|FIN_WAIT_2|TIME_WAIT|CLOSING|CLOSE_WAIT|LAST_ACK'
+<div class="codehilite"><pre><span></span><code><span class="n">netstat</span><span class="w"> </span><span class="o">-</span><span class="n">an</span><span class="o">|</span><span class="n">egrep</span><span class="w"> </span><span class="s1">&#39;ESTABLISHED|FIN_WAIT_1|FIN_WAIT_2|TIME_WAIT|CLOSING|CLOSE_WAIT|LAST_ACK&#39;</span>
 
-netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'
-</code></pre>
+<span class="n">netstat</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">awk</span><span class="w"> </span><span class="s1">&#39;/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}&#39;</span>
+</code></pre></div>
 
 <h1 id="8">8.查看是否丢包</h1>
-<pre class="codehilite"><code>cat /proc/net/dev
+<div class="codehilite"><pre><span></span><code>cat /proc/net/dev
 注意：dropped:0==&gt; 如果这个值不为 0 , 则说明有丢包现象
-</code></pre>
+</code></pre></div>
 
 <h1 id="9">9.网卡的工作状态</h1>
-<pre class="codehilite"><code>ifconfig -a
-如果网卡中状态无为down状态
+<div class="codehilite"><pre><span></span><code><span class="n">ifconfig</span><span class="w"> </span><span class="o">-</span><span class="n">a</span>
+<span class="err">如果网卡中状态无为</span><span class="n">down状态</span>
 
-ethtool eth1
-ethtool -i eth1
-iftop -B -n  -N -p
-fftop -i eth1 -B -n  -N -p
-查看网卡速度
-</code></pre>
+<span class="n">ethtool</span><span class="w"> </span><span class="n">eth1</span>
+<span class="n">ethtool</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">eth1</span>
+<span class="n">iftop</span><span class="w"> </span><span class="o">-</span><span class="n">B</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w">  </span><span class="o">-</span><span class="n">N</span><span class="w"> </span><span class="o">-</span><span class="n">p</span>
+<span class="n">fftop</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">eth1</span><span class="w"> </span><span class="o">-</span><span class="n">B</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w">  </span><span class="o">-</span><span class="n">N</span><span class="w"> </span><span class="o">-</span><span class="n">p</span>
+<span class="err">查看网卡速度</span>
+</code></pre></div>
 
 <h1 id="10cpu">10.CPU是否存在瓶颈</h1>
-<pre class="codehilite"><code>.CPU IDel大于90％则OK
-        top -i -n 1|grep id|awk '{print $8}'
+<div class="codehilite"><pre><span></span><code><span class="o">.</span><span class="n">CPU</span><span class="w"> </span><span class="n">IDel大于90</span><span class="err">％则</span><span class="n">OK</span>
+<span class="w">        </span><span class="n">top</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="mi">1</span><span class="o">|</span><span class="n">grep</span><span class="w"> </span><span class="n">id</span><span class="o">|</span><span class="n">awk</span><span class="w"> </span><span class="s1">&#39;{print $8}&#39;</span>
 
-.CPU load average 正常值：&lt; CPU个数 * 核数 *0.7
-        top -i -n 1|grep load|awk '{print $13}'
+<span class="o">.</span><span class="n">CPU</span><span class="w"> </span><span class="nb">load</span><span class="w"> </span><span class="n">average</span><span class="w"> </span><span class="err">正常值：</span><span class="o">&lt;</span><span class="w"> </span><span class="n">CPU个数</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="err">核数</span><span class="w"> </span><span class="o">*</span><span class="mf">0.7</span>
+<span class="w">        </span><span class="n">top</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="mi">1</span><span class="o">|</span><span class="n">grep</span><span class="w"> </span><span class="nb">load</span><span class="o">|</span><span class="n">awk</span><span class="w"> </span><span class="s1">&#39;{print $13}&#39;</span>
 
-        一般来说只要每个CPU的当前活动进程数不大于3那么系统的性能就是良好的，
-        如果每个CPU的任务数大于5，那么就表示这台机器的性能有严重问题。
-        实际上这个进程数就是每个CPU的负载.
-</code></pre>
+<span class="w">        </span><span class="err">一般来说只要每个</span><span class="n">CPU的当前活动进程数不大于3那么系统的性能就是良好的</span><span class="err">，</span>
+<span class="w">        </span><span class="err">如果每个</span><span class="n">CPU的任务数大于5</span><span class="err">，那么就表示这台机器的性能有严重问题。</span>
+<span class="w">        </span><span class="err">实际上这个进程数就是每个</span><span class="n">CPU的负载</span><span class="o">.</span>
+</code></pre></div>
 
 <h1 id="11">11.检查内存是否充足</h1>
-<pre class="codehilite"><code>内存有足够空间
+<div class="codehilite"><pre><span></span><code>内存有足够空间
 free -m
 
 没有发生换页
 vmstat 1 6
         如果 si 和so 的值总是不为零，则说明，swap 有很高的换页率
         如果 bi 和 bo 的值很高说明系统在进行大量的IO读些操作
-</code></pre>
+</code></pre></div>
 
 <h1 id="12io">12.检查IO</h1>
-<pre class="codehilite"><code>查看读写速度
-        iostat -d -x -k 1 5
+<div class="codehilite"><pre><span></span><code><span class="n">查看读写速度</span>
+<span class="w">        </span><span class="n">iostat</span><span class="w"> </span><span class="o">-</span><span class="n">d</span><span class="w"> </span><span class="o">-</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="n">k</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">5</span>
 
-        Device:         rrqm/s   wrqm/s     r/s     w/s    rkB/s    wkB/s avgrq-sz avgqu-sz   await  svctm  %util
-        xvdb              0.00    23.00    0.00   47.00     0.00   280.00    11.91     0.54   11.55   0.49   2.30
-        xvda              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00   0.00   0.00
-        xvdc              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00   0.00   0.00
-        xvdd              0.00     2.00    0.00  388.00     0.00  1560.00     8.04     1.26    3.26   0.34  13.10
+<span class="w">        </span><span class="nl">Device</span><span class="p">:</span><span class="w">         </span><span class="n">rrqm</span><span class="o">/</span><span class="n">s</span><span class="w">   </span><span class="n">wrqm</span><span class="o">/</span><span class="n">s</span><span class="w">     </span><span class="n">r</span><span class="o">/</span><span class="n">s</span><span class="w">     </span><span class="n">w</span><span class="o">/</span><span class="n">s</span><span class="w">    </span><span class="n">rkB</span><span class="o">/</span><span class="n">s</span><span class="w">    </span><span class="n">wkB</span><span class="o">/</span><span class="n">s</span><span class="w"> </span><span class="n">avgrq</span><span class="o">-</span><span class="n">sz</span><span class="w"> </span><span class="n">avgqu</span><span class="o">-</span><span class="n">sz</span><span class="w">   </span><span class="n">await</span><span class="w">  </span><span class="n">svctm</span><span class="w">  </span><span class="nf">%util</span>
+<span class="w">        </span><span class="n">xvdb</span><span class="w">              </span><span class="mf">0.00</span><span class="w">    </span><span class="mf">23.00</span><span class="w">    </span><span class="mf">0.00</span><span class="w">   </span><span class="mf">47.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">   </span><span class="mf">280.00</span><span class="w">    </span><span class="mf">11.91</span><span class="w">     </span><span class="mf">0.54</span><span class="w">   </span><span class="mf">11.55</span><span class="w">   </span><span class="mf">0.49</span><span class="w">   </span><span class="mf">2.30</span>
+<span class="w">        </span><span class="n">xvda</span><span class="w">              </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">    </span><span class="mf">0.00</span><span class="w">    </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">    </span><span class="mf">0.00</span><span class="w">   </span><span class="mf">0.00</span><span class="w">   </span><span class="mf">0.00</span>
+<span class="w">        </span><span class="n">xvdc</span><span class="w">              </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">    </span><span class="mf">0.00</span><span class="w">    </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">    </span><span class="mf">0.00</span><span class="w">   </span><span class="mf">0.00</span><span class="w">   </span><span class="mf">0.00</span>
+<span class="w">        </span><span class="n">xvdd</span><span class="w">              </span><span class="mf">0.00</span><span class="w">     </span><span class="mf">2.00</span><span class="w">    </span><span class="mf">0.00</span><span class="w">  </span><span class="mf">388.00</span><span class="w">     </span><span class="mf">0.00</span><span class="w">  </span><span class="mf">1560.00</span><span class="w">     </span><span class="mf">8.04</span><span class="w">     </span><span class="mf">1.26</span><span class="w">    </span><span class="mf">3.26</span><span class="w">   </span><span class="mf">0.34</span><span class="w">  </span><span class="mf">13.10</span>
 
-        rrqm/s 每秒读请求合并的次数
-        wrqm/s 每秒写请求合并的次数
-        r/s 每秒读请求次数，这个值通常会跟avgrq-sz一起观察，avgrq-sz大则有可能r/s比较小
-        w/s 每秒写请求次数，这个值通常会跟avgrq-sz一起观察，avgrq-sz大则有可能w/s比较小
-        rkB/s 这个指标跟vmstat的bi值通常应该是很接近的
-        wkB/s 这个指标跟vmstat的bo值通常应该是很接近的
-        avgrq-sz 每个请求平均大小，单位是扇区数，一般在200~400之间算是正常和理想的状态，如果这个值比较小，比方说只在100左右，说明太多的IO请求没有被合并，或者大的IO请求被“打散”，在写操作时，过多小的请求会造成磁盘磁头的频繁移动，降低IO性能。
-        avgqu-sz 平均请求队列长度，这个值在正常的系统中不应超过113太多，如果在200左右，甚至上千那说明发生了IO拥塞，而系统还在向IO请求队列中放请求（有一个例外是在执行sync,fsync操作时，该值到达最大值8192是正常的）
-        await 单位是毫秒，不应超过两位数，几百甚至上千都是不可接受的。
-        svctm 平均每次设备I/O操作的服务时间(毫秒)。即delta(use)/delta(rio+wio)
-        %util 尽可能的让该值达到100%，否则说明IO能力没有完全被利用。
+<span class="w">        </span><span class="n">rrqm</span><span class="o">/</span><span class="n">s</span><span class="w"> </span><span class="n">每秒读请求合并的次数</span>
+<span class="w">        </span><span class="n">wrqm</span><span class="o">/</span><span class="n">s</span><span class="w"> </span><span class="n">每秒写请求合并的次数</span>
+<span class="w">        </span><span class="n">r</span><span class="o">/</span><span class="n">s</span><span class="w"> </span><span class="n">每秒读请求次数</span><span class="err">，</span><span class="n">这个值通常会跟avgrq</span><span class="o">-</span><span class="n">sz一起观察</span><span class="err">，</span><span class="n">avgrq</span><span class="o">-</span><span class="n">sz大则有可能r</span><span class="o">/</span><span class="n">s比较小</span>
+<span class="w">        </span><span class="n">w</span><span class="o">/</span><span class="n">s</span><span class="w"> </span><span class="n">每秒写请求次数</span><span class="err">，</span><span class="n">这个值通常会跟avgrq</span><span class="o">-</span><span class="n">sz一起观察</span><span class="err">，</span><span class="n">avgrq</span><span class="o">-</span><span class="n">sz大则有可能w</span><span class="o">/</span><span class="n">s比较小</span>
+<span class="w">        </span><span class="n">rkB</span><span class="o">/</span><span class="n">s</span><span class="w"> </span><span class="n">这个指标跟vmstat的bi值通常应该是很接近的</span>
+<span class="w">        </span><span class="n">wkB</span><span class="o">/</span><span class="n">s</span><span class="w"> </span><span class="n">这个指标跟vmstat的bo值通常应该是很接近的</span>
+<span class="w">        </span><span class="n">avgrq</span><span class="o">-</span><span class="n">sz</span><span class="w"> </span><span class="n">每个请求平均大小</span><span class="err">，</span><span class="n">单位是扇区数</span><span class="err">，</span><span class="n">一般在200</span><span class="o">~</span><span class="mi">400</span><span class="n">之间算是正常和理想的状态</span><span class="err">，</span><span class="n">如果这个值比较小</span><span class="err">，</span><span class="n">比方说只在100左右</span><span class="err">，</span><span class="n">说明太多的IO请求没有被合并</span><span class="err">，</span><span class="n">或者大的IO请求被</span><span class="err">“</span><span class="n">打散</span><span class="err">”，</span><span class="n">在写操作时</span><span class="err">，</span><span class="n">过多小的请求会造成磁盘磁头的频繁移动</span><span class="err">，</span><span class="n">降低IO性能</span><span class="err">。</span>
+<span class="w">        </span><span class="n">avgqu</span><span class="o">-</span><span class="n">sz</span><span class="w"> </span><span class="n">平均请求队列长度</span><span class="err">，</span><span class="n">这个值在正常的系统中不应超过113太多</span><span class="err">，</span><span class="n">如果在200左右</span><span class="err">，</span><span class="n">甚至上千那说明发生了IO拥塞</span><span class="err">，</span><span class="n">而系统还在向IO请求队列中放请求</span><span class="err">（</span><span class="n">有一个例外是在执行sync</span><span class="p">,</span><span class="n">fsync操作时</span><span class="err">，</span><span class="n">该值到达最大值8192是正常的</span><span class="err">）</span>
+<span class="w">        </span><span class="n">await</span><span class="w"> </span><span class="n">单位是毫秒</span><span class="err">，</span><span class="n">不应超过两位数</span><span class="err">，</span><span class="n">几百甚至上千都是不可接受的</span><span class="err">。</span>
+<span class="w">        </span><span class="n">svctm</span><span class="w"> </span><span class="n">平均每次设备I</span><span class="o">/</span><span class="n">O操作的服务时间</span><span class="p">(</span><span class="n">毫秒</span><span class="p">)</span><span class="err">。</span><span class="n">即delta</span><span class="p">(</span><span class="n">use</span><span class="p">)</span><span class="o">/</span><span class="n">delta</span><span class="p">(</span><span class="n">rio</span><span class="o">+</span><span class="n">wio</span><span class="p">)</span>
+<span class="w">        </span><span class="nf">%util</span><span class="w"> </span><span class="n">尽可能的让该值达到100</span><span class="o">%</span><span class="err">，</span><span class="n">否则说明IO能力没有完全被利用</span><span class="err">。</span>
 
-        如果svctm比较接近await,说明I/O几乎没有等待时间;
-        如果await远大于svctm,说明I/O队列太长，应用得到的响应时间变慢。
-
-
-磁盘平均队列长度 avgqu-sz 大于 3 就需要关注，
-        iostat -xt 1
+<span class="w">        </span><span class="n">如果svctm比较接近await</span><span class="p">,</span><span class="n">说明I</span><span class="o">/</span><span class="n">O几乎没有等待时间</span><span class="p">;</span>
+<span class="w">        </span><span class="n">如果await远大于svctm</span><span class="p">,</span><span class="n">说明I</span><span class="o">/</span><span class="n">O队列太长</span><span class="err">，</span><span class="n">应用得到的响应时间变慢</span><span class="err">。</span>
 
 
-查看磁盘统计信息
-        cat /proc/diskstats
-
-     主设备号 次 设备名称   第1个域
-     202      32 xvdc           4959692 347 411803562 33790444 8109304 76242434 674813944 1340903295 0 14873863 1374687623
-     202      33 xvdc1          4959649 347 411803218 33790119 8109304 76242434 674813944 1340903295 0 14873753 1374687299
-     202      48 xvdd           222375610 17443 16714996538 923047010 5307720710 1063308104 50968261080 2447567938 0 1816063211 3368385818
-     202      49 xvdd1          222375567 17443 16714996194 923046942 5307720710 1063308104 50968261080 2447567938 0 1816063228 3368386366
+<span class="n">磁盘平均队列长度</span><span class="w"> </span><span class="n">avgqu</span><span class="o">-</span><span class="n">sz</span><span class="w"> </span><span class="n">大于</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="n">就需要关注</span><span class="err">，</span>
+<span class="w">        </span><span class="n">iostat</span><span class="w"> </span><span class="o">-</span><span class="n">xt</span><span class="w"> </span><span class="mi">1</span>
 
 
-    第1个域：读完成次数 ----- 读磁盘的次数，成功完成读的总次数。
-    （number of issued reads. This is the total number of reads completed successfully.）
+<span class="n">查看磁盘统计信息</span>
+<span class="w">        </span><span class="n">cat</span><span class="w"> </span><span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">diskstats</span>
 
-    第2个域：合并读完成次数， 第6个域：合并写完成次数。为了效率可能会合并相邻的读和写。从而两次4K的读在它最终被处理到磁盘上之前可能会变成一次8K的读，才被计数（和排队），因此只有一次I/O操作。这个域使你知道这样的操作有多频繁。
-    （number of reads merged）
+<span class="w">     </span><span class="n">主设备号</span><span class="w"> </span><span class="n">次</span><span class="w"> </span><span class="n">设备名称</span><span class="w">   </span><span class="n">第1个域</span>
+<span class="w">     </span><span class="mi">202</span><span class="w">      </span><span class="mi">32</span><span class="w"> </span><span class="n">xvdc</span><span class="w">           </span><span class="mi">4959692</span><span class="w"> </span><span class="mi">347</span><span class="w"> </span><span class="mi">411803562</span><span class="w"> </span><span class="mi">33790444</span><span class="w"> </span><span class="mi">8109304</span><span class="w"> </span><span class="mi">76242434</span><span class="w"> </span><span class="mi">674813944</span><span class="w"> </span><span class="mi">1340903295</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">14873863</span><span class="w"> </span><span class="mi">1374687623</span>
+<span class="w">     </span><span class="mi">202</span><span class="w">      </span><span class="mi">33</span><span class="w"> </span><span class="n">xvdc1</span><span class="w">          </span><span class="mi">4959649</span><span class="w"> </span><span class="mi">347</span><span class="w"> </span><span class="mi">411803218</span><span class="w"> </span><span class="mi">33790119</span><span class="w"> </span><span class="mi">8109304</span><span class="w"> </span><span class="mi">76242434</span><span class="w"> </span><span class="mi">674813944</span><span class="w"> </span><span class="mi">1340903295</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">14873753</span><span class="w"> </span><span class="mi">1374687299</span>
+<span class="w">     </span><span class="mi">202</span><span class="w">      </span><span class="mi">48</span><span class="w"> </span><span class="n">xvdd</span><span class="w">           </span><span class="mi">222375610</span><span class="w"> </span><span class="mi">17443</span><span class="w"> </span><span class="mi">16714996538</span><span class="w"> </span><span class="mi">923047010</span><span class="w"> </span><span class="mi">5307720710</span><span class="w"> </span><span class="mi">1063308104</span><span class="w"> </span><span class="mi">50968261080</span><span class="w"> </span><span class="mi">2447567938</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1816063211</span><span class="w"> </span><span class="mi">3368385818</span>
+<span class="w">     </span><span class="mi">202</span><span class="w">      </span><span class="mi">49</span><span class="w"> </span><span class="n">xvdd1</span><span class="w">          </span><span class="mi">222375567</span><span class="w"> </span><span class="mi">17443</span><span class="w"> </span><span class="mi">16714996194</span><span class="w"> </span><span class="mi">923046942</span><span class="w"> </span><span class="mi">5307720710</span><span class="w"> </span><span class="mi">1063308104</span><span class="w"> </span><span class="mi">50968261080</span><span class="w"> </span><span class="mi">2447567938</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1816063228</span><span class="w"> </span><span class="mi">3368386366</span>
 
-    第3个域：读扇区的次数，成功读过的扇区总次数。
-    （number of sectors read. This is the total number of sectors read successfully.）
 
-    第4个域：读花费的毫秒数，这是所有读操作所花费的毫秒数（用__make_request()到end_that_request_last()测量）。
-    （number of milliseconds spent reading. This is the total number of milliseconds spent by all reads (as measured from __make_request() to end_that_request_last()).）
+<span class="w">    </span><span class="n">第1个域</span><span class="err">：</span><span class="n">读完成次数</span><span class="w"> </span><span class="o">-----</span><span class="w"> </span><span class="n">读磁盘的次数</span><span class="err">，</span><span class="n">成功完成读的总次数</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">issued</span><span class="w"> </span><span class="n">reads</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">reads</span><span class="w"> </span><span class="n">completed</span><span class="w"> </span><span class="n">successfully</span><span class="p">.</span><span class="err">）</span>
 
-    第5个域：写完成次数 ----写完成的次数，成功写完成的总次数。
-    （number of writes completed. This is the total number of writes completed successfully.）
+<span class="w">    </span><span class="n">第2个域</span><span class="err">：</span><span class="n">合并读完成次数</span><span class="err">，</span><span class="w"> </span><span class="n">第6个域</span><span class="err">：</span><span class="n">合并写完成次数</span><span class="err">。</span><span class="n">为了效率可能会合并相邻的读和写</span><span class="err">。</span><span class="n">从而两次4K的读在它最终被处理到磁盘上之前可能会变成一次8K的读</span><span class="err">，</span><span class="n">才被计数</span><span class="err">（</span><span class="n">和排队</span><span class="err">），</span><span class="n">因此只有一次I</span><span class="o">/</span><span class="n">O操作</span><span class="err">。</span><span class="n">这个域使你知道这样的操作有多频繁</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">reads</span><span class="w"> </span><span class="n">merged</span><span class="err">）</span>
 
-    第6个域：合并写完成次数 -----合并写次数。
-    （number of writes merged Reads and writes which are adjacent to each other may be merged for efficiency. Thus two 4K reads may become one 8K read before it is ultimately handed to the disk, and so it will be counted (and queued) as only one I/O. This field lets you know how often this was done.）
+<span class="w">    </span><span class="n">第3个域</span><span class="err">：</span><span class="n">读扇区的次数</span><span class="err">，</span><span class="n">成功读过的扇区总次数</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">sectors</span><span class="w"> </span><span class="n">read</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">sectors</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="n">successfully</span><span class="p">.</span><span class="err">）</span>
 
-    第7个域：写扇区次数 ---- 写扇区的次数，成功写扇区总次数。
-    （number of sectors written. This is the total number of sectors written successfully.）
+<span class="w">    </span><span class="n">第4个域</span><span class="err">：</span><span class="n">读花费的毫秒数</span><span class="err">，</span><span class="n">这是所有读操作所花费的毫秒数</span><span class="err">（</span><span class="n">用__make_request</span><span class="p">()</span><span class="n">到end_that_request_last</span><span class="p">()</span><span class="n">测量</span><span class="err">）。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="n">spent</span><span class="w"> </span><span class="n">reading</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="n">spent</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">reads</span><span class="w"> </span><span class="p">(</span><span class="n">as</span><span class="w"> </span><span class="n">measured</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">__make_request</span><span class="p">()</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">end_that_request_last</span><span class="p">()).</span><span class="err">）</span>
 
-    第8个域：写操作花费的毫秒数  ---  写花费的毫秒数，这是所有写操作所花费的毫秒数（用__make_request()到end_that_request_last()测量）。
-    （number of milliseconds spent writing This is the total number of milliseconds spent by all writes (as measured from __make_request() to end_that_request_last()).）
+<span class="w">    </span><span class="n">第5个域</span><span class="err">：</span><span class="n">写完成次数</span><span class="w"> </span><span class="o">----</span><span class="n">写完成的次数</span><span class="err">，</span><span class="n">成功写完成的总次数</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">writes</span><span class="w"> </span><span class="n">completed</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">writes</span><span class="w"> </span><span class="n">completed</span><span class="w"> </span><span class="n">successfully</span><span class="p">.</span><span class="err">）</span>
 
-    第9个域：正在处理的输入/输出请求数 -- -I/O的当前进度，只有这个域应该是0。当请求被交给适当的request_queue_t时增加和请求完成时减小。
-    （number of I/Os currently in progress. The only field that should go to zero. Incremented as requests are given to appropriate request_queue_t and decremented as they finish.）
+<span class="w">    </span><span class="n">第6个域</span><span class="err">：</span><span class="n">合并写完成次数</span><span class="w"> </span><span class="o">-----</span><span class="n">合并写次数</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">writes</span><span class="w"> </span><span class="n">merged</span><span class="w"> </span><span class="n">Reads</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">writes</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">adjacent</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">merged</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">efficiency</span><span class="p">.</span><span class="w"> </span><span class="n">Thus</span><span class="w"> </span><span class="n">two</span><span class="w"> </span><span class="mi">4</span><span class="n">K</span><span class="w"> </span><span class="n">reads</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">become</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="mi">8</span><span class="n">K</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="n">before</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">ultimately</span><span class="w"> </span><span class="n">handed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">disk</span><span class="p">,</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">counted</span><span class="w"> </span><span class="p">(</span><span class="n">and</span><span class="w"> </span><span class="n">queued</span><span class="p">)</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="n">lets</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">know</span><span class="w"> </span><span class="n">how</span><span class="w"> </span><span class="n">often</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">was</span><span class="w"> </span><span class="n">done</span><span class="p">.</span><span class="err">）</span>
 
-    第10个域：输入/输出操作花费的毫秒数  ----花在I/O操作上的毫秒数，这个域会增长只要field 9不为0。
-    （number of milliseconds spent doing I/Os. This field is increased so long as field 9 is nonzero.）
+<span class="w">    </span><span class="n">第7个域</span><span class="err">：</span><span class="n">写扇区次数</span><span class="w"> </span><span class="o">----</span><span class="w"> </span><span class="n">写扇区的次数</span><span class="err">，</span><span class="n">成功写扇区总次数</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">sectors</span><span class="w"> </span><span class="n">written</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">sectors</span><span class="w"> </span><span class="n">written</span><span class="w"> </span><span class="n">successfully</span><span class="p">.</span><span class="err">）</span>
 
-    第11个域：输入/输出操作花费的加权毫秒数 -----  加权， 花在I/O操作上的毫秒数，在每次I/O开始，I/O结束，I/O合并时这个域都会增加。这可以给I/O完成时间和存储那些可以累积的提供一个便利的测量标准。
-    （number of milliseconds spent doing I/Os. This field is incremented at each I/O start, I/O completion, I/O merge, or read of these stats by the number of I/Os in progress (field 9) times the number of milliseconds spent doing I/O since the last update of this field. This can provide an easy measure of both I/O completion time and the backlog that may be accumulating.）
-</code></pre>
+<span class="w">    </span><span class="n">第8个域</span><span class="err">：</span><span class="n">写操作花费的毫秒数</span><span class="w">  </span><span class="o">---</span><span class="w">  </span><span class="n">写花费的毫秒数</span><span class="err">，</span><span class="n">这是所有写操作所花费的毫秒数</span><span class="err">（</span><span class="n">用__make_request</span><span class="p">()</span><span class="n">到end_that_request_last</span><span class="p">()</span><span class="n">测量</span><span class="err">）。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="n">spent</span><span class="w"> </span><span class="n">writing</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="n">spent</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">writes</span><span class="w"> </span><span class="p">(</span><span class="n">as</span><span class="w"> </span><span class="n">measured</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">__make_request</span><span class="p">()</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">end_that_request_last</span><span class="p">()).</span><span class="err">）</span>
+
+<span class="w">    </span><span class="n">第9个域</span><span class="err">：</span><span class="n">正在处理的输入</span><span class="o">/</span><span class="n">输出请求数</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="o">-</span><span class="n">I</span><span class="o">/</span><span class="n">O的当前进度</span><span class="err">，</span><span class="n">只有这个域应该是0</span><span class="err">。</span><span class="n">当请求被交给适当的request_queue_t时增加和请求完成时减小</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">Os</span><span class="w"> </span><span class="n">currently</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">progress</span><span class="p">.</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">zero</span><span class="p">.</span><span class="w"> </span><span class="n">Incremented</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">requests</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">given</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">appropriate</span><span class="w"> </span><span class="n">request_queue_t</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">decremented</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">finish</span><span class="p">.</span><span class="err">）</span>
+
+<span class="w">    </span><span class="n">第10个域</span><span class="err">：</span><span class="n">输入</span><span class="o">/</span><span class="n">输出操作花费的毫秒数</span><span class="w">  </span><span class="o">----</span><span class="n">花在I</span><span class="o">/</span><span class="n">O操作上的毫秒数</span><span class="err">，</span><span class="n">这个域会增长只要field</span><span class="w"> </span><span class="mi">9</span><span class="n">不为0</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="n">spent</span><span class="w"> </span><span class="n">doing</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">Os</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">increased</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">nonzero</span><span class="p">.</span><span class="err">）</span>
+
+<span class="w">    </span><span class="n">第11个域</span><span class="err">：</span><span class="n">输入</span><span class="o">/</span><span class="n">输出操作花费的加权毫秒数</span><span class="w"> </span><span class="o">-----</span><span class="w">  </span><span class="n">加权</span><span class="err">，</span><span class="w"> </span><span class="n">花在I</span><span class="o">/</span><span class="n">O操作上的毫秒数</span><span class="err">，</span><span class="n">在每次I</span><span class="o">/</span><span class="n">O开始</span><span class="err">，</span><span class="n">I</span><span class="o">/</span><span class="n">O结束</span><span class="err">，</span><span class="n">I</span><span class="o">/</span><span class="n">O合并时这个域都会增加</span><span class="err">。</span><span class="n">这可以给I</span><span class="o">/</span><span class="n">O完成时间和存储那些可以累积的提供一个便利的测量标准</span><span class="err">。</span>
+<span class="w">    </span><span class="err">（</span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="n">spent</span><span class="w"> </span><span class="n">doing</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">Os</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">incremented</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="w"> </span><span class="n">completion</span><span class="p">,</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="w"> </span><span class="n">merge</span><span class="p">,</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">these</span><span class="w"> </span><span class="n">stats</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">Os</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">progress</span><span class="w"> </span><span class="p">(</span><span class="n">field</span><span class="w"> </span><span class="mi">9</span><span class="p">)</span><span class="w"> </span><span class="n">times</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">milliseconds</span><span class="w"> </span><span class="n">spent</span><span class="w"> </span><span class="n">doing</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">last</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">provide</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">easy</span><span class="w"> </span><span class="n">measure</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">both</span><span class="w"> </span><span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="w"> </span><span class="n">completion</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">backlog</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">accumulating</span><span class="p">.</span><span class="err">）</span>
+</code></pre></div>
 
 <ul>
 <li>以上操作经过验证可以直接拿去。</li>
@@ -277,7 +277,7 @@ vmstat 1 6
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

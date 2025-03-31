@@ -110,105 +110,105 @@
     <div class="content">
         <p>服务器10台每台16块盘 其中两块系统盘,剩下的皆为数据盘，因为涉及到扩容，所以有一个大目录采用lvm挂载。</p>
 <h3 id="centos7">一次磁盘挂载（Centos7）</h3>
-<pre class="codehilite"><code class="language-bash">#!/usr/bin/env bash
-################## base ###############
-bashPath=$(cd `dirname $0`; pwd)
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">################## base ###############</span>
+<span class="nv">bashPath</span><span class="o">=</span><span class="k">$(</span><span class="nb">cd</span><span class="w"> </span><span class="sb">`</span>dirname<span class="w"> </span><span class="nv">$0</span><span class="sb">`</span><span class="p">;</span><span class="w"> </span><span class="nb">pwd</span><span class="k">)</span>
 
-${bashPath}/lvms.sh
+<span class="si">${</span><span class="nv">bashPath</span><span class="si">}</span>/lvms.sh
 
-sleep 2
+sleep<span class="w"> </span><span class="m">2</span>
 
-${bashPath}/parted.sh
-</code></pre>
+<span class="si">${</span><span class="nv">bashPath</span><span class="si">}</span>/parted.sh
+</code></pre></div>
 
 <ul>
 <li>lvms.sh</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-yum install -y lvm2
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>lvm2
 
-## disk---&gt;pv---&gt;vg---&gt;lv
+<span class="c1">## disk---&gt;pv---&gt;vg---&gt;lv</span>
 
-disk_index=14                  # 第14块盘
+<span class="nv">disk_index</span><span class="o">=</span><span class="m">14</span><span class="w">                  </span><span class="c1"># 第14块盘</span>
 
-partition=/data            # 定义最终挂载的名称
+<span class="nv">partition</span><span class="o">=</span>/data<span class="w">            </span><span class="c1"># 定义最终挂载的名称</span>
 
-j=`echo $disk_index|awk '{printf &quot;%c&quot;,97+$disk_index}'`
+<span class="nv">j</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$disk_index</span><span class="p">|</span>awk<span class="w"> </span><span class="s1">&#39;{printf &quot;%c&quot;,97+$disk_index}&#39;</span><span class="sb">`</span>
 
-## 直接disk
-fdisk /dev/sd$j &lt;&lt; FORMAT
-d
-w
-FORMAT
+<span class="c1">## 直接disk</span>
+fdisk<span class="w"> </span>/dev/sd<span class="nv">$j</span><span class="w"> </span><span class="s">&lt;&lt; FORMAT</span>
+<span class="s">d</span>
+<span class="s">w</span>
+<span class="s">FORMAT</span>
 
-parted /dev/sd$j &lt;&lt;ESXU
-mklabel gpt
-yes
-mkpart primary 0 100%
-ignore
-quit
-ESXU
+parted<span class="w"> </span>/dev/sd<span class="nv">$j</span><span class="w"> </span><span class="s">&lt;&lt;ESXU</span>
+<span class="s">mklabel gpt</span>
+<span class="s">yes</span>
+<span class="s">mkpart primary 0 100%</span>
+<span class="s">ignore</span>
+<span class="s">quit</span>
+<span class="s">ESXU</span>
 
-echo -e &quot;\033[32m disk successfully lvm $j \033[0m&quot;
+<span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[32m disk successfully lvm </span><span class="nv">$j</span><span class="s2"> \033[0m&quot;</span>
 
-mkdir -p $partition
+mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$partition</span>
 
-pvcreate /dev/sd${j}1
+pvcreate<span class="w"> </span>/dev/sd<span class="si">${</span><span class="nv">j</span><span class="si">}</span><span class="m">1</span>
 
-vgcreate vg_data_${j}  /dev/sd${j}1
+vgcreate<span class="w"> </span>vg_data_<span class="si">${</span><span class="nv">j</span><span class="si">}</span><span class="w">  </span>/dev/sd<span class="si">${</span><span class="nv">j</span><span class="si">}</span><span class="m">1</span>
 
-lvcreate  -l 100%FREE  -n  lv_data_${j}  vg_data_${j}
+lvcreate<span class="w">  </span>-l<span class="w"> </span><span class="m">100</span>%FREE<span class="w">  </span>-n<span class="w">  </span>lv_data_<span class="si">${</span><span class="nv">j</span><span class="si">}</span><span class="w">  </span>vg_data_<span class="si">${</span><span class="nv">j</span><span class="si">}</span>
 
-mkfs.ext4  /dev/vg_data_${j}/lv_data_${j}
+mkfs.ext4<span class="w">  </span>/dev/vg_data_<span class="si">${</span><span class="nv">j</span><span class="si">}</span>/lv_data_<span class="si">${</span><span class="nv">j</span><span class="si">}</span>
 
-mount=&quot;/dev/mapper/vg_data_${j}-lv_data_${j}      ${partition}  ext4    defaults        0       0&quot;
+<span class="nv">mount</span><span class="o">=</span><span class="s2">&quot;/dev/mapper/vg_data_</span><span class="si">${</span><span class="nv">j</span><span class="si">}</span><span class="s2">-lv_data_</span><span class="si">${</span><span class="nv">j</span><span class="si">}</span><span class="s2">      </span><span class="si">${</span><span class="nv">partition</span><span class="si">}</span><span class="s2">  ext4    defaults        0       0&quot;</span>
 
-echo $mount &gt;&gt;/etc/fstab                #写入分区表
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$mount</span><span class="w"> </span>&gt;&gt;/etc/fstab<span class="w">                </span><span class="c1">#写入分区表</span>
 
-sleep 1s
+sleep<span class="w"> </span>1s
 
-mount -a
-</code></pre>
+mount<span class="w"> </span>-a
+</code></pre></div>
 
 <ul>
 <li>parted.sh</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-PATH=/bin:/sbin:/usr/bin:/usr/sbin
-export PATH
-i=1
-while [ $i -lt 14 ]                  #硬盘数量,除系统盘之外是13块
-do
-j=`echo $i|awk '{printf &quot;%c&quot;,97+$i}'` #系统盘是sda1,如果是其它的需要修改脚本97=a
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="nv">PATH</span><span class="o">=</span>/bin:/sbin:/usr/bin:/usr/sbin
+<span class="nb">export</span><span class="w"> </span>PATH
+<span class="nv">i</span><span class="o">=</span><span class="m">1</span>
+<span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$i</span><span class="w"> </span>-lt<span class="w"> </span><span class="m">14</span><span class="w"> </span><span class="o">]</span><span class="w">                  </span><span class="c1">#硬盘数量,除系统盘之外是13块</span>
+<span class="k">do</span>
+<span class="nv">j</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$i</span><span class="p">|</span>awk<span class="w"> </span><span class="s1">&#39;{printf &quot;%c&quot;,97+$i}&#39;</span><span class="sb">`</span><span class="w"> </span><span class="c1">#系统盘是sda1,如果是其它的需要修改脚本97=a</span>
 
-unmount -v /dev/sd$j
+unmount<span class="w"> </span>-v<span class="w"> </span>/dev/sd<span class="nv">$j</span>
 
-parted /dev/sd$j &lt;&lt;FORMAT
-mklabel gpt
-mkpart primary 0 100%
-ignore
-quit
-FORMAT
-mkfs.ext4 -T largefile  /dev/sd${j}1    #格式化磁盘
-mkdir -p /data/disk${i}
-mount=&quot;/dev/sd${j}1       /data/disk${i}  ext4    defaults        0       0&quot;
-rm -rf /data/disk${i}/*
-echo $mount &gt;&gt;/etc/fstab                #写入分区表
-i=$(($i+1))
-done
-echo -e &quot;\033[32m *****Formating  and Mounting have finished wait 5s **** \033[0m&quot;
+parted<span class="w"> </span>/dev/sd<span class="nv">$j</span><span class="w"> </span><span class="s">&lt;&lt;FORMAT</span>
+<span class="s">mklabel gpt</span>
+<span class="s">mkpart primary 0 100%</span>
+<span class="s">ignore</span>
+<span class="s">quit</span>
+<span class="s">FORMAT</span>
+mkfs.ext4<span class="w"> </span>-T<span class="w"> </span>largefile<span class="w">  </span>/dev/sd<span class="si">${</span><span class="nv">j</span><span class="si">}</span><span class="m">1</span><span class="w">    </span><span class="c1">#格式化磁盘</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>/data/disk<span class="si">${</span><span class="nv">i</span><span class="si">}</span>
+<span class="nv">mount</span><span class="o">=</span><span class="s2">&quot;/dev/sd</span><span class="si">${</span><span class="nv">j</span><span class="si">}</span><span class="s2">1       /data/disk</span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">  ext4    defaults        0       0&quot;</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>/data/disk<span class="si">${</span><span class="nv">i</span><span class="si">}</span>/*
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$mount</span><span class="w"> </span>&gt;&gt;/etc/fstab<span class="w">                </span><span class="c1">#写入分区表</span>
+<span class="nv">i</span><span class="o">=</span><span class="k">$((</span><span class="nv">$i</span><span class="o">+</span><span class="m">1</span><span class="k">))</span>
+<span class="k">done</span>
+<span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[32m *****Formating  and Mounting have finished wait 5s **** \033[0m&quot;</span>
 
-chmod -R 777 /data/*
+chmod<span class="w"> </span>-R<span class="w"> </span><span class="m">777</span><span class="w"> </span>/data/*
 
-sleep 5
+sleep<span class="w"> </span><span class="m">5</span>
 
-mount -a
-</code></pre>
+mount<span class="w"> </span>-a
+</code></pre></div>
 
 <p>转载请注明出处，本文采用 <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/">CC4.0</a> 协议授权</p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

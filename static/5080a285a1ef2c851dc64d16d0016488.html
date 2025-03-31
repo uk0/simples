@@ -113,99 +113,99 @@
 <p>清理mac上Docker占用的磁盘空间</p>
 </blockquote>
 <h2 id="11">1.1、内容：</h2>
-<pre class="codehilite"><code class="language-text">Docker依赖Linux系统的cgroup实现，在mac系统中运行的时候，Docker会启动一个虚拟机中的Linux内核，并在硬盘上放一个 qcow2 格式的磁盘镜像文件。这个文件会随着Docker的使用不断膨胀，即使删除不用的Docker Image和Container也不会缩小。我在测试完一个自动化工具的Dockerfile改写之后，Docker.qcow2文件就达到42GB了。
+<div class="codehilite"><pre><span></span><code>Docker依赖Linux系统的cgroup实现，在mac系统中运行的时候，Docker会启动一个虚拟机中的Linux内核，并在硬盘上放一个 qcow2 格式的磁盘镜像文件。这个文件会随着Docker的使用不断膨胀，即使删除不用的Docker Image和Container也不会缩小。我在测试完一个自动化工具的Dockerfile改写之后，Docker.qcow2文件就达到42GB了。
 
 Google搜了一圏发现一个叫Théo Chamley的法国人写了一个脚本释放Docker.qcow2文件占用的空间。基本原理是用 docker save 命令保存要保留的image，然后关闭Docker，删除Docker.qcow2，再启动Docker，它会自动重建，最后用 docker load 命令恢复保留的image。
-</code></pre>
+</code></pre></div>
 
 <h2 id="_1">命令行</h2>
-<pre class="codehilite"><code class="language-bash"> sudo sh docker-clean.sh $(docker images | awk 'NR&gt;1 {print $1&quot;:&quot;$2}')
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span>sudo<span class="w"> </span>sh<span class="w"> </span>docker-clean.sh<span class="w"> </span><span class="k">$(</span>docker<span class="w"> </span>images<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;NR&gt;1 {print $1&quot;:&quot;$2}&#39;</span><span class="k">)</span>
+</code></pre></div>
 
 <h2 id="_2">脚本</h2>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-# sudo sh docker-clean.sh $(docker images | awk 'NR&gt;1 {print $1&quot;:&quot;$2}')
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1"># sudo sh docker-clean.sh $(docker images | awk &#39;NR&gt;1 {print $1&quot;:&quot;$2}&#39;)</span>
 
-IMAGES=$@
+<span class="nv">IMAGES</span><span class="o">=</span><span class="nv">$@</span>
 
-echo &quot;This will remove all your current containers and images except for:&quot;
-echo ${IMAGES}
-read -p &quot;Are you sure? [yes/NO] &quot; -n 1 -r
-echo    # (optional) move to a new line
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-    exit 1
-fi
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;This will remove all your current containers and images except for:&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">IMAGES</span><span class="si">}</span>
+<span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Are you sure? [yes/NO] &quot;</span><span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r
+<span class="nb">echo</span><span class="w">    </span><span class="c1"># (optional) move to a new line</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>!<span class="w"> </span><span class="nv">$REPLY</span><span class="w"> </span><span class="o">=</span>~<span class="w"> </span>^<span class="o">[</span>Yy<span class="o">]</span>$<span class="w"> </span><span class="o">]]</span>
+<span class="k">then</span>
+<span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+<span class="k">fi</span>
 
 
-TMP_DIR=$(mktemp -d)
+<span class="nv">TMP_DIR</span><span class="o">=</span><span class="k">$(</span>mktemp<span class="w"> </span>-d<span class="k">)</span>
 
-pushd $TMP_DIR &gt;/dev/null
+<span class="nb">pushd</span><span class="w"> </span><span class="nv">$TMP_DIR</span><span class="w"> </span>&gt;/dev/null
 
-open -a Docker
-echo &quot;=&gt; Saving the specified images&quot;
-for image in ${IMAGES}; do
-    echo &quot;==&gt; Saving ${image}&quot;
-    tar=$(echo -n ${image} | base64)
-    docker save -o ${tar}.tar ${image}
-    echo &quot;==&gt; Done.&quot;
-done
+open<span class="w"> </span>-a<span class="w"> </span>Docker
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=&gt; Saving the specified images&quot;</span>
+<span class="k">for</span><span class="w"> </span>image<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">IMAGES</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==&gt; Saving </span><span class="si">${</span><span class="nv">image</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="nv">tar</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">image</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="k">)</span>
+<span class="w">    </span>docker<span class="w"> </span>save<span class="w"> </span>-o<span class="w"> </span><span class="si">${</span><span class="nv">tar</span><span class="si">}</span>.tar<span class="w"> </span><span class="si">${</span><span class="nv">image</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==&gt; Done.&quot;</span>
+<span class="k">done</span>
 
-echo &quot;=&gt; Cleaning up&quot;
-echo -n &quot;==&gt; Quiting Docker&quot;
-osascript -e 'quit app &quot;Docker&quot;'
-while docker info &gt;/dev/null 2&gt;&amp;1; do
-    echo -n &quot;.&quot;
-    sleep 1
-done;
-echo &quot;&quot;
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=&gt; Cleaning up&quot;</span>
+<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;==&gt; Quiting Docker&quot;</span>
+osascript<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;quit app &quot;Docker&quot;&#39;</span>
+<span class="k">while</span><span class="w"> </span>docker<span class="w"> </span>info<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;.&quot;</span>
+<span class="w">    </span>sleep<span class="w"> </span><span class="m">1</span>
+<span class="k">done</span><span class="p">;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
 
-echo &quot;==&gt; Removing Docker.qcow2 file&quot;
-rm ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/Docker.qcow2
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==&gt; Removing Docker.qcow2 file&quot;</span>
+rm<span class="w"> </span>~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/Docker.qcow2
 
-echo &quot;==&gt; Launching Docker&quot;
-open -a Docker
-echo -n &quot;==&gt; Waiting for Docker to start&quot;
-until docker info &gt;/dev/null 2&gt;&amp;1; do
-    echo -n &quot;.&quot;
-    sleep 1
-done;
-echo &quot;&quot;
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==&gt; Launching Docker&quot;</span>
+open<span class="w"> </span>-a<span class="w"> </span>Docker
+<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;==&gt; Waiting for Docker to start&quot;</span>
+<span class="k">until</span><span class="w"> </span>docker<span class="w"> </span>info<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;.&quot;</span>
+<span class="w">    </span>sleep<span class="w"> </span><span class="m">1</span>
+<span class="k">done</span><span class="p">;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
 
-echo &quot;=&gt; Done.&quot;
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=&gt; Done.&quot;</span>
 
-echo &quot;=&gt; Loading saved images&quot;
-for image in ${IMAGES}; do
-    echo &quot;==&gt; Loading ${image}&quot;
-    tar=$(echo -n ${image} | base64)
-    docker load -q -i ${tar}.tar || exit 1
-    echo &quot;==&gt; Done.&quot;
-done
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=&gt; Loading saved images&quot;</span>
+<span class="k">for</span><span class="w"> </span>image<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">IMAGES</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==&gt; Loading </span><span class="si">${</span><span class="nv">image</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="nv">tar</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">image</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="k">)</span>
+<span class="w">    </span>docker<span class="w"> </span>load<span class="w"> </span>-q<span class="w"> </span>-i<span class="w"> </span><span class="si">${</span><span class="nv">tar</span><span class="si">}</span>.tar<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==&gt; Done.&quot;</span>
+<span class="k">done</span>
 
-popd &gt;/dev/null
-rm -r ${TMP_DIR}
-</code></pre>
+<span class="nb">popd</span><span class="w"> </span>&gt;/dev/null
+rm<span class="w"> </span>-r<span class="w"> </span><span class="si">${</span><span class="nv">TMP_DIR</span><span class="si">}</span>
+</code></pre></div>
 
 <h2 id="_3">貌似更好</h2>
 <ul>
 <li>This patch fixes a bug which would prevent the online compaction from being enabled. Hopefully now it's possible to turn it on again. I installed this version and then enabled experimental compaction by running the following script:</li>
 </ul>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 
-cd ~/Library/Containers/com.docker.docker/Data/database/
-git checkout master
-git reset --hard
-mkdir -p com.docker.driver.amd64-linux/disk
-echo 262144 &gt; com.docker.driver.amd64-linux/disk/compact-after
-echo 262144 &gt; com.docker.driver.amd64-linux/disk/keep-erased
-echo -n true &gt; com.docker.driver.amd64-linux/disk/trim
-#echo -n 'tcp:9090' &gt; com.docker.driver.amd64-linux/disk/stats
-git add com.docker.driver.amd64-linux/disk/compact-after
-git add com.docker.driver.amd64-linux/disk/keep-erased
-git add com.docker.driver.amd64-linux/disk/trim
-#git add com.docker.driver.amd64-linux/disk/stats
-git commit -s -m 'Enable on-line compaction'
-</code></pre>
+<span class="nb">cd</span><span class="w"> </span>~/Library/Containers/com.docker.docker/Data/database/
+git<span class="w"> </span>checkout<span class="w"> </span>master
+git<span class="w"> </span>reset<span class="w"> </span>--hard
+mkdir<span class="w"> </span>-p<span class="w"> </span>com.docker.driver.amd64-linux/disk
+<span class="nb">echo</span><span class="w"> </span><span class="m">262144</span><span class="w"> </span>&gt;<span class="w"> </span>com.docker.driver.amd64-linux/disk/compact-after
+<span class="nb">echo</span><span class="w"> </span><span class="m">262144</span><span class="w"> </span>&gt;<span class="w"> </span>com.docker.driver.amd64-linux/disk/keep-erased
+<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="nb">true</span><span class="w"> </span>&gt;<span class="w"> </span>com.docker.driver.amd64-linux/disk/trim
+<span class="c1">#echo -n &#39;tcp:9090&#39; &gt; com.docker.driver.amd64-linux/disk/stats</span>
+git<span class="w"> </span>add<span class="w"> </span>com.docker.driver.amd64-linux/disk/compact-after
+git<span class="w"> </span>add<span class="w"> </span>com.docker.driver.amd64-linux/disk/keep-erased
+git<span class="w"> </span>add<span class="w"> </span>com.docker.driver.amd64-linux/disk/trim
+<span class="c1">#git add com.docker.driver.amd64-linux/disk/stats</span>
+git<span class="w"> </span>commit<span class="w"> </span>-s<span class="w"> </span>-m<span class="w"> </span><span class="s1">&#39;Enable on-line compaction&#39;</span>
+</code></pre></div>
 
 <ul>
 <li>
@@ -217,7 +217,7 @@ git commit -s -m 'Enable on-line compaction'
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

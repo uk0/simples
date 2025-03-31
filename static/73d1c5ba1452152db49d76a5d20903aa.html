@@ -117,369 +117,369 @@ author：zhangjianxin</p>
 <li><a href="#_1">先看代码</a></li>
 </ul>
 </div>
-<pre class="codehilite"><code class="language-python">#!/usr/bin/env py262
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/env py262</span>
 
-#导入方法模块
-import os
-import sys
-import re
+<span class="c1">#导入方法模块</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
-from xml.dom import minidom
-from lxml import etree
-from StringIO import StringIO
-import time
+<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
+<span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
-file_eth1 = '/etc/sysconfig/network-scripts/ifcfg-eth1'
-file_eth0 = '/etc/sysconfig/network-scripts/ifcfg-eth0'
-file_sysctl = '/etc/sysctl_test.conf'
-file_vd = '/etc/init.d/varnishd'
-file_vf = '/usr/local/varnish_214/etc/varnish_01.conf'
-filexml= '/speedy_data_transfers_server/speedy_data_transfers_server/WEB-INF/classes/config/config.xml'
-nw = {}
-eth = {}
-
-
-def daemonize (stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
-    ''' Fork the current process as a daemon, redirecting standard file
-        descriptors (by default, redirects them to /dev/null).
-    '''
-    # Perform first fork.
-    try:
-        pid = os.fork( )
-        if pid &gt; 0:
-            sys.exit(0) # Exit first parent.
-    except OSError, e:
-        sys.stderr.write(&quot;fork #1 failed: (%d) %s\n&quot; % (e.errno, e.strerror))
-        sys.exit(1)
-    # Decouple from parent environment.
-    os.chdir(&quot;/&quot;)
-    os.umask(0)
-    os.setsid( )
-    # Perform second fork.
-
-    try:
-        pid = os.fork( )
-        if pid &gt; 0:
-            sys.exit(0) # Exit second parent.
-    except OSError, e:
-        sys.stderr.write(&quot;fork #2 failed: (%d) %s\n&quot; % (e.errno, e.strerror))
-        sys.exit(1)
-    # The process is now daemonized, redirect standard file descriptors.
-    for f in sys.stdout, sys.stderr: f.flush( )
-    si = file(stdin, 'r')
-    so = file(stdout, 'a+')
-    se = file(stderr, 'a+', 0)
-    os.dup2(si.fileno( ), sys.stdin.fileno( ))
-    os.dup2(so.fileno( ), sys.stdout.fileno( ))
-    os.dup2(se.fileno( ), sys.stderr.fileno( ))
+<span class="n">file_eth1</span> <span class="o">=</span> <span class="s1">&#39;/etc/sysconfig/network-scripts/ifcfg-eth1&#39;</span>
+<span class="n">file_eth0</span> <span class="o">=</span> <span class="s1">&#39;/etc/sysconfig/network-scripts/ifcfg-eth0&#39;</span>
+<span class="n">file_sysctl</span> <span class="o">=</span> <span class="s1">&#39;/etc/sysctl_test.conf&#39;</span>
+<span class="n">file_vd</span> <span class="o">=</span> <span class="s1">&#39;/etc/init.d/varnishd&#39;</span>
+<span class="n">file_vf</span> <span class="o">=</span> <span class="s1">&#39;/usr/local/varnish_214/etc/varnish_01.conf&#39;</span>
+<span class="n">filexml</span><span class="o">=</span> <span class="s1">&#39;/speedy_data_transfers_server/speedy_data_transfers_server/WEB-INF/classes/config/config.xml&#39;</span>
+<span class="n">nw</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">eth</span> <span class="o">=</span> <span class="p">{}</span>
 
 
+<span class="k">def</span> <span class="nf">daemonize</span> <span class="p">(</span><span class="n">stdin</span><span class="o">=</span><span class="s1">&#39;/dev/null&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="s1">&#39;/dev/null&#39;</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="s1">&#39;/dev/null&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; Fork the current process as a daemon, redirecting standard file</span>
+<span class="sd">        descriptors (by default, redirects them to /dev/null).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Perform first fork.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">(</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># Exit first parent.</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;fork #1 failed: (</span><span class="si">%d</span><span class="s2">) </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Decouple from parent environment.</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">umask</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">setsid</span><span class="p">(</span> <span class="p">)</span>
+    <span class="c1"># Perform second fork.</span>
 
-def parse_xml(fn,r_t,*tg):
-    f_x = open(fn,'r')
-    f_x.seek(0,0)
-    tree = etree.parse(fn)
-    root = tree.getroot()
-    #print root
-    #print type(root)
-    NS = '{http://accelerator.com/config}'
-
-    r_t_element = root.findall( NS  + r_t)
-    #print r_t_element
-    #print type(r_t_element)
-    if len(tg) &gt;= 2:
-        #if tg[-2] is None:
-           #print tg[-2]
-        s_t_element = tree.findall(&quot;//&quot; + NS  + tg[-2])
-        tg1_element = s_t_element[0].findall(NS + tg[-1])
-        b = []
-        for i in tg1_element:
-            b.append(i.text)
-        return b
-    if len(tg) &lt; 2:
-        tg1_element = r_t_element[0].findall(NS + tg[-1])
-        b = []
-        for i in tg1_element:
-            b.append(i.text)
-        return b
-
-def file_replace(filename,srcStr,dstStr):
-    f = open(filename,'r')
-    sc = f.read()
-    stra = re.compile(srcStr)
-    sub = re.sub(stra,dstStr,sc,0)
-    f.close
-    fok = open(filename,'w')
-    fok.write(sub)
-    fok.close()
-
-def file_replace_escap(filename,srcStr,dstStr):
-    f = open(filename,'r')
-    sc = f.read()
-    stra0 = re.sub('\^','\\^',srcStr)
-    stra1 = re.sub('\$','\\$',stra0)
-    stra2 = re.sub('\(','\\(',stra1)
-    stra3 = re.sub('\)','\\)',stra2)
-    stra = re.compile(stra3)
-    sub = re.sub(stra,dstStr,sc)
-    f.close
-    fok = open(filename,'w')
-    fok.write(sub)
-    fok.close()
-
-#www.iplaypy.com
-def fetch_conf(fn,conf):  #conf maybe: IPADDR|NETMASK|NETWORK|GATEWAY
-    #file_nw = file('/etc/sysconfig/network','r')
-    #file_nw.seek(0,0)
-    fn.seek(0,0)
-    if conf == 'GATEWAY':
-        #file_nw = file('/etc/sysconfig/network','r')
-        for eachLine in fn:
-            #alist = eachLine.strip().split('=')
-            m1 = re.match('^#|^$',eachLine)
-            if m1 is not None:
-                continue
-            else:
-                m1 = re.search('=',eachLine)
-                if m1 is not None:
-                    alist = eachLine.strip().split('=')
-                    nw[alist[0]]=alist[1]
-        #print nw[conf]
-        return  nw[conf]
-    else:
-        #file_eth1_pu = file('/etc/sysconfig/network-scripts/ifcfg-eth0','r')
-        for eachLine in fn:
-            #alist = eachLine.strip().split('=')
-            m1 = re.match('^#|^$',eachLine)
-            if m1 is not None:
-                continue
-            else:
-                m1 = re.search('=',eachLine)
-                if m1 is not None:
-                    alist = eachLine.strip().split('=')
-                    eth[alist[0]]=alist[1]
-        return eth[conf]
-
-def check_pn():
-    file_eth1_pu = open(file_eth1,'r')
-    xml_ip = parse_xml(filexml,&quot;network&quot;,&quot;public_setting&quot;,&quot;ip&quot;)
-    xml_mk = parse_xml(filexml,&quot;network&quot;,&quot;public_setting&quot;,&quot;mask&quot;)
-    xml_gw = parse_xml(filexml,&quot;network&quot;,&quot;public_setting&quot;,&quot;gateway&quot;)
-    conf_ip = fetch_conf(file_eth1_pu,&quot;IPADDR&quot;)
-    conf_mk = fetch_conf(file_eth1_pu,&quot;NETMASK&quot;)
-    conf_gw = fetch_conf(file_eth1_pu,&quot;GATEWAY&quot;)
-    file_eth1_pu.close()
-    '''check public ip'''
-    if  xml_ip[0] == conf_ip:
-        print &quot;ip is ok&quot;,xml_ip[0],conf_ip
-    else:
-        print &quot;ip is wrong&quot;,xml_ip[0],conf_ip
-        file_replace(file_eth1,conf_ip,xml_ip[0])
-        #os.system('''sudo sed -i 's|wrong|right|g' /etc/sysconfig/network-scripts/ifcfg-eth1''')
-    '''check public netmask'''
-    if xml_mk[0] == conf_mk:
-        print &quot;netmask is ok&quot;,xml_mk[0],conf_mk
-    else:
-        print &quot;netmask is wrong&quot;,xml_mk[0],conf_mk
-        file_replace(file_eth1,conf_mk,xml_mk[0])
-    '''check public gateway'''
-    if xml_gw[0] == conf_gw:
-        print &quot;gateway is ok&quot;,xml_gw[0],conf_gw
-    else:
-        print &quot;gateway is wrong&quot;,xml_gw[0],conf_gw
-        file_replace(file_eth1,conf_gw,xml_gw[0])
-
-def check_in():
-    file_eth0_it = open(file_eth0,'r')
-    xml_ip = parse_xml(filexml,&quot;network&quot;,&quot;private_setting&quot;,&quot;ip&quot;)
-    xml_mk = parse_xml(filexml,&quot;network&quot;,&quot;private_setting&quot;,&quot;mask&quot;)
-    xml_gw = parse_xml(filexml,&quot;network&quot;,&quot;private_setting&quot;,&quot;gateway&quot;)
-    conf_ip = fetch_conf(file_eth0_it,&quot;IPADDR&quot;)
-    conf_mk = fetch_conf(file_eth0_it,&quot;NETMASK&quot;)
-    conf_gw = fetch_conf(file_eth0_it,&quot;GATEWAY&quot;)
-    file_eth0_it.close()
-    '''check internal ip'''
-    if  xml_ip[0] == conf_ip:
-        print &quot;ip is ok&quot;,xml_ip[0],conf_ip
-    else:
-        print &quot;ip is wrong&quot;,xml_ip[0],conf_ip
-        file_replace(file_eth0,conf_ip,xml_ip[0])
-    '''check internal netmask'''
-    if xml_mk == conf_mk:
-        print &quot;netmask is ok&quot;,xml_mk[0],conf_mk
-    else:
-        print &quot;netmask is wrong&quot;,xml_mk[0],conf_mk
-        file_replace(file_eth0,conf_mk,xml_mk[0])
-    '''check internal gateway'''
-    if xml_gw == conf_gw:
-        print &quot;gateway is ok&quot;,xml_gw[0],conf_gw
-    else:
-        print &quot;gateway is wrong&quot;,xml_gw[0],conf_gw
-        file_replace(file_eth0,conf_gw,xml_gw[0])
-
-def bu_cv(str):
-    if str == &quot;true&quot;:
-       return str.replace('true','1')
-    else:
-       return str.replace('false','0')
-
-def bu_cv0(str):
-    if str == '0':
-        return str.replace('0','true')
-    else:
-        return str.replace('1','false')
-def check_sysctl_fs():
-    file_sysctl_fs = open(file_sysctl,'r')
-    xml_fs_en = &quot;tcp_fast.enable=&quot; + bu_cv(str(parse_xml(filexml,&quot;fasttcp&quot;,&quot;enable&quot;)[0]))
-    xml_fs_p1 = &quot;tcp_fast.noaccel_lport=&quot; + parse_xml(filexml,&quot;fasttcp&quot;,&quot;block_port&quot;,&quot;value&quot;)[0]
-    xml_fs_p2 = &quot;tcp_fast.noaccel_lport2=&quot; + parse_xml(filexml,&quot;fasttcp&quot;,&quot;block_port&quot;,&quot;value&quot;)[1]
-    conf_fs_en = &quot;tcp_fast.enable=&quot; + fetch_conf(file_sysctl_fs,'tcp_fast.enable')
-    conf_fs_p1 = &quot;tcp_fast.noaccel_lport=&quot; + fetch_conf(file_sysctl_fs,'tcp_fast.noaccel_lport')
-    conf_fs_p2 = &quot;tcp_fast.noaccel_lport2=&quot; + fetch_conf(file_sysctl_fs,'tcp_fast.noaccel_lport2')
-    file_sysctl_fs.close()
-
-    if xml_fs_en == conf_fs_en:
-        print &quot;fastsoft enable toggle is ok&quot;
-    else:
-        print &quot;fastsoft enable toggle is bad&quot;
-        file_replace(file_sysctl,conf_fs_en,xml_fs_en)
-
-    if xml_fs_p1 == conf_fs_p1:
-        print &quot;fastsoft p1 is ok&quot;
-    else:
-        print &quot;fastsoft p2 is bad&quot;
-        file_replace(file_sysctl,conf_fs_p1,xml_fs_p1)
-
-    if xml_fs_p2 == conf_fs_p2:
-        print &quot;fastsoft p2 is ok&quot;
-    else:
-        print &quot;fastsoft p2 is bad&quot;
-        file_replace(file_sysctl,conf_fs_p2,xml_fs_p2)
-
-def check_cache():
-    file_vd_cf = open(file_vd,'r')
-    xml_cache_mm = &quot;VARNISH_STORAGE_SIZE=&quot; + parse_xml(filexml,&quot;cache&quot;,&quot;max_memeory&quot;)[0] + &quot;M&quot;
-    xml_cache_en = str(parse_xml(filexml,&quot;cache&quot;,&quot;enable&quot;)[0])
-    conf_cache_mm = &quot;VARNISH_STORAGE_SIZE=&quot; + fetch_conf(file_vd_cf,'VARNISH_STORAGE_SIZE')
-    conf_cache_en = bu_cv0(str(os.system('ps aux | grep -v grep | grep -q varnishd')))
-    file_vd_cf.close()
-    if xml_cache_mm[0] == conf_cache_mm:
-        print &quot;conf_cache_mm is ok&quot;
-    else:
-        print &quot;conf_cache_mm is bad&quot;
-        file_replace(file_vd,conf_cache_mm,xml_cache_mm[0])
-    if xml_cache_en[0] == conf_cache_en:
-        print &quot;conf_cache_en is ok&quot;
-    else:
-        print &quot;conf_cache_en is bad&quot;
-        if xml_cache_en == 'true':
-            os.system('/sbin/service varnishd start')
-        if xml_cache_en == 'false':
-            os.system('/sbin/service varnishd stop')
-
-def gen_backend_str():
-    k = &quot;&quot;
-    xml_varnish_origin = parse_xml(filexml,&quot;varnish&quot;,&quot;origin&quot;,&quot;value&quot;)
-    #print xml_varnish_origin[0].split('|')[0],xml_varnish_origin[0].split('|')[1],xml_varnish_origin[0].split('|')[2]
-    ft_bk = &quot;#origin_backend_start#&quot; + &quot;\n&quot; + &quot;backend  &quot; + xml_varnish_origin[0].split('|')[0] + &quot; {\n&quot; + &quot;\t.host = \&quot;&quot; + xml_varnish_origin[0].split('|')[1] + &quot;\&quot;;\n\t.port = \&quot;&quot; + xml_varnish_origin[0].split('|')[2]  + &quot;\&quot;;\n}\n&quot;
-    for i in xml_varnish_origin[1:-1]:
-        #print i.split('|')[0],i.split('|')[1],i.split('|')[2]
-        j = &quot;backend  &quot; + i.split('|')[0] + &quot; {\n&quot; + &quot;\t.host = \&quot;&quot; + i.split('|')[1] + &quot;\&quot;;\n\t.port = \&quot;&quot; + i.split('|')[2]  + &quot;\&quot;;\n}\n&quot;
-        k += j
-    #print xml_varnish_origin[-1].split('|')[0],xml_varnish_origin[-1].split('|')[1],xml_varnish_origin[-1].split('|')[2]
-    lt_bk = &quot;backend  &quot; + xml_varnish_origin[-1].split('|')[0] + &quot; {\n&quot; + &quot;\t.host = \&quot;&quot; + xml_varnish_origin[-1].split('|')[1] + &quot;\&quot;;\n\t.port = \&quot;&quot; + xml_varnish_origin[-1].split('|')[2]  + &quot;\&quot;;\n}\n#origin_backend_end#\n&quot;
-    all_str= ft_bk + k + lt_bk
-    #print all_str
-    return all_str
-
-
-def gen_origin_str():
-    k = &quot;&quot;
-    xml_varnish_origin = parse_xml(filexml,&quot;varnish&quot;,&quot;origin&quot;,&quot;value&quot;)
-
-    ft_o = &quot;#origin_start#&quot; + &quot;\n&quot; + &quot;if (req.http.host ~ \&quot;^&quot; + xml_varnish_origin[0].split('|')[0]  +  &quot;$\&quot;) {\n&quot; + &quot;set req.backend=&quot; + xml_varnish_origin[0].split('|')[0] + &quot; ;\n}&quot;
-    #print ft_o
-    #print xml_varnish_origin[1:]
-    for i in xml_varnish_origin[1:]:
-       #print i
-       j = &quot;  elsif (req.http.host ~ \&quot;^&quot; + i.split('|')[0]  +  &quot;$\&quot;) {\n&quot; + &quot;set req.backend=&quot; + i.split('|')[0] + &quot; ;\n}&quot;
-       k += j
-    lt_o = &quot;  else {\n&quot; + &quot;error 404 \&quot;Unknown virtual host\&quot;;\n&quot; + &quot;}\n#origin_end#\n&quot;
-    #print ft_o + k + lt_o
-    return ft_o + k + lt_o
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">(</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># Exit second parent.</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;fork #2 failed: (</span><span class="si">%d</span><span class="s2">) </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># The process is now daemonized, redirect standard file descriptors.</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span> <span class="p">)</span>
+    <span class="n">si</span> <span class="o">=</span> <span class="n">file</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">so</span> <span class="o">=</span> <span class="n">file</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s1">&#39;a+&#39;</span><span class="p">)</span>
+    <span class="n">se</span> <span class="o">=</span> <span class="n">file</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s1">&#39;a+&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">si</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span> <span class="p">),</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span> <span class="p">))</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">so</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span> <span class="p">),</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span> <span class="p">))</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">se</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span> <span class="p">),</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">fileno</span><span class="p">(</span> <span class="p">))</span>
 
 
 
-def check_varnishd():
-    file_vd_cf = open(file_vd,'r')
-    xml_varnish_status = parse_xml(filexml,&quot;varnish&quot;,&quot;status&quot;)[0]
-    xml_varnish_storage = parse_xml(filexml,&quot;varnish&quot;,&quot;storage&quot;)[0]
-    #xml_varnish_origin = parse_xml(filexml,&quot;varnish&quot;,&quot;origin&quot;,&quot;value&quot;)
-    conf_varnish_status = bu_cv0(str(os.system('ps aux | grep -v grep | grep -q varnishd')))
-    conf_varnish_storage = &quot;VARNISH_STORAGE_SIZE=&quot; + fetch_conf(file_vd_cf,'VARNISH_STORAGE_SIZE')
-    file_vd_cf.close()
+<span class="k">def</span> <span class="nf">parse_xml</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">r_t</span><span class="p">,</span><span class="o">*</span><span class="n">tg</span><span class="p">):</span>
+    <span class="n">f_x</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">f_x</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+    <span class="c1">#print root</span>
+    <span class="c1">#print type(root)</span>
+    <span class="n">NS</span> <span class="o">=</span> <span class="s1">&#39;{http://accelerator.com/config}&#39;</span>
 
-    fl_vf = open(file_vf,'r')
-    fl_vf_all = fl_vf.read()
-    m1 = re.search('#origin_backend_start#(\n.*)*#origin_backend_end#\n',fl_vf_all)
-    if m1 is not None:
-        conf_varnishd_backend = m1.group()
-    fl_vf.close()
+    <span class="n">r_t_element</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span> <span class="n">NS</span>  <span class="o">+</span> <span class="n">r_t</span><span class="p">)</span>
+    <span class="c1">#print r_t_element</span>
+    <span class="c1">#print type(r_t_element)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tg</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1">#if tg[-2] is None:</span>
+           <span class="c1">#print tg[-2]</span>
+        <span class="n">s_t_element</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;//&quot;</span> <span class="o">+</span> <span class="n">NS</span>  <span class="o">+</span> <span class="n">tg</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">tg1_element</span> <span class="o">=</span> <span class="n">s_t_element</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">NS</span> <span class="o">+</span> <span class="n">tg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tg1_element</span><span class="p">:</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">tg1_element</span> <span class="o">=</span> <span class="n">r_t_element</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">NS</span> <span class="o">+</span> <span class="n">tg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tg1_element</span><span class="p">:</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span>
+
+<span class="k">def</span> <span class="nf">file_replace</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">srcStr</span><span class="p">,</span><span class="n">dstStr</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">stra</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">srcStr</span><span class="p">)</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">stra</span><span class="p">,</span><span class="n">dstStr</span><span class="p">,</span><span class="n">sc</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span>
+    <span class="n">fok</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">fok</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
+    <span class="n">fok</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">file_replace_escap</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">srcStr</span><span class="p">,</span><span class="n">dstStr</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">stra0</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;\^&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">^&#39;</span><span class="p">,</span><span class="n">srcStr</span><span class="p">)</span>
+    <span class="n">stra1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;\$&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">$&#39;</span><span class="p">,</span><span class="n">stra0</span><span class="p">)</span>
+    <span class="n">stra2</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;\(&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">(&#39;</span><span class="p">,</span><span class="n">stra1</span><span class="p">)</span>
+    <span class="n">stra3</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;\)&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">)&#39;</span><span class="p">,</span><span class="n">stra2</span><span class="p">)</span>
+    <span class="n">stra</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">stra3</span><span class="p">)</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">stra</span><span class="p">,</span><span class="n">dstStr</span><span class="p">,</span><span class="n">sc</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span>
+    <span class="n">fok</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">fok</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
+    <span class="n">fok</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1">#www.iplaypy.com</span>
+<span class="k">def</span> <span class="nf">fetch_conf</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">conf</span><span class="p">):</span>  <span class="c1">#conf maybe: IPADDR|NETMASK|NETWORK|GATEWAY</span>
+    <span class="c1">#file_nw = file(&#39;/etc/sysconfig/network&#39;,&#39;r&#39;)</span>
+    <span class="c1">#file_nw.seek(0,0)</span>
+    <span class="n">fn</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">conf</span> <span class="o">==</span> <span class="s1">&#39;GATEWAY&#39;</span><span class="p">:</span>
+        <span class="c1">#file_nw = file(&#39;/etc/sysconfig/network&#39;,&#39;r&#39;)</span>
+        <span class="k">for</span> <span class="n">eachLine</span> <span class="ow">in</span> <span class="n">fn</span><span class="p">:</span>
+            <span class="c1">#alist = eachLine.strip().split(&#39;=&#39;)</span>
+            <span class="n">m1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;^#|^$&#39;</span><span class="p">,</span><span class="n">eachLine</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">m1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span><span class="n">eachLine</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">m1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">alist</span> <span class="o">=</span> <span class="n">eachLine</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                    <span class="n">nw</span><span class="p">[</span><span class="n">alist</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">alist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1">#print nw[conf]</span>
+        <span class="k">return</span>  <span class="n">nw</span><span class="p">[</span><span class="n">conf</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1">#file_eth1_pu = file(&#39;/etc/sysconfig/network-scripts/ifcfg-eth0&#39;,&#39;r&#39;)</span>
+        <span class="k">for</span> <span class="n">eachLine</span> <span class="ow">in</span> <span class="n">fn</span><span class="p">:</span>
+            <span class="c1">#alist = eachLine.strip().split(&#39;=&#39;)</span>
+            <span class="n">m1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;^#|^$&#39;</span><span class="p">,</span><span class="n">eachLine</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">m1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span><span class="n">eachLine</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">m1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">alist</span> <span class="o">=</span> <span class="n">eachLine</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                    <span class="n">eth</span><span class="p">[</span><span class="n">alist</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">alist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">eth</span><span class="p">[</span><span class="n">conf</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">check_pn</span><span class="p">():</span>
+    <span class="n">file_eth1_pu</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_eth1</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">xml_ip</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;network&quot;</span><span class="p">,</span><span class="s2">&quot;public_setting&quot;</span><span class="p">,</span><span class="s2">&quot;ip&quot;</span><span class="p">)</span>
+    <span class="n">xml_mk</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;network&quot;</span><span class="p">,</span><span class="s2">&quot;public_setting&quot;</span><span class="p">,</span><span class="s2">&quot;mask&quot;</span><span class="p">)</span>
+    <span class="n">xml_gw</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;network&quot;</span><span class="p">,</span><span class="s2">&quot;public_setting&quot;</span><span class="p">,</span><span class="s2">&quot;gateway&quot;</span><span class="p">)</span>
+    <span class="n">conf_ip</span> <span class="o">=</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_eth1_pu</span><span class="p">,</span><span class="s2">&quot;IPADDR&quot;</span><span class="p">)</span>
+    <span class="n">conf_mk</span> <span class="o">=</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_eth1_pu</span><span class="p">,</span><span class="s2">&quot;NETMASK&quot;</span><span class="p">)</span>
+    <span class="n">conf_gw</span> <span class="o">=</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_eth1_pu</span><span class="p">,</span><span class="s2">&quot;GATEWAY&quot;</span><span class="p">)</span>
+    <span class="n">file_eth1_pu</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;check public ip&#39;&#39;&#39;</span>
+    <span class="k">if</span>  <span class="n">xml_ip</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">conf_ip</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;ip is ok&quot;</span><span class="p">,</span><span class="n">xml_ip</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_ip</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;ip is wrong&quot;</span><span class="p">,</span><span class="n">xml_ip</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_ip</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_eth1</span><span class="p">,</span><span class="n">conf_ip</span><span class="p">,</span><span class="n">xml_ip</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1">#os.system(&#39;&#39;&#39;sudo sed -i &#39;s|wrong|right|g&#39; /etc/sysconfig/network-scripts/ifcfg-eth1&#39;&#39;&#39;)</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;check public netmask&#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">xml_mk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">conf_mk</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;netmask is ok&quot;</span><span class="p">,</span><span class="n">xml_mk</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_mk</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;netmask is wrong&quot;</span><span class="p">,</span><span class="n">xml_mk</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_mk</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_eth1</span><span class="p">,</span><span class="n">conf_mk</span><span class="p">,</span><span class="n">xml_mk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;check public gateway&#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">xml_gw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">conf_gw</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;gateway is ok&quot;</span><span class="p">,</span><span class="n">xml_gw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_gw</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;gateway is wrong&quot;</span><span class="p">,</span><span class="n">xml_gw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_gw</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_eth1</span><span class="p">,</span><span class="n">conf_gw</span><span class="p">,</span><span class="n">xml_gw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">check_in</span><span class="p">():</span>
+    <span class="n">file_eth0_it</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_eth0</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">xml_ip</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;network&quot;</span><span class="p">,</span><span class="s2">&quot;private_setting&quot;</span><span class="p">,</span><span class="s2">&quot;ip&quot;</span><span class="p">)</span>
+    <span class="n">xml_mk</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;network&quot;</span><span class="p">,</span><span class="s2">&quot;private_setting&quot;</span><span class="p">,</span><span class="s2">&quot;mask&quot;</span><span class="p">)</span>
+    <span class="n">xml_gw</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;network&quot;</span><span class="p">,</span><span class="s2">&quot;private_setting&quot;</span><span class="p">,</span><span class="s2">&quot;gateway&quot;</span><span class="p">)</span>
+    <span class="n">conf_ip</span> <span class="o">=</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_eth0_it</span><span class="p">,</span><span class="s2">&quot;IPADDR&quot;</span><span class="p">)</span>
+    <span class="n">conf_mk</span> <span class="o">=</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_eth0_it</span><span class="p">,</span><span class="s2">&quot;NETMASK&quot;</span><span class="p">)</span>
+    <span class="n">conf_gw</span> <span class="o">=</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_eth0_it</span><span class="p">,</span><span class="s2">&quot;GATEWAY&quot;</span><span class="p">)</span>
+    <span class="n">file_eth0_it</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;check internal ip&#39;&#39;&#39;</span>
+    <span class="k">if</span>  <span class="n">xml_ip</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">conf_ip</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;ip is ok&quot;</span><span class="p">,</span><span class="n">xml_ip</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_ip</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;ip is wrong&quot;</span><span class="p">,</span><span class="n">xml_ip</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_ip</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_eth0</span><span class="p">,</span><span class="n">conf_ip</span><span class="p">,</span><span class="n">xml_ip</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;check internal netmask&#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">xml_mk</span> <span class="o">==</span> <span class="n">conf_mk</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;netmask is ok&quot;</span><span class="p">,</span><span class="n">xml_mk</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_mk</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;netmask is wrong&quot;</span><span class="p">,</span><span class="n">xml_mk</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_mk</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_eth0</span><span class="p">,</span><span class="n">conf_mk</span><span class="p">,</span><span class="n">xml_mk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;check internal gateway&#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">xml_gw</span> <span class="o">==</span> <span class="n">conf_gw</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;gateway is ok&quot;</span><span class="p">,</span><span class="n">xml_gw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_gw</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;gateway is wrong&quot;</span><span class="p">,</span><span class="n">xml_gw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">conf_gw</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_eth0</span><span class="p">,</span><span class="n">conf_gw</span><span class="p">,</span><span class="n">xml_gw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">bu_cv</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">str</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
+       <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;true&#39;</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+       <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;false&#39;</span><span class="p">,</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">bu_cv0</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">str</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="s1">&#39;true&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;false&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">check_sysctl_fs</span><span class="p">():</span>
+    <span class="n">file_sysctl_fs</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_sysctl</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">xml_fs_en</span> <span class="o">=</span> <span class="s2">&quot;tcp_fast.enable=&quot;</span> <span class="o">+</span> <span class="n">bu_cv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;fasttcp&quot;</span><span class="p">,</span><span class="s2">&quot;enable&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">xml_fs_p1</span> <span class="o">=</span> <span class="s2">&quot;tcp_fast.noaccel_lport=&quot;</span> <span class="o">+</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;fasttcp&quot;</span><span class="p">,</span><span class="s2">&quot;block_port&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">xml_fs_p2</span> <span class="o">=</span> <span class="s2">&quot;tcp_fast.noaccel_lport2=&quot;</span> <span class="o">+</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;fasttcp&quot;</span><span class="p">,</span><span class="s2">&quot;block_port&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">conf_fs_en</span> <span class="o">=</span> <span class="s2">&quot;tcp_fast.enable=&quot;</span> <span class="o">+</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_sysctl_fs</span><span class="p">,</span><span class="s1">&#39;tcp_fast.enable&#39;</span><span class="p">)</span>
+    <span class="n">conf_fs_p1</span> <span class="o">=</span> <span class="s2">&quot;tcp_fast.noaccel_lport=&quot;</span> <span class="o">+</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_sysctl_fs</span><span class="p">,</span><span class="s1">&#39;tcp_fast.noaccel_lport&#39;</span><span class="p">)</span>
+    <span class="n">conf_fs_p2</span> <span class="o">=</span> <span class="s2">&quot;tcp_fast.noaccel_lport2=&quot;</span> <span class="o">+</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_sysctl_fs</span><span class="p">,</span><span class="s1">&#39;tcp_fast.noaccel_lport2&#39;</span><span class="p">)</span>
+    <span class="n">file_sysctl_fs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">xml_fs_en</span> <span class="o">==</span> <span class="n">conf_fs_en</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;fastsoft enable toggle is ok&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;fastsoft enable toggle is bad&quot;</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_sysctl</span><span class="p">,</span><span class="n">conf_fs_en</span><span class="p">,</span><span class="n">xml_fs_en</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">xml_fs_p1</span> <span class="o">==</span> <span class="n">conf_fs_p1</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;fastsoft p1 is ok&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;fastsoft p2 is bad&quot;</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_sysctl</span><span class="p">,</span><span class="n">conf_fs_p1</span><span class="p">,</span><span class="n">xml_fs_p1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">xml_fs_p2</span> <span class="o">==</span> <span class="n">conf_fs_p2</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;fastsoft p2 is ok&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;fastsoft p2 is bad&quot;</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_sysctl</span><span class="p">,</span><span class="n">conf_fs_p2</span><span class="p">,</span><span class="n">xml_fs_p2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">check_cache</span><span class="p">():</span>
+    <span class="n">file_vd_cf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_vd</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">xml_cache_mm</span> <span class="o">=</span> <span class="s2">&quot;VARNISH_STORAGE_SIZE=&quot;</span> <span class="o">+</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;cache&quot;</span><span class="p">,</span><span class="s2">&quot;max_memeory&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;M&quot;</span>
+    <span class="n">xml_cache_en</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;cache&quot;</span><span class="p">,</span><span class="s2">&quot;enable&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">conf_cache_mm</span> <span class="o">=</span> <span class="s2">&quot;VARNISH_STORAGE_SIZE=&quot;</span> <span class="o">+</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_vd_cf</span><span class="p">,</span><span class="s1">&#39;VARNISH_STORAGE_SIZE&#39;</span><span class="p">)</span>
+    <span class="n">conf_cache_en</span> <span class="o">=</span> <span class="n">bu_cv0</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;ps aux | grep -v grep | grep -q varnishd&#39;</span><span class="p">)))</span>
+    <span class="n">file_vd_cf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">xml_cache_mm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">conf_cache_mm</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;conf_cache_mm is ok&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;conf_cache_mm is bad&quot;</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="n">file_vd</span><span class="p">,</span><span class="n">conf_cache_mm</span><span class="p">,</span><span class="n">xml_cache_mm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">xml_cache_en</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">conf_cache_en</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;conf_cache_en is ok&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;conf_cache_en is bad&quot;</span>
+        <span class="k">if</span> <span class="n">xml_cache_en</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;/sbin/service varnishd start&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xml_cache_en</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;/sbin/service varnishd stop&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">gen_backend_str</span><span class="p">():</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">xml_varnish_origin</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;varnish&quot;</span><span class="p">,</span><span class="s2">&quot;origin&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+    <span class="c1">#print xml_varnish_origin[0].split(&#39;|&#39;)[0],xml_varnish_origin[0].split(&#39;|&#39;)[1],xml_varnish_origin[0].split(&#39;|&#39;)[2]</span>
+    <span class="n">ft_bk</span> <span class="o">=</span> <span class="s2">&quot;#origin_backend_start#&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;backend  &quot;</span> <span class="o">+</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; {</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">.host = </span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">;</span><span class="se">\n\t</span><span class="s2">.port = </span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>  <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">;</span><span class="se">\n</span><span class="s2">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="c1">#print i.split(&#39;|&#39;)[0],i.split(&#39;|&#39;)[1],i.split(&#39;|&#39;)[2]</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="s2">&quot;backend  &quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; {</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">.host = </span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">;</span><span class="se">\n\t</span><span class="s2">.port = </span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>  <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">;</span><span class="se">\n</span><span class="s2">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">k</span> <span class="o">+=</span> <span class="n">j</span>
+    <span class="c1">#print xml_varnish_origin[-1].split(&#39;|&#39;)[0],xml_varnish_origin[-1].split(&#39;|&#39;)[1],xml_varnish_origin[-1].split(&#39;|&#39;)[2]</span>
+    <span class="n">lt_bk</span> <span class="o">=</span> <span class="s2">&quot;backend  &quot;</span> <span class="o">+</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; {</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">.host = </span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">;</span><span class="se">\n\t</span><span class="s2">.port = </span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>  <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">;</span><span class="se">\n</span><span class="s2">}</span><span class="se">\n</span><span class="s2">#origin_backend_end#</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">all_str</span><span class="o">=</span> <span class="n">ft_bk</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="n">lt_bk</span>
+    <span class="c1">#print all_str</span>
+    <span class="k">return</span> <span class="n">all_str</span>
 
 
-    fl_vf2 = open(file_vf,'r')
-    fl_vf_all2 = fl_vf2.read()
-    m2 = re.search('#origin_start#(\n.*)*#origin_end#\n',fl_vf_all2)
-    if m2 is not None:
-        conf_varnishd_origin = m2.group()
-    fl_vf2.close()
+<span class="k">def</span> <span class="nf">gen_origin_str</span><span class="p">():</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">xml_varnish_origin</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;varnish&quot;</span><span class="p">,</span><span class="s2">&quot;origin&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+
+    <span class="n">ft_o</span> <span class="o">=</span> <span class="s2">&quot;#origin_start#&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;if (req.http.host ~ </span><span class="se">\&quot;</span><span class="s2">^&quot;</span> <span class="o">+</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">+</span>  <span class="s2">&quot;$</span><span class="se">\&quot;</span><span class="s2">) {</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;set req.backend=&quot;</span> <span class="o">+</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; ;</span><span class="se">\n</span><span class="s2">}&quot;</span>
+    <span class="c1">#print ft_o</span>
+    <span class="c1">#print xml_varnish_origin[1:]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xml_varnish_origin</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+       <span class="c1">#print i</span>
+       <span class="n">j</span> <span class="o">=</span> <span class="s2">&quot;  elsif (req.http.host ~ </span><span class="se">\&quot;</span><span class="s2">^&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">+</span>  <span class="s2">&quot;$</span><span class="se">\&quot;</span><span class="s2">) {</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;set req.backend=&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; ;</span><span class="se">\n</span><span class="s2">}&quot;</span>
+       <span class="n">k</span> <span class="o">+=</span> <span class="n">j</span>
+    <span class="n">lt_o</span> <span class="o">=</span> <span class="s2">&quot;  else {</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;error 404 </span><span class="se">\&quot;</span><span class="s2">Unknown virtual host</span><span class="se">\&quot;</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">#origin_end#</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="c1">#print ft_o + k + lt_o</span>
+    <span class="k">return</span> <span class="n">ft_o</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="n">lt_o</span>
 
 
-    xml_varnishd_backend = gen_backend_str()
-    xml_varnishd_origin = gen_origin_str()
 
-    if xml_varnishd_backend != conf_varnishd_backend:
-        print &quot;conf_varnishd_backend is wrong, Begin replace the wrong conf...&quot;
-        print xml_varnishd_backend
-        print conf_varnishd_backend
-        file_replace('/usr/local/varnish_214/etc/varnish_01.conf',conf_varnishd_backend,xml_varnishd_backend)
-        #os.system('service varnishd restart')
-    else:
-        print xml_varnishd_backend
-        print conf_varnishd_backend
-        print &quot;conf_varnishd_backend is ok&quot;
-    if xml_varnishd_origin != conf_varnishd_origin:
-        print xml_varnishd_origin
-        print '------------------'
-        print conf_varnishd_origin
-        print &quot;conf_varnishd_origin is wrong, Begin replace the wrong conf...&quot;
-        file_replace_escap('/usr/local/varnish_214/etc/varnish_01.conf',conf_varnishd_origin,xml_varnishd_origin)
-        #os.system('service varnishd restart')
-    else:
-        print xml_varnishd_origin
-        print '------------------'
-        print conf_varnishd_origin
-        print &quot;conf_varnishd_origin is ok&quot;
+<span class="k">def</span> <span class="nf">check_varnishd</span><span class="p">():</span>
+    <span class="n">file_vd_cf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_vd</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">xml_varnish_status</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;varnish&quot;</span><span class="p">,</span><span class="s2">&quot;status&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">xml_varnish_storage</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">filexml</span><span class="p">,</span><span class="s2">&quot;varnish&quot;</span><span class="p">,</span><span class="s2">&quot;storage&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1">#xml_varnish_origin = parse_xml(filexml,&quot;varnish&quot;,&quot;origin&quot;,&quot;value&quot;)</span>
+    <span class="n">conf_varnish_status</span> <span class="o">=</span> <span class="n">bu_cv0</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;ps aux | grep -v grep | grep -q varnishd&#39;</span><span class="p">)))</span>
+    <span class="n">conf_varnish_storage</span> <span class="o">=</span> <span class="s2">&quot;VARNISH_STORAGE_SIZE=&quot;</span> <span class="o">+</span> <span class="n">fetch_conf</span><span class="p">(</span><span class="n">file_vd_cf</span><span class="p">,</span><span class="s1">&#39;VARNISH_STORAGE_SIZE&#39;</span><span class="p">)</span>
+    <span class="n">file_vd_cf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">fl_vf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_vf</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">fl_vf_all</span> <span class="o">=</span> <span class="n">fl_vf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;#origin_backend_start#(</span><span class="se">\n</span><span class="s1">.*)*#origin_backend_end#</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">fl_vf_all</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">conf_varnishd_backend</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+    <span class="n">fl_vf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-def main():
-    while True:
-        time.sleep(3)
-        daemonize()
-        check_pn()
-        check_in()
-        check_sysctl_fs()
+    <span class="n">fl_vf2</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_vf</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">fl_vf_all2</span> <span class="o">=</span> <span class="n">fl_vf2</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;#origin_start#(</span><span class="se">\n</span><span class="s1">.*)*#origin_end#</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">fl_vf_all2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">conf_varnishd_origin</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+    <span class="n">fl_vf2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-2000
-   check_cache()
-        check_varnishd()
-        gen_backend_str()
-        gen_origin_str()
-        check_varnishd()
 
-if __name__ == '__main__':
-   main()
-</code></pre>
+    <span class="n">xml_varnishd_backend</span> <span class="o">=</span> <span class="n">gen_backend_str</span><span class="p">()</span>
+    <span class="n">xml_varnishd_origin</span> <span class="o">=</span> <span class="n">gen_origin_str</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">xml_varnishd_backend</span> <span class="o">!=</span> <span class="n">conf_varnishd_backend</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;conf_varnishd_backend is wrong, Begin replace the wrong conf...&quot;</span>
+        <span class="nb">print</span> <span class="n">xml_varnishd_backend</span>
+        <span class="nb">print</span> <span class="n">conf_varnishd_backend</span>
+        <span class="n">file_replace</span><span class="p">(</span><span class="s1">&#39;/usr/local/varnish_214/etc/varnish_01.conf&#39;</span><span class="p">,</span><span class="n">conf_varnishd_backend</span><span class="p">,</span><span class="n">xml_varnishd_backend</span><span class="p">)</span>
+        <span class="c1">#os.system(&#39;service varnishd restart&#39;)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="n">xml_varnishd_backend</span>
+        <span class="nb">print</span> <span class="n">conf_varnishd_backend</span>
+        <span class="nb">print</span> <span class="s2">&quot;conf_varnishd_backend is ok&quot;</span>
+    <span class="k">if</span> <span class="n">xml_varnishd_origin</span> <span class="o">!=</span> <span class="n">conf_varnishd_origin</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="n">xml_varnishd_origin</span>
+        <span class="nb">print</span> <span class="s1">&#39;------------------&#39;</span>
+        <span class="nb">print</span> <span class="n">conf_varnishd_origin</span>
+        <span class="nb">print</span> <span class="s2">&quot;conf_varnishd_origin is wrong, Begin replace the wrong conf...&quot;</span>
+        <span class="n">file_replace_escap</span><span class="p">(</span><span class="s1">&#39;/usr/local/varnish_214/etc/varnish_01.conf&#39;</span><span class="p">,</span><span class="n">conf_varnishd_origin</span><span class="p">,</span><span class="n">xml_varnishd_origin</span><span class="p">)</span>
+        <span class="c1">#os.system(&#39;service varnishd restart&#39;)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="n">xml_varnishd_origin</span>
+        <span class="nb">print</span> <span class="s1">&#39;------------------&#39;</span>
+        <span class="nb">print</span> <span class="n">conf_varnishd_origin</span>
+        <span class="nb">print</span> <span class="s2">&quot;conf_varnishd_origin is ok&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">daemonize</span><span class="p">()</span>
+        <span class="n">check_pn</span><span class="p">()</span>
+        <span class="n">check_in</span><span class="p">()</span>
+        <span class="n">check_sysctl_fs</span><span class="p">()</span>
+
+<span class="mi">2000</span>
+   <span class="n">check_cache</span><span class="p">()</span>
+        <span class="n">check_varnishd</span><span class="p">()</span>
+        <span class="n">gen_backend_str</span><span class="p">()</span>
+        <span class="n">gen_origin_str</span><span class="p">()</span>
+        <span class="n">check_varnishd</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+   <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
 
 <ul>
 <li>以上操作经过验证可以直接拿去。</li>
@@ -488,7 +488,7 @@ if __name__ == '__main__':
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

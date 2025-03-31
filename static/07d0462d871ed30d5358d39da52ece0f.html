@@ -123,175 +123,175 @@
 <p>CPS</p>
 </li>
 </ul>
-<pre class="codehilite"><code class="language-scheme">;; A simple CPS transformer which does proper tail-call and does not
-;; duplicate contexts for if-expressions.
+<div class="codehilite"><pre><span></span><code><span class="c1">;; A simple CPS transformer which does proper tail-call and does not</span>
+<span class="c1">;; duplicate contexts for if-expressions.</span>
 
-;; author: Yin Wang (yw21@cs.indiana.edu)
-
-
-(load &quot;pmatch.scm&quot;)
+<span class="c1">;; author: Yin Wang (yw21@cs.indiana.edu)</span>
 
 
-(define cps
-(lambda (exp)
-(letrec
-([trivial? (lambda (x) (memq x '(zero? add1 sub1)))]
-[id (lambda (v) v)]
-[ctx0 (lambda (v) `(k ,v))] ; tail context
-[fv (let ([n -1])
-(lambda ()
-(set! n (+ 1 n))
-(string-&gt;symbol (string-append &quot;v&quot; (number-&gt;string n)))))]
-[cps1
-(lambda (exp ctx)
-(pmatch exp
-[,x (guard (not (pair? x))) (ctx x)]
-[(if ,test ,conseq ,alt)
-(cps1 test
-(lambda (t)
-(cond
-[(memq ctx (list ctx0 id))
-`(if ,t ,(cps1 conseq ctx) ,(cps1 alt ctx))]
-[else
-(let ([u (fv)])
-`(let ([k (lambda (,u) ,(ctx u))])
-(if ,t ,(cps1 conseq ctx0) ,(cps1 alt ctx0))))])))]
-[(lambda (,x) ,body)
-(ctx `(lambda (,x k) ,(cps1 body ctx0)))]
-[(,op ,a ,b)
-(cps1 a (lambda (v1)
-(cps1 b (lambda (v2)
-(ctx `(,op ,v1 ,v2))))))]
-[(,rator ,rand)
-(cps1 rator
-(lambda (r)
-(cps1 rand
-(lambda (d)
-(cond
-[(trivial? r) (ctx `(,r ,d))]
-[(eq? ctx ctx0) `(,r ,d k)] ; tail call
-[else
-(let ([u (fv)])
-`(,r ,d (lambda (,u) ,(ctx u))))])))))]))])
-(cps1 exp id))))%
-</code></pre>
+<span class="p">(</span><span class="k">load</span><span class="w"> </span><span class="s">&quot;pmatch.scm&quot;</span><span class="p">)</span>
+
+
+<span class="p">(</span><span class="k">define</span><span class="w"> </span><span class="nv">cps</span>
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nb">exp</span><span class="p">)</span>
+<span class="p">(</span><span class="k">letrec</span>
+<span class="p">([</span><span class="nv">trivial?</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">memq</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">zero?</span><span class="w"> </span><span class="nv">add1</span><span class="w"> </span><span class="nv">sub1</span><span class="p">)))]</span>
+<span class="p">[</span><span class="nv">id</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">v</span><span class="p">)</span><span class="w"> </span><span class="nv">v</span><span class="p">)]</span>
+<span class="p">[</span><span class="nv">ctx0</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">v</span><span class="p">)</span><span class="w"> </span><span class="o">`</span><span class="p">(</span><span class="nf">k</span><span class="w"> </span><span class="o">,</span><span class="nv">v</span><span class="p">))]</span><span class="w"> </span><span class="c1">; tail context</span>
+<span class="p">[</span><span class="nv">fv</span><span class="w"> </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">([</span><span class="nv">n</span><span class="w"> </span><span class="mi">-1</span><span class="p">])</span>
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="p">(</span><span class="k">set!</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">n</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">string-&gt;symbol</span><span class="w"> </span><span class="p">(</span><span class="nb">string-append</span><span class="w"> </span><span class="s">&quot;v&quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">number-&gt;string</span><span class="w"> </span><span class="nv">n</span><span class="p">)))))]</span>
+<span class="p">[</span><span class="nv">cps1</span>
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nb">exp</span><span class="w"> </span><span class="nv">ctx</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">pmatch</span><span class="w"> </span><span class="nb">exp</span>
+<span class="p">[</span><span class="o">,</span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nf">guard</span><span class="w"> </span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="p">(</span><span class="nb">pair?</span><span class="w"> </span><span class="nv">x</span><span class="p">)))</span><span class="w"> </span><span class="p">(</span><span class="nf">ctx</span><span class="w"> </span><span class="nv">x</span><span class="p">)]</span>
+<span class="p">[(</span><span class="k">if</span><span class="w"> </span><span class="o">,</span><span class="nv">test</span><span class="w"> </span><span class="o">,</span><span class="nv">conseq</span><span class="w"> </span><span class="o">,</span><span class="nv">alt</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">test</span>
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">t</span><span class="p">)</span>
+<span class="p">(</span><span class="k">cond</span>
+<span class="p">[(</span><span class="nb">memq</span><span class="w"> </span><span class="nv">ctx</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="nv">ctx0</span><span class="w"> </span><span class="nv">id</span><span class="p">))</span>
+<span class="o">`</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="o">,</span><span class="nv">t</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">conseq</span><span class="w"> </span><span class="nv">ctx</span><span class="p">)</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">alt</span><span class="w"> </span><span class="nv">ctx</span><span class="p">))]</span>
+<span class="p">[</span><span class="k">else</span>
+<span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">([</span><span class="nv">u</span><span class="w"> </span><span class="p">(</span><span class="nf">fv</span><span class="p">)])</span>
+<span class="o">`</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">([</span><span class="nv">k</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="o">,</span><span class="nv">u</span><span class="p">)</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">ctx</span><span class="w"> </span><span class="nv">u</span><span class="p">))])</span>
+<span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="o">,</span><span class="nv">t</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">conseq</span><span class="w"> </span><span class="nv">ctx0</span><span class="p">)</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">alt</span><span class="w"> </span><span class="nv">ctx0</span><span class="p">))))])))]</span>
+<span class="p">[(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="o">,</span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="o">,</span><span class="nv">body</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">ctx</span><span class="w"> </span><span class="o">`</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="o">,</span><span class="nv">x</span><span class="w"> </span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">body</span><span class="w"> </span><span class="nv">ctx0</span><span class="p">)))]</span>
+<span class="p">[(</span><span class="o">,</span><span class="nv">op</span><span class="w"> </span><span class="o">,</span><span class="nv">a</span><span class="w"> </span><span class="o">,</span><span class="nv">b</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">v1</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">v2</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">ctx</span><span class="w"> </span><span class="o">`</span><span class="p">(</span><span class="o">,</span><span class="nv">op</span><span class="w"> </span><span class="o">,</span><span class="nv">v1</span><span class="w"> </span><span class="o">,</span><span class="nv">v2</span><span class="p">))))))]</span>
+<span class="p">[(</span><span class="o">,</span><span class="nv">rator</span><span class="w"> </span><span class="o">,</span><span class="nv">rand</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">rator</span>
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">r</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nv">rand</span>
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">d</span><span class="p">)</span>
+<span class="p">(</span><span class="k">cond</span>
+<span class="p">[(</span><span class="nf">trivial?</span><span class="w"> </span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">ctx</span><span class="w"> </span><span class="o">`</span><span class="p">(</span><span class="o">,</span><span class="nv">r</span><span class="w"> </span><span class="o">,</span><span class="nv">d</span><span class="p">))]</span>
+<span class="p">[(</span><span class="nb">eq?</span><span class="w"> </span><span class="nv">ctx</span><span class="w"> </span><span class="nv">ctx0</span><span class="p">)</span><span class="w"> </span><span class="o">`</span><span class="p">(</span><span class="o">,</span><span class="nv">r</span><span class="w"> </span><span class="o">,</span><span class="nv">d</span><span class="w"> </span><span class="nv">k</span><span class="p">)]</span><span class="w"> </span><span class="c1">; tail call</span>
+<span class="p">[</span><span class="k">else</span>
+<span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">([</span><span class="nv">u</span><span class="w"> </span><span class="p">(</span><span class="nf">fv</span><span class="p">)])</span>
+<span class="o">`</span><span class="p">(</span><span class="o">,</span><span class="nv">r</span><span class="w"> </span><span class="o">,</span><span class="nv">d</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="o">,</span><span class="nv">u</span><span class="p">)</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">ctx</span><span class="w"> </span><span class="nv">u</span><span class="p">))))])))))]))])</span>
+<span class="p">(</span><span class="nf">cps1</span><span class="w"> </span><span class="nb">exp</span><span class="w"> </span><span class="nv">id</span><span class="p">))))</span><span class="nv">%</span>
+</code></pre></div>
 
 <ul>
 <li>pmatch</li>
 </ul>
-<pre class="codehilite"><code class="language-scheme">(define-syntax pmatch
-  (syntax-rules (else guard)
-    ((_ (rator rand ...) cs ...)
-     (let ((v (rator rand ...)))
-       (pmatch v cs ...)))
-    ((_ v) (error 'pmatch &quot;failed: ~s&quot; v))
-    ((_ v (else e0 e ...)) (begin e0 e ...))
-    ((_ v (pat (guard g ...) e0 e ...) cs ...)
-     (let ((fk (lambda () (pmatch v cs ...))))
-       (ppat v pat (if (and g ...) (begin e0 e ...) (fk)) (fk))))
-    ((_ v (pat e0 e ...) cs ...)
-     (let ((fk (lambda () (pmatch v cs ...))))
-       (ppat v pat (begin e0 e ...) (fk))))))
+<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="k">define-syntax</span><span class="w"> </span><span class="nv">pmatch</span>
+<span class="w">  </span><span class="p">(</span><span class="k">syntax-rules</span><span class="w"> </span><span class="p">(</span><span class="k">else</span><span class="w"> </span><span class="nv">guard</span><span class="p">)</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="p">(</span><span class="nf">rator</span><span class="w"> </span><span class="nv">rand</span><span class="w"> </span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="nv">cs</span><span class="w"> </span><span class="o">...</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">v</span><span class="w"> </span><span class="p">(</span><span class="nf">rator</span><span class="w"> </span><span class="nv">rand</span><span class="w"> </span><span class="o">...</span><span class="p">)))</span>
+<span class="w">       </span><span class="p">(</span><span class="nf">pmatch</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">cs</span><span class="w"> </span><span class="o">...</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">error</span><span class="w"> </span><span class="ss">&#39;pmatch</span><span class="w"> </span><span class="s">&quot;failed: ~s&quot;</span><span class="w"> </span><span class="nv">v</span><span class="p">))</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="k">else</span><span class="w"> </span><span class="nv">e0</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="o">...</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="k">begin</span><span class="w"> </span><span class="nv">e0</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="o">...</span><span class="p">))</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nf">pat</span><span class="w"> </span><span class="p">(</span><span class="nf">guard</span><span class="w"> </span><span class="nv">g</span><span class="w"> </span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="nv">e0</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="nv">cs</span><span class="w"> </span><span class="o">...</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">fk</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="nf">pmatch</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">cs</span><span class="w"> </span><span class="o">...</span><span class="p">))))</span>
+<span class="w">       </span><span class="p">(</span><span class="nf">ppat</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">pat</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="nv">g</span><span class="w"> </span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">begin</span><span class="w"> </span><span class="nv">e0</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">fk</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">fk</span><span class="p">))))</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nf">pat</span><span class="w"> </span><span class="nv">e0</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="nv">cs</span><span class="w"> </span><span class="o">...</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">fk</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="nf">pmatch</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">cs</span><span class="w"> </span><span class="o">...</span><span class="p">))))</span>
+<span class="w">       </span><span class="p">(</span><span class="nf">ppat</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">pat</span><span class="w"> </span><span class="p">(</span><span class="k">begin</span><span class="w"> </span><span class="nv">e0</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">fk</span><span class="p">))))))</span>
 
-(define-syntax ppat
-  (syntax-rules (_ quote unquote)
-    ((_ v _ kt kf) kt)
-    ((_ v () kt kf) (if (null? v) kt kf))
-    ((_ v (quote lit) kt kf) (if (equal? v (quote lit)) kt kf))
-    ((_ v (unquote var) kt kf) (let ((var v)) kt))
-    ((_ v (x . y) kt kf)
-     (if (pair? v)
-       (let ((vx (car v)) (vy (cdr v)))
-     (ppat vx x (ppat vy y kt kf) kf))
-       kf))
-    ((_ v lit kt kf) (if (equal? v (quote lit)) kt kf))))
-</code></pre>
+<span class="p">(</span><span class="k">define-syntax</span><span class="w"> </span><span class="nv">ppat</span>
+<span class="w">  </span><span class="p">(</span><span class="k">syntax-rules</span><span class="w"> </span><span class="p">(</span><span class="k">_</span><span class="w"> </span><span class="k">quote</span><span class="w"> </span><span class="k">unquote</span><span class="p">)</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="k">_</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">)</span><span class="w"> </span><span class="nv">kt</span><span class="p">)</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">null?</span><span class="w"> </span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">))</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="k">quote</span><span class="w"> </span><span class="nv">lit</span><span class="p">)</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">equal?</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="k">quote</span><span class="w"> </span><span class="nv">lit</span><span class="p">))</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">))</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="k">unquote</span><span class="w"> </span><span class="nv">var</span><span class="p">)</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">var</span><span class="w"> </span><span class="nv">v</span><span class="p">))</span><span class="w"> </span><span class="nv">kt</span><span class="p">))</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">pair?</span><span class="w"> </span><span class="nv">v</span><span class="p">)</span>
+<span class="w">       </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">vx</span><span class="w"> </span><span class="p">(</span><span class="nb">car</span><span class="w"> </span><span class="nv">v</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">vy</span><span class="w"> </span><span class="p">(</span><span class="nb">cdr</span><span class="w"> </span><span class="nv">v</span><span class="p">)))</span>
+<span class="w">     </span><span class="p">(</span><span class="nf">ppat</span><span class="w"> </span><span class="nv">vx</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nf">ppat</span><span class="w"> </span><span class="nv">vy</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">)</span><span class="w"> </span><span class="nv">kf</span><span class="p">))</span>
+<span class="w">       </span><span class="nv">kf</span><span class="p">))</span>
+<span class="w">    </span><span class="p">((</span><span class="k">_</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">lit</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">equal?</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="k">quote</span><span class="w"> </span><span class="nv">lit</span><span class="p">))</span><span class="w"> </span><span class="nv">kt</span><span class="w"> </span><span class="nv">kf</span><span class="p">))))</span>
+</code></pre></div>
 
 <h2 id="test">test</h2>
-<pre class="codehilite"><code class="language-scheme">;;; tests
+<div class="codehilite"><pre><span></span><code><span class="c1">;;; tests</span>
 
-;; var
-(cps 'x)
-(cps '(lambda (x) x))
-(cps '(lambda (x) (x 1)))
-
-
-;; no lambda (will generate identity functions to return to the toplevel)
-(cps '(if (f x) a b))
-(cps '(if x (f a) b))
+<span class="c1">;; var</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="ss">&#39;x</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span>
 
 
-;; if stand-alone (tail)
-(cps '(lambda (x) (if (f x) a b)))
+<span class="c1">;; no lambda (will generate identity functions to return to the toplevel)</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span><span class="w"> </span><span class="nv">b</span><span class="p">))</span>
 
 
-;; if inside if-test (non-tail)
-(cps '(lambda (x) (if (if x (f a) b) c d)))
+<span class="c1">;; if stand-alone (tail)</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">)))</span>
 
 
-;; both branches are trivial, should do some more optimizations
-(cps '(lambda (x) (if (if x (zero? a) b) c d)))
+<span class="c1">;; if inside if-test (non-tail)</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span><span class="w"> </span><span class="nv">b</span><span class="p">)</span><span class="w"> </span><span class="nv">c</span><span class="w"> </span><span class="nv">d</span><span class="p">)))</span>
 
 
-;; if inside if-branch (tail)
-(cps '(lambda (x) (if t (if x (f a) b) c)))
+<span class="c1">;; both branches are trivial, should do some more optimizations</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nb">zero?</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span><span class="w"> </span><span class="nv">b</span><span class="p">)</span><span class="w"> </span><span class="nv">c</span><span class="w"> </span><span class="nv">d</span><span class="p">)))</span>
 
 
-;; if inside if-branch, but again inside another if-test (non-tail)
-(cps '(lambda (x) (if (if t (if x (f a) b) c) e w)))
+<span class="c1">;; if inside if-branch (tail)</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span><span class="w"> </span><span class="nv">b</span><span class="p">)</span><span class="w"> </span><span class="nv">c</span><span class="p">)))</span>
 
 
-;; if as operand (non-tail)
-(cps '(lambda (x) (h (if x (f a) b))))
+<span class="c1">;; if inside if-branch, but again inside another if-test (non-tail)</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span><span class="w"> </span><span class="nv">b</span><span class="p">)</span><span class="w"> </span><span class="nv">c</span><span class="p">)</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="nv">w</span><span class="p">)))</span>
 
 
-;; if as operator (non-tail)
-(cps '(lambda (x) ((if x (f g) h) c)))
+<span class="c1">;; if as operand (non-tail)</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">h</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span><span class="w"> </span><span class="nv">b</span><span class="p">))))</span>
 
 
-;; why we need more than two names
-(cps '(((f a) (g b)) ((f c) (g d))))
+<span class="c1">;; if as operator (non-tail)</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="k">if</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="nv">g</span><span class="p">)</span><span class="w"> </span><span class="nv">h</span><span class="p">)</span><span class="w"> </span><span class="nv">c</span><span class="p">)))</span>
+
+
+<span class="c1">;; why we need more than two names</span>
+<span class="p">(</span><span class="nf">cps</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(((</span><span class="nf">f</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">g</span><span class="w"> </span><span class="nv">b</span><span class="p">))</span><span class="w"> </span><span class="p">((</span><span class="nf">f</span><span class="w"> </span><span class="nv">c</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">g</span><span class="w"> </span><span class="nv">d</span><span class="p">))))</span>
 
 
 
-;; factorial
-(define fact-cps
-(cps
-'(lambda (n)
-((lambda (fact)
-((fact fact) n))
-(lambda (fact)
-(lambda (n)
-(if (zero? n)
-1
-(* n ((fact fact) (sub1 n))))))))))
+<span class="c1">;; factorial</span>
+<span class="p">(</span><span class="k">define</span><span class="w"> </span><span class="nv">fact-cps</span>
+<span class="p">(</span><span class="nf">cps</span>
+<span class="o">&#39;</span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">n</span><span class="p">)</span>
+<span class="p">((</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">fact</span><span class="p">)</span>
+<span class="p">((</span><span class="nf">fact</span><span class="w"> </span><span class="nv">fact</span><span class="p">)</span><span class="w"> </span><span class="nv">n</span><span class="p">))</span>
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">fact</span><span class="p">)</span>
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">n</span><span class="p">)</span>
+<span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">zero?</span><span class="w"> </span><span class="nv">n</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="p">((</span><span class="nf">fact</span><span class="w"> </span><span class="nv">fact</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">sub1</span><span class="w"> </span><span class="nv">n</span><span class="p">))))))))))</span>
 
-;; print out CPSed function
-(pretty-print fact-cps)
-;; =&gt;
-;; '(lambda (n k)
-;; ((lambda (fact k) (fact fact (lambda (v0) (v0 n k))))
-;; (lambda (fact k)
-;; (k
-;; (lambda (n k)
-;; (if (zero? n)
-;; (k 1)
-;; (fact
-;; fact
-;; (lambda (v1) (v1 (sub1 n) (lambda (v2) (k (* n v2))))))))))
-;; k))
+<span class="c1">;; print out CPSed function</span>
+<span class="p">(</span><span class="nf">pretty-print</span><span class="w"> </span><span class="nv">fact-cps</span><span class="p">)</span>
+<span class="c1">;; =&gt;</span>
+<span class="c1">;; &#39;(lambda (n k)</span>
+<span class="c1">;; ((lambda (fact k) (fact fact (lambda (v0) (v0 n k))))</span>
+<span class="c1">;; (lambda (fact k)</span>
+<span class="c1">;; (k</span>
+<span class="c1">;; (lambda (n k)</span>
+<span class="c1">;; (if (zero? n)</span>
+<span class="c1">;; (k 1)</span>
+<span class="c1">;; (fact</span>
+<span class="c1">;; fact</span>
+<span class="c1">;; (lambda (v1) (v1 (sub1 n) (lambda (v2) (k (* n v2))))))))))</span>
+<span class="c1">;; k))</span>
 
 
-((eval fact-cps) 5 (lambda (v) v))
-;; =&gt; 120
-</code></pre>
+<span class="p">((</span><span class="nb">eval</span><span class="w"> </span><span class="nv">fact-cps</span><span class="p">)</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">v</span><span class="p">)</span><span class="w"> </span><span class="nv">v</span><span class="p">))</span>
+<span class="c1">;; =&gt; 120</span>
+</code></pre></div>
 
 <h2 id="_1">大佬的代码解析</h2>
 <p><img alt="" src="/static/blog/tmp/cps.jpg" /></p>
 <p><img alt="" src="/static/blog/tmp/cps-1.png" /></p>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

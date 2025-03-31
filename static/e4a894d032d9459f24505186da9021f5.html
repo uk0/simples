@@ -110,504 +110,504 @@
     <div class="content">
         <p>发这个贴的原因，是因为 是因为 是因为啥来着，忘了 那就是因为你，因为你 。</p>
 <h2 id="_1">代码</h2>
-<pre class="codehilite"><code class="language-javascript">/**
- * @author 第一作者：张建新
- * Ajax封装类,所有的Ajax都需要通过此方法进行发送 以便进行相应的Ajax方式管理
- * 注意 $.support.cors = true; 用来解决Ajax跨域问题，此方法需要和后台数据接口相配合
- * successFun,errorFun,beforeSendFun,completeFun
- * 示例写法
- * var successFun = function functionName(data)
- * {
- *      对Ajax解析过来的数据进行渲染
- * }
- * 将successFun作为参数传入方法中
- * @param {Object} actionUrl 数据请求地址
- * @param {Object} parems Ajax参数列表
- * @param {Object} sendMethod 发送方式
- * @param {Object} successFun 请求成功后回调函数
- * @param {Object} errorFun 请求错误时回调函数
- * @param {Object} beforeSendFun 在发送请求之前回调函数
- * @param {Object} completeFun 请求完成后回调函数 (请求成功或失败之后均调用)
- */
-function ajaxLoad(actionUrl,parems,sendMethod,successFun,errorFun,beforeSendFun,completeFun){
-    /**解决ajax跨域问题*/
-    $.support.cors = true;
-    $.ajax( {
-        url :actionUrl, /**请求的url地址*/
-        dataType : &quot;json&quot;, /**返回格式为json*/
-        async : true,/**请求是否异步，默认为异步，这也是ajax重要特性 */
-        data : parems, /**参数值*/
-        type :sendMethod, /**请求方式*/
-        /** 状态*/
-        beforeSend :beforeSendFun,
-        success : successFun,
-        complete : completeFun,
-        error :errorFun
-    });
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * @author 第一作者：张建新</span>
+<span class="cm"> * Ajax封装类,所有的Ajax都需要通过此方法进行发送 以便进行相应的Ajax方式管理</span>
+<span class="cm"> * 注意 $.support.cors = true; 用来解决Ajax跨域问题，此方法需要和后台数据接口相配合</span>
+<span class="cm"> * successFun,errorFun,beforeSendFun,completeFun</span>
+<span class="cm"> * 示例写法</span>
+<span class="cm"> * var successFun = function functionName(data)</span>
+<span class="cm"> * {</span>
+<span class="cm"> *      对Ajax解析过来的数据进行渲染</span>
+<span class="cm"> * }</span>
+<span class="cm"> * 将successFun作为参数传入方法中</span>
+<span class="cm"> * @param {Object} actionUrl 数据请求地址</span>
+<span class="cm"> * @param {Object} parems Ajax参数列表</span>
+<span class="cm"> * @param {Object} sendMethod 发送方式</span>
+<span class="cm"> * @param {Object} successFun 请求成功后回调函数</span>
+<span class="cm"> * @param {Object} errorFun 请求错误时回调函数</span>
+<span class="cm"> * @param {Object} beforeSendFun 在发送请求之前回调函数</span>
+<span class="cm"> * @param {Object} completeFun 请求完成后回调函数 (请求成功或失败之后均调用)</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">ajaxLoad</span><span class="p">(</span><span class="nx">actionUrl</span><span class="p">,</span><span class="nx">parems</span><span class="p">,</span><span class="nx">sendMethod</span><span class="p">,</span><span class="nx">successFun</span><span class="p">,</span><span class="nx">errorFun</span><span class="p">,</span><span class="nx">beforeSendFun</span><span class="p">,</span><span class="nx">completeFun</span><span class="p">){</span>
+<span class="w">    </span><span class="cm">/**解决ajax跨域问题*/</span>
+<span class="w">    </span><span class="nx">$</span><span class="p">.</span><span class="nx">support</span><span class="p">.</span><span class="nx">cors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">(</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">url</span><span class="w"> </span><span class="o">:</span><span class="nx">actionUrl</span><span class="p">,</span><span class="w"> </span><span class="cm">/**请求的url地址*/</span>
+<span class="w">        </span><span class="nx">dataType</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;json&quot;</span><span class="p">,</span><span class="w"> </span><span class="cm">/**返回格式为json*/</span>
+<span class="w">        </span><span class="k">async</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="cm">/**请求是否异步，默认为异步，这也是ajax重要特性 */</span>
+<span class="w">        </span><span class="nx">data</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">parems</span><span class="p">,</span><span class="w"> </span><span class="cm">/**参数值*/</span>
+<span class="w">        </span><span class="nx">type</span><span class="w"> </span><span class="o">:</span><span class="nx">sendMethod</span><span class="p">,</span><span class="w"> </span><span class="cm">/**请求方式*/</span>
+<span class="w">        </span><span class="cm">/** 状态*/</span>
+<span class="w">        </span><span class="nx">beforeSend</span><span class="w"> </span><span class="o">:</span><span class="nx">beforeSendFun</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">success</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">successFun</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">complete</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">completeFun</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">error</span><span class="w"> </span><span class="o">:</span><span class="nx">errorFun</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="toast">Toast显示框</h2>
-<pre class="codehilite"><code class="language-javascript">/*
- * 是否正在Toast通知
- */
+<div class="codehilite"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm"> * 是否正在Toast通知</span>
+<span class="cm"> */</span>
 
-var isToasting = false;
-/*
- * Toast通知
- */
-function Toast(toastText){
-    /*如果正在显示通知*/
-    if(isToasting){
-        /*延时3秒回调方法*/
-        setTimeout(function(){
-            Toast(toastText)
-        },3000);
-    }else{
-        /*设置正在显示通知*/
-        isToasting = true;
-        /*创建通知控件*/
-        var toast = document.createElement(&quot;div&quot;);
-        /*设置通知文本*/
-        toast.innerHTML = toastText;
-        /*设置通知样式*/
-        toast.className = &quot;Toast&quot;;
-        /*延时3秒销毁控件*/
-        setTimeout(function(){  
-            document.body.removeChild(toast);
-            isToasting = false;
-        },3000);
-        /*显示控件*/
-        document.body.appendChild(toast);
-    }
-}
-</code></pre>
+<span class="kd">var</span><span class="w"> </span><span class="nx">isToasting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="cm">/*</span>
+<span class="cm"> * Toast通知</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">Toast</span><span class="p">(</span><span class="nx">toastText</span><span class="p">){</span>
+<span class="w">    </span><span class="cm">/*如果正在显示通知*/</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="nx">isToasting</span><span class="p">){</span>
+<span class="w">        </span><span class="cm">/*延时3秒回调方法*/</span>
+<span class="w">        </span><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+<span class="w">            </span><span class="nx">Toast</span><span class="p">(</span><span class="nx">toastText</span><span class="p">)</span>
+<span class="w">        </span><span class="p">},</span><span class="mf">3000</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/*设置正在显示通知*/</span>
+<span class="w">        </span><span class="nx">isToasting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">        </span><span class="cm">/*创建通知控件*/</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">toast</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="cm">/*设置通知文本*/</span>
+<span class="w">        </span><span class="nx">toast</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">toastText</span><span class="p">;</span>
+<span class="w">        </span><span class="cm">/*设置通知样式*/</span>
+<span class="w">        </span><span class="nx">toast</span><span class="p">.</span><span class="nx">className</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Toast&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="cm">/*延时3秒销毁控件*/</span>
+<span class="w">        </span><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span><span class="w">  </span>
+<span class="w">            </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">toast</span><span class="p">);</span>
+<span class="w">            </span><span class="nx">isToasting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">        </span><span class="p">},</span><span class="mf">3000</span><span class="p">);</span>
+<span class="w">        </span><span class="cm">/*显示控件*/</span>
+<span class="w">        </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">toast</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="echart-echarts-utils">Echart echarts-utils</h2>
-<pre class="codehilite"><code class="language-javascript">/*
- * 参数列表
- * title 雷达图标题 字符串
- * subTitle 雷达图子标题 字符串
- * analyzeItems 分析项目 字符串数组 如分析北京 上海 广州 的农业林业牧业副业渔业 ['北京','上海','广州']
- * kindItems 雷达图对比分类 如事故分类 农业 林业 牧业 副业 渔业    ['农业', '林业', '牧业', '副业', '渔业']
- * datas对应行业的参数的二维数组，注意父数组长度对应对比分类 子数组长度应与分析项目长度相同，对应相应的对比项目下的分类的参数 如[[10,20,50],[30,80,100],[500,600,200],[700,800,900],[100,200,300]]
- */
-function initRaderMap(title,
-    analyzeItems,
-    datas, drawPictureDiv,pictrueType,yTitle) {
-    var myChart = echarts.init(document.getElementById(drawPictureDiv));
+<div class="codehilite"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm"> * 参数列表</span>
+<span class="cm"> * title 雷达图标题 字符串</span>
+<span class="cm"> * subTitle 雷达图子标题 字符串</span>
+<span class="cm"> * analyzeItems 分析项目 字符串数组 如分析北京 上海 广州 的农业林业牧业副业渔业 [&#39;北京&#39;,&#39;上海&#39;,&#39;广州&#39;]</span>
+<span class="cm"> * kindItems 雷达图对比分类 如事故分类 农业 林业 牧业 副业 渔业    [&#39;农业&#39;, &#39;林业&#39;, &#39;牧业&#39;, &#39;副业&#39;, &#39;渔业&#39;]</span>
+<span class="cm"> * datas对应行业的参数的二维数组，注意父数组长度对应对比分类 子数组长度应与分析项目长度相同，对应相应的对比项目下的分类的参数 如[[10,20,50],[30,80,100],[500,600,200],[700,800,900],[100,200,300]]</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">initRaderMap</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">analyzeItems</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">datas</span><span class="p">,</span><span class="w"> </span><span class="nx">drawPictureDiv</span><span class="p">,</span><span class="nx">pictrueType</span><span class="p">,</span><span class="nx">yTitle</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">myChart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">echarts</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">drawPictureDiv</span><span class="p">));</span>
 
-    option = {
-        title: {
-            text: title,
-            x: 'center'
-        },
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            orient: 'horizontal',/**默认为 水平布局，垂直布局为 'vertical*/
-            padding: 3,
-            data: analyzeItems,
-            x: 'center',
-            y: 'bottom'
-        },
-        toolbox: {
-            show: true,
-            feature: {
-                mark: {
-                    show: true
-                },
-                dataView: {
-                    show: false,
-                    readOnly: false
-                },
-                magicType: {
-                    show: true,
-                    type: ['line', 'bar', 'stack', 'tiled']
-                },
-                restore: {
-                    show: false
-                },
-                saveAsImage: {
-                    show: true
-                }
-            }
-        },
-        calculable: true, /**启用拖拽重计算特性*/
-        xAxis: [{
-            type: 'category',
-           /**  boundaryGap: false,*/
-            data: getXAxisData(datas)
-        }],
-        yAxis: [{
-            type: 'value',
-            name:yTitle,
-            axisLabel : {
-                formatter: '{value}'      
-            }
-        }],
-        series : getSeriesData(analyzeItems, datas, pictrueType)
-    };
-    myChart.setOption(option);
-}
-/**
- * 获取分析指标参数
- * @param {Object} kindItems 雷达图对比分类 如事故分类 农业 林业 牧业 副业 渔业    ['农业', '林业', '牧业', '副业', '渔业']
- * @param {Object} datas datas对应行业的参数的二维数组，注意父数组长度对应对比分类 子数组长度应与分析项目长度相同，对应相应的对比项目下的分类的参数 如[[10,20,50],[30,80,100],[500,600,200],[700,800,900],[100,200,300]]
- */
-function getXAxisData(datas) {
-    var indicatorArray = new Array(datas.length);
-    for (var i = 0; i &lt; indicatorArray.length; i++) {
-        indicatorArray[i] = datas[i][0];
-        datas[i].splice(0, 1);
-    }
-    return indicatorArray;
-}
-/**
- * 获取数据封装参数
- * @param {Object} analyzeItems 分析项目 字符串数组 如分析北京 上海 广州 的农业林业牧业副业渔业 ['北京','上海','广州']
- * @param {Object} datas对应行业的参数的二维数组，注意父数组长度对应对比分类 子数组长度应与分析项目长度相同，对应相应的对比项目下的分类的参数 如[[10,20,50],[30,80,100],[500,600,200],[700,800,900],[100,200,300]]
- */
-function getSeriesData(analyzeItems, datas, pictrueType) {
-    var seriesData = new Array(analyzeItems.length);
-    for (var i = 0; i &lt; analyzeItems.length; i++) {
-        var dataItem = new Object();
-        dataItem.data = getAnalyzeItem(i, datas);
-        dataItem.name = analyzeItems[i];
-        dataItem.type = pictrueType;
-        dataItem.smooth = true;
-        /** dataItem.itemStyle = {normal: {areaStyle: {type: 'default'}}};*/
-        seriesData[i] = dataItem;
-    }
-    /*此函数不支持IE8 暂时注释*/
-    /**console.log(JSON.stringify(seriesData));*/
-    return seriesData;
-}
-/**
- * 获取指定索引的所有分类数据
- * @param {Object} index 指定的索引
- * @param {Object} datas对应行业的参数的二维数组，注意父数组长度对应对比分类 子数组长度应与分析项目长度相同，对应相应的对比项目下的分类的参数 如[[10,20,50],[30,80,100],[500,600,200],[700,800,900],[100,200,300]]
- */
-function getAnalyzeItem(index, datas) {
-    var value = new Array(datas.length);
-    for (var i = 0; i &lt; value.length; i++) {
-        value[i] = datas[i][index];
-    }
-    return value;
-}
-function drawPiePicture(drawPictureDiv, title, analyzeItems, datas) {
-    /** 基于准备好的dom，初始化echarts图表*/
-    myChart = echarts.init(document.getElementById(drawPictureDiv));
-    var option = {
-        title: {
-            text: title,
-            x: 'center',
-            textStyle:{
-                color: '#333',
-                fontStyle: 'normal',
-                fontWeight: 'normal',
-                fontFamily: 'sans-serief',
-                fontSize: 25
-            }
-        },
-        tooltip: {
-            trigger: 'item',
-            formatter: &quot;{a} &lt;br/&gt;{b} : {c} ({d}%)&quot;
-        },
-        legend: {
-            orient: 'vertical',
-            x: 'left',
-            data: analyzeItems,
-            textStyle:{
-                fontStyle: 'normal',
-                fontWeight: 'normal',
-                fontFamily: 'sans-serief',
-                fontSize: 15
-            }
-        },
-        toolbox: {
-            show: true,
-            feature: {
-                mark: {
-                    show: true
-                },
-                dataView: {
-                    show: true,
-                    readOnly: false
-                },
-                magicType: {
-                    show: true,
-                    type: ['pie', 'funnel'],
-                    option: {
-                        funnel: {
-                            x: '25%',
-                            width: '50%',
-                            funnelAlign: 'left',
-                            max: 1548
-                        }
-                    }
-                },
-                restore: {
-                    show: true
-                },
-                saveAsImage: {
-                    show: true
-                }
-            }
-        },
-        calculable: true,
-        series: [{
-            type: 'pie',
-            radius: '55%',
-            center: ['50%', '60%'],
-            data: datas,
-            itemStyle: {
-                normal: {
-                    label: {
-                        show: true,
-                        formatter: '{b} : {c}' + '吨标煤' + ' ({d}%)',
-                        textStyle:{
-                            fontStyle: 'normal',
-                            fontWeight: 'normal',
-                            fontFamily: 'sans-serief',
-                            fontSize: 15
-                        }
-                    },
-                    labelLine: {
-                        show: true
-                    }
-                }
-            }
-        }]
-    };
-    /** 为echarts对象加载数据 */
-    myChart.setOption(option);
-}
-function drawColummnPicture(echartsTitle, drawPictureDiv, analyzeItems) {
-    /** 基于准备好的dom，初始化echarts图表*/
-    myChart = echarts.init(document.getElementById(drawPictureDiv));;
-    /** 指定图表的配置项和数据*/
-    var option = {
-        title: {
-            text: echartsTitle,
-            x: 'center'
-        },
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            orient: 'horizontal',
-            padding: 3,
-            data: analyzeItems,
-            x: 'center',
-            y: 'bottom'
-        },
-        xAxis: [{
-            type: 'category',
-            data: ['系统效率']
-        }],
-        yAxis: [{
-            type: 'value'
-        }],
-        series: [{
-            name: '',
-            type: 'bar',
-            data: []
-        }]
-    };
-    /** 为echarts对象加载数据 */
-    myChart.setOption(option);
-}
-function drawColummnMap(title,
-                        analyzeItems,
-                        datas, 
-                        drawPictureDiv,
-                        yTitle) {
-    var myChart = echarts.init(document.getElementById(drawPictureDiv));
+<span class="w">    </span><span class="nx">option</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="nx">title</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;center&#39;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">tooltip</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">trigger</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;axis&#39;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">legend</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">orient</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span><span class="cm">/**默认为 水平布局，垂直布局为 &#39;vertical*/</span>
+<span class="w">            </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">analyzeItems</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;bottom&#39;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">toolbox</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">feature</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">mark</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">dataView</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                    </span><span class="nx">readOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">magicType</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                    </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;stack&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;tiled&#39;</span><span class="p">]</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">restore</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">saveAsImage</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">calculable</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="cm">/**启用拖拽重计算特性*/</span>
+<span class="w">        </span><span class="nx">xAxis</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">            </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;category&#39;</span><span class="p">,</span>
+<span class="w">           </span><span class="cm">/**  boundaryGap: false,*/</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">getXAxisData</span><span class="p">(</span><span class="nx">datas</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}],</span>
+<span class="w">        </span><span class="nx">yAxis</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">            </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;value&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">name</span><span class="o">:</span><span class="nx">yTitle</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">axisLabel</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">formatter</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;{value}&#39;</span><span class="w">      </span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}],</span>
+<span class="w">        </span><span class="nx">series</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">getSeriesData</span><span class="p">(</span><span class="nx">analyzeItems</span><span class="p">,</span><span class="w"> </span><span class="nx">datas</span><span class="p">,</span><span class="w"> </span><span class="nx">pictrueType</span><span class="p">)</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="nx">myChart</span><span class="p">.</span><span class="nx">setOption</span><span class="p">(</span><span class="nx">option</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cm">/**</span>
+<span class="cm"> * 获取分析指标参数</span>
+<span class="cm"> * @param {Object} kindItems 雷达图对比分类 如事故分类 农业 林业 牧业 副业 渔业    [&#39;农业&#39;, &#39;林业&#39;, &#39;牧业&#39;, &#39;副业&#39;, &#39;渔业&#39;]</span>
+<span class="cm"> * @param {Object} datas datas对应行业的参数的二维数组，注意父数组长度对应对比分类 子数组长度应与分析项目长度相同，对应相应的对比项目下的分类的参数 如[[10,20,50],[30,80,100],[500,600,200],[700,800,900],[100,200,300]]</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">getXAxisData</span><span class="p">(</span><span class="nx">datas</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">indicatorArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Array</span><span class="p">(</span><span class="nx">datas</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">indicatorArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">indicatorArray</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">datas</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mf">0</span><span class="p">];</span>
+<span class="w">        </span><span class="nx">datas</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">splice</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">indicatorArray</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/**</span>
+<span class="cm"> * 获取数据封装参数</span>
+<span class="cm"> * @param {Object} analyzeItems 分析项目 字符串数组 如分析北京 上海 广州 的农业林业牧业副业渔业 [&#39;北京&#39;,&#39;上海&#39;,&#39;广州&#39;]</span>
+<span class="cm"> * @param {Object} datas对应行业的参数的二维数组，注意父数组长度对应对比分类 子数组长度应与分析项目长度相同，对应相应的对比项目下的分类的参数 如[[10,20,50],[30,80,100],[500,600,200],[700,800,900],[100,200,300]]</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">getSeriesData</span><span class="p">(</span><span class="nx">analyzeItems</span><span class="p">,</span><span class="w"> </span><span class="nx">datas</span><span class="p">,</span><span class="w"> </span><span class="nx">pictrueType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">seriesData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Array</span><span class="p">(</span><span class="nx">analyzeItems</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">analyzeItems</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">dataItem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Object</span><span class="p">();</span>
+<span class="w">        </span><span class="nx">dataItem</span><span class="p">.</span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getAnalyzeItem</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span><span class="w"> </span><span class="nx">datas</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">dataItem</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">analyzeItems</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+<span class="w">        </span><span class="nx">dataItem</span><span class="p">.</span><span class="nx">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pictrueType</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">dataItem</span><span class="p">.</span><span class="nx">smooth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">        </span><span class="cm">/** dataItem.itemStyle = {normal: {areaStyle: {type: &#39;default&#39;}}};*/</span>
+<span class="w">        </span><span class="nx">seriesData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">dataItem</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="cm">/*此函数不支持IE8 暂时注释*/</span>
+<span class="w">    </span><span class="cm">/**console.log(JSON.stringify(seriesData));*/</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">seriesData</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/**</span>
+<span class="cm"> * 获取指定索引的所有分类数据</span>
+<span class="cm"> * @param {Object} index 指定的索引</span>
+<span class="cm"> * @param {Object} datas对应行业的参数的二维数组，注意父数组长度对应对比分类 子数组长度应与分析项目长度相同，对应相应的对比项目下的分类的参数 如[[10,20,50],[30,80,100],[500,600,200],[700,800,900],[100,200,300]]</span>
+<span class="cm"> */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">getAnalyzeItem</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span><span class="w"> </span><span class="nx">datas</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Array</span><span class="p">(</span><span class="nx">datas</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">value</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">datas</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">index</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">value</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">drawPiePicture</span><span class="p">(</span><span class="nx">drawPictureDiv</span><span class="p">,</span><span class="w"> </span><span class="nx">title</span><span class="p">,</span><span class="w"> </span><span class="nx">analyzeItems</span><span class="p">,</span><span class="w"> </span><span class="nx">datas</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/** 基于准备好的dom，初始化echarts图表*/</span>
+<span class="w">    </span><span class="nx">myChart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">echarts</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">drawPictureDiv</span><span class="p">));</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">option</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="nx">title</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">textStyle</span><span class="o">:</span><span class="p">{</span>
+<span class="w">                </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;#333&#39;</span><span class="p">,</span>
+<span class="w">                </span><span class="nx">fontStyle</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+<span class="w">                </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+<span class="w">                </span><span class="nx">fontFamily</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;sans-serief&#39;</span><span class="p">,</span>
+<span class="w">                </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">25</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">tooltip</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">trigger</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;item&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">formatter</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;{a} &lt;br/&gt;{b} : {c} ({d}%)&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">legend</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">orient</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">analyzeItems</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">textStyle</span><span class="o">:</span><span class="p">{</span>
+<span class="w">                </span><span class="nx">fontStyle</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+<span class="w">                </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+<span class="w">                </span><span class="nx">fontFamily</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;sans-serief&#39;</span><span class="p">,</span>
+<span class="w">                </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">toolbox</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">feature</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">mark</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">dataView</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                    </span><span class="nx">readOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">magicType</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                    </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;pie&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;funnel&#39;</span><span class="p">],</span>
+<span class="w">                    </span><span class="nx">option</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nx">funnel</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;25%&#39;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nx">width</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;50%&#39;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nx">funnelAlign</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nx">max</span><span class="o">:</span><span class="w"> </span><span class="mf">1548</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">restore</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">saveAsImage</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">calculable</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">series</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">            </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;pie&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">radius</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;55%&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">center</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;50%&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;60%&#39;</span><span class="p">],</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">datas</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">itemStyle</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">normal</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                        </span><span class="nx">formatter</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;{b} : {c}&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;吨标煤&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39; ({d}%)&#39;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nx">textStyle</span><span class="o">:</span><span class="p">{</span>
+<span class="w">                            </span><span class="nx">fontStyle</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nx">fontFamily</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;sans-serief&#39;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">},</span>
+<span class="w">                    </span><span class="nx">labelLine</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}]</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="cm">/** 为echarts对象加载数据 */</span>
+<span class="w">    </span><span class="nx">myChart</span><span class="p">.</span><span class="nx">setOption</span><span class="p">(</span><span class="nx">option</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">drawColummnPicture</span><span class="p">(</span><span class="nx">echartsTitle</span><span class="p">,</span><span class="w"> </span><span class="nx">drawPictureDiv</span><span class="p">,</span><span class="w"> </span><span class="nx">analyzeItems</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/** 基于准备好的dom，初始化echarts图表*/</span>
+<span class="w">    </span><span class="nx">myChart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">echarts</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">drawPictureDiv</span><span class="p">));;</span>
+<span class="w">    </span><span class="cm">/** 指定图表的配置项和数据*/</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">option</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="nx">echartsTitle</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;center&#39;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">tooltip</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">trigger</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;axis&#39;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">legend</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">orient</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">analyzeItems</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;bottom&#39;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">xAxis</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">            </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;category&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;系统效率&#39;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">}],</span>
+<span class="w">        </span><span class="nx">yAxis</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">            </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;value&#39;</span>
+<span class="w">        </span><span class="p">}],</span>
+<span class="w">        </span><span class="nx">series</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">            </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">        </span><span class="p">}]</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="cm">/** 为echarts对象加载数据 */</span>
+<span class="w">    </span><span class="nx">myChart</span><span class="p">.</span><span class="nx">setOption</span><span class="p">(</span><span class="nx">option</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">drawColummnMap</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span>
+<span class="w">                        </span><span class="nx">analyzeItems</span><span class="p">,</span>
+<span class="w">                        </span><span class="nx">datas</span><span class="p">,</span><span class="w"> </span>
+<span class="w">                        </span><span class="nx">drawPictureDiv</span><span class="p">,</span>
+<span class="w">                        </span><span class="nx">yTitle</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">myChart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">echarts</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">drawPictureDiv</span><span class="p">));</span>
 
-    option = {
-        title: {
-            text: title,
-            x: 'center'
-        },
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            orient: 'horizontal',
-            padding: 1,
-            data: analyzeItems,
-            x: 'center',
-            y: 'bottom',
-            itemWidth: 10,             /** 图例图形宽度*/
-            itemHeight: 5,             /** 图例图形高度*/
-            textStyle: {
-                fontSize:7                /** 图例文字大小*/
-            }
-        },
-        toolbox: {
-            show: true,
-            feature: {
-                mark: {
-                    show: true
-                },
-                dataView: {
-                    show: false,
-                    readOnly: false
-                },
-                magicType: {
-                    show: true,
-                    type: ['line', 'bar', 'stack', 'tiled']
-                },
-                restore: {
-                    show: false
-                },
-                saveAsImage: {
-                    show: true
-                }
-            }
-        },
-        calculable: true, /**启用拖拽重计算特性*/
-        xAxis: [{
-            type: 'category',
-            data: getXAxisDataOne(datas)
-        }],
-        yAxis: [{
-            type: 'value',
-            name:yTitle
-        }],
-        series: getSeriesDataOne(analyzeItems, datas)
-    };
-    myChart.setOption(option);
-}
-            function getXAxisDataOne(pictrueDatas) {
-                var indicatorArray = new Array(pictrueDatas.length);
-                for (var i = 0; i &lt; indicatorArray.length; i++) {
-                    indicatorArray[i] = pictrueDatas[i][0];
-                    pictrueDatas[i].splice(0, 1);
-                }
-                return indicatorArray;
-            }
-            function getSeriesDataOne(testAnalyzeItems, pictrueDatas) {
-                var seriesData = new Array(testAnalyzeItems.length);
-                for (var i = 0; i &lt; testAnalyzeItems.length; i++) {
-                    var dataItem = new Object();
-                    dataItem.data = getAnalyzeItem(i, pictrueDatas);
-                    dataItem.name = testAnalyzeItems[i];
-                    dataItem.type = 'bar';
-                    dataItem.smooth = true;
-                    seriesData[i] = dataItem;
-                }
-                return seriesData;
-            }
-            function testAnalyzeItems(index, pictrueDatas) {
-                var value = new Array(pictrueDatas.length);
-                for (var i = 0; i &lt; value.length; i++) {
-                    value[i] = datas[i][index];
-                }
-                return value;
-            }
-</code></pre>
+<span class="w">    </span><span class="nx">option</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="nx">title</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;center&#39;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">tooltip</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">trigger</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;axis&#39;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">legend</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">orient</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">analyzeItems</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">itemWidth</span><span class="o">:</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span><span class="w">             </span><span class="cm">/** 图例图形宽度*/</span>
+<span class="w">            </span><span class="nx">itemHeight</span><span class="o">:</span><span class="w"> </span><span class="mf">5</span><span class="p">,</span><span class="w">             </span><span class="cm">/** 图例图形高度*/</span>
+<span class="w">            </span><span class="nx">textStyle</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">fontSize</span><span class="o">:</span><span class="mf">7</span><span class="w">                </span><span class="cm">/** 图例文字大小*/</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">toolbox</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">feature</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">mark</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">dataView</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                    </span><span class="nx">readOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">magicType</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                    </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;stack&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;tiled&#39;</span><span class="p">]</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">restore</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nx">saveAsImage</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">calculable</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="cm">/**启用拖拽重计算特性*/</span>
+<span class="w">        </span><span class="nx">xAxis</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">            </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;category&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">getXAxisDataOne</span><span class="p">(</span><span class="nx">datas</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}],</span>
+<span class="w">        </span><span class="nx">yAxis</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">            </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;value&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">name</span><span class="o">:</span><span class="nx">yTitle</span>
+<span class="w">        </span><span class="p">}],</span>
+<span class="w">        </span><span class="nx">series</span><span class="o">:</span><span class="w"> </span><span class="nx">getSeriesDataOne</span><span class="p">(</span><span class="nx">analyzeItems</span><span class="p">,</span><span class="w"> </span><span class="nx">datas</span><span class="p">)</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="nx">myChart</span><span class="p">.</span><span class="nx">setOption</span><span class="p">(</span><span class="nx">option</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="w">            </span><span class="kd">function</span><span class="w"> </span><span class="nx">getXAxisDataOne</span><span class="p">(</span><span class="nx">pictrueDatas</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">indicatorArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Array</span><span class="p">(</span><span class="nx">pictrueDatas</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">indicatorArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">indicatorArray</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pictrueDatas</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mf">0</span><span class="p">];</span>
+<span class="w">                    </span><span class="nx">pictrueDatas</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">splice</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nx">indicatorArray</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="kd">function</span><span class="w"> </span><span class="nx">getSeriesDataOne</span><span class="p">(</span><span class="nx">testAnalyzeItems</span><span class="p">,</span><span class="w"> </span><span class="nx">pictrueDatas</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">seriesData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Array</span><span class="p">(</span><span class="nx">testAnalyzeItems</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">testAnalyzeItems</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="kd">var</span><span class="w"> </span><span class="nx">dataItem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Object</span><span class="p">();</span>
+<span class="w">                    </span><span class="nx">dataItem</span><span class="p">.</span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getAnalyzeItem</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span><span class="w"> </span><span class="nx">pictrueDatas</span><span class="p">);</span>
+<span class="w">                    </span><span class="nx">dataItem</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">testAnalyzeItems</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+<span class="w">                    </span><span class="nx">dataItem</span><span class="p">.</span><span class="nx">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">dataItem</span><span class="p">.</span><span class="nx">smooth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">seriesData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">dataItem</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nx">seriesData</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="kd">function</span><span class="w"> </span><span class="nx">testAnalyzeItems</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span><span class="w"> </span><span class="nx">pictrueDatas</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Array</span><span class="p">(</span><span class="nx">pictrueDatas</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">value</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">datas</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">index</span><span class="p">];</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nx">value</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+</code></pre></div>
 
 <h2 id="alertwin">alertWin 早期作品</h2>
-<pre class="codehilite"><code class="language-javascript">    /**
-     * @author 作者：张建新
-     *弹窗封装类 alertWin(title, msg, w, h)
-     * 示例写法：alertWin('提示信息','数据库修改失败',200,200);
-     * @param {Object} title 标题
-     * @param {Object} msg 错误信息以及提示信息
-     * @param {Object} w 宽度
-     * @param {Object} h 高度
-     **/
-    function alertWin(title, msg, w, h) {
-        var titleheight = &quot;22px&quot;; /** 提示窗口标题高度 */
-        var bordercolor = &quot;#364751&quot;; /** 提示窗口的边框颜色 */
-        var titlecolor = &quot;#FFFFFF&quot;; /** 提示窗口的标题颜色 */
-        var titlebgcolor = &quot;#364751&quot;; /** 提示窗口的标题背景色 */
-        var bgcolor = &quot;#FFFFFF&quot;; /** 提示内容的背景色 */
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * @author 作者：张建新</span>
+<span class="cm">     *弹窗封装类 alertWin(title, msg, w, h)</span>
+<span class="cm">     * 示例写法：alertWin(&#39;提示信息&#39;,&#39;数据库修改失败&#39;,200,200);</span>
+<span class="cm">     * @param {Object} title 标题</span>
+<span class="cm">     * @param {Object} msg 错误信息以及提示信息</span>
+<span class="cm">     * @param {Object} w 宽度</span>
+<span class="cm">     * @param {Object} h 高度</span>
+<span class="cm">     **/</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">alertWin</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span><span class="w"> </span><span class="nx">msg</span><span class="p">,</span><span class="w"> </span><span class="nx">w</span><span class="p">,</span><span class="w"> </span><span class="nx">h</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">titleheight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;22px&quot;</span><span class="p">;</span><span class="w"> </span><span class="cm">/** 提示窗口标题高度 */</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">bordercolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;#364751&quot;</span><span class="p">;</span><span class="w"> </span><span class="cm">/** 提示窗口的边框颜色 */</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">titlecolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;#FFFFFF&quot;</span><span class="p">;</span><span class="w"> </span><span class="cm">/** 提示窗口的标题颜色 */</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">titlebgcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;#364751&quot;</span><span class="p">;</span><span class="w"> </span><span class="cm">/** 提示窗口的标题背景色 */</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">bgcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;#FFFFFF&quot;</span><span class="p">;</span><span class="w"> </span><span class="cm">/** 提示内容的背景色 */</span>
 
-        var iWidth = document.documentElement.clientWidth;
-        var iHeight = document.documentElement.clientHeight;
-        var bgObj = document.createElement(&quot;div&quot;);
-        bgObj.style.cssText = &quot;position:absolute;left:0px;top:0px;width:&quot; + iWidth + &quot;px;height:&quot; + Math.max(document.body.clientHeight, iHeight) + &quot;px;filter:Alpha(Opacity=30);opacity:0.3;background-color:#000000;z-index:101;&quot;;
-        document.body.appendChild(bgObj);
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">iWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">clientWidth</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">iHeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">clientHeight</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">bgObj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">bgObj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cssText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;position:absolute;left:0px;top:0px;width:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">iWidth</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px;height:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">clientHeight</span><span class="p">,</span><span class="w"> </span><span class="nx">iHeight</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px;filter:Alpha(Opacity=30);opacity:0.3;background-color:#000000;z-index:101;&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">bgObj</span><span class="p">);</span>
 
-        var msgObj = document.createElement(&quot;div&quot;);
-        msgObj.style.cssText = &quot;position:absolute;font:11px '宋体';top:&quot; + (iHeight - h) / 2 + &quot;px;left:&quot; + (iWidth - w) / 2 + &quot;px;width:&quot; + w + &quot;px;height:&quot; + h + &quot;px;text-align:center;border:1px solid &quot; + bordercolor + &quot;;background-color:&quot; + bgcolor + &quot;;line-height:22px;z-index:102;&quot;;
-        document.body.appendChild(msgObj);
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">msgObj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">msgObj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cssText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;position:absolute;font:11px &#39;宋体&#39;;top:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="nx">iHeight</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">h</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px;left:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="nx">iWidth</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">w</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px;width:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">w</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px;height:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">h</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px;text-align:center;border:1px solid &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">bordercolor</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;;background-color:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">bgcolor</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;;line-height:22px;z-index:102;&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">msgObj</span><span class="p">);</span>
 
-        var table = document.createElement(&quot;table&quot;); /** */
-        msgObj.appendChild(table);
-        table.style.cssText = &quot;margin:0px;border:0px;padding:0px;&quot;;
-        table.cellSpacing = 0;
-        var tr = table.insertRow(-1);
-        var titleBar = tr.insertCell(-1);
-        titleBar.style.cssText = &quot;width:100%;height:&quot; + titleheight + &quot;px;text-align:left;padding:3px;margin:0px;font:bold 13px '宋体';color:&quot; + titlecolor + &quot;;border:1px solid &quot; + bordercolor + &quot;;cursor:move;background-color:&quot; + titlebgcolor;
-        titleBar.style.paddingLeft = &quot;10px&quot;;
-        titleBar.innerHTML = title;
-        var moveX = 0;
-        var moveY = 0;
-        var moveTop = 0;
-        var moveLeft = 0;
-        var moveable = false;
-        var docMouseMoveEvent = document.onmousemove; 
-        var docMouseUpEvent = document.onmouseup;
-        titleBar.onmousedown = function() {
-            var evt = getEvent();
-            moveable = true;
-            moveX = evt.clientX;
-            moveY = evt.clientY;
-            moveTop = parseInt(msgObj.style.top);
-            moveLeft = parseInt(msgObj.style.left);
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;table&quot;</span><span class="p">);</span><span class="w"> </span><span class="cm">/** */</span>
+<span class="w">        </span><span class="nx">msgObj</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">table</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">table</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cssText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;margin:0px;border:0px;padding:0px;&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">table</span><span class="p">.</span><span class="nx">cellSpacing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">tr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">insertRow</span><span class="p">(</span><span class="o">-</span><span class="mf">1</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">titleBar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">tr</span><span class="p">.</span><span class="nx">insertCell</span><span class="p">(</span><span class="o">-</span><span class="mf">1</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">titleBar</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cssText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;width:100%;height:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">titleheight</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px;text-align:left;padding:3px;margin:0px;font:bold 13px &#39;宋体&#39;;color:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">titlecolor</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;;border:1px solid &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">bordercolor</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;;cursor:move;background-color:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">titlebgcolor</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">titleBar</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">paddingLeft</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;10px&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">titleBar</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">title</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">moveX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">moveY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">moveTop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">moveLeft</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">moveable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">docMouseMoveEvent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">onmousemove</span><span class="p">;</span><span class="w"> </span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">docMouseUpEvent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">onmouseup</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">titleBar</span><span class="p">.</span><span class="nx">onmousedown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">var</span><span class="w"> </span><span class="nx">evt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getEvent</span><span class="p">();</span>
+<span class="w">            </span><span class="nx">moveable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">            </span><span class="nx">moveX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">evt</span><span class="p">.</span><span class="nx">clientX</span><span class="p">;</span>
+<span class="w">            </span><span class="nx">moveY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">evt</span><span class="p">.</span><span class="nx">clientY</span><span class="p">;</span>
+<span class="w">            </span><span class="nx">moveTop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">msgObj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span><span class="p">);</span>
+<span class="w">            </span><span class="nx">moveLeft</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">msgObj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span><span class="p">);</span>
 
-            document.onmousemove = function() {
-                if (moveable) {
-                    var evt = getEvent();
-                    var x = moveLeft + evt.clientX - moveX; /***/
-                    var y = moveTop + evt.clientY - moveY;
-                    if (x &gt; 0 &amp;&amp; (x + w &lt; iWidth) &amp;&amp; y &gt; 0 &amp;&amp; (y + h &lt; iHeight)) {
-                        msgObj.style.left = x + &quot;px&quot;;
-                        msgObj.style.top = y + &quot;px&quot;;
-                    }
-                }
-            };
-            document.onmouseup = function() {
-                if (moveable) {
-                    document.onmousemove = docMouseMoveEvent; /** */
-                    document.onmouseup = docMouseUpEvent;
-                    moveable = false;
-                    moveX = 0;
-                    moveY = 0;
-                    moveTop = 0;
-                    moveLeft = 0;
-                }
-            };
-        }
+<span class="w">            </span><span class="nb">document</span><span class="p">.</span><span class="nx">onmousemove</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">moveable</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="kd">var</span><span class="w"> </span><span class="nx">evt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getEvent</span><span class="p">();</span>
+<span class="w">                    </span><span class="kd">var</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">moveLeft</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">evt</span><span class="p">.</span><span class="nx">clientX</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">moveX</span><span class="p">;</span><span class="w"> </span><span class="cm">/***/</span>
+<span class="w">                    </span><span class="kd">var</span><span class="w"> </span><span class="nx">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">moveTop</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">evt</span><span class="p">.</span><span class="nx">clientY</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">moveY</span><span class="p">;</span>
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">w</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">iWidth</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">y</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="nx">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">h</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">iHeight</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nx">msgObj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px&quot;</span><span class="p">;</span>
+<span class="w">                        </span><span class="nx">msgObj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;px&quot;</span><span class="p">;</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">};</span>
+<span class="w">            </span><span class="nb">document</span><span class="p">.</span><span class="nx">onmouseup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">moveable</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nb">document</span><span class="p">.</span><span class="nx">onmousemove</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">docMouseMoveEvent</span><span class="p">;</span><span class="w"> </span><span class="cm">/** */</span>
+<span class="w">                    </span><span class="nb">document</span><span class="p">.</span><span class="nx">onmouseup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">docMouseUpEvent</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">moveable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">moveX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">moveY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">moveTop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">                    </span><span class="nx">moveLeft</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">};</span>
+<span class="w">        </span><span class="p">}</span>
 
-        var closeBtn = tr.insertCell(-1);
-        closeBtn.style.cssText = &quot;cursor:pointer; padding:2px;background-color:&quot; + titlebgcolor;
-        closeBtn.innerHTML = &quot;&lt;span style='font-size:15pt; color:&quot; + titlecolor + &quot;;'&gt;×&lt;/span&gt;&quot;;
-        closeBtn.onclick = function() {
-            document.body.removeChild(bgObj);
-            document.body.removeChild(msgObj);
-        }
-        var msgBox = table.insertRow(-1).insertCell(-1);
-        msgBox.style.cssText = &quot;font:10pt '宋体';&quot;;
-        msgBox.colSpan = 2;
-        msgBox.innerHTML = msg;
-        /**
-        获得事件Event对象，用于兼容IE和FireFox 
-        * 为了兼容 Ie 进行获取ie 浏览器窗口的操作控制
-        */
-        function getEvent() {
-            return window.event || arguments.callee.caller.arguments[0];
-        }
-    }
-</code></pre>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">closeBtn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">tr</span><span class="p">.</span><span class="nx">insertCell</span><span class="p">(</span><span class="o">-</span><span class="mf">1</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">closeBtn</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cssText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;cursor:pointer; padding:2px;background-color:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">titlebgcolor</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">closeBtn</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&lt;span style=&#39;font-size:15pt; color:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">titlecolor</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;;&#39;&gt;×&lt;/span&gt;&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">closeBtn</span><span class="p">.</span><span class="nx">onclick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">bgObj</span><span class="p">);</span>
+<span class="w">            </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">msgObj</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">msgBox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">table</span><span class="p">.</span><span class="nx">insertRow</span><span class="p">(</span><span class="o">-</span><span class="mf">1</span><span class="p">).</span><span class="nx">insertCell</span><span class="p">(</span><span class="o">-</span><span class="mf">1</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">msgBox</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cssText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;font:10pt &#39;宋体&#39;;&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">msgBox</span><span class="p">.</span><span class="nx">colSpan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">msgBox</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">msg</span><span class="p">;</span>
+<span class="w">        </span><span class="cm">/**</span>
+<span class="cm">        获得事件Event对象，用于兼容IE和FireFox </span>
+<span class="cm">        * 为了兼容 Ie 进行获取ie 浏览器窗口的操作控制</span>
+<span class="cm">        */</span>
+<span class="w">        </span><span class="kd">function</span><span class="w"> </span><span class="nx">getEvent</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">event</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">.</span><span class="nx">caller</span><span class="p">.</span><span class="nx">arguments</span><span class="p">[</span><span class="mf">0</span><span class="p">];</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:11
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

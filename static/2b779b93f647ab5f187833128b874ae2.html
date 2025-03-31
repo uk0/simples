@@ -123,254 +123,254 @@ author：zhangjianxin</p>
 </ul>
 </div>
 <h1 id="1-concurrentblockingqueue">1. ConcurrentBlockingQueue</h1>
-<pre class="codehilite"><code class="language-java">package me.firsh.tools;
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">me.firsh.tools</span><span class="p">;</span>
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.IOException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.TimeUnit</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.atomic.AtomicLong</span><span class="p">;</span>
 
-public class ConcurrentBlockingQueue&lt;T extends Exchengeable&gt; {
-        public long p1, p2, p3, p4, p5, p6, p7; // cache line padding
-        private volatile long proCursor = 0;
-        public long p8, p9, p10, p11, p12, p13, p14; // cache line padding
-        private volatile long comsumeCursor = 0;
-        private final AtomicLong produceSequence = new AtomicLong(0);
-        private final AtomicLong comsumeSequence = new AtomicLong(0);
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ConcurrentBlockingQueue</span><span class="o">&lt;</span><span class="n">T</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Exchengeable</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p">,</span><span class="w"> </span><span class="n">p3</span><span class="p">,</span><span class="w"> </span><span class="n">p4</span><span class="p">,</span><span class="w"> </span><span class="n">p5</span><span class="p">,</span><span class="w"> </span><span class="n">p6</span><span class="p">,</span><span class="w"> </span><span class="n">p7</span><span class="p">;</span><span class="w"> </span><span class="c1">// cache line padding</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">volatile</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">proCursor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">p8</span><span class="p">,</span><span class="w"> </span><span class="n">p9</span><span class="p">,</span><span class="w"> </span><span class="n">p10</span><span class="p">,</span><span class="w"> </span><span class="n">p11</span><span class="p">,</span><span class="w"> </span><span class="n">p12</span><span class="p">,</span><span class="w"> </span><span class="n">p13</span><span class="p">,</span><span class="w"> </span><span class="n">p14</span><span class="p">;</span><span class="w"> </span><span class="c1">// cache line padding</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">volatile</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">comsumeCursor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AtomicLong</span><span class="w"> </span><span class="n">produceSequence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AtomicLong</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AtomicLong</span><span class="w"> </span><span class="n">comsumeSequence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AtomicLong</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 
-        private final Exchengeable[] entries;
-        private final int ringModMask;
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Exchengeable</span><span class="o">[]</span><span class="w"> </span><span class="n">entries</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ringModMask</span><span class="p">;</span>
 
-        private final int nextHighestPowerOfTwo(int v) {
-                v--;
-                v |= v &gt;&gt; 1;
-                v |= v &gt;&gt; 2;
-                v |= v &gt;&gt; 4;
-                v |= v &gt;&gt; 8;
-                v |= v &gt;&gt; 16;
-                v++;
-                return v;
-        }
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">nextHighestPowerOfTwo</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">v</span><span class="o">--</span><span class="p">;</span>
+<span class="w">                </span><span class="n">v</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">                </span><span class="n">v</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">                </span><span class="n">v</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">                </span><span class="n">v</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span>
+<span class="w">                </span><span class="n">v</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+<span class="w">                </span><span class="n">v</span><span class="o">++</span><span class="p">;</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">v</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-        public ConcurrentBlockingQueue(final int size) {
-                int sizeAsPowerOfTwo = Math.max(nextHighestPowerOfTwo(size), 1);
-                ringModMask = sizeAsPowerOfTwo - 1;
-                entries = new Exchengeable[sizeAsPowerOfTwo];
-        }
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="nf">ConcurrentBlockingQueue</span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kt">int</span><span class="w"> </span><span class="n">sizeAsPowerOfTwo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">nextHighestPowerOfTwo</span><span class="p">(</span><span class="n">size</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">                </span><span class="n">ringModMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sizeAsPowerOfTwo</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">                </span><span class="n">entries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Exchengeable</span><span class="o">[</span><span class="n">sizeAsPowerOfTwo</span><span class="o">]</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-        @SuppressWarnings(&quot;unchecked&quot;)
-        private T getEntry(final long sequence) {
-                return (T) entries[(int) (sequence &amp; ringModMask)];
-        }
+<span class="w">        </span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&quot;unchecked&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="nf">getEntry</span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">sequence</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="n">entries</span><span class="o">[</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">sequence</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ringModMask</span><span class="p">)</span><span class="o">]</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-        private void setEntry(final long sequence, T t) {
-                final int index = (int) (sequence &amp; ringModMask);
-                if (entries[index] == null) {
-                        entries[index] = t;
-                } else {
-                        entries[index].exchange(t);
-                }
-        }
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setEntry</span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">sequence</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">sequence</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ringModMask</span><span class="p">);</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">entries</span><span class="o">[</span><span class="n">index</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="n">entries</span><span class="o">[</span><span class="n">index</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="n">entries</span><span class="o">[</span><span class="n">index</span><span class="o">]</span><span class="p">.</span><span class="na">exchange</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
 
-        private final long waitForNextProduce() {
-                while (true) {
-                        if (produceSequence.get() - comsumeCursor &lt; entries.length) {
-                                return produceSequence.incrementAndGet();
-                        } else {
-                                try {
-                                        Thread.yield();
-                                } catch (Exception e) {
-                                        e.printStackTrace();
-                                }
-                        }
-                }
-        }
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">waitForNextProduce</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">produceSequence</span><span class="p">.</span><span class="na">get</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">comsumeCursor</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">entries</span><span class="p">.</span><span class="na">length</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                </span><span class="k">return</span><span class="w"> </span><span class="n">produceSequence</span><span class="p">.</span><span class="na">incrementAndGet</span><span class="p">();</span>
+<span class="w">                        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                        </span><span class="n">Thread</span><span class="p">.</span><span class="na">yield</span><span class="p">();</span>
+<span class="w">                                </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                        </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">                                </span><span class="p">}</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
 
-        public void put(T t) {
-                long sequence = waitForNextProduce();
-                setEntry(sequence - 1, t);
-                proCursor = sequence;
-        }
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kt">long</span><span class="w"> </span><span class="n">sequence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">waitForNextProduce</span><span class="p">();</span>
+<span class="w">                </span><span class="n">setEntry</span><span class="p">(</span><span class="n">sequence</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">);</span>
+<span class="w">                </span><span class="n">proCursor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sequence</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-        private final long waitForComsume() {
-                while (true) {
-                        long comsume = proCursor - comsumeSequence.get();
-                        if (comsume &gt; 0 &amp;&amp; comsume &lt;= entries.length) {
-                                return comsumeSequence.incrementAndGet();
-                        } else {
-                                try {
-                                        Thread.yield();
-                                } catch (Exception e) {
-                                        e.printStackTrace();
-                                }
-                        }
-                }
-        }
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">waitForComsume</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="kt">long</span><span class="w"> </span><span class="n">comsume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proCursor</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">comsumeSequence</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
+<span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">comsume</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">comsume</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">entries</span><span class="p">.</span><span class="na">length</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                </span><span class="k">return</span><span class="w"> </span><span class="n">comsumeSequence</span><span class="p">.</span><span class="na">incrementAndGet</span><span class="p">();</span>
+<span class="w">                        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                        </span><span class="n">Thread</span><span class="p">.</span><span class="na">yield</span><span class="p">();</span>
+<span class="w">                                </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                        </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+<span class="w">                                </span><span class="p">}</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
 
-        public T take() {
-                long nextSequence = waitForComsume();
-                comsumeCursor = nextSequence;
-                return getEntry(nextSequence - 1);
-        }
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="nf">take</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kt">long</span><span class="w"> </span><span class="n">nextSequence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">waitForComsume</span><span class="p">();</span>
+<span class="w">                </span><span class="n">comsumeCursor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nextSequence</span><span class="p">;</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">getEntry</span><span class="p">(</span><span class="n">nextSequence</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
 
-        public boolean put(T t, long time, TimeUnit unit) throws IOException {
-                put(t);
-                return true;
-        }
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="w"> </span><span class="n">unit</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">put</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-        public T take(long time, TimeUnit unit) throws IOException {
-                return take();
-        }
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="w"> </span><span class="n">unit</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">take</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
 
-}
-</code></pre>
+<span class="p">}</span>
+</code></pre></div>
 
 <h1 id="2lengthbytearrayencoder">2.LengthByteArrayEncoder</h1>
-<pre class="codehilite"><code class="language-java">@Sharable
-public class LengthByteArrayEncoder extends MessageToMessageEncoder&lt;byte[]&gt; {
-    @Override
-    protected void encode(ChannelHandlerContext ctx, byte[] msg,
-            List&lt;Object&gt; out) throws Exception {
-        byte[] b1 = toBytes(msg.length);
-        // out.add(Unpooled.wrappedBuffer(b1)); // length
-        // out.add(Unpooled.wrappedBuffer(msg)); // data
+<div class="codehilite"><pre><span></span><code><span class="nd">@Sharable</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LengthByteArrayEncoder</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">MessageToMessageEncoder</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="n">ChannelHandlerContext</span><span class="w"> </span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">msg</span><span class="p">,</span>
+<span class="w">            </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">b1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">toBytes</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="na">length</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// out.add(Unpooled.wrappedBuffer(b1)); // length</span>
+<span class="w">        </span><span class="c1">// out.add(Unpooled.wrappedBuffer(msg)); // data</span>
 
-        ByteBuf buf = Unpooled.wrappedBuffer(b1, msg); // length , data
-        out.add(buf);
-    }
+<span class="w">        </span><span class="n">ByteBuf</span><span class="w"> </span><span class="n">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Unpooled</span><span class="p">.</span><span class="na">wrappedBuffer</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">);</span><span class="w"> </span><span class="c1">// length , data</span>
+<span class="w">        </span><span class="n">out</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    static final byte[] N1 = { B2Type.INT_N1 };
-    static final byte[] I0 = { B2Type.INT_0 };
-    static final byte[] I1 = { B2Type.INT_1 };
-    static final byte[] I2 = { B2Type.INT_2 };
-    static final byte[] I3 = { B2Type.INT_3 };
-    static final byte[] I4 = { B2Type.INT_4 };
-    static final byte[] I5 = { B2Type.INT_5 };
-    static final byte[] I6 = { B2Type.INT_6 };
-    static final byte[] I7 = { B2Type.INT_7 };
-    static final byte[] I8 = { B2Type.INT_8 };
-    static final byte[] I9 = { B2Type.INT_9 };
-    static final byte[] I10 = { B2Type.INT_10 };
-    static final byte[] I11 = { B2Type.INT_11 };
-    static final byte[] I12 = { B2Type.INT_12 };
-    static final byte[] I13 = { B2Type.INT_13 };
-    static final byte[] I14 = { B2Type.INT_14 };
-    static final byte[] I15 = { B2Type.INT_15 };
-    static final byte[] I16 = { B2Type.INT_16 };
-    static final byte[] I17 = { B2Type.INT_17 };
-    static final byte[] I18 = { B2Type.INT_18 };
-    static final byte[] I19 = { B2Type.INT_19 };
-    static final byte[] I20 = { B2Type.INT_20 };
-    static final byte[] I21 = { B2Type.INT_21 };
-    static final byte[] I22 = { B2Type.INT_22 };
-    static final byte[] I23 = { B2Type.INT_23 };
-    static final byte[] I24 = { B2Type.INT_24 };
-    static final byte[] I25 = { B2Type.INT_25 };
-    static final byte[] I26 = { B2Type.INT_26 };
-    static final byte[] I27 = { B2Type.INT_27 };
-    static final byte[] I28 = { B2Type.INT_28 };
-    static final byte[] I29 = { B2Type.INT_29 };
-    static final byte[] I30 = { B2Type.INT_30 };
-    static final byte[] I31 = { B2Type.INT_31 };
-    static final byte[] I32 = { B2Type.INT_32 };
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">N1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_N1</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_0</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_1</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_2</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_3</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_4</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_5</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_6</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_7</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_8</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I9</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_9</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_10</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I11</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_11</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I12</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_12</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I13</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_13</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I14</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_14</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I15</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_15</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I16</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_16</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I17</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_17</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I18</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_18</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I19</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_19</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I20</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_20</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I21</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_21</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I22</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_22</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I23</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_23</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I24</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_24</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I25</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_25</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I26</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_26</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I27</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_27</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I28</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_28</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I29</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_29</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I30</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_30</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I31</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_31</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">I32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_32</span><span class="w"> </span><span class="p">};</span>
 
-    static final byte[] toBytes(int v) {
-        switch (v) {
-        case -1:
-            return N1;
-        case 0:
-            return I0;
-        case 1:
-            return I1;
-        case 2:
-            return I2;
-        case 3:
-            return I3;
-        case 4:
-            return I4;
-        case 5:
-            return I5;
-        case 6:
-            return I6;
-        case 7:
-            return I7;
-        case 8:
-            return I8;
-        case 9:
-            return I9;
-        case 10:
-            return I10;
-        case 11:
-            return I11;
-        case 12:
-            return I12;
-        case 13:
-            return I13;
-        case 14:
-            return I14;
-        case 15:
-            return I15;
-        case 16:
-            return I16;
-        case 17:
-            return I17;
-        case 18:
-            return I18;
-        case 19:
-            return I19;
-        case 20:
-            return I20;
-        case 21:
-            return I21;
-        case 22:
-            return I22;
-        case 23:
-            return I23;
-        case 24:
-            return I24;
-        case 25:
-            return I25;
-        case 26:
-            return I26;
-        case 27:
-            return I27;
-        case 28:
-            return I28;
-        case 29:
-            return I29;
-        case 30:
-            return I30;
-        case 31:
-            return I31;
-        case 32:
-            return I32;
-        default:
-            if (v &gt;= NumEx.BYTE_MIN_VALUE &amp;&amp; v &lt;= NumEx.BYTE_MAX_VALUE) {
-                // byte[] r2 = new byte[2];
-                // r2[0] = B2Type.INT_8B;
-                byte[] r2 = { B2Type.INT_8B, 1 };
-                r2[1] = (byte) (v &amp; 0xff);
-                return r2;
-            } else if (v &gt;= NumEx.SHORT_MIN_VALUE &amp;&amp; v &lt;= NumEx.SHORT_MAX_VALUE) {
-                // byte[] r2 = new byte[3];
-                // r2[0] = B2Type.INT_16B;
-                byte[] r2 = { B2Type.INT_16B, 1, 2 };
-                r2[1] = (byte) ((v &gt;&gt; 8) &amp; 0xff);
-                r2[2] = (byte) ((v &gt;&gt; 0) &amp; 0xff);
-                return r2;
-            } else {
-                // byte[] r2 = new byte[5];
-                // r2[0] = B2Type.INT_32B;
-                byte[] r2 = { B2Type.INT_32B, 1, 2, 3, 4 };
-                r2[1] = (byte) ((v &gt;&gt; 24) &amp; 0xff);
-                r2[2] = (byte) ((v &gt;&gt; 16) &amp; 0xff);
-                r2[3] = (byte) ((v &gt;&gt; 8) &amp; 0xff);
-                r2[4] = (byte) ((v &gt;&gt; 0) &amp; 0xff);
-                return r2;
-            }
-        }
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="nf">toBytes</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">N1</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I1</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I2</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">3</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I3</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">4</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I4</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">5</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I5</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">6</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I6</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">7</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I7</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">8</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I8</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">9</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I9</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">10</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I10</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">11</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I11</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">12</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I12</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">13</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I13</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">14</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I14</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">15</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I15</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">16</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I16</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">17</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I17</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">18</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I18</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">19</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I19</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I20</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">21</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I21</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">22</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I22</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">23</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I23</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">24</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I24</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">25</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I25</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">26</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I26</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">27</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I27</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">28</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I28</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">29</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I29</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">30</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I30</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">31</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I31</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">32</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">I32</span><span class="p">;</span>
+<span class="w">        </span><span class="k">default</span><span class="p">:</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">NumEx</span><span class="p">.</span><span class="na">BYTE_MIN_VALUE</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">NumEx</span><span class="p">.</span><span class="na">BYTE_MAX_VALUE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// byte[] r2 = new byte[2];</span>
+<span class="w">                </span><span class="c1">// r2[0] = B2Type.INT_8B;</span>
+<span class="w">                </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_8B</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">};</span>
+<span class="w">                </span><span class="n">r2</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xff</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">r2</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">NumEx</span><span class="p">.</span><span class="na">SHORT_MIN_VALUE</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">NumEx</span><span class="p">.</span><span class="na">SHORT_MAX_VALUE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// byte[] r2 = new byte[3];</span>
+<span class="w">                </span><span class="c1">// r2[0] = B2Type.INT_16B;</span>
+<span class="w">                </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_16B</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">};</span>
+<span class="w">                </span><span class="n">r2</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xff</span><span class="p">);</span>
+<span class="w">                </span><span class="n">r2</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xff</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">r2</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// byte[] r2 = new byte[5];</span>
+<span class="w">                </span><span class="c1">// r2[0] = B2Type.INT_32B;</span>
+<span class="w">                </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">B2Type</span><span class="p">.</span><span class="na">INT_32B</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">};</span>
+<span class="w">                </span><span class="n">r2</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">24</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xff</span><span class="p">);</span>
+<span class="w">                </span><span class="n">r2</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xff</span><span class="p">);</span>
+<span class="w">                </span><span class="n">r2</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xff</span><span class="p">);</span>
+<span class="w">                </span><span class="n">r2</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xff</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">r2</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="_1">推荐在必要时候使用移位。</h2>
 <ul>
@@ -380,7 +380,7 @@ public class LengthByteArrayEncoder extends MessageToMessageEncoder&lt;byte[]&gt
 </ul>
     </div>
     <footer>
-        Power By Python Markdown Generate 2024-11-11 11:39:19
+        Power By Python Markdown Generate 2025-03-31 13:05:10
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
