@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="matching,ssh">
-    <meta name="keywords" content="ssh, matching">
-    <title>ssh链接报错 Unable to negotiate with IP</title>
+    <meta name="description" content="使用 tunnelbroker 构建自己的IPv6 代理池">
+    <meta name="keywords" content="tunnelbroker 阿里云">
+    <title>tunnelbroker ipv6 pool</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
@@ -102,35 +102,90 @@
 </head>
 <body class="day-mode">
     <div class="metadata">
-        <p><strong>Title:</strong> ssh链接报错 Unable to negotiate with IP</p>
-        <p><strong>Categories:</strong> linux,sshd,ssh</p>
-        <p><strong>Description:</strong> matching,ssh</p>
-        <p><strong>Keywords:</strong> ssh, matching</p>
+        <p><strong>Title:</strong> tunnelbroker ipv6 pool</p>
+        <p><strong>Categories:</strong> tunnelbroker</p>
+        <p><strong>Description:</strong> 使用 tunnelbroker 构建自己的IPv6 代理池</p>
+        <p><strong>Keywords:</strong> tunnelbroker 阿里云</p>
     </div>
     <div class="content">
-        <p>ssh Unable to negotiate with 182.158.68.5 port 22: no matching host key type found. Their offer: ssh-dss</p>
-<h2 id="_1">介绍</h2>
+        <h4 id="_1">准备</h4>
 <ul>
-<li>今天帮别人部署东西，远程连接服务器的时候发现发生了错误：。</li>
+<li>阿里云轻量服务器 【Centos 8.2】</li>
+<li>tunnelbroker 账号</li>
+<li>tunnelbroker 通道</li>
 </ul>
-<div class="codehilite"><pre><span></span><code><span class="w"> </span>Unable<span class="w"> </span>to<span class="w"> </span>negotiate<span class="w"> </span>with<span class="w"> </span><span class="m">182</span>.158.68.5<span class="w"> </span>port<span class="w"> </span><span class="m">22</span>:<span class="w"> </span>no<span class="w"> </span>matching<span class="w"> </span>host<span class="w"> </span>key<span class="w"> </span><span class="nb">type</span><span class="w"> </span>found.<span class="w"> </span>Their<span class="w"> </span>offer:<span class="w"> </span>ssh-dss
+<h4 id="_2">脚本如下</h4>
+<ul>
+<li>
+<p>sudo vim /etc/sysctl.conf 编辑系统设置ipv6相关</p>
+<p>```bash</p>
+<p>net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+net.ipv6.conf.eth0.disable_ipv6 = 0</p>
+<p>```</p>
+</li>
+<li>
+<p>sudo sysctl -p 重载系统设置</p>
+</li>
+<li>
+<p>获取Example Config</p>
+<blockquote>
+<p>2001:xxx:x:xxx::2/64 = [Client IPv6 Address]
+172.xxx.xxx.xx = [服务器内网IP]</p>
+</blockquote>
+</li>
+<li>
+<p>服务器上执行</p>
+</li>
+</ul>
+<p>```bash</p>
+<p>sudo modprobe ipv6
+  sudo ip tunnel add he-ipv6 mode sit remote 216.66.22.2 local 172.xxx.xxx.xx ttl 255
+  sudo ip link set he-ipv6 up
+  sudo ip addr add 2001:xxx:x:xxx::2/64 dev he-ipv6
+  sudo ip route add ::/0 dev he-ipv6
+  sudo ip -f inet6 addr</p>
+<p>```</p>
+<ul>
+<li>
+<p>验证 </p>
+<p>```bash</p>
+<p>curl ipv6.ip.sb</p>
+<p>```</p>
+</li>
+<li>
+<p>收尾</p>
+</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>sysctl<span class="w"> </span>-w<span class="w"> </span>net.ipv6.ip_nonlocal_bind<span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="c1">#开启不限制绑定</span>
+
+<span class="c1"># 这个地址在配置里面可以找到 【Routed IPv6 Prefixes】</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>-6<span class="w"> </span>route<span class="w"> </span>add<span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="m">2001</span>:xxx:x:xxx::/64<span class="w"> </span>dev<span class="w"> </span>lo<span class="w"> </span><span class="c1">#添加本地回环接口</span>
+<span class="c1"># 测试</span>
+curl<span class="w"> </span>--interface<span class="w"> </span><span class="m">2001</span>:xxx:x:xxx::3<span class="w"> </span>ipv6.ip.sb
 </code></pre></div>
 
-<h2 id="_2">解决方案</h2>
-<blockquote>
-<p>The version of OpenSSH included in 16.04 disables ssh-dss. There's a neat page with legacy information that includes this issue: http://www.openssh.com/legacy.html
-In a nutshell, you should add the option -oHostKeyAlgorithms=+ssh-dss to the SSH command:</p>
-</blockquote>
-<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>-oHostKeyAlgorithms<span class="o">=</span>+ssh-dss<span class="w"> </span>root@182.158.68.5
-</code></pre></div>
+<ul>
+<li>开启代理</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="c1">#amd </span>
 
-<blockquote>
-<p>成功登录</p>
-</blockquote>
-<div class="codehilite"><pre><span></span><code>➜<span class="w">  </span>~<span class="w"> </span>ssh<span class="w"> </span>-oHostKeyAlgorithms<span class="o">=</span>+ssh-dss<span class="w"> </span>root@182.158.68.5
-The<span class="w"> </span>authenticity<span class="w"> </span>of<span class="w"> </span>host<span class="w"> </span><span class="s1">&#39;182.158.68.55 (182.158.68.5)&#39;</span><span class="w"> </span>can<span class="err">&#39;</span>t<span class="w"> </span>be<span class="w"> </span>established.
-DSA<span class="w"> </span>key<span class="w"> </span>fingerprint<span class="w"> </span>is<span class="w"> </span>SHA256:LVWhbgb8q5TdW2QEsFjOVNp8ekW8UqPVE/KCbMOI4CM.
-Are<span class="w"> </span>you<span class="w"> </span>sure<span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span><span class="k">continue</span><span class="w"> </span>connecting<span class="w"> </span><span class="o">(</span>yes/no<span class="o">)</span>?<span class="w"> </span>
+wget<span class="w"> </span>https://github.com/deanxv/go-proxy-ipv6-pool/releases/download/v1.0.0/go-proxy-ipv6-pool-linux-amd64
+
+<span class="c1">#arm</span>
+
+wget<span class="w"> </span>https://github.com/deanxv/go-proxy-ipv6-pool/releases/download/v1.0.0/go-proxy-ipv6-pool-linux-arm64
+
+
+chmod<span class="w"> </span>+x<span class="w"> </span>go-proxy-ipv6-pool-linux-amd64
+
+<span class="c1"># cidr = 【Routed IPv6 Prefixes】</span>
+nohup<span class="w"> </span>./go-proxy-ipv6-pool-linux-amd64<span class="w"> </span>--port<span class="w"> </span><span class="m">51422</span><span class="w"> </span>--cidr<span class="w"> </span><span class="m">2001</span>:xxx:x:xxx::/64<span class="w"> </span>&gt;<span class="w"> </span>proxy.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+
+curl<span class="w"> </span>-x<span class="w"> </span>http://xx.xx.xx.xx:51422<span class="w"> </span>http://6.ipw.cn/
+
+<span class="c1"># 会收到变化的ipv6地址</span>
 </code></pre></div>
     </div>
     <footer>
