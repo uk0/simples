@@ -20,12 +20,13 @@ import (
 )
 
 var (
-	srcDir   string
-	outDir   string
-	addr     string
-	postTpl  *template.Template
-	indexTpl *template.Template
-	mdConv   goldmark.Markdown
+	srcDir         string
+	outDir         string
+	addr           string
+	attachmentsDir = ".attachments" // 可按需修改 / 抽成 flag
+	postTpl        *template.Template
+	indexTpl       *template.Template
+	mdConv         goldmark.Markdown
 )
 
 func init() {
@@ -37,7 +38,7 @@ func init() {
 func main() {
 	flag.Parse()
 	loadTemplates()
-	mdConv = goldmark.New() // 默认即可，足够精简快速
+	mdConv = goldmark.New()
 
 	if err := rebuildAll(); err != nil {
 		log.Fatalf("initial build failed: %v", err)
@@ -78,6 +79,9 @@ func rebuildAll() error {
 		return err
 	}
 	if err := copyAssets(); err != nil {
+		return err
+	}
+	if err := copyAttachments(); err != nil {
 		return err
 	}
 
@@ -154,13 +158,32 @@ func copyAssets() error {
 		if err != nil || d.IsDir() || strings.HasSuffix(d.Name(), ".md") {
 			return err
 		}
-		rel, _ := filepath.Rel(srcDir, path)
-		dest := filepath.Join(outDir, rel)
-		if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
+		return copyRel(path, srcDir)
+	})
+}
+
+// 额外复制 .attachments（如果存在）
+func copyAttachments() error {
+	attachRoot := filepath.Join(srcDir, attachmentsDir)
+	if _, err := os.Stat(attachRoot); os.IsNotExist(err) {
+		return nil // 没有附件目录可跳过
+	}
+	return filepath.WalkDir(attachRoot, func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
 			return err
 		}
-		return copyFile(path, dest)
+		return copyRel(path, srcDir)
 	})
+}
+
+// copyRel: 把 src 目录下的 path 复制到 outDir，并保留相对层级
+func copyRel(absPath, base string) error {
+	rel, _ := filepath.Rel(base, absPath)
+	dest := filepath.Join(outDir, rel)
+	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
+		return err
+	}
+	return copyFile(absPath, dest)
 }
 
 func copyFile(src, dest string) error {
@@ -204,10 +227,28 @@ func ensureImgs(md string) {
 func watch() {
 	w, _ := fsnotify.NewWatcher()
 	defer w.Close()
-	_ = w.Add(srcDir)
+
+	// 初始递归注册
+	addRecursiveWatch := func(dir string) {
+		filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
+			if err != nil || !d.IsDir() {
+				return err
+			}
+			_ = w.Add(p)
+			return nil
+		})
+	}
+	addRecursiveWatch(srcDir)
+
 	for {
 		select {
 		case ev := <-w.Events:
+			// 新目录，需要补注册
+			if ev.Has(fsnotify.Create) {
+				if fi, err := os.Stat(ev.Name); err == nil && fi.IsDir() {
+					addRecursiveWatch(ev.Name)
+				}
+			}
 			if ev.Has(fsnotify.Write | fsnotify.Create | fsnotify.Remove | fsnotify.Rename) {
 				log.Printf("change: %s", ev)
 				if err := rebuildAll(); err != nil {

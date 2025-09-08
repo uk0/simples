@@ -6,15 +6,15 @@
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="a.css">
 
-    <!-- 只为固定页脚附加少量样式 -->
+    
     <style>
         html,body{height:100%;margin:0;}
         footer{
             position:fixed;
-            left:0;right:0;bottom:0;       /* 永远贴底 */
-            height:60px;line-height:18px;  /* 与旧版高度一致 */
+            left:0;right:0;bottom:0;        
+            height:60px;line-height:18px;   
             text-align:center;
-            background:transparent;        /* 继续透出 syslogo 背景 */
+            background:transparent;         
             font-size:smaller;
         }
     </style>
@@ -22,15 +22,15 @@
 
 <body background="syslogo.png" style="margin:0;">
 
-<!-- ================= 外层全屏表格（主体） ================= -->
+
 <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td align="center" valign="top">
 
-            <!-- ============== 650 px 中央版芯 ============== -->
+            
             <table width="650" border="0" cellspacing="0" cellpadding="6">
 
-                <!-- ▍页眉：头像 + 标题 + 更新时间 ---------------- -->
+                
                 <tr>
                     <td width="64" rowspan="2" align="center">
                         <a href="index.html"><img src="avatar.png" width="48" height="48" alt="avatar"></a>
@@ -39,11 +39,11 @@
                         <h2 style="margin:4px 0;">NeoJ&nbsp;Blog</h2>
                     </td>
                     <td width="120" rowspan="2" align="center" bgcolor="#f0f0f0" style="font-size:small">
-                        Last&nbsp;Update:<br>{{ .Now }}
+                        Last&nbsp;Update:<br>2025-09-09 00:18
                     </td>
                 </tr>
 
-                <!-- ▍二级导航 ----------------------------------- -->
+                
                 <tr>
                     <td align="center" bgcolor="#d0d0d0">
                         <a href="index.html">Index</a> |
@@ -52,28 +52,43 @@
                     </td>
                 </tr>
 
-                <!-- ▍文章列表 ----------------------------------- -->
+                
                 <tr>
                     <td colspan="3">
                         <table width="100%" border="1" cellpadding="5" cellspacing="0">
-                            {{ range .Posts }}
+                            
                             <tr>
-                                <td width="70%"><a href="{{ .File }}">{{ .Title }}</a></td>
-                                <td width="30%" align="right">{{ .Date.Format "2006-01-02" }}</td>
+                                <td width="70%"><a href="659dcc2201f49a86b22325860c37c17f.html">Vultr 账户删除</a></td>
+                                <td width="30%" align="right">2025-09-09</td>
                             </tr>
-                            {{ end }}
+                            
+                            <tr>
+                                <td width="70%"><a href="02142e369c62602bb1be3e3440a36364.html">使用 tunnelbroker 构建自己的 IPv6 代理池</a></td>
+                                <td width="30%" align="right">2025-09-09</td>
+                            </tr>
+                            
+                            <tr>
+                                <td width="70%"><a href="f63297edfc7d9bdb426ef718ae55d917.html">RocketMQ Install</a></td>
+                                <td width="30%" align="right">2025-09-09</td>
+                            </tr>
+                            
+                            <tr>
+                                <td width="70%"><a href="947a237e5b203af5aa1a1e6615974de0.html">Nginx 做为前端负载均衡时，后端服务器获取的 IP 为 Nginx 的本机 IP ，让 Nginx 把用户 IP 传递到后端里面去。</a></td>
+                                <td width="30%" align="right">2025-09-09</td>
+                            </tr>
+                            
                         </table>
                     </td>
                 </tr>
 
-            </table><!-- /650 版芯 -->
+            </table>
         </td>
     </tr>
-</table><!-- /外层全屏表格 -->
+</table>
 
-<!-- ======================== 固定页脚 ======================== -->
+
 <footer>
-    Last generated: {{ .Now }}<br>
+    Last generated: 2025-09-09 00:18<br>
     Content licensed under
     <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">
         CC&nbsp;BY&nbsp;4.0

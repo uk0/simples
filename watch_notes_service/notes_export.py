@@ -48,4 +48,4 @@ if __name__ == "__main__":
         os.remove(s)
 
     print("sync notes to server")
-    os.system("sync_note.sh")
+    os.system("bash /Users/firshme/Desktop/work/simples/watch_notes_service/sync_note.sh")

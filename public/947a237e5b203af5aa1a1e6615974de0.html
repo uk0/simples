@@ -2,29 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ .Title }}</title>
+    <title>Nginx 做为前端负载均衡时，后端服务器获取的 IP 为 Nginx 的本机 IP ，让 Nginx 把用户 IP 传递到后端里面去。</title>
     <link rel="icon" href="favicon.ico">
-    <!-- 站点公用复古样式 -->
+    
     <link rel="stylesheet" href="a.css">
 </head>
 
 <body background="syslogo.png" style="margin:0;">
 
-<!-- ====================== 全屏外壳 ====================== -->
+
 <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td align="center" valign="top">
 
-            <!-- =============== 650 px 中央版芯 =============== -->
+            
             <table width="650" border="0" cellspacing="0" cellpadding="6">
 
-                <!-- ▍页眉：头像 + 站点名 + Home 链接 -->
+                
                 <tr>
                     <td width="64" rowspan="2" align="center">
                         <a href="index.html"><img src="avatar.png" width="48" height="48" alt="avatar"></a>
                     </td>
                     <td align="center" bgcolor="#e0e0e0">
-                        <h2 style="margin:4px 0;">{{ .Title }}</h2>
+                        <h2 style="margin:4px 0;">Nginx 做为前端负载均衡时，后端服务器获取的 IP 为 Nginx 的本机 IP ，让 Nginx 把用户 IP 传递到后端里面去。</h2>
                     </td>
                     <td width="120" rowspan="2" align="center" bgcolor="#f0f0f0">
                         <a href="index.html">Home</a>
@@ -37,17 +37,49 @@
                     </td>
                 </tr>
 
-                <!-- ▍分隔线 -->
+                
                 <tr><td colspan="3"><hr style="border:0;border-top:1px solid #ccc;"></td></tr>
 
-                <!-- ▍正文（已限制 650 px 内） -->
+                
                 <tr>
                     <td colspan="3">
-                        <div class="post-body">{{ .Body }}</div>
+                        <div class="post-body"><h1>Nginx 做为前端负载均衡时，后端服务器获取的 IP 为 Nginx 的本机 IP ，让 Nginx 把用户 IP 传递到后端里面去。</h1>
+<h2>问题</h2>
+<p>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP.</p>
+<h2>解决办法</h2>
+<pre><code>  
+1. Nginx 开启 http\_realip\_module 模块  
+  
+./configure --with-http\_realip\_module  
+  
+make &amp;&amp; make install  
+  
+2. Nginx 前端 增加 proxy\_set\_header  
+  
+proxy\_set\_header X-Real-IP $remote\_addr;  
+  
+3. Nginx 后端 增加 real\_ip\_header  
+  
+real\_ip\_header X-Real-IP;  
+  
+后端配置 必须重启 Nginx 才能生效， reload 不生效。  
+  
+4. Tomcat 后端 需要修改 Service.xml  
+  
+找到  
+  
+pattern=&quot;%h %l %u %t &amp;ampquot%r&amp;ampquot %s %b&quot; /&gt;  
+  
+修改为  
+  
+pattern=&quot;%{X-FORWARDED-FOR}i %l %u %t %r %s %b %D %q %{User-Agent}i %T&quot; resolveHosts=&amp;quotfalse&quot;/&gt;  
+  
+</code></pre>
+</div>
                     </td>
                 </tr>
 
-                <!-- ▍回到顶部链接 -->
+                
                 <tr>
                     <td colspan="3" align="right" style="font-size:small;">
                         <a href="#">↑ Back to top</a>
@@ -57,7 +89,7 @@
         </td>
     </tr>
 
-    <!-- ====================== 页脚 ====================== -->
+    
     <tr>
         <td align="center" valign="bottom" height="60">
             <font size="-1">
