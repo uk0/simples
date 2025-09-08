@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ .Title }}</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="a.css">
+</head>
+<body background="syslogo.png" style="margin:0;">
+<!-- ================== 外层全屏表格 ================== -->
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+    <!-- ================================================= 主体 ================================================= -->
+    <tr>
+        <td align="center" valign="top">
+            <!-- --------------------------- 800px 内层 --------------------------- -->
+            <table width="700" border="0" cellspacing="0" cellpadding="6">
+
+                <!-- 页眉：头像 + 标题 + 返回首页 + 日期占位 -->
+                <tr>
+                    <td width="64" rowspan="2" align="center">
+                        <a href="index.html"><img src="avatar.png" width="48" height="48" alt="avatar"></a>
+                    </td>
+                    <td align="center" bgcolor="#e0e0e0">
+                        <h2 style="margin:4px 0;">{{ .Title }}</h2>
+                    </td>
+                    <td width="120" rowspan="2" align="center" bgcolor="#f0f0f0">
+                        <a href="index.html">Home</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" bgcolor="#d0d0d0">
+                        <a href="index.html">Index</a> |
+                        <a href="about.html">About</a>
+                    </td>
+                </tr>
+
+                <!-- 正文 -------------------------------------------------------- -->
+                <tr><td colspan="3">{{ .Body }}</td></tr>
+
+            </table>
+        </td>
+    </tr>
+
+    <!-- ================================================= 页脚 ================================================= -->
+    <tr>
+        <td align="center" valign="bottom" height="60">
+            <font size="-1"><a href="index.html">Back to Home</a></font>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NeoJ Blog</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="a.css">
+</head>
+<body background="syslogo.png" style="margin:0;">
+<!-- ================== 外层全屏表格 ================== -->
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+    <!-- ================================================= 主体 ================================================= -->
+    <tr>
+        <td align="center" valign="top">
+            <!-- --------------------------- 800px 内层 --------------------------- -->
+            <table width="700" border="0" cellspacing="0" cellpadding="6">
+
+                <!-- 页眉：头像 + 标题 + 更新时间 -->
+                <tr>
+                    <td width="64" rowspan="2" align="center">
+                        <a href="index.html"><img src="avatar.png" width="48" height="48" alt="avatar"></a>
+                    </td>
+                    <td align="center" bgcolor="#e0e0e0">
+                        <h2 style="margin:4px 0;">NeoJ&nbsp;Blog</h2>
+                    </td>
+                    <td width="120" rowspan="2" align="center" bgcolor="#f0f0f0" style="font-size:small">
+                        Last&nbsp;Update:<br>{{ .Now }}
+                    </td>
+                </tr>
+
+                <!-- 二级导航（可按需修改链接） -->
+                <tr>
+                    <td align="center" bgcolor="#d0d0d0">
+                        <a href="index.html">Index</a> |
+                        <a href="about.html">About</a> |
+                        <a href="https://github.com/uk0">GitHub</a>
+                    </td>
+                </tr>
+
+                <!-- 文章列表 ----------------------------------------------------- -->
+                <tr><td colspan="3">
+                    <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                        {{ range .Posts }}
+                        <tr>
+                            <td width="70%"><a href="{{ .File }}">{{ .Title }}</a></td>
+                            <td width="30%" align="right">{{ .Date.Format "2006-01-02" }}</td>
+                        </tr>
+                        {{ end }}
+                    </table>
+                </td></tr>
+
+            </table>
+        </td>
+    </tr>
+
+    <!-- ================================================= 页脚 ================================================= -->
+    <tr>
+        <td align="center" valign="bottom" height="60">
+            <font size="-1">
+                Last generated: {{ .Now }}<br>
+                Content licensed under
+                <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">
+                    CC&nbsp;BY&nbsp;4.0
+                </a>
+            </font>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

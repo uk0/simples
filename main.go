@@ -1,369 +1,233 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"encoding/json"
-	"fmt"
+	"bytes"
+	"flag"
 	"html/template"
-	"io/ioutil"
+	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
+	"time"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/yuin/goldmark"
 )
 
-type Article struct {
-	Title string
-	URL   string
-}
+var (
+	srcDir   string
+	outDir   string
+	addr     string
+	postTpl  *template.Template
+	indexTpl *template.Template
+	mdConv   goldmark.Markdown
+)
 
-type GitHubUser struct {
-	AvatarURL string `json:"avatar_url"`
+func init() {
+	flag.StringVar(&srcDir, "src", "./pre", "Markdown & asset source directory")
+	flag.StringVar(&outDir, "out", "./public", "Output directory")
+	flag.StringVar(&addr, "addr", ":8080", "HTTP listen address")
 }
 
 func main() {
-	markdownDir := "./book"
-	staticDir := "./static"
-	articles := processMarkdownFiles(markdownDir, staticDir)
-	avatarURL := getGitHubAvatar("uk0")
-	generateIndexHTML(articles, avatarURL)
+	flag.Parse()
+	loadTemplates()
+	mdConv = goldmark.New() // 默认即可，足够精简快速
 
-	// 指定静态文件目录
-	fs := http.FileServer(http.Dir("./static"))
+	if err := rebuildAll(); err != nil {
+		log.Fatalf("initial build failed: %v", err)
+	}
+	log.Println("initial build done.")
 
-	// 使用 http.Handle() 函数将文件服务器注册到 /static 路径
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	go watch()
 
-	// 使用 http.HandleFunc() 函数将 index.html 文件注册到根路径
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./index.html")
-	})
+	log.Printf("serving %s at http://%s …", outDir, addr)
+	http.Handle("/", http.FileServer(http.Dir(outDir)))
+	log.Fatal(http.ListenAndServe(addr, nil))
+}
 
-	// 启动服务器，监听在 8080 端口
-	fmt.Println("Starting server at port 8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
+/* ---------------------- templates ---------------------- */
+
+func loadTemplates() {
+	var err error
+	postTpl, err = template.ParseFiles("tpl/post.html")
+	if err != nil {
+		log.Fatalf("post template: %v", err)
+	}
+	indexTpl, err = template.ParseFiles("tpl/index.html")
+	if err != nil {
+		log.Fatalf("index template: %v", err)
 	}
 }
 
-func processMarkdownFiles(markdownDir, staticDir string) []Article {
-	var articles []Article
+/* ---------------------- rebuild ------------------------ */
 
-	err := filepath.Walk(markdownDir, func(path string, info os.FileInfo, err error) error {
+type post struct {
+	Title string
+	File  string
+	Date  time.Time
+}
+
+func rebuildAll() error {
+	if err := os.MkdirAll(outDir, 0755); err != nil {
+		return err
+	}
+	if err := copyAssets(); err != nil {
+		return err
+	}
+
+	var posts []post
+	err := filepath.WalkDir(srcDir, func(path string, d fs.DirEntry, walkErr error) error {
+		if walkErr != nil || d.IsDir() || !strings.HasSuffix(d.Name(), ".md") {
+			return walkErr
+		}
+		p, err := buildPage(path)
 		if err != nil {
 			return err
 		}
-		if filepath.Ext(path) == ".md" {
-			content, err := ioutil.ReadFile(path)
-			if err != nil {
-				return err
-			}
-
-			title := extractTitle(string(content))
-			md5sum := calculateMD5(content)
-			url := fmt.Sprintf("%s/%s.html", staticDir, md5sum)
-
-			articles = append(articles, Article{Title: title, URL: url})
-		}
+		posts = append(posts, p)
 		return nil
 	})
-
 	if err != nil {
-		fmt.Printf("Error walking through markdown directory: %v\n", err)
+		return err
 	}
-
-	return articles
+	return buildIndex(posts)
 }
 
-func extractTitle(content string) string {
-	re := regexp.MustCompile(`title:\s*(.+)`)
-	matches := re.FindStringSubmatch(content)
-	if len(matches) > 1 {
-		return strings.TrimSpace(matches[1])
+func buildPage(mdPath string) (post, error) {
+	data, err := os.ReadFile(mdPath)
+	if err != nil {
+		return post{}, err
 	}
-	return "Untitled"
+
+	title := firstHeading(string(data), filepath.Base(mdPath))
+
+	var buf bytes.Buffer
+	if err := mdConv.Convert(data, &buf); err != nil {
+		return post{}, err
+	}
+
+	// 复制文中引用图片
+	ensureImgs(string(data))
+
+	htmlName := strings.TrimSuffix(filepath.Base(mdPath), ".md") + ".html"
+	out := filepath.Join(outDir, htmlName)
+	f, err := os.Create(out)
+	if err != nil {
+		return post{}, err
+	}
+	defer f.Close()
+
+	if err := postTpl.Execute(f, map[string]any{
+		"Title": title,
+		"Body":  template.HTML(buf.String()),
+	}); err != nil {
+		return post{}, err
+	}
+
+	st, _ := os.Stat(mdPath)
+	return post{Title: title, File: htmlName, Date: st.ModTime()}, nil
 }
 
-func calculateMD5(content []byte) string {
-	hash := md5.Sum(content)
-	return hex.EncodeToString(hash[:])
+func buildIndex(posts []post) error {
+	sort.Slice(posts, func(i, j int) bool { return posts[i].Date.After(posts[j].Date) })
+	f, err := os.Create(filepath.Join(outDir, "index.html"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return indexTpl.Execute(f, map[string]any{
+		"Posts": posts,
+		"Now":   time.Now().Format("2006-01-02 15:04"),
+	})
 }
 
-func getGitHubAvatar(username string) string {
-	url := fmt.Sprintf("https://api.github.com/users/%s", username)
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Printf("Error fetching GitHub user data: %v\n", err)
-		return ""
-	}
-	defer resp.Body.Close()
+/* ---------------------- assets ------------------------- */
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
-		return ""
-	}
-
-	var user GitHubUser
-	err = json.Unmarshal(body, &user)
-	if err != nil {
-		fmt.Printf("Error unmarshaling JSON: %v\n", err)
-		return ""
-	}
-
-	return user.AvatarURL
+func copyAssets() error {
+	return filepath.WalkDir(srcDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() || strings.HasSuffix(d.Name(), ".md") {
+			return err
+		}
+		rel, _ := filepath.Rel(srcDir, path)
+		dest := filepath.Join(outDir, rel)
+		if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
+			return err
+		}
+		return copyFile(path, dest)
+	})
 }
 
-func generateIndexHTML(articles []Article, avatarURL string) {
-	tmpl := `
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>打怪兽升级咯～</title>
-	<!-- Cloudflare Web Analytics -->
-	<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "38ef94cda57d43a1a9de524646e66805"}'></script>
-    <!-- End Cloudflare Web Analytics -->
-	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-	<script>
-        function generateRandomColor() {
-            return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-        }
-
-        function createCubeIcon() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 64;
-            canvas.height = 64;
-            const ctx = canvas.getContext('2d');
-
-            const color1 = generateRandomColor();
-            const color2 = generateRandomColor();
-            const color3 = generateRandomColor();
-
-            // 绘制顶面
-            ctx.beginPath();
-            ctx.moveTo(32, 10);
-            ctx.lineTo(54, 20);
-            ctx.lineTo(32, 30);
-            ctx.lineTo(10, 20);
-            ctx.closePath();
-            ctx.fillStyle = color1;
-            ctx.fill();
-
-            // 绘制右面
-            ctx.beginPath();
-            ctx.moveTo(54, 20);
-            ctx.lineTo(54, 52);
-            ctx.lineTo(32, 62);
-            ctx.lineTo(32, 30);
-            ctx.closePath();
-            ctx.fillStyle = color2;
-            ctx.fill();
-
-            // 绘制左面
-            ctx.beginPath();
-            ctx.moveTo(10, 20);
-            ctx.lineTo(32, 30);
-            ctx.lineTo(32, 62);
-            ctx.lineTo(10, 52);
-            ctx.closePath();
-            ctx.fillStyle = color3;
-            ctx.fill();
-
-            return canvas.toDataURL('image/png');
-        }
-
-        function setFavicon() {
-            const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
-            link.type = 'image/x-icon';
-            link.rel = 'shortcut icon';
-            link.href = createCubeIcon();
-            document.getElementsByTagName('head')[0].appendChild(link);
-        }
-
-        // 页面加载时设置favicon
-        window.onload = setFavicon;
-
-        // 每5秒更新一次favicon
-        setInterval(setFavicon, 96);
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-        	
-        body {
-            font-family: 'VT323', monospace;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #000;
-            color: #00ff00;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .github-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 2px solid #00ff00;
-            filter: grayscale(100%) brightness(150%) contrast(120%);
-        }
-        h1 {
-            text-align: center;
-            color: #00ff00;
-            font-size: 2em;
-            text-shadow: 0 0 5px #00ff00;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin-bottom: 10px;
-            padding: 5px;
-            border: 1px solid #00ff00;
-        }
-        a {
-            color: #00ff00;
-            text-decoration: none;
-            display: block;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 1em;
-            background-color: #00ff00;
-            animation: blink 0.7s steps(1) infinite;
-            vertical-align: middle;
-            margin-left: 2px;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-        }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.8em;
-            color: #00aa00;
-        }
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            .github-avatar {
-                width: 60px;
-                height: 60px;
-            }
-            h1 {
-                font-size: 1.5em;
-            }
-            li {
-                padding: 3px;
-            }
-        }
-    </style>
-	<script>
-	window.onloadTurnstileCallback = function () {
-    turnstile.render('body', {
-        sitekey: '0x4AAAAAAAkDvnJ2XJn6mQqA',
-        callback: function(token) {
-			console.log(token);
-			},
-		});
-	};
-	</script>
-</head>
-<body>
-    <header>
-        <a href="https://github.com/uk0" target="_blank">
-            <img src="{{.AvatarURL}}" alt="GitHub Avatar" class="github-avatar">
-        </a>
-    </header>
-    <h1>君子论迹不论心。</h1>
-    <ul id="article-list">
-        {{range .Articles}}
-        <li><a href="{{.URL}}"></a></li>
-        {{end}}
-    </ul>
-    <footer>
-        Power By AI AutoTextGenerate
-    </footer>
-
-    <script>
-        const articleList = document.getElementById('article-list');
-        const items = articleList.getElementsByTagName('li');
-        const titles = {{.Articles | json}}.map(article => article.Title);
-        let currentItemIndex = 0;
-        let currentCharIndex = 0;
-
-        function typeNextChar() {
-            if (currentItemIndex >= items.length) {
-                return;
-            }
-
-            const item = items[currentItemIndex];
-            const link = item.getElementsByTagName('a')[0];
-            const title = titles[currentItemIndex];
-
-            if (currentCharIndex < title.length) {
-                link.textContent += title[currentCharIndex];
-                currentCharIndex++;
-                setTimeout(typeNextChar, Math.random() * 3 + 1);
-            } else {
-                link.innerHTML += '<span class="cursor"></span>';
-                currentItemIndex++;
-                currentCharIndex = 0;
-                setTimeout(typeNextChar, 2);
-            }
-        }
-
-        window.onload = typeNextChar;
-    </script>
-</body>
-</html>
-`
-
-	t, err := template.New("index").Funcs(template.FuncMap{
-		"json": func(v interface{}) template.JS {
-			a, _ := json.Marshal(v)
-			return template.JS(a)
-		},
-	}).Parse(tmpl)
+func copyFile(src, dest string) error {
+	in, err := os.Open(src)
 	if err != nil {
-		fmt.Printf("Error parsing template: %v\n", err)
-		return
+		return err
 	}
-
-	file, err := os.Create("index.html")
+	defer in.Close()
+	out, err := os.Create(dest)
 	if err != nil {
-		fmt.Printf("Error creating index.html: %v\n", err)
-		return
+		return err
 	}
-	defer file.Close()
-
-	data := struct {
-		Articles  []Article
-		AvatarURL string
-	}{
-		Articles:  articles,
-		AvatarURL: avatarURL,
+	defer out.Close()
+	if _, err := io.Copy(out, in); err != nil {
+		return err
 	}
+	return out.Sync()
+}
 
-	err = t.Execute(file, data)
-	if err != nil {
-		fmt.Printf("Error executing template: %v\n", err)
-		return
+var imgRe = regexp.MustCompile(`!\[[^\]]*\]\(([^)]+)\)`)
+
+func ensureImgs(md string) {
+	for _, m := range imgRe.FindAllStringSubmatch(md, -1) {
+		p := strings.TrimSpace(m[1])
+		if p == "" || strings.HasPrefix(p, "http") {
+			continue
+		}
+		src := filepath.Join(srcDir, p)
+		dest := filepath.Join(outDir, p)
+		if _, err := os.Stat(dest); err == nil {
+			continue
+		}
+		if err := os.MkdirAll(filepath.Dir(dest), 0755); err == nil {
+			_ = copyFile(src, dest)
+		}
 	}
+}
 
-	fmt.Println("index.html generated successfully.")
+/* ---------------------- watcher ------------------------ */
+
+func watch() {
+	w, _ := fsnotify.NewWatcher()
+	defer w.Close()
+	_ = w.Add(srcDir)
+	for {
+		select {
+		case ev := <-w.Events:
+			if ev.Has(fsnotify.Write | fsnotify.Create | fsnotify.Remove | fsnotify.Rename) {
+				log.Printf("change: %s", ev)
+				if err := rebuildAll(); err != nil {
+					log.Printf("rebuild error: %v", err)
+				}
+			}
+		case err := <-w.Errors:
+			log.Printf("watch error: %v", err)
+		}
+	}
+}
+
+/* ---------------------- helpers ------------------------ */
+
+func firstHeading(md, fallback string) string {
+	for _, l := range strings.Split(md, "\n") {
+		l = strings.TrimSpace(l)
+		if strings.HasPrefix(l, "#") {
+			return strings.TrimSpace(strings.TrimLeft(l, "#"))
+		}
+	}
+	return strings.TrimSuffix(fallback, ".md")
 }
