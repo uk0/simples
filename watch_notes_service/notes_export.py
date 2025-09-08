@@ -46,3 +46,6 @@ if __name__ == "__main__":
     staged = glob.glob(staging_folder_path + '/*.staged')
     for s in staged:
         os.remove(s)
+
+    print("sync notes to server")
+    os.system("sync_note.sh")

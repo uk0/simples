@@ -2,3 +2,6 @@ simples
 .idea
 .DS_Store
 static/index.html
+
+sync.sh
+sync_note.sh
