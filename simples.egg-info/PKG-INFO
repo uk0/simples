@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: simples
+Version: 0.0.1
+Requires-Python: >=3.10
+Requires-Dist: markdown2==2.5.4
+Requires-Dist: markdownify==1.2.0
+Requires-Dist: pathlib
+Dynamic: requires-dist
+Dynamic: requires-python

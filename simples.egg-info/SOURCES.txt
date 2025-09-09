@@ -1,0 +1,13 @@
+README.md
+setup.py
+simples.egg-info/PKG-INFO
+simples.egg-info/SOURCES.txt
+simples.egg-info/dependency_links.txt
+simples.egg-info/entry_points.txt
+simples.egg-info/requires.txt
+simples.egg-info/top_level.txt
+watch_notes_service/__init__.py
+watch_notes_service/helpers.py
+watch_notes_service/note.py
+watch_notes_service/notes_export.py
+watch_notes_service/notescript.py
