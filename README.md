@@ -22,9 +22,9 @@
 go run main.go
 ```
 
-* gen md
+* Gen Markdown file from Mac Notes
 
-> modify `HOME_BASE`  or os.system(...) in notes_export.py
+> modify `HOME_BASE` and os.system(...) in notes_export.py
 
 ```bash
 python watch_notes_service/notes_export.py
