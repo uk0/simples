@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Complete Apple Notes Parser
-Based on analysis of threeplanetssoftware/apple_cloud_notes_parser
+Complete Apple Notes Parser with Attachments Export - Fixed Version
 """
 
 import sys
@@ -12,7 +11,8 @@ import struct
 import zlib
 import re
 import json
-from datetime import datetime
+import shutil
+from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any, Tuple
 from pathlib import Path
 
@@ -95,6 +95,18 @@ class AppleNotesProtoParser:
             self.pos += length
         elif wire_type == self.FIXED32:
             self.pos += 4
+
+
+class Attachment:
+    """表示一个附件"""
+
+    def __init__(self):
+        self.identifier = ""
+        self.type_uti = ""
+        self.filename = ""
+        self.media_path = ""
+        self.size = 0
+        self.data = None
 
 
 class AppleNote:
@@ -234,7 +246,9 @@ class AppleNote:
             # Attachment (field 12)
             elif field_number == 12 and wire_type == AppleNotesProtoParser.LENGTH_DELIMITED:
                 attach_data = parser.read_length_delimited()
-                self._parse_attachment(attach_data)
+                attachment = self._parse_attachment(attach_data)
+                if attachment:
+                    self.attachments.append(attachment)
 
             else:
                 parser.skip_field(wire_type)
@@ -290,7 +304,7 @@ class AppleNote:
     def _parse_attachment(self, data: bytes):
         """解析附件"""
         parser = AppleNotesProtoParser(data)
-        attachment = {}
+        attachment = Attachment()
 
         while parser.pos < len(data):
             tag_info = parser.read_tag()
@@ -303,23 +317,22 @@ class AppleNote:
             if field_number == 1 and wire_type == AppleNotesProtoParser.LENGTH_DELIMITED:
                 id_data = parser.read_length_delimited()
                 try:
-                    attachment['id'] = id_data.decode('utf-8', errors='ignore')
+                    attachment.identifier = id_data.decode('utf-8', errors='ignore')
                 except:
-                    attachment['id'] = id_data.hex()
+                    attachment.identifier = id_data.hex()
 
             # Type UTI (field 2)
             elif field_number == 2 and wire_type == AppleNotesProtoParser.LENGTH_DELIMITED:
                 type_data = parser.read_length_delimited()
                 try:
-                    attachment['type'] = type_data.decode('utf-8', errors='ignore')
+                    attachment.type_uti = type_data.decode('utf-8', errors='ignore')
                 except:
-                    attachment['type'] = str(type_data)
+                    attachment.type_uti = str(type_data)
 
             else:
                 parser.skip_field(wire_type)
 
-        if attachment:
-            self.attachments.append(attachment)
+        return attachment if attachment.identifier else None
 
     def _fallback_parse(self, data: bytes) -> bool:
         """备用解析方法"""
@@ -354,17 +367,292 @@ class AppleNote:
             return False
 
 
+class AttachmentExtractor:
+    """附件提取器"""
+
+    def __init__(self, db_path: str):
+        self.db_path = db_path
+        self.base_path = Path(db_path).parent
+        self.conn = sqlite3.connect(db_path)
+
+        # Apple Notes 附件可能的存储位置
+        self.attachment_paths = [
+            self.base_path / "Accounts",
+            self.base_path / "Media",
+            self.base_path / "FallbackImages",
+            self.base_path / "Previews"
+        ]
+
+        # 检查数据库表结构
+        self._check_database_schema()
+
+    def _check_database_schema(self):
+        """检查数据库表结构"""
+        cursor = self.conn.cursor()
+
+        # 获取ZICCLOUDSYNCINGOBJECT表的所有列
+        cursor.execute("PRAGMA table_info(ZICCLOUDSYNCINGOBJECT)")
+        columns = cursor.fetchall()
+        self.available_columns = [col[1] for col in columns]
+
+        print(f"    Available columns in database: {len(self.available_columns)} columns")
+
+    def get_attachment_details(self, attachment_id: str) -> Dict[str, Any]:
+        """从数据库获取附件详细信息"""
+        cursor = self.conn.cursor()
+
+        try:
+            # 首先尝试基本查询
+            basic_query = """
+                          SELECT ZIDENTIFIER, \
+                                 ZTYPEUTI, \
+                                 ZFILENAME, \
+                                 ZMEDIA, \
+                                 ZCREATIONDATE, \
+                                 ZMODIFICATIONDATE
+                          FROM ZICCLOUDSYNCINGOBJECT
+                          WHERE ZIDENTIFIER = ? \
+                             OR ZIDENTIFIER LIKE ? \
+                          """
+
+            results = cursor.execute(basic_query, (attachment_id, f"%{attachment_id}%")).fetchall()
+
+            if results:
+                row = results[0]
+                details = {
+                    'identifier': row[0],
+                    'type_uti': row[1],
+                    'filename': row[2],
+                    'media_id': row[3],
+                    'creation_date': row[4],
+                    'modification_date': row[5]
+                }
+
+                # 如果有media_id，尝试获取媒体文件信息
+                if details['media_id']:
+                    try:
+                        # 查询媒体记录
+                        media_query = """
+                                      SELECT ZFILENAME, ZIDENTIFIER
+                                      FROM ZICCLOUDSYNCINGOBJECT
+                                      WHERE Z_PK = ? \
+                                      """
+                        media_results = cursor.execute(media_query, (details['media_id'],)).fetchall()
+                        if media_results:
+                            details['media_filename'] = media_results[0][0]
+                            details['media_identifier'] = media_results[0][1]
+                    except Exception as e:
+                        print(f"      Warning: Could not get media info: {e}")
+
+                return details
+
+        except Exception as e:
+            print(f"      Warning: Database query error: {e}")
+
+        return {}
+
+    def find_attachment_file(self, attachment_id: str, filename: str = None) -> Optional[Path]:
+        """在文件系统中查找附件文件"""
+        # 构建搜索模式
+        patterns = []
+
+        if filename:
+            patterns.append(filename)
+            # 去掉扩展名尝试
+            name_without_ext = os.path.splitext(filename)[0]
+            patterns.append(f"{name_without_ext}*")
+
+        # 基于ID的搜索模式
+        if attachment_id:
+            # 清理ID（去掉可能的特殊字符）
+            clean_id = re.sub(r'[^a-zA-Z0-9]', '', attachment_id)
+            if clean_id:
+                patterns.extend([
+                    f"*{clean_id}*",
+                    f"*{clean_id[:16]}*" if len(clean_id) > 16 else clean_id,
+                    f"*{clean_id[:8]}*" if len(clean_id) > 8 else clean_id
+                ])
+
+        # 在所有可能的路径中搜索
+        for base_path in self.attachment_paths:
+            if not base_path.exists():
+                continue
+
+            # 搜索文件
+            for pattern in patterns:
+                try:
+                    # 使用glob搜索
+                    for file_path in base_path.rglob(pattern):
+                        if file_path.is_file():
+                            # 验证文件大小
+                            if file_path.stat().st_size > 0:
+                                return file_path
+                except Exception as e:
+                    continue
+
+        # 尝试在整个Notes目录下搜索
+        try:
+            notes_dir = self.base_path
+            if attachment_id:
+                # 搜索包含ID前8位的文件
+                short_id = attachment_id[:8] if len(attachment_id) > 8 else attachment_id
+                for file_path in notes_dir.rglob(f"*{short_id}*"):
+                    if file_path.is_file() and file_path.stat().st_size > 0:
+                        return file_path
+        except Exception:
+            pass
+
+        return None
+
+    def extract_attachment(self, attachment: Attachment, output_dir: Path) -> bool:
+        """提取并保存附件"""
+        try:
+            details = self.get_attachment_details(attachment.identifier)
+
+            if not details and not attachment.identifier:
+                print(f"      ✗ No attachment identifier")
+                return False
+
+            # 确定文件名
+            filename = None
+            if details.get('filename'):
+                filename = details['filename']
+
+            # 根据UTI生成文件名
+            if not filename:
+                ext = self._uti_to_extension(attachment.type_uti)
+                base_name = attachment.identifier[:8] if attachment.identifier else "attachment"
+                filename = f"{base_name}{ext}"
+
+            # 确保文件名有扩展名
+            if '.' not in filename:
+                ext = self._uti_to_extension(attachment.type_uti)
+                if ext:
+                    filename = f"{filename}{ext}"
+
+            # 清理文件名
+            filename = self._sanitize_filename(filename)
+            output_path = output_dir / filename
+
+            # 尝试查找文件
+            source_file = self.find_attachment_file(
+                attachment.identifier,
+                details.get('filename') or details.get('media_filename')
+            )
+
+            if source_file:
+                shutil.copy2(source_file, output_path)
+                attachment.filename = filename
+                print(f"      ✓ Extracted: {filename} (from {source_file.name})")
+                return True
+
+            # 如果有media_identifier，尝试用它查找
+            if details.get('media_identifier'):
+                source_file = self.find_attachment_file(details['media_identifier'])
+                if source_file:
+                    shutil.copy2(source_file, output_path)
+                    attachment.filename = filename
+                    print(f"      ✓ Extracted: {filename} (via media ID)")
+                    return True
+
+            print(f"      ✗ Could not find file for: {filename}")
+
+            # 保存附件信息到文本文件
+            info_file = output_dir / f"{filename}.info.txt"
+            with open(info_file, 'w') as f:
+                f.write(f"Attachment Information\n")
+                f.write(f"=====================\n")
+                f.write(f"Identifier: {attachment.identifier}\n")
+                f.write(f"Type: {attachment.type_uti}\n")
+                if details:
+                    for key, value in details.items():
+                        f.write(f"{key}: {value}\n")
+
+            return False
+
+        except Exception as e:
+            print(f"      ✗ Error extracting attachment: {e}")
+            return False
+
+    def _uti_to_extension(self, uti: str) -> str:
+        """将UTI转换为文件扩展名"""
+        if not uti:
+            return ".dat"
+
+        uti_lower = uti.lower()
+
+        uti_map = {
+            'public.jpeg': '.jpg',
+            'public.png': '.png',
+            'public.heic': '.heic',
+            'public.heif': '.heif',
+            'public.pdf': '.pdf',
+            'public.plain-text': '.txt',
+            'public.rtf': '.rtf',
+            'public.html': '.html',
+            'public.xml': '.xml',
+            'public.json': '.json',
+            'public.mpeg-4': '.mp4',
+            'public.mpeg-4-audio': '.m4a',
+            'public.mp3': '.mp3',
+            'public.movie': '.mov',
+            'com.apple.quicktime-movie': '.mov',
+            'public.avi': '.avi',
+            'public.data': '.dat',
+            'com.microsoft.word.doc': '.doc',
+            'com.microsoft.excel.xls': '.xls',
+            'com.microsoft.powerpoint.ppt': '.ppt',
+            'org.openxmlformats.wordprocessingml.document': '.docx',
+            'org.openxmlformats.spreadsheetml.sheet': '.xlsx',
+            'org.openxmlformats.presentationml.presentation': '.pptx',
+            'com.apple.webarchive': '.webarchive',
+            'public.vcard': '.vcf',
+            'public.image': '.img'
+        }
+
+        for key, ext in uti_map.items():
+            if key in uti_lower:
+                return ext
+
+        # 尝试从UTI提取扩展名
+        if '.' in uti:
+            parts = uti.split('.')
+            last_part = parts[-1].lower()
+            if len(last_part) <= 5 and last_part.isalnum():
+                return f".{last_part}"
+
+        return ".dat"
+
+    def _sanitize_filename(self, filename: str) -> str:
+        """清理文件名"""
+        # 移除非法字符
+        filename = re.sub(r'[<>:"/\\|?*\x00-\x1f]', '_', filename)
+        # 限制长度
+        if len(filename) > 200:
+            name, ext = os.path.splitext(filename)
+            filename = name[:200 - len(ext)] + ext
+        return filename or "unnamed"
+
+    def close(self):
+        """关闭数据库连接"""
+        if self.conn:
+            self.conn.close()
+
+
 class AppleNotesExporter:
     """Apple Notes 导出器"""
 
     def __init__(self, db_path: str, output_dir: str):
         self.db_path = db_path
         self.output_dir = output_dir
+        self.attachment_extractor = AttachmentExtractor(db_path)
         self.stats = {
             'total': 0,
             'success': 0,
             'failed': 0,
             'with_attachments': 0,
+            'attachments_extracted': 0,
+            'attachments_failed': 0,
             'with_tables': 0,
             'with_checklists': 0
         }
@@ -384,19 +672,19 @@ class AppleNotesExporter:
 
         # 查询笔记数据
         query = """
-                SELECT nd.Z_PK             as note_id, \
-                       nd.ZDATA            as data, \
-                       n.ZTITLE            as title, \
-                       n.ZSNIPPET          as snippet, \
-                       n.ZCREATIONDATE     as created, \
-                       n.ZMODIFICATIONDATE as modified, \
-                       n.ZFOLDER           as folder_id, \
+                SELECT nd.Z_PK             as note_id,
+                       nd.ZDATA            as data,
+                       n.ZTITLE            as title,
+                       n.ZSNIPPET          as snippet,
+                       n.ZCREATIONDATE     as created,
+                       n.ZMODIFICATIONDATE as modified,
+                       n.ZFOLDER           as folder_id,
                        f.ZTITLE            as folder_name
                 FROM ZICNOTEDATA nd
                          LEFT JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
                          LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
                 WHERE nd.ZDATA IS NOT NULL
-                ORDER BY nd.Z_PK \
+                ORDER BY nd.Z_PK
                 """
 
         results = cursor.execute(query).fetchall()
@@ -409,6 +697,7 @@ class AppleNotesExporter:
             self._export_note(row)
 
         conn.close()
+        self.attachment_extractor.close()
 
         # 打印统计
         self._print_stats()
@@ -462,20 +751,23 @@ class AppleNotesExporter:
         else:
             folder_path = self.output_dir
 
-        # 生成文件名
+        # 为每个笔记创建独立目录
         if note.title:
-            base_name = f"{note_id:04d} - {note.title}"
+            note_dir_name = f"{note_id:04d} - {note.title}"
         elif note.text:
             first_line = note.text.split('\n')[0][:50]
-            base_name = f"{note_id:04d} - {first_line}"
+            note_dir_name = f"{note_id:04d} - {first_line}"
         else:
-            base_name = f"{note_id:04d} - Note"
+            note_dir_name = f"{note_id:04d} - Note"
 
-        filename = self._sanitize_filename(base_name) + ".txt"
-        filepath = os.path.join(folder_path, filename)
+        note_dir_name = self._sanitize_filename(note_dir_name)
+        note_dir_path = os.path.join(folder_path, note_dir_name)
+        os.makedirs(note_dir_path, exist_ok=True)
 
-        # 写入内容
-        with open(filepath, 'w', encoding='utf-8') as f:
+        # 保存笔记内容
+        note_file_path = os.path.join(note_dir_path, "note.txt")
+
+        with open(note_file_path, 'w', encoding='utf-8') as f:
             # 元数据头
             f.write("=" * 60 + "\n")
             f.write(f"Note ID: {note_id}\n")
@@ -499,12 +791,32 @@ class AppleNotesExporter:
                 for link in note.links:
                     f.write(f"  - {link}\n")
 
+            # 附件信息
             if note.attachments:
                 f.write("\n\n" + "=" * 60 + "\n")
-                f.write("Attachments:\n")
-                for att in note.attachments:
-                    f.write(f"  - ID: {att.get('id', 'unknown')}\n")
-                    f.write(f"    Type: {att.get('type', 'unknown')}\n")
+                f.write(f"Attachments ({len(note.attachments)}):\n")
+
+                # 创建附件目录
+                attachments_dir = os.path.join(note_dir_path, "attachments")
+                os.makedirs(attachments_dir, exist_ok=True)
+
+                # 提取附件
+                print(f"    Extracting {len(note.attachments)} attachment(s)...")
+                for i, att in enumerate(note.attachments, 1):
+                    success = self.attachment_extractor.extract_attachment(
+                        att, Path(attachments_dir)
+                    )
+
+                    if success:
+                        self.stats['attachments_extracted'] += 1
+                        f.write(f"  {i}. {att.filename or 'attachment'}\n")
+                        f.write(f"     Type: {att.type_uti}\n")
+                        f.write(f"     ID: {att.identifier[:16] if att.identifier else 'unknown'}...\n")
+                    else:
+                        self.stats['attachments_failed'] += 1
+                        f.write(f"  {i}. [Not found - see .info.txt file]\n")
+                        f.write(f"     Type: {att.type_uti}\n")
+                        f.write(f"     ID: {att.identifier[:16] if att.identifier else 'unknown'}...\n")
 
             if note.checklists:
                 f.write("\n\n" + "=" * 60 + "\n")
@@ -512,12 +824,6 @@ class AppleNotesExporter:
                 for item in note.checklists:
                     status = "✓" if item.get('done') else "○"
                     f.write(f"  {status} {item.get('uuid', 'item')}\n")
-
-        # 保存原始数据（用于调试）
-        if note.raw_data:
-            raw_filepath = os.path.join(folder_path, f"{note_id:04d}_raw.bin")
-            with open(raw_filepath, 'wb') as f:
-                f.write(note.raw_data)
 
     def _sanitize_filename(self, name: str) -> str:
         """清理文件名"""
@@ -534,8 +840,8 @@ class AppleNotesExporter:
             try:
                 # Apple的时间戳是从2001-01-01开始的
                 apple_epoch = datetime(2001, 1, 1)
-                dt = apple_epoch.timestamp() + timestamp
-                return datetime.fromtimestamp(dt).strftime('%Y-%m-%d %H:%M:%S')
+                dt = apple_epoch + timedelta(seconds=timestamp)
+                return dt.strftime('%Y-%m-%d %H:%M:%S')
             except:
                 return str(timestamp)
         return "unknown"
@@ -547,9 +853,11 @@ class AppleNotesExporter:
         print(f"  Total notes: {self.stats['total']}")
         print(f"  Successfully exported: {self.stats['success']}")
         print(f"  Failed: {self.stats['failed']}")
-        print(f"  With attachments: {self.stats['with_attachments']}")
-        print(f"  With tables: {self.stats['with_tables']}")
-        print(f"  With checklists: {self.stats['with_checklists']}")
+        print(f"  Notes with attachments: {self.stats['with_attachments']}")
+        print(f"  Attachments extracted: {self.stats['attachments_extracted']}")
+        print(f"  Attachments not found: {self.stats['attachments_failed']}")
+        print(f"  Notes with tables: {self.stats['with_tables']}")
+        print(f"  Notes with checklists: {self.stats['with_checklists']}")
         print(f"\nOutput directory: {self.output_dir}")
 
 
@@ -576,6 +884,8 @@ def main():
         exporter.export_all()
     except Exception as e:
         print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 
