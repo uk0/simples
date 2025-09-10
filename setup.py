@@ -8,6 +8,7 @@ setup(
     install_requires=[
         "markdown2==2.5.4",
         "markdownify==1.2.0",
+        "pyqt6",
         "pathlib",
     ],
     entry_points={
