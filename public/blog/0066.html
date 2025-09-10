@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP，让Nginx 把用户</title>
+    <link rel="icon" href="../favicon.ico">
+    
+    <link rel="stylesheet" href="../a.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body class="win95-bg">
+
+<table class="outer" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center" valign="top">
+            <table class="frame" width="650" border="0" cellspacing="0" cellpadding="6">
+                
+                <tr>
+                    <td class="avatar-cell" width="64" rowspan="2" align="center">
+                        <a href="../index.html">
+                            <img class="avatar" src="../avatar.png" width="48" height="48" alt="avatar">
+                        </a>
+                    </td>
+                    <td class="titlebar" align="center">
+                        <h2 class="title" style="margin:4px 0;">Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP，让Nginx 把用户</h2>
+                        <div class="post-category">Category: blog</div>
+                    </td>
+                    <td class="infobar" width="160" rowspan="2" align="center">
+                        <a href="../index.html">Home</a>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="nav" align="center">
+                        <a href="../index.html">Index</a>
+                        <span class="sep">|</span>
+                        <a href="../about.html">About</a>
+                    </td>
+                </tr>
+
+                
+                <tr>
+                    <td colspan="3">
+                        <hr class="hr-etched">
+                    </td>
+                </tr>
+
+                
+                <tr>
+                    <td class="content" colspan="3">
+                        <div class="post-body"><h1>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP，让Nginx 把用户IP传递到后端里面去。</h1>
+<h2>问题</h2>
+<p>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP.</p>
+<h2>解决办法</h2>
+<pre><code>1. Nginx 开启 http\_realip\_module 模块    
+    
+./configure --with-http\_realip\_module    
+    
+make &amp;&amp; make install    
+    
+    
+2. Nginx 前端 增加 proxy\_set\_header    
+    
+proxy\_set\_header X-Real-IP $remote\_addr;    
+    
+    
+3. Nginx 后端 增加 real\_ip\_header    
+    
+real\_ip\_header X-Real-IP;    
+    
+后端配置 必须重启 Nginx 才能生效， reload 不生效。    
+    
+4. Tomcat 后端 需要修改 Service.xml    
+    
+找到     
+pattern=&quot;%h %l %u %t &amp;quot;%r&amp;quot; %s %b&quot; /&gt;    
+    
+修改为     
+pattern=&quot;%{X-FORWARDED-FOR}i %l %u %t %r %s %b %D %q %{User-Agent}i %T&quot; resolveHosts=&quot;false&quot;/&gt;    
+    
+</code></pre>
+</div>
+                    </td>
+                </tr>
+
+                
+                <tr>
+                    <td colspan="3" align="right" style="font-size:small;">
+                        <a href="#">↑ Back to top</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    
+    <tr>
+        <td align="center" valign="bottom" height="60">
+            <font size="-1">
+                <a href="../index.html">Back to Home</a>
+            </font>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

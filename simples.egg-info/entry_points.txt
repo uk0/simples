@@ -1,2 +1,0 @@
-[console_scripts]
-notespush = watch_notes_service.notes_export:main

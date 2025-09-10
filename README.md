@@ -1,6 +1,6 @@
 ## simples
 
-* sync Mac Notes to web page
+* Sync Mac Notes to web page
 
 
 ![img.png](img.png)
@@ -19,20 +19,45 @@
 * web page server
 
 ```bash
-go run main.go
+#x86
+make build 
+# or
+go build .
 ```
 
-* Gen Markdown file from Mac Notes
-
-> modify `HOME_BASE` and os.system(...) in notes_export.py
+* Start Gui Config
 
 ```bash
-python watch_notes_service/notes_export.py
+python watch_notes_service_v2/qt_main.py
 ```
 
 * open `http://localhost:8080`
 
 
-#### 感谢（复制了这个大佬的代码）
+#### 感谢
 
 * https://github.com/keithvassallomt/taskbridge
+* https://www.ciofecaforensics.com/2024/12/10/ios18-notes/
+* https://github.com/threeplanetssoftware/apple_cloud_notes_parser
+
+
+
+### build package 
+
+```bash
+python -m pip install -U pip setuptools wheel
+python -m pip install PySide6 nuitka ordered-set zstandard
+❯ python -m nuitka --version
+2.7.13
+Commercial: None
+Python: 3.13.7 | packaged by Anaconda, Inc. | (main, Sep  9 2025, 19:54:17) [Clang 17.0.6 ]
+Flavor: Anaconda Python
+GIL: yes
+Executable: ~/miniconda/envs/zlibs/bin/python
+OS: Darwin
+Arch: arm64
+macOSRelease: 15.5
+Version C compiler: /opt/homebrew/opt/llvm/bin/clang (clang 20.1.7).
+```
+
+* Nuitka

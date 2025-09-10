@@ -5,78 +5,74 @@
     <title>NeoJ Blog</title>
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="a.css">
-
-    <!-- 只为固定页脚附加少量样式 -->
-    <style>
-        html,body{height:100%;margin:0;}
-        footer{
-            position:fixed;
-            left:0;right:0;bottom:0;       /* 永远贴底 */
-            height:60px;line-height:18px;  /* 与旧版高度一致 */
-            text-align:center;
-            background:transparent;        /* 继续透出 syslogo 背景 */
-            font-size:smaller;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-<body background="syslogo.png" style="margin:0;">
+<body class="win95-bg">
 
-<!-- ================= 外层全屏表格（主体） ================= -->
-<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+<table class="outer" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td align="center" valign="top">
+            <table class="frame" width="650" border="0" cellspacing="0" cellpadding="6">
 
-            <!-- ============== 650 px 中央版芯 ============== -->
-            <table width="650" border="0" cellspacing="0" cellpadding="6">
-
-                <!-- ▍页眉：头像 + 标题 + 更新时间 ---------------- -->
+                <!-- Header: avatar + title + update time -->
                 <tr>
-                    <td width="64" rowspan="2" align="center">
-                        <a href="index.html"><img src="avatar.png" width="48" height="48" alt="avatar"></a>
+                    <td class="avatar-cell" width="64" rowspan="2" align="center">
+                        <a href="index.html"><img class="avatar" src="avatar.png" width="48" height="48" alt="avatar"></a>
                     </td>
-                    <td align="center" bgcolor="#e0e0e0">
-                        <h2 style="margin:4px 0;">NeoJ&nbsp;Blog</h2>
+                    <td class="titlebar" align="center">
+                        <h2 class="title">NeoJ Blog</h2>
                     </td>
-                    <td width="120" rowspan="2" align="center" bgcolor="#f0f0f0" style="font-size:small">
-                        Last&nbsp;Update:<br>{{ .Now }}
+                    <td class="infobar" width="160" rowspan="2" align="center">
+                        <div class="infotitle">Last Update:</div>
+                        <div class="infovalue">{{ .Now }}</div>
                     </td>
                 </tr>
 
-                <!-- ▍二级导航 ----------------------------------- -->
+                <!-- Secondary navigation -->
                 <tr>
-                    <td align="center" bgcolor="#d0d0d0">
-                        <a href="index.html">Index</a> |
-                        <a href="about.html">About</a> |
+                    <td class="nav" align="center">
+                        <a href="index.html">Index</a>
+                        <span class="sep">|</span>
+                        <a href="about.html">About</a>
+                        <span class="sep">|</span>
                         <a href="https://github.com/uk0">GitHub</a>
                     </td>
                 </tr>
 
-                <!-- ▍文章列表 ----------------------------------- -->
+                <!-- Article list grouped by category -->
                 <tr>
-                    <td colspan="3">
-                        <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                    <td class="content" colspan="3">
+                        {{ range .Categories }}
+                        <div class="cat-header">
+                            <h3 id="{{ .Name }}" class="cat-title">{{ .Name }}</h3>
+                        </div>
+                        <table class="postlist" width="100%" border="1" cellpadding="5" cellspacing="0">
                             {{ range .Posts }}
                             <tr>
-                                <td width="70%"><a href="{{ .File }}">{{ .Title }}</a></td>
-                                <td width="30%" align="right">{{ .Date.Format "2006-01-02" }}</td>
+                                <td width="70%">
+                                    <a href="{{ .File }}">{{ .Title }}</a>
+                                </td>
+                                <td width="30%" align="right" class="date">
+                                    {{ .Date.Format "2006-01-02" }}
+                                </td>
                             </tr>
                             {{ end }}
                         </table>
+                        {{ end }}
                     </td>
                 </tr>
 
-            </table><!-- /650 版芯 -->
+            </table>
         </td>
     </tr>
-</table><!-- /外层全屏表格 -->
+</table>
 
-<!-- ======================== 固定页脚 ======================== -->
-<footer>
+<footer class="footer">
     Last generated: {{ .Now }}<br>
     Content licensed under
     <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">
-        CC&nbsp;BY&nbsp;4.0
+        CC BY 4.0
     </a>
 </footer>
 

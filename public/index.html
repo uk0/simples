@@ -5,79 +5,113 @@
     <title>NeoJ Blog</title>
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="a.css">
-
-    
-    <style>
-        html,body{height:100%;margin:0;}
-        footer{
-            position:fixed;
-            left:0;right:0;bottom:0;        
-            height:60px;line-height:18px;   
-            text-align:center;
-            background:transparent;         
-            font-size:smaller;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-<body background="syslogo.png" style="margin:0;">
+<body class="win95-bg">
 
-
-<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+<table class="outer" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td align="center" valign="top">
-
-            
-            <table width="650" border="0" cellspacing="0" cellpadding="6">
+            <table class="frame" width="650" border="0" cellspacing="0" cellpadding="6">
 
                 
                 <tr>
-                    <td width="64" rowspan="2" align="center">
-                        <a href="index.html"><img src="avatar.png" width="48" height="48" alt="avatar"></a>
+                    <td class="avatar-cell" width="64" rowspan="2" align="center">
+                        <a href="index.html"><img class="avatar" src="avatar.png" width="48" height="48" alt="avatar"></a>
                     </td>
-                    <td align="center" bgcolor="#e0e0e0">
-                        <h2 style="margin:4px 0;">NeoJ&nbsp;Blog</h2>
+                    <td class="titlebar" align="center">
+                        <h2 class="title">NeoJ Blog</h2>
                     </td>
-                    <td width="120" rowspan="2" align="center" bgcolor="#f0f0f0" style="font-size:small">
-                        Last&nbsp;Update:<br>2025-09-09 00:18
+                    <td class="infobar" width="160" rowspan="2" align="center">
+                        <div class="infotitle">Last Update:</div>
+                        <div class="infovalue">2025-09-11 06:03</div>
                     </td>
                 </tr>
 
                 
                 <tr>
-                    <td align="center" bgcolor="#d0d0d0">
-                        <a href="index.html">Index</a> |
-                        <a href="about.html">About</a> |
+                    <td class="nav" align="center">
+                        <a href="index.html">Index</a>
+                        <span class="sep">|</span>
+                        <a href="about.html">About</a>
+                        <span class="sep">|</span>
                         <a href="https://github.com/uk0">GitHub</a>
                     </td>
                 </tr>
 
                 
                 <tr>
-                    <td colspan="3">
-                        <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                    <td class="content" colspan="3">
+                        
+                        <div class="cat-header">
+                            <h3 id="Test" class="cat-title">Test</h3>
+                        </div>
+                        <table class="postlist" width="100%" border="1" cellpadding="5" cellspacing="0">
                             
                             <tr>
-                                <td width="70%"><a href="659dcc2201f49a86b22325860c37c17f.html">Vultr 账户删除</a></td>
-                                <td width="30%" align="right">2025-09-09</td>
-                            </tr>
-                            
-                            <tr>
-                                <td width="70%"><a href="02142e369c62602bb1be3e3440a36364.html">使用 tunnelbroker 构建自己的 IPv6 代理池</a></td>
-                                <td width="30%" align="right">2025-09-09</td>
-                            </tr>
-                            
-                            <tr>
-                                <td width="70%"><a href="f63297edfc7d9bdb426ef718ae55d917.html">RocketMQ Install</a></td>
-                                <td width="30%" align="right">2025-09-09</td>
-                            </tr>
-                            
-                            <tr>
-                                <td width="70%"><a href="947a237e5b203af5aa1a1e6615974de0.html">Nginx 做为前端负载均衡时，后端服务器获取的 IP 为 Nginx 的本机 IP ，让 Nginx 把用户 IP 传递到后端里面去。</a></td>
-                                <td width="30%" align="right">2025-09-09</td>
+                                <td width="70%">
+                                    <a href="Test/0074.html">Test11111111111111111111111111111111111111111111</a>
+                                </td>
+                                <td width="30%" align="right" class="date">
+                                    2025-09-11
+                                </td>
                             </tr>
                             
                         </table>
+                        
+                        <div class="cat-header">
+                            <h3 id="blog" class="cat-title">blog</h3>
+                        </div>
+                        <table class="postlist" width="100%" border="1" cellpadding="5" cellspacing="0">
+                            
+                            <tr>
+                                <td width="70%">
+                                    <a href="blog/0068.html">BGP 线路分类</a>
+                                </td>
+                                <td width="30%" align="right" class="date">
+                                    2025-09-11
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td width="70%">
+                                    <a href="blog/0067.html">RocketMQ Install</a>
+                                </td>
+                                <td width="30%" align="right" class="date">
+                                    2025-09-11
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td width="70%">
+                                    <a href="blog/0066.html">Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP，让Nginx 把用户</a>
+                                </td>
+                                <td width="30%" align="right" class="date">
+                                    2025-09-11
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td width="70%">
+                                    <a href="blog/0064.html">Vultr 账户删除</a>
+                                </td>
+                                <td width="30%" align="right" class="date">
+                                    2025-09-11
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td width="70%">
+                                    <a href="blog/0063.html">使用tunnelbroker构建自己的IPv6代理池</a>
+                                </td>
+                                <td width="30%" align="right" class="date">
+                                    2025-09-11
+                                </td>
+                            </tr>
+                            
+                        </table>
+                        
                     </td>
                 </tr>
 
@@ -86,12 +120,11 @@
     </tr>
 </table>
 
-
-<footer>
-    Last generated: 2025-09-09 00:18<br>
+<footer class="footer">
+    Last generated: 2025-09-11 06:03<br>
     Content licensed under
     <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">
-        CC&nbsp;BY&nbsp;4.0
+        CC BY 4.0
     </a>
 </footer>
 

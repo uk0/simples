@@ -3,51 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ .Title }}</title>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" href="../favicon.ico">
     <!-- 站点公用复古样式 -->
-    <link rel="stylesheet" href="a.css">
+    <link rel="stylesheet" href="../a.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-<body background="syslogo.png" style="margin:0;">
+<body class="win95-bg">
 
-<!-- ====================== 全屏外壳 ====================== -->
-<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+<table class="outer" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td align="center" valign="top">
-
-            <!-- =============== 650 px 中央版芯 =============== -->
-            <table width="650" border="0" cellspacing="0" cellpadding="6">
-
-                <!-- ▍页眉：头像 + 站点名 + Home 链接 -->
+            <table class="frame" width="650" border="0" cellspacing="0" cellpadding="6">
+                <!-- 页眉：头像 + 标题 + Home -->
                 <tr>
-                    <td width="64" rowspan="2" align="center">
-                        <a href="index.html"><img src="avatar.png" width="48" height="48" alt="avatar"></a>
+                    <td class="avatar-cell" width="64" rowspan="2" align="center">
+                        <a href="../index.html">
+                            <img class="avatar" src="../avatar.png" width="48" height="48" alt="avatar">
+                        </a>
                     </td>
-                    <td align="center" bgcolor="#e0e0e0">
-                        <h2 style="margin:4px 0;">{{ .Title }}</h2>
+                    <td class="titlebar" align="center">
+                        <h2 class="title" style="margin:4px 0;">{{ .Title }}</h2>
+                        <div class="post-category">Category: {{ .Category }}</div>
                     </td>
-                    <td width="120" rowspan="2" align="center" bgcolor="#f0f0f0">
-                        <a href="index.html">Home</a>
+                    <td class="infobar" width="160" rowspan="2" align="center">
+                        <a href="../index.html">Home</a>
                     </td>
                 </tr>
+                <!-- 二级导航 -->
                 <tr>
-                    <td align="center" bgcolor="#d0d0d0">
-                        <a href="index.html">Index</a> |
-                        <a href="about.html">About</a>
+                    <td class="nav" align="center">
+                        <a href="../index.html">Index</a>
+                        <span class="sep">|</span>
+                        <a href="../about.html">About</a>
                     </td>
                 </tr>
 
-                <!-- ▍分隔线 -->
-                <tr><td colspan="3"><hr style="border:0;border-top:1px solid #ccc;"></td></tr>
-
-                <!-- ▍正文（已限制 650 px 内） -->
+                <!-- 分隔线 -->
                 <tr>
                     <td colspan="3">
+                        <hr class="hr-etched">
+                    </td>
+                </tr>
+
+                <!-- 正文 -->
+                <tr>
+                    <td class="content" colspan="3">
                         <div class="post-body">{{ .Body }}</div>
                     </td>
                 </tr>
 
-                <!-- ▍回到顶部链接 -->
+                <!-- 回到顶部 -->
                 <tr>
                     <td colspan="3" align="right" style="font-size:small;">
                         <a href="#">↑ Back to top</a>
@@ -57,11 +63,11 @@
         </td>
     </tr>
 
-    <!-- ====================== 页脚 ====================== -->
+    <!-- 页脚 -->
     <tr>
         <td align="center" valign="bottom" height="60">
             <font size="-1">
-                <a href="index.html">Back to Home</a>
+                <a href="../index.html">Back to Home</a>
             </font>
         </td>
     </tr>
