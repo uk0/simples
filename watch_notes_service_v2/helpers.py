@@ -51,9 +51,17 @@ def html_to_markdown(html: str) -> str:
 
     # 2) 保持 <ul> 之前的换行（原需求）
     html = html.replace("<ul", "<br><ul")
+    # 去掉i标签
+    html = html.replace("</i>", "")
+    html = html.replace("<i>", "")
 
     # 3) markdownify
-    md_text = md(html, heading_style="ATX", newline_style="SPACES")
+    md_text = md( html,
+        code_language='',  # 空字符串表示使用默认语言标记
+        escape_underscores=False,  # 禁用下划线转义
+        escape_asterisks=False,    # 禁用星号转义
+        heading_style="ATX",
+         newline_style="SPACES")
 
     # 4) 把换行替换成带两个空格的软换行
-    return md_text.replace("\n", "  \n")
+    return md_text

@@ -14,7 +14,7 @@ from enum import IntEnum
 
 import helpers
 
-DEBUG = False
+DEBUG = True
 
 
 class ProtoVarInt:
@@ -1502,30 +1502,30 @@ class AppleNotesExporter:
         print(f"\nOutput directory: {self.output_dir}")
 
 #
-# def main():
-#     """主函数"""
-#     default_db = os.path.expanduser("~/Library/Group\ Containers/group.com.apple.notes/NoteStore.sqlite")
-#
-#     if len(sys.argv) > 1:
-#         db_path = sys.argv[1]
-#     else:
-#         db_path = default_db
-#         print(f"Using default database: {db_path}")
-#
-#     if len(sys.argv) > 2:
-#         output_dir = sys.argv[2]
-#     else:
-#         output_dir = "apple_notes_export"
-#
-#     try:
-#         exporter = AppleNotesExporter(db_path, output_dir)
-#         exporter.export_all(folder_name='blog')
-#     except Exception as e:
-#         print(f"Error: {e}")
-#         import traceback
-#         traceback.print_exc()
-#         sys.exit(1)
-#
-#
-# if __name__ == "__main__":
-#     main()
+def main():
+    """主函数"""
+    default_db = os.path.expanduser("~/Library/Group Containers/group.com.apple.notes/NoteStore.sqlite")
+
+    if len(sys.argv) > 1:
+        db_path = sys.argv[1]
+    else:
+        db_path = default_db
+        print(f"Using default database: {db_path}")
+
+    if len(sys.argv) > 2:
+        output_dir = sys.argv[2]
+    else:
+        output_dir = "/tmp/apple_notes_export"
+
+    try:
+        exporter = AppleNotesExporter(db_path, output_dir)
+        exporter.export_all(folder_name='blog')
+    except Exception as e:
+        print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

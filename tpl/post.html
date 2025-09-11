@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>{{ .Title }}</title>
     <link rel="icon" href="../favicon.ico">
+
+
     <!-- 站点公用复古样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/routeros.min.css">
+
     <link rel="stylesheet" href="../a.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -72,5 +76,32 @@
         </td>
     </tr>
 </table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+
+<!-- 引入 highlight.js 库 -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+<script>
+
+    if (document.readyState === "loading") {
+        // 此时加载尚未完成
+        document.addEventListener("DOMContentLoaded", function() {
+            hljs.highlightAll();
+            hljs.initLineNumbersOnLoad();
+        });
+    } else {
+        // `DOMContentLoaded` 已经被触发
+        hljs.highlightAll();
+        hljs.initLineNumbersOnLoad();
+    }
+
+
+</script>
 </body>
 </html>

@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP，让Nginx 把用户</title>
     <link rel="icon" href="../favicon.ico">
+
+
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/routeros.min.css">
+
     <link rel="stylesheet" href="../a.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -53,32 +57,32 @@
 <h2>问题</h2>
 <p>Nginx 做为前端负载均衡时，后端服务器获取的IP为 Nginx 的本机IP.</p>
 <h2>解决办法</h2>
-<pre><code>1. Nginx 开启 http\_realip\_module 模块    
-    
-./configure --with-http\_realip\_module    
-    
-make &amp;&amp; make install    
-    
-    
-2. Nginx 前端 增加 proxy\_set\_header    
-    
-proxy\_set\_header X-Real-IP $remote\_addr;    
-    
-    
-3. Nginx 后端 增加 real\_ip\_header    
-    
-real\_ip\_header X-Real-IP;    
-    
-后端配置 必须重启 Nginx 才能生效， reload 不生效。    
-    
-4. Tomcat 后端 需要修改 Service.xml    
-    
-找到     
-pattern=&quot;%h %l %u %t &amp;quot;%r&amp;quot; %s %b&quot; /&gt;    
-    
-修改为     
-pattern=&quot;%{X-FORWARDED-FOR}i %l %u %t %r %s %b %D %q %{User-Agent}i %T&quot; resolveHosts=&quot;false&quot;/&gt;    
-    
+<pre><code>1. Nginx 开启 http_realip_module 模块  
+  
+./configure --with-http_realip_module  
+  
+make &amp;&amp; make install  
+  
+  
+2. Nginx 前端 增加 proxy_set_header  
+  
+proxy_set_header X-Real-IP $remote_addr;  
+  
+  
+3. Nginx 后端 增加 real_ip_header  
+  
+real_ip_header X-Real-IP;  
+  
+后端配置 必须重启 Nginx 才能生效， reload 不生效。  
+  
+4. Tomcat 后端 需要修改 Service.xml  
+  
+找到   
+pattern=&quot;%h %l %u %t &amp;quot;%r&amp;quot; %s %b&quot; /&gt;  
+  
+修改为   
+pattern=&quot;%{X-FORWARDED-FOR}i %l %u %t %r %s %b %D %q %{User-Agent}i %T&quot; resolveHosts=&quot;false&quot;/&gt;  
+  
 </code></pre>
 </div>
                     </td>
@@ -103,5 +107,32 @@ pattern=&quot;%{X-FORWARDED-FOR}i %l %u %t %r %s %b %D %q %{User-Agent}i %T&quot
         </td>
     </tr>
 </table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+<script>
+
+    if (document.readyState === "loading") {
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            hljs.highlightAll();
+            hljs.initLineNumbersOnLoad();
+        });
+    } else {
+        
+        hljs.highlightAll();
+        hljs.initLineNumbersOnLoad();
+    }
+
+
+</script>
 </body>
 </html>

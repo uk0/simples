@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>BGP 线路分类</title>
     <link rel="icon" href="../favicon.ico">
+
+
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/routeros.min.css">
+
     <link rel="stylesheet" href="../a.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -94,7 +98,7 @@ cn2 gt 出国有自己单独的通道，回国和163走一个通道，而回国�
 <strong>163 线路一般情况下晚高峰卡爆。</strong></p>
 <h2><strong>AS9929</strong></h2>
 <p><strong>联通专有</strong><br>
-AS9929 特点：线路经过218.105.*.*/210.51.*.*（AS9929），主要是因为用的人很少，所以负载低，速度快，<strong>价格贵</strong>。<br>
+AS9929 特点：线路经过218.105.<em>.</em>/210.51.<em>.</em>（AS9929），主要是因为用的人很少，所以负载低，速度快，<strong>价格贵</strong>。<br>
 <strong>AS9929 对标 cn2 gia</strong></p>
 <h2><strong>AS4837</strong></h2>
 <p><strong>联通专有</strong><br>
@@ -109,24 +113,24 @@ AS4837 本来对标163，但是因为<strong>走圣何塞出口的AS4837</strong
 自己家宽带电信，能选cn2 gia就选cn2 gia吧，不能选就老老实实根据服务器商提供的测速链接测速然后购买。</p>
 <h2><strong>回程判断方法</strong></h2>
 <p>回程测试需要登录 VPS，然后输入下面命令安装 BestTrace：</p>
-<pre><code class="language-bash">wget https://cdn.ipip.net/17mon/besttrace4linux.zip    
-unzip besttrace4linux.zip    
-chmod +x besttrace    
+<pre><code class="language-bash">wget https://cdn.ipip.net/17mon/besttrace4linux.zip  
+unzip besttrace4linux.zip  
+chmod +x besttrace  
 </code></pre>
 <p>之后，执行下面命令开始测试：</p>
-<pre><code>./besttrace 218.2.2.2    
+<pre><code>./besttrace 218.2.2.2  
 </code></pre>
 <h3>翻 出来 点东西</h3>
-<img src="0068/attachments/111680A9.jpg" alt="fac0b5e3f204e3a4c0583c3ffe8b821f.jpg" loading="lazy" />    
+<img src="0068/attachments/111680A9.jpg" alt="fac0b5e3f204e3a4c0583c3ffe8b821f.jpg" loading="lazy" />  
 <h3>拓扑图</h3>
-<img src="0068/attachments/D6AB39AD.jpg" alt="2827fbe62d1fed3a2cb0d463df1d5563.jpg" loading="lazy" />    
+<img src="0068/attachments/D6AB39AD.jpg" alt="2827fbe62d1fed3a2cb0d463df1d5563.jpg" loading="lazy" />  
 <h3>BGP 类型 说明 （ 可能 已经过时 ）</h3>
-<img src="0068/attachments/8636BA9C.png" alt="24599689dacc72185910604125bcaa23.png" loading="lazy" />    
+<img src="0068/attachments/8636BA9C.png" alt="24599689dacc72185910604125bcaa23.png" loading="lazy" />  
 <h4>测试地址可以使用当地的 dns</h4>
 <ol>
 <li><a href="https://toolb.cn/publicdns">https://toolb.cn/publicdns</a></li>
 </ol>
-<img src="0068/attachments/789D0851.png" alt="Weixin Image_20250909071211_254_1.png" loading="lazy" />    
+<img src="0068/attachments/789D0851.png" alt="Weixin Image_20250909071211_254_1.png" loading="lazy" />  
 </div>
                     </td>
                 </tr>
@@ -150,5 +154,32 @@ chmod +x besttrace
         </td>
     </tr>
 </table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+<script>
+
+    if (document.readyState === "loading") {
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            hljs.highlightAll();
+            hljs.initLineNumbersOnLoad();
+        });
+    } else {
+        
+        hljs.highlightAll();
+        hljs.initLineNumbersOnLoad();
+    }
+
+
+</script>
 </body>
 </html>

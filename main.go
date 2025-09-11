@@ -33,7 +33,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&srcDir, "src", "./apple_notes_export", "Notes source directory")
+	flag.StringVar(&srcDir, "src", "/tmp/apple_notes_export", "Notes source directory")
 	flag.StringVar(&outDir, "out", "./public", "Output directory")
 	flag.StringVar(&addr, "addr", ":8080", "HTTP listen address")
 }

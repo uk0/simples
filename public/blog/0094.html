@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Xgboost install by cluster yarn</title>
+    <link rel="icon" href="../favicon.ico">
+
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/routeros.min.css">
+
+    <link rel="stylesheet" href="../a.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body class="win95-bg">
+
+<table class="outer" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center" valign="top">
+            <table class="frame" width="650" border="0" cellspacing="0" cellpadding="6">
+                
+                <tr>
+                    <td class="avatar-cell" width="64" rowspan="2" align="center">
+                        <a href="../index.html">
+                            <img class="avatar" src="../avatar.png" width="48" height="48" alt="avatar">
+                        </a>
+                    </td>
+                    <td class="titlebar" align="center">
+                        <h2 class="title" style="margin:4px 0;">Xgboost install by cluster yarn</h2>
+                        <div class="post-category">Category: blog</div>
+                    </td>
+                    <td class="infobar" width="160" rowspan="2" align="center">
+                        <a href="../index.html">Home</a>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="nav" align="center">
+                        <a href="../index.html">Index</a>
+                        <span class="sep">|</span>
+                        <a href="../about.html">About</a>
+                    </td>
+                </tr>
+
+                
+                <tr>
+                    <td colspan="3">
+                        <hr class="hr-etched">
+                    </td>
+                </tr>
+
+                
+                <tr>
+                    <td class="content" colspan="3">
+                        <div class="post-body"><h1>Xgboost install by cluster yarn</h1>
+<h2>yum 安装基础的依赖</h2>
+<pre><code>  
+yum install gcc-c++ fuse-devel git hadoop-libhdfs-devel  
+  
+</code></pre>
+<h2>配置环境变量</h2>
+<pre><code>export MVN_HOME=/opt/soft/apache-maven-3.6.0  
+export PATH=$MVN_HOME/bin:$PATH  
+export XGB_HOME=/home/download  
+export PATH=$XGB_HOME:$PATH  
+export HDFS_LIB_PATH=${XGB_HOME}/xgboost-packages/libhdfs  
+export LD_LIBRARY_PATH=${XGB_HOME}/xgboost-packages/lib64:$JAVA_HOME/jre/lib/amd64/server:/${XGB_HOME}/xgboost-packages/libhdfs:$LD_LIBRARY_PATH  
+export HADOOP_HOME=/opt/cloudera/parcels/CDH/lib/hadoop  
+export HADOOP_COMMON_HOME=$HADOOP_HOME  
+export HADOOP_HDFS_HOME=/opt/cloudera/parcels/CDH/lib/hadoop-hdfs  
+export HADOOP_MAPRED_HOME=/opt/cloudera/parcels/CDH/lib/hadoop-yarn  
+export HADOOP_YARN_HOME=$HADOOP_MAPRED_HOME  
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop  
+</code></pre>
+<h2>xgboost git clone and install</h2>
+<pre><code>mkdir -p xgboost-packages/lib64  
+  
+cd xgboost-packages  
+  
+  
+git clone --recursive https://github.com/dmlc/xgboost  
+cd xgboost  
+cp make/config.mk ./  
+vim config.mk  
+add line # HADOOP_HOME = /usr/lib/hadoop  
+  
+mkdir build  
+cd build  
+cmake .. USE_HDFS=ON # 开启HDFS  
+make -j4  
+  
+</code></pre>
+<h2>install python package on env</h2>
+<pre><code>  
+cd python-package/ &amp;&amp; python setup.py install   
+  
+</code></pre>
+<h2>install jvm-package on env</h2>
+<pre><code>  
+cd jvm-packages/ &amp;&amp; mvn install:install-file -Dfile=xgboost4j-spark-0.83-jar-with-dependencies.jar -DgroupId=ml.dmlc -DartifactId=xgboost4j-spark -Dversion=0.7 -Dpackaging=jar  
+  
+</code></pre>
+</div>
+                    </td>
+                </tr>
+
+                
+                <tr>
+                    <td colspan="3" align="right" style="font-size:small;">
+                        <a href="#">↑ Back to top</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    
+    <tr>
+        <td align="center" valign="bottom" height="60">
+            <font size="-1">
+                <a href="../index.html">Back to Home</a>
+            </font>
+        </td>
+    </tr>
+</table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+<script>
+
+    if (document.readyState === "loading") {
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            hljs.highlightAll();
+            hljs.initLineNumbersOnLoad();
+        });
+    } else {
+        
+        hljs.highlightAll();
+        hljs.initLineNumbersOnLoad();
+    }
+
+
+</script>
+</body>
+</html>
