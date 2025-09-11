@@ -20,13 +20,14 @@ from PySide6.QtCore import Qt, QFileSystemWatcher, QTimer, QPoint, QSize
 from PySide6.QtGui import QIcon, QFont
 from PySide6.QtGui import QColor, QPixmap, QPainter
 
+from permission_helper import get_notes_db_with_dialog, check_and_request_access
 
 from export_v2 import AppleNotesExporter  # 假设你已有的导出脚本模块
 
 
 class StatusLight(QLabel):
     """一个圆形状态灯（红/绿）"""
-    def __init__(self, diameter=12, parent=None):
+    def __init__(self, diameter=6, parent=None):
         super().__init__(parent)
         self.diameter = diameter
         self.setFixedSize(diameter, diameter)
@@ -60,7 +61,6 @@ class ExportServiceWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("🍏 Apple Notes Exporter")
         self.resize(600, 580)
-
         # 文件系统监视器
         self.watcher = QFileSystemWatcher(self)
         self.watcher.fileChanged.connect(self._on_fs_changed)
@@ -123,10 +123,12 @@ class ExportServiceWindow(QMainWindow):
         main_layout.addWidget(self.log_output, 1)
 
         # 默认路径
-        default_db = os.path.expanduser(
-            "~/Library/Group Containers/group.com.apple.notes/NoteStore.sqlite"
-        )
-        self.db_input.setText(default_db)
+        default_db = Path.home() / "Library/Group Containers/group.com.apple.notes/NoteStore.sqlite"
+
+        if not default_db.exists():
+            self.log("⚠️ Default Notes database not found. Please set the correct path.")
+        self.log(f"⚙️ Using default database path {default_db.as_posix()}")
+        self.db_input.setText(default_db.as_posix())
         self.out_input.setText(str("/tmp/apple_notes_export"))
 
         # 启动时尝试加载配置（会覆盖上面默认值）
@@ -137,6 +139,30 @@ class ExportServiceWindow(QMainWindow):
 
         # 启动配置自动保存线程
         self._start_config_autosave()
+
+        self.check_and_setup_permissions()
+
+    def check_and_setup_permissions(self):
+        """启动时检查并设置权限"""
+        db_path = check_and_request_access()
+
+        if db_path:
+            self.notes_db_path = db_path
+            self.db_input.setText(str(db_path))
+            self.log(f"✅ 使用数据库: {db_path}")
+        else:
+            self.log("❌ 无法获取数据库访问权限")
+
+            # 提供最后的选择
+            reply = QMessageBox.question(
+                self,
+                "无法访问",
+                "无法访问 Notes 数据库。\n\n是否继续运行（功能受限）？",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+
+            if reply == QMessageBox.StandardButton.No:
+                sys.exit(0)
 
     # ---------------------------- 配置文件 ----------------------------
 
@@ -403,9 +429,7 @@ class ExportServiceWindow(QMainWindow):
     # ---------------------------- 交互逻辑 ----------------------------
 
     def browse_db(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Select NoteStore.sqlite", str(Path.home()), "SQLite Files (*.sqlite *.db)"
-        )
+        path = get_notes_db_with_dialog()
         if path:
             self.db_input.setText(path)
 

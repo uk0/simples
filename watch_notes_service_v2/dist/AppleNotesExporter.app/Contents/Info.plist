@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>app_logo.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>AppleNotesExporter</string>
+	<string>com.uk0.applenotesexporter</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -18,7 +18,11 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.0</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>This app needs to access Apple Notes data.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSSystemAdministrationUsageDescription</key>
+	<string>This app requires Full Disk Access to read Notes database.</string>
 </dict>
 </plist>

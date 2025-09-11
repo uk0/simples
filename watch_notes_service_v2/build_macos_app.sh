@@ -23,7 +23,9 @@ python -m nuitka \
     --include-qt-plugins=sensible,styles,platforms,iconengines,imageformats \
     --include-module=markdownify \
     --include-module=export_v2 \
+    --include-module=permission_helper \
     --include-module=helpers \
+    --include-module=sqlite3 \
     --assume-yes-for-downloads \
     --show-progress \
     --output-dir=dist \
@@ -33,6 +35,20 @@ echo "✅ Build complete!"
 
 # 查找生成的 App
 APP_PATH="dist/AppleNotesExporter.app"
+
+echo "🔧 Fixing permissions..."
+bash fix_app_permissions.sh
+
+echo "✅ Build complete!"
+echo ""
+echo "📝 使用说明："
+echo "1. 双击运行 dist/AppleNotesExporter.app"
+echo "2. 如果提示安全警告，在系统设置中允许运行"
+echo "3. 授予完全磁盘访问权限"
+echo "4. 重启应用即可正常使用"
+
+
+
 
 if [ -d "$APP_PATH" ]; then
     echo "📦 App location: $APP_PATH"
