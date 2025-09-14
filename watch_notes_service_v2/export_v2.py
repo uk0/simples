@@ -14,7 +14,7 @@ from enum import IntEnum
 
 import helpers
 
-DEBUG = True
+DEBUG = False
 
 
 class ProtoVarInt:
@@ -1029,6 +1029,7 @@ class AttachmentExtractor:
             return ".dat"
 
         uti_lower = uti.lower()
+
 
         uti_map = {
             'public.jpeg': '.jpg',

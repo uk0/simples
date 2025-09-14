@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"crypto/md5"
 	"errors"
 	"flag"
+	"fmt"
 	"html/template"
 	"io"
 	"io/fs"
@@ -12,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"retroblog/parser"
 	"sort"
 	"strconv"
 	"strings"
@@ -33,7 +36,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&srcDir, "src", "/tmp/apple_notes_export", "Notes source directory")
+	flag.StringVar(&srcDir, "src", "./apple_notes_export", "Notes source directory")
 	flag.StringVar(&outDir, "out", "./public", "Output directory")
 	flag.StringVar(&addr, "addr", ":8080", "HTTP listen address")
 }
@@ -442,8 +445,11 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 		// Copied file lives at: out/<category>/<slug>/attachments/...
 		rel := filepath.ToSlash(filepath.Join(slug, att.Path))
 		ext := strings.ToLower(filepath.Ext(att.Path))
+		ext_v2 := strings.ToLower(filepath.Ext(att.OriginalFilename))
 
-		switch ext {
+		log.Printf("Transforming attachment ID %s (%s) ext (%s) to HTML tag", id, att.Path, ext_v2)
+
+		switch ext_v2 {
 		case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg":
 			alt := att.OriginalFilename
 			if alt == "" {
@@ -457,14 +463,25 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 </object>`
 		case ".mp4", ".webm", ".ogg", ".mov":
 			return `<video controls style="max-width:100%;">
-  <source src="` + rel + `" type="video/` + strings.TrimPrefix(ext, ".") + `">
+  <source src="` + rel + `" type="video/` + strings.TrimPrefix(ext_v2, ".") + `">
   <a href="` + rel + `">Download video</a>
 </video>`
 		case ".mp3", ".wav", ".flac", ".m4a", ".aac", ".oga":
 			return `<audio controls>
-  <source src="` + rel + `" type="audio/` + strings.TrimPrefix(ext, ".") + `">
+  <source src="` + rel + `" type="audio/` + strings.TrimPrefix(ext_v2, ".") + `">
   <a href="` + rel + `">Download audio</a>
 </audio>`
+
+		case ".nes":
+			// Generate unique ID for this NES player instance
+			// Use a hash of the attachment ID to ensure consistency
+			uniqueID := fmt.Sprintf("nes_%x", md5.Sum([]byte(id)))[:12]
+			name := att.OriginalFilename
+			if name == "" {
+				name = filepath.Base(att.Path)
+			}
+			log.Println("Embedding NES player for", name, "with ID", uniqueID)
+			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
 		default:
 			name := att.OriginalFilename
 			if name == "" {
