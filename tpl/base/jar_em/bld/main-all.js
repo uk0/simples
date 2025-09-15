@@ -24,14 +24,15 @@ var lcdHeight=320;
 // }
 config.canvasSize = 'size-240x320';
 config.gamepadSize = 'gamepad-3'
+config.enginemode = 'enginemode2-classes2.jar'
 config.gamepad = 1
 console.log("config.gamepadSize "+config.gamepadSize);
 if(config.gamepad)
 {
   if(config.gamepadSize)
   {
-    document.getElementById("keypad").className = config.gamepadSize; 
-    
+    document.getElementById("keypad").className = config.gamepadSize;
+
   }
 }
 
@@ -47,7 +48,7 @@ if(!window.AudioContext)
   window.AudioContext = function(){
 
   };
-} 
+}
 
 if (inBrowser && !HTMLCanvasElement.prototype.toBlob) {
   Object.defineProperty(HTMLCanvasElement.prototype, "toBlob", {value:function(callback, type, quality) {
@@ -155,14 +156,14 @@ if (inBrowser && !HTMLCanvasElement.prototype.toBlob) {
 if (!Map.prototype.clear) {
   Map.prototype.clear = function() {
 
-    for (var i = 0; i < this.length; i++) {  
-      this.delete(this[i][0]);  
+    for (var i = 0; i < this.length; i++) {
+      this.delete(this[i][0]);
     }
   };
 }
 if (!Map.prototype.forEach) {
   Map.prototype.forEach = function(callback, thisArg) {
-    for (var i = 0; i < this.length; i++) {  
+    for (var i = 0; i < this.length; i++) {
       var keyVal=this[i];
       callback.call(thisArg || null, keyVal[1], keyVal[0], this);
     }
@@ -323,7 +324,7 @@ Native["java/lang/System.arraycopy.(Ljava/lang/Object;ILjava/lang/Object;II)V"] 
   // if(length==1)
   // {
   //   console.log("srcClassInfo",srcClassInfo,dstClassInfo)
-  // } 
+  // }
   if (!(srcClassInfo instanceof J2ME.ArrayClassInfo) || !(dstClassInfo instanceof J2ME.ArrayClassInfo)) {
     throw $.newArrayStoreException("Can only copy to/from array types.");
   }
@@ -403,7 +404,7 @@ Native["java/lang/System.arraycopy.(Ljava/lang/Object;ILjava/lang/Object;II)V"] 
 var stubProperties = {"com.nokia.multisim.slots":"1", "com.nokia.mid.imsi":"000000000000000", "com.nokia.mid.imei":""};
 Native["java/lang/System.getProperty0.(Ljava/lang/String;)Ljava/lang/String;"] = function(addr, keyAddr) {
   var key = J2ME.fromStringAddr(keyAddr);
-  try{ 
+  try{
  //console.log("System.getProperty0",key)
   var value;
   switch(key) {
@@ -502,9 +503,9 @@ Native["java/lang/System.getProperty0.(Ljava/lang/String;)Ljava/lang/String;"] =
       break;
     case "com.nokia.keyboard.type":
       value = "None";
-      break; 
+      break;
     case "com.nokia.mid.batterylevel":
-      try{ 
+      try{
         value = Math.floor(navigator.battery.level * 100).toString();
       }catch(err)
       {
@@ -545,7 +546,7 @@ Native["java/lang/System.getProperty0.(Ljava/lang/String;)Ljava/lang/String;"] =
       break;
     case "audio.encodings":
       value = "encoding=audio/amr";
-      break; 
+      break;
     case "video.snapshot.encodings":
       value = "encoding=jpeg&quality=80&progressive=true&type=jfif&width=400&height=400";
       break;
@@ -663,24 +664,24 @@ Native["java/lang/Class.getName.()Ljava/lang/String;"] = function(addr) {
 };
 Native["java/lang/Class.forName0.(Ljava/lang/String;)V"] = function(addr, nameAddr) {
   var classInfo = null;
-  
+
   //console.warn("nameAddr ",nameAddr,J2ME.fromStringAddr(nameAddr));
   if(nameAddr>=0xffffff)
   {
     //console.warn("ClassNotFoundException");
     throw $.newClassNotFoundException("'" + e.message + "' not found.");
     return;
-  } 
+  }
   try {
-    
+
     if (nameAddr === J2ME.Constants.NULL) {
       throw new J2ME.ClassNotFoundException;
       //console.warn('ClassNotFoundException');
       return;
     }
-    var className = J2ME.fromStringAddr(nameAddr).replace(/\./g, "/"); 
+    var className = J2ME.fromStringAddr(nameAddr).replace(/\./g, "/");
     //console.log(className)
-    classInfo = CLASSES.getClass(className); 
+    classInfo = CLASSES.getClass(className);
     //console.log(classInfo)
 
   } catch (e) {
@@ -706,7 +707,7 @@ Native["java/lang/Class.forName1.(Ljava/lang/String;)Ljava/lang/Class;"] = funct
       return J2ME.Constants.NULL;
     }
     var className = J2ME.fromStringAddr(nameAddr).replace(/\./g, "/");
-    var classInfo = CLASSES.getClass(className); 
+    var classInfo = CLASSES.getClass(className);
     var address = $.getClassObjectAddress(classInfo);
     //console.log("forName1",className)
     return address;
@@ -799,7 +800,7 @@ Native["java/lang/Runtime.freeMemory.()J"] = function(addr) {
 Native["java/lang/Runtime.gc.()V"] = function(addr) {
   asyncImpl("V", new Promise(function(resolve, reject) {
     setTimeout(function() {
-      try{ 
+      try{
         ASM._forceCollection();
       }catch(err)
       {
@@ -904,7 +905,7 @@ function flushConsoleBuffer() {
     var temp = consoleBuffer;
     consoleBuffer = "";
     //if(temp.indexOf(temp)<0)
-    //{ 
+    //{
       //不输出未实现的提示
       if(temp.indexOf("DeviceControl::setLights")>-1)
       {
@@ -1083,17 +1084,17 @@ Native["org/mozilla/internal/Sys.startProfile.()V"] = function(addr) {
 };
 var profileSaved = false;
 Native["org/mozilla/internal/Sys.stopProfile.()V"] = function(addr) {
- 
+
 };
 function load(file, responseType) {
-  
+
   var progressBar = document.getElementById('download-bar');
   return new Promise(function(resolve, reject) {
     var xhr = new XMLHttpRequest({mozSystem:true});
     xhr.addEventListener("progress", function(event) {
       if (event.lengthComputable && progressBar) {
-          var percentage = Math.round((event.loaded * 100) / event.total); 
-          progressBar.value = percentage; 
+          var percentage = Math.round((event.loaded * 100) / event.total);
+          progressBar.value = percentage;
       }
     }, false);
     xhr.open("GET", file, true);
@@ -1146,14 +1147,14 @@ function loadScript(path) {
 ;var codeLenCodeMap = new Int32Array([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]);
 var lengthDecode = new Int32Array([3, 4, 5, 6, 7, 8, 9, 10, 65547, 65549, 65551, 65553, 131091, 131095, 131099, 131103, 196643, 196651, 196659, 196667, 262211, 262227, 262243, 262259, 327811, 327843, 327875, 327907, 258, 258, 258]);
 var distDecode = new Int32Array([1, 2, 3, 4, 65541, 65543, 131081, 131085, 196625, 196633, 262177, 262193, 327745, 327777, 393345, 393409, 459009, 459137, 524801, 525057, 590849, 591361, 657409, 658433, 724993, 727041, 794625, 798721, 868353, 876545]);
-var fixedLitCodeTab = [new Int32Array([459008, 524368, 524304, 524568, 459024, 524400, 524336, 590016, 459016, 524384, 524320, 589984, 524288, 524416, 524352, 590048, 459012, 524376, 524312, 589968, 459028, 524408, 524344, 590032, 459020, 524392, 524328, 59E4, 524296, 524424, 524360, 590064, 459010, 524372, 524308, 524572, 459026, 524404, 524340, 590024, 459018, 524388, 524324, 589992, 524292, 524420, 524356, 590056, 459014, 524380, 524316, 589976, 459030, 524412, 524348, 590040, 459022, 524396, 
-524332, 590008, 524300, 524428, 524364, 590072, 459009, 524370, 524306, 524570, 459025, 524402, 524338, 590020, 459017, 524386, 524322, 589988, 524290, 524418, 524354, 590052, 459013, 524378, 524314, 589972, 459029, 524410, 524346, 590036, 459021, 524394, 524330, 590004, 524298, 524426, 524362, 590068, 459011, 524374, 524310, 524574, 459027, 524406, 524342, 590028, 459019, 524390, 524326, 589996, 524294, 524422, 524358, 590060, 459015, 524382, 524318, 589980, 459031, 524414, 524350, 590044, 459023, 
-524398, 524334, 590012, 524302, 524430, 524366, 590076, 459008, 524369, 524305, 524569, 459024, 524401, 524337, 590018, 459016, 524385, 524321, 589986, 524289, 524417, 524353, 590050, 459012, 524377, 524313, 589970, 459028, 524409, 524345, 590034, 459020, 524393, 524329, 590002, 524297, 524425, 524361, 590066, 459010, 524373, 524309, 524573, 459026, 524405, 524341, 590026, 459018, 524389, 524325, 589994, 524293, 524421, 524357, 590058, 459014, 524381, 524317, 589978, 459030, 524413, 524349, 590042, 
-459022, 524397, 524333, 590010, 524301, 524429, 524365, 590074, 459009, 524371, 524307, 524571, 459025, 524403, 524339, 590022, 459017, 524387, 524323, 589990, 524291, 524419, 524355, 590054, 459013, 524379, 524315, 589974, 459029, 524411, 524347, 590038, 459021, 524395, 524331, 590006, 524299, 524427, 524363, 590070, 459011, 524375, 524311, 524575, 459027, 524407, 524343, 590030, 459019, 524391, 524327, 589998, 524295, 524423, 524359, 590062, 459015, 524383, 524319, 589982, 459031, 524415, 524351, 
-590046, 459023, 524399, 524335, 590014, 524303, 524431, 524367, 590078, 459008, 524368, 524304, 524568, 459024, 524400, 524336, 590017, 459016, 524384, 524320, 589985, 524288, 524416, 524352, 590049, 459012, 524376, 524312, 589969, 459028, 524408, 524344, 590033, 459020, 524392, 524328, 590001, 524296, 524424, 524360, 590065, 459010, 524372, 524308, 524572, 459026, 524404, 524340, 590025, 459018, 524388, 524324, 589993, 524292, 524420, 524356, 590057, 459014, 524380, 524316, 589977, 459030, 524412, 
-524348, 590041, 459022, 524396, 524332, 590009, 524300, 524428, 524364, 590073, 459009, 524370, 524306, 524570, 459025, 524402, 524338, 590021, 459017, 524386, 524322, 589989, 524290, 524418, 524354, 590053, 459013, 524378, 524314, 589973, 459029, 524410, 524346, 590037, 459021, 524394, 524330, 590005, 524298, 524426, 524362, 590069, 459011, 524374, 524310, 524574, 459027, 524406, 524342, 590029, 459019, 524390, 524326, 589997, 524294, 524422, 524358, 590061, 459015, 524382, 524318, 589981, 459031, 
-524414, 524350, 590045, 459023, 524398, 524334, 590013, 524302, 524430, 524366, 590077, 459008, 524369, 524305, 524569, 459024, 524401, 524337, 590019, 459016, 524385, 524321, 589987, 524289, 524417, 524353, 590051, 459012, 524377, 524313, 589971, 459028, 524409, 524345, 590035, 459020, 524393, 524329, 590003, 524297, 524425, 524361, 590067, 459010, 524373, 524309, 524573, 459026, 524405, 524341, 590027, 459018, 524389, 524325, 589995, 524293, 524421, 524357, 590059, 459014, 524381, 524317, 589979, 
-459030, 524413, 524349, 590043, 459022, 524397, 524333, 590011, 524301, 524429, 524365, 590075, 459009, 524371, 524307, 524571, 459025, 524403, 524339, 590023, 459017, 524387, 524323, 589991, 524291, 524419, 524355, 590055, 459013, 524379, 524315, 589975, 459029, 524411, 524347, 590039, 459021, 524395, 524331, 590007, 524299, 524427, 524363, 590071, 459011, 524375, 524311, 524575, 459027, 524407, 524343, 590031, 459019, 524391, 524327, 589999, 524295, 524423, 524359, 590063, 459015, 524383, 524319, 
+var fixedLitCodeTab = [new Int32Array([459008, 524368, 524304, 524568, 459024, 524400, 524336, 590016, 459016, 524384, 524320, 589984, 524288, 524416, 524352, 590048, 459012, 524376, 524312, 589968, 459028, 524408, 524344, 590032, 459020, 524392, 524328, 59E4, 524296, 524424, 524360, 590064, 459010, 524372, 524308, 524572, 459026, 524404, 524340, 590024, 459018, 524388, 524324, 589992, 524292, 524420, 524356, 590056, 459014, 524380, 524316, 589976, 459030, 524412, 524348, 590040, 459022, 524396,
+524332, 590008, 524300, 524428, 524364, 590072, 459009, 524370, 524306, 524570, 459025, 524402, 524338, 590020, 459017, 524386, 524322, 589988, 524290, 524418, 524354, 590052, 459013, 524378, 524314, 589972, 459029, 524410, 524346, 590036, 459021, 524394, 524330, 590004, 524298, 524426, 524362, 590068, 459011, 524374, 524310, 524574, 459027, 524406, 524342, 590028, 459019, 524390, 524326, 589996, 524294, 524422, 524358, 590060, 459015, 524382, 524318, 589980, 459031, 524414, 524350, 590044, 459023,
+524398, 524334, 590012, 524302, 524430, 524366, 590076, 459008, 524369, 524305, 524569, 459024, 524401, 524337, 590018, 459016, 524385, 524321, 589986, 524289, 524417, 524353, 590050, 459012, 524377, 524313, 589970, 459028, 524409, 524345, 590034, 459020, 524393, 524329, 590002, 524297, 524425, 524361, 590066, 459010, 524373, 524309, 524573, 459026, 524405, 524341, 590026, 459018, 524389, 524325, 589994, 524293, 524421, 524357, 590058, 459014, 524381, 524317, 589978, 459030, 524413, 524349, 590042,
+459022, 524397, 524333, 590010, 524301, 524429, 524365, 590074, 459009, 524371, 524307, 524571, 459025, 524403, 524339, 590022, 459017, 524387, 524323, 589990, 524291, 524419, 524355, 590054, 459013, 524379, 524315, 589974, 459029, 524411, 524347, 590038, 459021, 524395, 524331, 590006, 524299, 524427, 524363, 590070, 459011, 524375, 524311, 524575, 459027, 524407, 524343, 590030, 459019, 524391, 524327, 589998, 524295, 524423, 524359, 590062, 459015, 524383, 524319, 589982, 459031, 524415, 524351,
+590046, 459023, 524399, 524335, 590014, 524303, 524431, 524367, 590078, 459008, 524368, 524304, 524568, 459024, 524400, 524336, 590017, 459016, 524384, 524320, 589985, 524288, 524416, 524352, 590049, 459012, 524376, 524312, 589969, 459028, 524408, 524344, 590033, 459020, 524392, 524328, 590001, 524296, 524424, 524360, 590065, 459010, 524372, 524308, 524572, 459026, 524404, 524340, 590025, 459018, 524388, 524324, 589993, 524292, 524420, 524356, 590057, 459014, 524380, 524316, 589977, 459030, 524412,
+524348, 590041, 459022, 524396, 524332, 590009, 524300, 524428, 524364, 590073, 459009, 524370, 524306, 524570, 459025, 524402, 524338, 590021, 459017, 524386, 524322, 589989, 524290, 524418, 524354, 590053, 459013, 524378, 524314, 589973, 459029, 524410, 524346, 590037, 459021, 524394, 524330, 590005, 524298, 524426, 524362, 590069, 459011, 524374, 524310, 524574, 459027, 524406, 524342, 590029, 459019, 524390, 524326, 589997, 524294, 524422, 524358, 590061, 459015, 524382, 524318, 589981, 459031,
+524414, 524350, 590045, 459023, 524398, 524334, 590013, 524302, 524430, 524366, 590077, 459008, 524369, 524305, 524569, 459024, 524401, 524337, 590019, 459016, 524385, 524321, 589987, 524289, 524417, 524353, 590051, 459012, 524377, 524313, 589971, 459028, 524409, 524345, 590035, 459020, 524393, 524329, 590003, 524297, 524425, 524361, 590067, 459010, 524373, 524309, 524573, 459026, 524405, 524341, 590027, 459018, 524389, 524325, 589995, 524293, 524421, 524357, 590059, 459014, 524381, 524317, 589979,
+459030, 524413, 524349, 590043, 459022, 524397, 524333, 590011, 524301, 524429, 524365, 590075, 459009, 524371, 524307, 524571, 459025, 524403, 524339, 590023, 459017, 524387, 524323, 589991, 524291, 524419, 524355, 590055, 459013, 524379, 524315, 589975, 459029, 524411, 524347, 590039, 459021, 524395, 524331, 590007, 524299, 524427, 524363, 590071, 459011, 524375, 524311, 524575, 459027, 524407, 524343, 590031, 459019, 524391, 524327, 589999, 524295, 524423, 524359, 590063, 459015, 524383, 524319,
 589983, 459031, 524415, 524351, 590047, 459023, 524399, 524335, 590015, 524303, 524431, 524367, 590079]), 9];
 var fixedDistCodeTab = [new Int32Array([327680, 327696, 327688, 327704, 327684, 327700, 327692, 327708, 327682, 327698, 327690, 327706, 327686, 327702, 327694, 0, 327681, 327697, 327689, 327705, 327685, 327701, 327693, 327709, 327683, 327699, 327691, 327707, 327687, 327703, 327695, 0]), 5];
 function inflate(bytes, uncompressed_len) {
@@ -1468,7 +1469,7 @@ if (typeof module === "object") {
           reject(request.error.name);
         };
         transaction.oncomplete = function() {
-          if (request.result) { 
+          if (request.result) {
             resolve(request.result);
           } else {
             resolve(false);
@@ -1489,7 +1490,7 @@ if (typeof module === "object") {
       console.log(config)
       var jar = zip.directory;
       mffile = jar['META-INF/MANIFEST.MF'];
-      
+
       mfdata=''
       switch(mffile.compression_method) {
         case 0:
@@ -1515,14 +1516,14 @@ if (typeof module === "object") {
   function deleteJar(jarName)
   {
     return openDatabase.then(function() {
-      return new Promise(function(resolve, reject) { 
+      return new Promise(function(resolve, reject) {
         var transaction = database.transaction(OBJECT_STORE_WITH_UNCOMPRESSED_LEN, "readwrite");
         var objectStore = transaction.objectStore(OBJECT_STORE_WITH_UNCOMPRESSED_LEN);
         var request = objectStore.delete(jarName);
-        request.onerror = function() { 
+        request.onerror = function() {
           reject(request.error.name);
         };
-        transaction.oncomplete = function() { 
+        transaction.oncomplete = function() {
           resolve();
         };
       });
@@ -1532,7 +1533,7 @@ if (typeof module === "object") {
   function installJAR(jarName, jarData, jadData) {
     return openDatabase.then(function() {
       return new Promise(function(resolve, reject) {
-        var zip = new ZipFile(jarData, true); 
+        var zip = new ZipFile(jarData, true);
         var transaction = database.transaction(OBJECT_STORE_WITH_UNCOMPRESSED_LEN, "readwrite");
         var objectStore = transaction.objectStore(OBJECT_STORE_WITH_UNCOMPRESSED_LEN);
         var request = objectStore.put({jarName:jarName, jar:zip.directory, jad:jadData || null});
@@ -1605,8 +1606,8 @@ if (typeof module === "object") {
     }
     return bytes;
   }
-  function loadFile(fileName) { 
-    for (var i = 0; i < jars.length; i++) {  
+  function loadFile(fileName) {
+    for (var i = 0; i < jars.length; i++) {
       var jarName=jars[i][0];
       var data = loadFileFromJAR(jarName, fileName);
       if (data) {
@@ -1786,14 +1787,14 @@ if (typeof module === "object") {
     }
     return null;
   }
-  var encodings = [{"encodings":[{"labels":["unicode-1-1-utf-8", "utf-8", "utf8"], "name":"utf-8"}], "heading":"The Encoding"}, {"encodings":[{"labels":["866", "cp866", "csibm866", "ibm866"], "name":"ibm866"}, {"labels":["csisolatin2", "iso-8859-2", "iso-ir-101", "iso8859-2", "iso88592", "iso_8859-2", "iso_8859-2:1987", "l2", "latin2"], "name":"iso-8859-2"}, {"labels":["csisolatin3", "iso-8859-3", "iso-ir-109", "iso8859-3", "iso88593", "iso_8859-3", "iso_8859-3:1988", "l3", "latin3"], "name":"iso-8859-3"}, 
-  {"labels":["csisolatin4", "iso-8859-4", "iso-ir-110", "iso8859-4", "iso88594", "iso_8859-4", "iso_8859-4:1988", "l4", "latin4"], "name":"iso-8859-4"}, {"labels":["csisolatincyrillic", "cyrillic", "iso-8859-5", "iso-ir-144", "iso8859-5", "iso88595", "iso_8859-5", "iso_8859-5:1988"], "name":"iso-8859-5"}, {"labels":["arabic", "asmo-708", "csiso88596e", "csiso88596i", "csisolatinarabic", "ecma-114", "iso-8859-6", "iso-8859-6-e", "iso-8859-6-i", "iso-ir-127", "iso8859-6", "iso88596", "iso_8859-6", 
-  "iso_8859-6:1987"], "name":"iso-8859-6"}, {"labels":["csisolatingreek", "ecma-118", "elot_928", "greek", "greek8", "iso-8859-7", "iso-ir-126", "iso8859-7", "iso88597", "iso_8859-7", "iso_8859-7:1987", "sun_eu_greek"], "name":"iso-8859-7"}, {"labels":["csiso88598e", "csisolatinhebrew", "hebrew", "iso-8859-8", "iso-8859-8-e", "iso-ir-138", "iso8859-8", "iso88598", "iso_8859-8", "iso_8859-8:1988", "visual"], "name":"iso-8859-8"}, {"labels":["csiso88598i", "iso-8859-8-i", "logical"], "name":"iso-8859-8-i"}, 
-  {"labels":["csisolatin6", "iso-8859-10", "iso-ir-157", "iso8859-10", "iso885910", "l6", "latin6"], "name":"iso-8859-10"}, {"labels":["iso-8859-13", "iso8859-13", "iso885913"], "name":"iso-8859-13"}, {"labels":["iso-8859-14", "iso8859-14", "iso885914"], "name":"iso-8859-14"}, {"labels":["csisolatin9", "iso-8859-15", "iso8859-15", "iso885915", "iso_8859-15", "l9"], "name":"iso-8859-15"}, {"labels":["iso-8859-16"], "name":"iso-8859-16"}, {"labels":["cskoi8r", "koi", "koi8", "koi8-r", "koi8_r"], "name":"koi8-r"}, 
-  {"labels":["koi8-u"], "name":"koi8-u"}, {"labels":["csmacintosh", "mac", "macintosh", "x-mac-roman"], "name":"macintosh"}, {"labels":["dos-874", "iso-8859-11", "iso8859-11", "iso885911", "tis-620", "windows-874"], "name":"windows-874"}, {"labels":["cp1250", "windows-1250", "x-cp1250"], "name":"windows-1250"}, {"labels":["cp1251", "windows-1251", "x-cp1251"], "name":"windows-1251"}, {"labels":["ansi_x3.4-1968", "ascii", "cp1252", "cp819", "csisolatin1", "ibm819", "iso-8859-1", "iso-ir-100", "iso8859-1", 
-  "iso88591", "iso_8859-1", "iso_8859-1:1987", "l1", "latin1", "us-ascii", "windows-1252", "x-cp1252"], "name":"windows-1252"}, {"labels":["cp1253", "windows-1253", "x-cp1253"], "name":"windows-1253"}, {"labels":["cp1254", "csisolatin5", "iso-8859-9", "iso-ir-148", "iso8859-9", "iso88599", "iso_8859-9", "iso_8859-9:1989", "l5", "latin5", "windows-1254", "x-cp1254"], "name":"windows-1254"}, {"labels":["cp1255", "windows-1255", "x-cp1255"], "name":"windows-1255"}, {"labels":["cp1256", "windows-1256", 
-  "x-cp1256"], "name":"windows-1256"}, {"labels":["cp1257", "windows-1257", "x-cp1257"], "name":"windows-1257"}, {"labels":["cp1258", "windows-1258", "x-cp1258"], "name":"windows-1258"}, {"labels":["x-mac-cyrillic", "x-mac-ukrainian"], "name":"x-mac-cyrillic"}], "heading":"Legacy single-byte encodings"}, {"encodings":[{"labels":["chinese", "csgb2312", "csiso58gb231280", "gb18030", "gb2312", "gb_2312", "gb_2312-80", "gbk", "iso-ir-58", "x-gbk"], "name":"gb18030"}, {"labels":["hz-gb-2312"], "name":"hz-gb-2312"}], 
-  "heading":"Legacy multi-byte Chinese (simplified) encodings"}, {"encodings":[{"labels":["big5", "big5-hkscs", "cn-big5", "csbig5", "x-x-big5"], "name":"big5"}], "heading":"Legacy multi-byte Chinese (traditional) encodings"}, {"encodings":[{"labels":["cseucpkdfmtjapanese", "euc-jp", "x-euc-jp"], "name":"euc-jp"}, {"labels":["csiso2022jp", "iso-2022-jp"], "name":"iso-2022-jp"}, {"labels":["csshiftjis", "ms_kanji", "shift-jis", "shift_jis", "sjis", "windows-31j", "x-sjis"], "name":"shift_jis"}], "heading":"Legacy multi-byte Japanese encodings"}, 
+  var encodings = [{"encodings":[{"labels":["unicode-1-1-utf-8", "utf-8", "utf8"], "name":"utf-8"}], "heading":"The Encoding"}, {"encodings":[{"labels":["866", "cp866", "csibm866", "ibm866"], "name":"ibm866"}, {"labels":["csisolatin2", "iso-8859-2", "iso-ir-101", "iso8859-2", "iso88592", "iso_8859-2", "iso_8859-2:1987", "l2", "latin2"], "name":"iso-8859-2"}, {"labels":["csisolatin3", "iso-8859-3", "iso-ir-109", "iso8859-3", "iso88593", "iso_8859-3", "iso_8859-3:1988", "l3", "latin3"], "name":"iso-8859-3"},
+  {"labels":["csisolatin4", "iso-8859-4", "iso-ir-110", "iso8859-4", "iso88594", "iso_8859-4", "iso_8859-4:1988", "l4", "latin4"], "name":"iso-8859-4"}, {"labels":["csisolatincyrillic", "cyrillic", "iso-8859-5", "iso-ir-144", "iso8859-5", "iso88595", "iso_8859-5", "iso_8859-5:1988"], "name":"iso-8859-5"}, {"labels":["arabic", "asmo-708", "csiso88596e", "csiso88596i", "csisolatinarabic", "ecma-114", "iso-8859-6", "iso-8859-6-e", "iso-8859-6-i", "iso-ir-127", "iso8859-6", "iso88596", "iso_8859-6",
+  "iso_8859-6:1987"], "name":"iso-8859-6"}, {"labels":["csisolatingreek", "ecma-118", "elot_928", "greek", "greek8", "iso-8859-7", "iso-ir-126", "iso8859-7", "iso88597", "iso_8859-7", "iso_8859-7:1987", "sun_eu_greek"], "name":"iso-8859-7"}, {"labels":["csiso88598e", "csisolatinhebrew", "hebrew", "iso-8859-8", "iso-8859-8-e", "iso-ir-138", "iso8859-8", "iso88598", "iso_8859-8", "iso_8859-8:1988", "visual"], "name":"iso-8859-8"}, {"labels":["csiso88598i", "iso-8859-8-i", "logical"], "name":"iso-8859-8-i"},
+  {"labels":["csisolatin6", "iso-8859-10", "iso-ir-157", "iso8859-10", "iso885910", "l6", "latin6"], "name":"iso-8859-10"}, {"labels":["iso-8859-13", "iso8859-13", "iso885913"], "name":"iso-8859-13"}, {"labels":["iso-8859-14", "iso8859-14", "iso885914"], "name":"iso-8859-14"}, {"labels":["csisolatin9", "iso-8859-15", "iso8859-15", "iso885915", "iso_8859-15", "l9"], "name":"iso-8859-15"}, {"labels":["iso-8859-16"], "name":"iso-8859-16"}, {"labels":["cskoi8r", "koi", "koi8", "koi8-r", "koi8_r"], "name":"koi8-r"},
+  {"labels":["koi8-u"], "name":"koi8-u"}, {"labels":["csmacintosh", "mac", "macintosh", "x-mac-roman"], "name":"macintosh"}, {"labels":["dos-874", "iso-8859-11", "iso8859-11", "iso885911", "tis-620", "windows-874"], "name":"windows-874"}, {"labels":["cp1250", "windows-1250", "x-cp1250"], "name":"windows-1250"}, {"labels":["cp1251", "windows-1251", "x-cp1251"], "name":"windows-1251"}, {"labels":["ansi_x3.4-1968", "ascii", "cp1252", "cp819", "csisolatin1", "ibm819", "iso-8859-1", "iso-ir-100", "iso8859-1",
+  "iso88591", "iso_8859-1", "iso_8859-1:1987", "l1", "latin1", "us-ascii", "windows-1252", "x-cp1252"], "name":"windows-1252"}, {"labels":["cp1253", "windows-1253", "x-cp1253"], "name":"windows-1253"}, {"labels":["cp1254", "csisolatin5", "iso-8859-9", "iso-ir-148", "iso8859-9", "iso88599", "iso_8859-9", "iso_8859-9:1989", "l5", "latin5", "windows-1254", "x-cp1254"], "name":"windows-1254"}, {"labels":["cp1255", "windows-1255", "x-cp1255"], "name":"windows-1255"}, {"labels":["cp1256", "windows-1256",
+  "x-cp1256"], "name":"windows-1256"}, {"labels":["cp1257", "windows-1257", "x-cp1257"], "name":"windows-1257"}, {"labels":["cp1258", "windows-1258", "x-cp1258"], "name":"windows-1258"}, {"labels":["x-mac-cyrillic", "x-mac-ukrainian"], "name":"x-mac-cyrillic"}], "heading":"Legacy single-byte encodings"}, {"encodings":[{"labels":["chinese", "csgb2312", "csiso58gb231280", "gb18030", "gb2312", "gb_2312", "gb_2312-80", "gbk", "iso-ir-58", "x-gbk"], "name":"gb18030"}, {"labels":["hz-gb-2312"], "name":"hz-gb-2312"}],
+  "heading":"Legacy multi-byte Chinese (simplified) encodings"}, {"encodings":[{"labels":["big5", "big5-hkscs", "cn-big5", "csbig5", "x-x-big5"], "name":"big5"}], "heading":"Legacy multi-byte Chinese (traditional) encodings"}, {"encodings":[{"labels":["cseucpkdfmtjapanese", "euc-jp", "x-euc-jp"], "name":"euc-jp"}, {"labels":["csiso2022jp", "iso-2022-jp"], "name":"iso-2022-jp"}, {"labels":["csshiftjis", "ms_kanji", "shift-jis", "shift_jis", "sjis", "windows-31j", "x-sjis"], "name":"shift_jis"}], "heading":"Legacy multi-byte Japanese encodings"},
   {"encodings":[{"labels":["cseuckr", "csksc56011987", "euc-kr", "iso-ir-149", "korean", "ks_c_5601-1987", "ks_c_5601-1989", "ksc5601", "ksc_5601", "windows-949"], "name":"euc-kr"}], "heading":"Legacy multi-byte Korean encodings"}, {"encodings":[{"labels":["csiso2022kr", "iso-2022-cn", "iso-2022-cn-ext", "iso-2022-kr"], "name":"replacement"}, {"labels":["utf-16be"], "name":"utf-16be"}, {"labels":["utf-16", "utf-16le"], "name":"utf-16le"}, {"labels":["x-user-defined"], "name":"x-user-defined"}], "heading":"Legacy miscellaneous encodings"}];
   var name_to_encoding = {};
   var label_to_encoding = {};
@@ -3502,7 +3503,7 @@ var fs = function() {
     openedFile.dirty = false;
 
     var datas = openedFiles;
-    for (var i = 0; i < datas.length; i++) {   
+    for (var i = 0; i < datas.length; i++) {
       var entry=datas[i];
       if (!entry[1].dirty && entry[1].path === openedFile.path) {
         entry[1].mtime = openedFile.mtime;
@@ -3513,7 +3514,7 @@ var fs = function() {
   }
   function flushAll() {
     var datas = openedFiles;
-    for (var i = 0; i < datas.length; i++) {   
+    for (var i = 0; i < datas.length; i++) {
       var entry=datas[i];
       if (entry[1].dirty) {
         flush(entry[0]);
@@ -3521,22 +3522,22 @@ var fs = function() {
     }
     syncStore();
   }
-  function flushAllRms() { 
+  function flushAllRms() {
     var datas = openedFiles;
-    for (var i = 0; i < datas.length; i++) {   
+    for (var i = 0; i < datas.length; i++) {
       var entry=datas[i];
       if (entry[1].dirty && entry[1].path.startsWith(RECORD_STORE_BASE))  {
         flush(entry[0]);
       }
     }
     syncStore();
-  } 
-  
+  }
+
   myflushAll = function()
   {
-	  flushAll(); 
+	  flushAll();
   }
-  
+
   window.addEventListener("οnbefοreunlοad", flushAll);
   function list(path) {
     path = normalizePath(path);
@@ -3603,8 +3604,8 @@ var fs = function() {
     }
 
     var datas = openedFiles.values();
-    for (var i = 0; i < openedFiles.size; i++) {   
-      var file=datas.next().value; 
+    for (var i = 0; i < openedFiles.size; i++) {
+      var file=datas.next().value;
       if (file.path === path) {
         if (DEBUG_FS) {
           console.log("file is open");
@@ -3621,8 +3622,8 @@ var fs = function() {
     }
     if (record.isDir) {
       var datas = store.map.values();
-      for (var i = 0; i < store.map.size; i++) {   
-        var value=datas.next().value; 
+      for (var i = 0; i < store.map.size; i++) {
+        var value=datas.next().value;
         if (value && value.parentDir === path) {
           if (DEBUG_FS) {
             console.log("directory is not empty");
@@ -3719,8 +3720,8 @@ var fs = function() {
       console.log("fs rename " + oldPath + " -> " + newPath);
     }
     var datas = openedFiles.values();
-    for (var i = 0; i < openedFiles.size; i++) {   
-      var file=datas.next().value;  
+    for (var i = 0; i < openedFiles.size; i++) {
+      var file=datas.next().value;
       if (file.path === oldPath) {
         if (DEBUG_FS) {
           console.log("file is open");
@@ -3734,8 +3735,8 @@ var fs = function() {
     }
     if (oldRecord.isDir) {
       var datas = store.map.values();
-      for (var i = 0; i < datastore.maps.size; i++) {   
-        var value=datas.next().value;   
+      for (var i = 0; i < datastore.maps.size; i++) {
+        var value=datas.next().value;
         if (value && value.parentDir === oldPath) {
           console.error("rename directory containing files not implemented: " + oldPath + " to " + newPath);
           return false;
@@ -5730,7 +5731,7 @@ function bnModInverse(m) {
     return d;
   }
 }
-var lowprimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 
+var lowprimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563,
 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997];
 var lplim = (1 << 26) / lowprimes[lowprimes.length - 1];
 function bnIsProbablePrime(t) {
@@ -6099,64 +6100,64 @@ if (window.parent !== window) {
   return {ContactToVcard:ContactToVcard, ContactToVcardBlob:ContactToVcardBlob};
 }();
 var emoji = function() {
-  var regexString = ["\ud83c[\udf00-\udfff]", "\ud83d[\udc00-\ude4f]", "\ud83d[\ude80-\udeff]", "[#|0-9]\u20e3", "\ud83c\uddef\ud83c\uddf5", "\ud83c\uddf0\ud83c\uddf7", "\ud83c\udde9\ud83c\uddea", "\ud83c\udde8\ud83c\uddf3", "\ud83c\uddfa\ud83c\uddf8", "\ud83c\uddeb\ud83c\uddf7", "\ud83c\uddea\ud83c\uddf8", "\ud83c\uddee\ud83c\uddf9", "\ud83c\uddf7\ud83c\uddfa", "\ud83c\uddec\ud83c\udde7", "\ud83c\uddee\ud83c\uddf3", "\ud83c\uddf2\ud83c\uddfd", "\ud83c\udde7\ud83c\uddf7", "\ud83c\uddf8\ud83c\udde6", 
-  "\ud83c\uddff\ud83c\udde6", "\ud83c\udde6\ud83c\uddf7", "\ud83c\uddf3\ud83c\uddf1", "\ud83c\uddf9\ud83c\uddf7", "\ud83c\uddf2\ud83c\uddfe", "\ud83c\uddfb\ud83c\uddea", "\ud83c\udde8\ud83c\uddf4", "\ud83c\udde8\ud83c\uddf1", "\ud83c\udded\ud83c\uddf0", "\ud83c\uddf3\ud83c\uddec", "\ud83c\udde8\ud83c\udded", "\ud83c\uddee\ud83c\uddf1", "\ud83c\uddf9\ud83c\udded", "\ud83c\uddf8\ud83c\uddec", "\ud83c\udde6\ud83c\uddea", "\ud83c\uddf9\ud83c\uddfc", "\ud83c\uddea\ud83c\uddec", "\ud83c\udde8\ud83c\udde6", 
-  "\ud83c\uddf2\ud83c\udde8", "\ud83c\udde6\ud83c\uddf9", "\ud83c\udde6\ud83c\uddfa", "\ud83c\udde7\ud83c\udde6", "\ud83c\udde7\ud83c\uddea", "\ud83c\udde8\ud83c\uddee", "\ud83c\udde8\ud83c\uddf2", "\ud83c\udde8\ud83c\uddf7", "\ud83c\udde9\ud83c\uddff", "\ud83c\uddea\ud83c\udde8", "\ud83c\uddec\ud83c\udded", "\ud83c\uddec\ud83c\uddf7", "\ud83c\udded\ud83c\uddf3", "\ud83c\udded\ud83c\uddf7", "\ud83c\uddee\ud83c\uddf7", "\ud83c\uddef\ud83c\uddf4", "\ud83c\uddf0\ud83c\uddff", "\ud83c\uddf1\ud83c\udde7", 
-  "\ud83c\uddf5\ud83c\uddea", "\ud83c\uddf5\ud83c\uddf9", "\ud83c\uddf8\ud83c\uddfe", "\ud83c\uddfa\ud83c\udde6", "\ud83c\uddfa\ud83c\uddfe", "\ud83c\uddfd\ud83c\uddea", "\u00a9", "\u00ae", "\u2122", "\u2139", "\u2194", "\u2195", "\u2196", "\u2197", "\u2198", "\u2199", "\u21a9", "\u21aa", "\u231a", "\u231b", "\u23e9", "\u23ea", "\u23eb", "\u23ec", "\u23f0", "\u23f3", "\u24c2", "\u25aa", "\u25ab", "\u25b6", "\u25c0", "\u25fb", "\u25fc", "\u25fd", "\u25fe", "\u2600", "\u2601", "\u260e", "\u2611", "\u2614", 
-  "\u2615", "\u261d", "\u2648", "\u2649", "\u264a", "\u264b", "\u264c", "\u264d", "\u264e", "\u264f", "\u2650", "\u2651", "\u2652", "\u2653", "\u2660", "\u2663", "\u2665", "\u2666", "\u2668", "\u267b", "\u267f", "\u2693", "\u26a0", "\u26a1", "\u26aa", "\u26ab", "\u26bd", "\u26be", "\u26c4", "\u26c5", "\u26ce", "\u26d4", "\u26ea", "\u26fa", "\u26f2", "\u26f3", "\u26f5", "\u26fd", "\u2702", "\u2705", "\u2708", "\u2709", "\u270a", "\u270b", "\u270c", "\u270f", "\u2712", "\u2714", "\u2716", "\u2728", 
-  "\u2733", "\u2734", "\u2744", "\u2747", "\u274c", "\u274e", "\u2753", "\u2754", "\u2755", "\u2757", "\u2764", "\u2795", "\u2796", "\u2797", "\u27a1", "\u27b0", "\u27bf", "\u2934", "\u2935", "\u2b05", "\u2b06", "\u2b07", "\u2b1b", "\u2b1c", "\u2b50", "\u2b55", "\u3030", "\u303d", "\u3297", "\u3299", "\ud83c\udd70", "\ud83c\udd71", "\ud83c\udd7e", "\ud83c\udd7f", "\ud83c\udd8e", "\ud83c\udd91", "\ud83c\udd92", "\ud83c\udd93", "\ud83c\udd94", "\ud83c\udd95", "\ud83c\udd96", "\ud83c\udd97", "\ud83c\udd98", 
+  var regexString = ["\ud83c[\udf00-\udfff]", "\ud83d[\udc00-\ude4f]", "\ud83d[\ude80-\udeff]", "[#|0-9]\u20e3", "\ud83c\uddef\ud83c\uddf5", "\ud83c\uddf0\ud83c\uddf7", "\ud83c\udde9\ud83c\uddea", "\ud83c\udde8\ud83c\uddf3", "\ud83c\uddfa\ud83c\uddf8", "\ud83c\uddeb\ud83c\uddf7", "\ud83c\uddea\ud83c\uddf8", "\ud83c\uddee\ud83c\uddf9", "\ud83c\uddf7\ud83c\uddfa", "\ud83c\uddec\ud83c\udde7", "\ud83c\uddee\ud83c\uddf3", "\ud83c\uddf2\ud83c\uddfd", "\ud83c\udde7\ud83c\uddf7", "\ud83c\uddf8\ud83c\udde6",
+  "\ud83c\uddff\ud83c\udde6", "\ud83c\udde6\ud83c\uddf7", "\ud83c\uddf3\ud83c\uddf1", "\ud83c\uddf9\ud83c\uddf7", "\ud83c\uddf2\ud83c\uddfe", "\ud83c\uddfb\ud83c\uddea", "\ud83c\udde8\ud83c\uddf4", "\ud83c\udde8\ud83c\uddf1", "\ud83c\udded\ud83c\uddf0", "\ud83c\uddf3\ud83c\uddec", "\ud83c\udde8\ud83c\udded", "\ud83c\uddee\ud83c\uddf1", "\ud83c\uddf9\ud83c\udded", "\ud83c\uddf8\ud83c\uddec", "\ud83c\udde6\ud83c\uddea", "\ud83c\uddf9\ud83c\uddfc", "\ud83c\uddea\ud83c\uddec", "\ud83c\udde8\ud83c\udde6",
+  "\ud83c\uddf2\ud83c\udde8", "\ud83c\udde6\ud83c\uddf9", "\ud83c\udde6\ud83c\uddfa", "\ud83c\udde7\ud83c\udde6", "\ud83c\udde7\ud83c\uddea", "\ud83c\udde8\ud83c\uddee", "\ud83c\udde8\ud83c\uddf2", "\ud83c\udde8\ud83c\uddf7", "\ud83c\udde9\ud83c\uddff", "\ud83c\uddea\ud83c\udde8", "\ud83c\uddec\ud83c\udded", "\ud83c\uddec\ud83c\uddf7", "\ud83c\udded\ud83c\uddf3", "\ud83c\udded\ud83c\uddf7", "\ud83c\uddee\ud83c\uddf7", "\ud83c\uddef\ud83c\uddf4", "\ud83c\uddf0\ud83c\uddff", "\ud83c\uddf1\ud83c\udde7",
+  "\ud83c\uddf5\ud83c\uddea", "\ud83c\uddf5\ud83c\uddf9", "\ud83c\uddf8\ud83c\uddfe", "\ud83c\uddfa\ud83c\udde6", "\ud83c\uddfa\ud83c\uddfe", "\ud83c\uddfd\ud83c\uddea", "\u00a9", "\u00ae", "\u2122", "\u2139", "\u2194", "\u2195", "\u2196", "\u2197", "\u2198", "\u2199", "\u21a9", "\u21aa", "\u231a", "\u231b", "\u23e9", "\u23ea", "\u23eb", "\u23ec", "\u23f0", "\u23f3", "\u24c2", "\u25aa", "\u25ab", "\u25b6", "\u25c0", "\u25fb", "\u25fc", "\u25fd", "\u25fe", "\u2600", "\u2601", "\u260e", "\u2611", "\u2614",
+  "\u2615", "\u261d", "\u2648", "\u2649", "\u264a", "\u264b", "\u264c", "\u264d", "\u264e", "\u264f", "\u2650", "\u2651", "\u2652", "\u2653", "\u2660", "\u2663", "\u2665", "\u2666", "\u2668", "\u267b", "\u267f", "\u2693", "\u26a0", "\u26a1", "\u26aa", "\u26ab", "\u26bd", "\u26be", "\u26c4", "\u26c5", "\u26ce", "\u26d4", "\u26ea", "\u26fa", "\u26f2", "\u26f3", "\u26f5", "\u26fd", "\u2702", "\u2705", "\u2708", "\u2709", "\u270a", "\u270b", "\u270c", "\u270f", "\u2712", "\u2714", "\u2716", "\u2728",
+  "\u2733", "\u2734", "\u2744", "\u2747", "\u274c", "\u274e", "\u2753", "\u2754", "\u2755", "\u2757", "\u2764", "\u2795", "\u2796", "\u2797", "\u27a1", "\u27b0", "\u27bf", "\u2934", "\u2935", "\u2b05", "\u2b06", "\u2b07", "\u2b1b", "\u2b1c", "\u2b50", "\u2b55", "\u3030", "\u303d", "\u3297", "\u3299", "\ud83c\udd70", "\ud83c\udd71", "\ud83c\udd7e", "\ud83c\udd7f", "\ud83c\udd8e", "\ud83c\udd91", "\ud83c\udd92", "\ud83c\udd93", "\ud83c\udd94", "\ud83c\udd95", "\ud83c\udd96", "\ud83c\udd97", "\ud83c\udd98",
   "\ud83c\udd99", "\ud83c\udd9a", "\ud83c\ude01", "\ud83c\ude02", "\ud83c\ude1a", "\ud83c\ude2f", "\ud83c\ude32", "\ud83c\ude33", "\ud83c\ude34", "\ud83c\ude35", "\ud83c\ude36", "\ud83c\ude37", "\ud83c\ude38", "\ud83c\ude39", "\ud83c\ude3a", "\ud83c\ude50", "\ud83c\ude51"].join("|");
-  var data = {"1f466":{"sheet":0, "x":0}, "1f467":{"sheet":0, "x":1}, "1f48b":{"sheet":0, "x":2}, "1f468":{"sheet":0, "x":3}, "1f469":{"sheet":0, "x":4}, "1f455":{"sheet":0, "x":5}, "1f45f":{"sheet":0, "x":6}, "1f4f7":{"sheet":0, "x":7}, "260e":{"sheet":0, "x":8}, "1f4f1":{"sheet":0, "x":9}, "1f4e0":{"sheet":0, "x":10}, "1f4bb":{"sheet":0, "x":11}, "1f44a":{"sheet":0, "x":12}, "1f44d":{"sheet":0, "x":13}, "261d":{"sheet":0, "x":14}, "270a":{"sheet":0, "x":15}, "270c":{"sheet":0, "x":16}, "270b":{"sheet":0, 
-  "x":17}, "1f3bf":{"sheet":0, "x":18}, "26f3":{"sheet":0, "x":19}, "1f3be":{"sheet":0, "x":20}, "26be":{"sheet":0, "x":21}, "1f3c4":{"sheet":0, "x":22}, "26bd":{"sheet":0, "x":23}, "1f41f":{"sheet":0, "x":24}, "1f434":{"sheet":0, "x":25}, "1f697":{"sheet":0, "x":26}, "26f5":{"sheet":0, "x":27}, 2708:{"sheet":0, "x":28}, "1f683":{"sheet":0, "x":29}, "1f685":{"sheet":0, "x":30}, 2753:{"sheet":0, "x":31}, 2757:{"sheet":0, "x":32}, 2764:{"sheet":0, "x":33}, "1f494":{"sheet":0, "x":34}, "1f550":{"sheet":0, 
-  "x":35}, "1f551":{"sheet":0, "x":36}, "1f552":{"sheet":0, "x":37}, "1f553":{"sheet":0, "x":38}, "1f554":{"sheet":0, "x":39}, "1f555":{"sheet":0, "x":40}, "1f556":{"sheet":0, "x":41}, "1f557":{"sheet":0, "x":42}, "1f558":{"sheet":0, "x":43}, "1f559":{"sheet":0, "x":44}, "1f55a":{"sheet":0, "x":45}, "1f55b":{"sheet":0, "x":46}, "1f338":{"sheet":0, "x":47}, "1f531":{"sheet":0, "x":48}, "1f339":{"sheet":0, "x":49}, "1f384":{"sheet":0, "x":50}, "1f48d":{"sheet":0, "x":51}, "1f48e":{"sheet":0, "x":52}, 
-  "1f3e0":{"sheet":0, "x":53}, "26ea":{"sheet":0, "x":54}, "1f3e2":{"sheet":0, "x":55}, "1f689":{"sheet":0, "x":56}, "26fd":{"sheet":0, "x":57}, "1f5fb":{"sheet":0, "x":58}, "1f3a4":{"sheet":0, "x":59}, "1f3a5":{"sheet":0, "x":60}, "1f3b5":{"sheet":0, "x":61}, "1f511":{"sheet":0, "x":62}, "1f3b7":{"sheet":0, "x":63}, "1f3b8":{"sheet":0, "x":64}, "1f3ba":{"sheet":0, "x":65}, "1f374":{"sheet":0, "x":66}, "1f378":{"sheet":0, "x":67}, 2615:{"sheet":0, "x":68}, "1f370":{"sheet":0, "x":69}, "1f37a":{"sheet":0, 
-  "x":70}, "26c4":{"sheet":0, "x":71}, 2601:{"sheet":0, "x":72}, 2600:{"sheet":0, "x":73}, 2614:{"sheet":0, "x":74}, "1f319":{"sheet":0, "x":75}, "1f304":{"sheet":0, "x":76}, "1f47c":{"sheet":0, "x":77}, "1f431":{"sheet":0, "x":78}, "1f42f":{"sheet":0, "x":79}, "1f43b":{"sheet":0, "x":80}, "1f436":{"sheet":0, "x":81}, "1f42d":{"sheet":0, "x":82}, "1f433":{"sheet":0, "x":83}, "1f427":{"sheet":0, "x":84}, "1f60a":{"sheet":0, "x":85}, "1f603":{"sheet":0, "x":86}, "1f61e":{"sheet":0, "x":87}, "1f620":{"sheet":0, 
-  "x":88}, "1f4a9":{"sheet":0, "x":89}, "1f4ea":{"sheet":1, "x":0}, "1f4ee":{"sheet":1, "x":1}, "1f4e9":{"sheet":1, "x":2}, "1f4f2":{"sheet":1, "x":3}, "1f61c":{"sheet":1, "x":4}, "1f60d":{"sheet":1, "x":5}, "1f631":{"sheet":1, "x":6}, "1f613":{"sheet":1, "x":7}, "1f435":{"sheet":1, "x":8}, "1f419":{"sheet":1, "x":9}, "1f437":{"sheet":1, "x":10}, "1f47d":{"sheet":1, "x":11}, "1f680":{"sheet":1, "x":12}, "1f451":{"sheet":1, "x":13}, "1f4a1":{"sheet":1, "x":14}, "1f340":{"sheet":1, "x":15}, "1f48f":{"sheet":1, 
-  "x":16}, "1f381":{"sheet":1, "x":17}, "1f52b":{"sheet":1, "x":18}, "1f50d":{"sheet":1, "x":19}, "1f3c3":{"sheet":1, "x":20}, "1f528":{"sheet":1, "x":21}, "1f386":{"sheet":1, "x":22}, "1f341":{"sheet":1, "x":23}, "1f342":{"sheet":1, "x":24}, "1f47f":{"sheet":1, "x":25}, "1f47b":{"sheet":1, "x":26}, "1f480":{"sheet":1, "x":27}, "1f525":{"sheet":1, "x":28}, "1f4bc":{"sheet":1, "x":29}, "1f4ba":{"sheet":1, "x":30}, "1f354":{"sheet":1, "x":31}, "26f2":{"sheet":1, "x":32}, "26fa":{"sheet":1, "x":33}, 
-  2668:{"sheet":1, "x":34}, "1f3a1":{"sheet":1, "x":35}, "1f3ab":{"sheet":1, "x":36}, "1f4bf":{"sheet":1, "x":37}, "1f4c0":{"sheet":1, "x":38}, "1f4fb":{"sheet":1, "x":39}, "1f4fc":{"sheet":1, "x":40}, "1f4fa":{"sheet":1, "x":41}, "1f47e":{"sheet":1, "x":42}, "303d":{"sheet":1, "x":43}, "1f004":{"sheet":1, "x":44}, "1f19a":{"sheet":1, "x":45}, "1f4b0":{"sheet":1, "x":46}, "1f3af":{"sheet":1, "x":47}, "1f3c6":{"sheet":1, "x":48}, "1f3c1":{"sheet":1, "x":49}, "1f3b0":{"sheet":1, "x":50}, "1f40e":{"sheet":1, 
-  "x":51}, "1f6a4":{"sheet":1, "x":52}, "1f6b2":{"sheet":1, "x":53}, "1f6a7":{"sheet":1, "x":54}, "1f6b9":{"sheet":1, "x":55}, "1f6ba":{"sheet":1, "x":56}, "1f6bc":{"sheet":1, "x":57}, "1f489":{"sheet":1, "x":58}, "1f4a4":{"sheet":1, "x":59}, "26a1":{"sheet":1, "x":60}, "1f460":{"sheet":1, "x":61}, "1f6c0":{"sheet":1, "x":62}, "1f6bd":{"sheet":1, "x":63}, "1f508":{"sheet":1, "x":64}, "1f4e2":{"sheet":1, "x":65}, "1f38c":{"sheet":1, "x":66}, "1f512":{"sheet":1, "x":67}, "1f513":{"sheet":1, "x":68}, 
-  "1f306":{"sheet":1, "x":69}, "1f373":{"sheet":1, "x":70}, "1f4d6":{"sheet":1, "x":71}, "1f4b1":{"sheet":1, "x":72}, "1f4b9":{"sheet":1, "x":73}, "1f4e1":{"sheet":1, "x":74}, "1f4aa":{"sheet":1, "x":75}, "1f3e6":{"sheet":1, "x":76}, "1f6a5":{"sheet":1, "x":77}, "1f17f":{"sheet":1, "x":78}, "1f68f":{"sheet":1, "x":79}, "1f6bb":{"sheet":1, "x":80}, "1f46e":{"sheet":1, "x":81}, "1f3e3":{"sheet":1, "x":82}, "1f3e7":{"sheet":1, "x":83}, "1f3e5":{"sheet":1, "x":84}, "1f3ea":{"sheet":1, "x":85}, "1f3eb":{"sheet":1, 
-  "x":86}, "1f3e8":{"sheet":1, "x":87}, "1f68c":{"sheet":1, "x":88}, "1f695":{"sheet":1, "x":89}, "1f6b6":{"sheet":2, "x":0}, "1f6a2":{"sheet":2, "x":1}, "1f201":{"sheet":2, "x":2}, "1f49f":{"sheet":2, "x":3}, 2734:{"sheet":2, "x":4}, 2733:{"sheet":2, "x":5}, "1f51e":{"sheet":2, "x":6}, "1f6ad":{"sheet":2, "x":7}, "1f530":{"sheet":2, "x":8}, "267f":{"sheet":2, "x":9}, "1f4f6":{"sheet":2, "x":10}, 2665:{"sheet":2, "x":11}, 2666:{"sheet":2, "x":12}, 2660:{"sheet":2, "x":13}, 2663:{"sheet":2, "x":14}, 
-  "0023-20e3":{"sheet":2, "x":15}, "27bf":{"sheet":2, "x":16}, "1f195":{"sheet":2, "x":17}, "1f199":{"sheet":2, "x":18}, "1f192":{"sheet":2, "x":19}, "1f236":{"sheet":2, "x":20}, "1f21a":{"sheet":2, "x":21}, "1f237":{"sheet":2, "x":22}, "1f238":{"sheet":2, "x":23}, "1f534":{"sheet":2, "x":24}, "1f532":{"sheet":2, "x":25}, "1f533":{"sheet":2, "x":26}, "0031-20e3":{"sheet":2, "x":27}, "0032-20e3":{"sheet":2, "x":28}, "0033-20e3":{"sheet":2, "x":29}, "0034-20e3":{"sheet":2, "x":30}, "0035-20e3":{"sheet":2, 
-  "x":31}, "0036-20e3":{"sheet":2, "x":32}, "0037-20e3":{"sheet":2, "x":33}, "0038-20e3":{"sheet":2, "x":34}, "0039-20e3":{"sheet":2, "x":35}, "0030-20e3":{"sheet":2, "x":36}, "1f250":{"sheet":2, "x":37}, "1f239":{"sheet":2, "x":38}, "1f202":{"sheet":2, "x":39}, "1f194":{"sheet":2, "x":40}, "1f235":{"sheet":2, "x":41}, "1f233":{"sheet":2, "x":42}, "1f22f":{"sheet":2, "x":43}, "1f23a":{"sheet":2, "x":44}, "1f446":{"sheet":2, "x":45}, "1f447":{"sheet":2, "x":46}, "1f448":{"sheet":2, "x":47}, "1f449":{"sheet":2, 
-  "x":48}, "2b06":{"sheet":2, "x":49}, "2b07":{"sheet":2, "x":50}, "27a1":{"sheet":2, "x":51}, "2b05":{"sheet":2, "x":52}, 2197:{"sheet":2, "x":53}, 2196:{"sheet":2, "x":54}, 2198:{"sheet":2, "x":55}, 2199:{"sheet":2, "x":56}, "25b6":{"sheet":2, "x":57}, "25c0":{"sheet":2, "x":58}, "23e9":{"sheet":2, "x":59}, "23ea":{"sheet":2, "x":60}, "1f52f":{"sheet":2, "x":61}, 2648:{"sheet":2, "x":62}, 2649:{"sheet":2, "x":63}, "264a":{"sheet":2, "x":64}, "264b":{"sheet":2, "x":65}, "264c":{"sheet":2, "x":66}, 
-  "264d":{"sheet":2, "x":67}, "264e":{"sheet":2, "x":68}, "264f":{"sheet":2, "x":69}, 2650:{"sheet":2, "x":70}, 2651:{"sheet":2, "x":71}, 2652:{"sheet":2, "x":72}, 2653:{"sheet":2, "x":73}, "26ce":{"sheet":2, "x":74}, "1f51d":{"sheet":2, "x":75}, "1f197":{"sheet":2, "x":76}, "00a9":{"sheet":2, "x":77}, "00ae":{"sheet":2, "x":78}, "1f4f3":{"sheet":2, "x":79}, "1f4f4":{"sheet":2, "x":80}, "26a0":{"sheet":2, "x":81}, "1f481":{"sheet":2, "x":82}, "1f4dd":{"sheet":3, "x":0}, "1f454":{"sheet":3, "x":1}, 
-  "1f33a":{"sheet":3, "x":2}, "1f337":{"sheet":3, "x":3}, "1f33b":{"sheet":3, "x":4}, "1f490":{"sheet":3, "x":5}, "1f334":{"sheet":3, "x":6}, "1f335":{"sheet":3, "x":7}, "1f6be":{"sheet":3, "x":8}, "1f3a7":{"sheet":3, "x":9}, "1f376":{"sheet":3, "x":10}, "1f37b":{"sheet":3, "x":11}, 3297:{"sheet":3, "x":12}, "1f6ac":{"sheet":3, "x":13}, "1f48a":{"sheet":3, "x":14}, "1f388":{"sheet":3, "x":15}, "1f4a3":{"sheet":3, "x":16}, "1f389":{"sheet":3, "x":17}, 2702:{"sheet":3, "x":18}, "1f380":{"sheet":3, 
-  "x":19}, 3299:{"sheet":3, "x":20}, "1f4bd":{"sheet":3, "x":21}, "1f4e3":{"sheet":3, "x":22}, "1f452":{"sheet":3, "x":23}, "1f457":{"sheet":3, "x":24}, "1f461":{"sheet":3, "x":25}, "1f462":{"sheet":3, "x":26}, "1f484":{"sheet":3, "x":27}, "1f485":{"sheet":3, "x":28}, "1f486":{"sheet":3, "x":29}, "1f487":{"sheet":3, "x":30}, "1f488":{"sheet":3, "x":31}, "1f458":{"sheet":3, "x":32}, "1f459":{"sheet":3, "x":33}, "1f45c":{"sheet":3, "x":34}, "1f3ac":{"sheet":3, "x":35}, "1f514":{"sheet":3, "x":36}, 
-  "1f3b6":{"sheet":3, "x":37}, "1f493":{"sheet":3, "x":38}, "1f497":{"sheet":3, "x":39}, "1f498":{"sheet":3, "x":40}, "1f499":{"sheet":3, "x":41}, "1f49a":{"sheet":3, "x":42}, "1f49b":{"sheet":3, "x":43}, "1f49c":{"sheet":3, "x":44}, 2728:{"sheet":3, "x":45}, "2b50":{"sheet":3, "x":46}, "1f4a8":{"sheet":3, "x":47}, "1f4a6":{"sheet":3, "x":48}, "2b55":{"sheet":3, "x":49}, "274c":{"sheet":3, "x":50}, "1f4a2":{"sheet":3, "x":51}, "1f31f":{"sheet":3, "x":52}, 2754:{"sheet":3, "x":53}, 2755:{"sheet":3, 
-  "x":54}, "1f375":{"sheet":3, "x":55}, "1f35e":{"sheet":3, "x":56}, "1f366":{"sheet":3, "x":57}, "1f35f":{"sheet":3, "x":58}, "1f361":{"sheet":3, "x":59}, "1f358":{"sheet":3, "x":60}, "1f35a":{"sheet":3, "x":61}, "1f35d":{"sheet":3, "x":62}, "1f35c":{"sheet":3, "x":63}, "1f35b":{"sheet":3, "x":64}, "1f359":{"sheet":3, "x":65}, "1f362":{"sheet":3, "x":66}, "1f363":{"sheet":3, "x":67}, "1f34e":{"sheet":3, "x":68}, "1f34a":{"sheet":3, "x":69}, "1f353":{"sheet":3, "x":70}, "1f349":{"sheet":3, "x":71}, 
-  "1f345":{"sheet":3, "x":72}, "1f346":{"sheet":3, "x":73}, "1f382":{"sheet":3, "x":74}, "1f371":{"sheet":3, "x":75}, "1f372":{"sheet":3, "x":76}, "1f652":{"sheet":4, "x":0}, "1f60f":{"sheet":4, "x":1}, "1f614":{"sheet":4, "x":2}, "1f601":{"sheet":4, "x":3}, "1f609":{"sheet":4, "x":4}, "1f623":{"sheet":4, "x":5}, "1f616":{"sheet":4, "x":6}, "1f62a":{"sheet":4, "x":7}, "1f61d":{"sheet":4, "x":8}, "1f60c":{"sheet":4, "x":9}, "1f628":{"sheet":4, "x":10}, "1f637":{"sheet":4, "x":11}, "1f633":{"sheet":4, 
-  "x":12}, "1f612":{"sheet":4, "x":13}, "1f630":{"sheet":4, "x":14}, "1f632":{"sheet":4, "x":15}, "1f62d":{"sheet":4, "x":16}, "1f602":{"sheet":4, "x":17}, "1f622":{"sheet":4, "x":18}, "263a":{"sheet":4, "x":19}, "1f604":{"sheet":4, "x":20}, "1f621":{"sheet":4, "x":21}, "1f61a":{"sheet":4, "x":22}, "1f618":{"sheet":4, "x":23}, "1f440":{"sheet":4, "x":24}, "1f443":{"sheet":4, "x":25}, "1f442":{"sheet":4, "x":26}, "1f444":{"sheet":4, "x":27}, "1f64f":{"sheet":4, "x":28}, "1f44b":{"sheet":4, "x":29}, 
-  "1f44f":{"sheet":4, "x":30}, "1f44c":{"sheet":4, "x":31}, "1f44e":{"sheet":4, "x":32}, "1f450":{"sheet":4, "x":33}, "1f645":{"sheet":4, "x":34}, "1f646":{"sheet":4, "x":35}, "1f491":{"sheet":4, "x":36}, "1f647":{"sheet":4, "x":37}, "1f64c":{"sheet":4, "x":38}, "1f46b":{"sheet":4, "x":39}, "1f46f":{"sheet":4, "x":40}, "1f3c0":{"sheet":4, "x":41}, "1f3c8":{"sheet":4, "x":42}, "1f3b1":{"sheet":4, "x":43}, "1f3ca":{"sheet":4, "x":44}, "1f699":{"sheet":4, "x":45}, "1f69a":{"sheet":4, "x":46}, "1f692":{"sheet":4, 
-  "x":47}, "1f691":{"sheet":4, "x":48}, "1f693":{"sheet":4, "x":49}, "1f3a2":{"sheet":4, "x":50}, "1f687":{"sheet":4, "x":51}, "1f684":{"sheet":4, "x":52}, "1f38d":{"sheet":4, "x":53}, "1f49d":{"sheet":4, "x":54}, "1f38e":{"sheet":4, "x":55}, "1f393":{"sheet":4, "x":56}, "1f392":{"sheet":4, "x":57}, "1f38f":{"sheet":4, "x":58}, "1f302":{"sheet":4, "x":59}, "1f492":{"sheet":4, "x":60}, "1f30a":{"sheet":4, "x":61}, "1f367":{"sheet":4, "x":62}, "1f387":{"sheet":4, "x":63}, "1f41a":{"sheet":4, "x":64}, 
-  "1f390":{"sheet":4, "x":65}, "1f300":{"sheet":4, "x":66}, "1f33e":{"sheet":4, "x":67}, "1f383":{"sheet":4, "x":68}, "1f391":{"sheet":4, "x":69}, "1f343":{"sheet":4, "x":70}, "1f385":{"sheet":4, "x":71}, "1f305":{"sheet":4, "x":72}, "1f307":{"sheet":4, "x":73}, "1f303":{"sheet":4, "x":74}, "1f308":{"sheet":4, "x":75}, "1f3e9":{"sheet":5, "x":0}, "1f3a8":{"sheet":5, "x":1}, "1f3a9":{"sheet":5, "x":2}, "1f3ec":{"sheet":5, "x":3}, "1f3ef":{"sheet":5, "x":4}, "1f3f0":{"sheet":5, "x":5}, "1f3a6":{"sheet":5, 
-  "x":6}, "1f3ed":{"sheet":5, "x":7}, "1f5fc":{"sheet":5, "x":8}, "UNKNOWN":{"sheet":5, "x":9}, "1f1ef-1f1f5":{"sheet":5, "x":10}, "1f1fa-1f1f8":{"sheet":5, "x":11}, "1f1eb-1f1f7":{"sheet":5, "x":12}, "1f1e9-1f1ea":{"sheet":5, "x":13}, "1f1ee-1f1f9":{"sheet":5, "x":14}, "1f1ec-1f1e7":{"sheet":5, "x":15}, "1f1ea-1f1f8":{"sheet":5, "x":16}, "1f1f7-1f1fa":{"sheet":5, "x":17}, "1f1e8-1f1f3":{"sheet":5, "x":18}, "1f1f0-1f1f7":{"sheet":5, "x":19}, "1f471":{"sheet":5, "x":20}, "1f472":{"sheet":5, "x":21}, 
-  "1f473":{"sheet":5, "x":22}, "1f474":{"sheet":5, "x":23}, "1f475":{"sheet":5, "x":24}, "1f476":{"sheet":5, "x":25}, "1f477":{"sheet":5, "x":26}, "1f478":{"sheet":5, "x":27}, "1f5fd":{"sheet":5, "x":28}, "1f482":{"sheet":5, "x":29}, "1f483":{"sheet":5, "x":30}, "1f42c":{"sheet":5, "x":31}, "1f426":{"sheet":5, "x":32}, "1f420":{"sheet":5, "x":33}, "1f424":{"sheet":5, "x":34}, "1f439":{"sheet":5, "x":35}, "1f41b":{"sheet":5, "x":36}, "1f418":{"sheet":5, "x":37}, "1f428":{"sheet":5, "x":38}, "1f412":{"sheet":5, 
-  "x":39}, "1f411":{"sheet":5, "x":40}, "1f43a":{"sheet":5, "x":41}, "1f42e":{"sheet":5, "x":42}, "1f430":{"sheet":5, "x":43}, "1f40d":{"sheet":5, "x":44}, "1f414":{"sheet":5, "x":45}, "1f417":{"sheet":5, "x":46}, "1f42b":{"sheet":5, "x":47}, "1f438":{"sheet":5, "x":48}, "1f170":{"sheet":5, "x":49}, "1f171":{"sheet":5, "x":50}, "1f18e":{"sheet":5, "x":51}, "1f17e":{"sheet":5, "x":52}, "1f463":{"sheet":5, "x":53}, 2122:{"sheet":5, "x":54}, "203c":{"sheet":6, "x":0}, 2049:{"sheet":6, "x":1}, 2139:{"sheet":6, 
-  "x":2}, 2194:{"sheet":6, "x":3}, 2195:{"sheet":6, "x":4}, "21a9":{"sheet":6, "x":5}, "21aa":{"sheet":6, "x":6}, "231a":{"sheet":6, "x":7}, "231b":{"sheet":6, "x":8}, "23eb":{"sheet":6, "x":9}, "23ec":{"sheet":6, "x":10}, "23f0":{"sheet":6, "x":11}, "23f3":{"sheet":6, "x":12}, "24c2":{"sheet":6, "x":13}, "25aa":{"sheet":6, "x":14}, "25ab":{"sheet":6, "x":15}, "2b1c":{"sheet":6, "x":16}, "2b1b":{"sheet":6, "x":17}, "25fd":{"sheet":6, "x":18}, "25fe":{"sheet":6, "x":19}, 2611:{"sheet":6, "x":20}, 
-  "267b":{"sheet":6, "x":21}, 2693:{"sheet":6, "x":22}, "26aa":{"sheet":6, "x":23}, "26ab":{"sheet":6, "x":24}, "26c5":{"sheet":6, "x":25}, "26d4":{"sheet":6, "x":26}, 2705:{"sheet":6, "x":27}, 2709:{"sheet":6, "x":28}, "270f":{"sheet":6, "x":29}, 2712:{"sheet":6, "x":30}, 2714:{"sheet":6, "x":31}, 2716:{"sheet":6, "x":32}, 2744:{"sheet":6, "x":33}, 2747:{"sheet":6, "x":34}, "274e":{"sheet":6, "x":35}, 2795:{"sheet":6, "x":36}, 2796:{"sheet":6, "x":37}, 2797:{"sheet":6, "x":38}, "27b0":{"sheet":6, 
-  "x":39}, 2934:{"sheet":6, "x":40}, 2935:{"sheet":6, "x":41}, "25fc":{"sheet":6, "x":42}, "25fb":{"sheet":6, "x":43}, 3030:{"sheet":6, "x":44}, "1f0cf":{"sheet":6, "x":45}, "1f191":{"sheet":6, "x":46}, "1f193":{"sheet":6, "x":47}, "1f196":{"sheet":6, "x":48}, "1f198":{"sheet":6, "x":49}, "1f232":{"sheet":6, "x":50}, "1f234":{"sheet":6, "x":51}, "1f251":{"sheet":6, "x":52}, "1f301":{"sheet":6, "x":53}, "1f309":{"sheet":6, "x":54}, "1f30b":{"sheet":6, "x":55}, "1f30c":{"sheet":6, "x":56}, "1f30d":{"sheet":6, 
-  "x":57}, "1f30e":{"sheet":6, "x":58}, "1f30f":{"sheet":6, "x":59}, "1f310":{"sheet":6, "x":60}, "1f311":{"sheet":6, "x":61}, "1f312":{"sheet":6, "x":62}, "1f313":{"sheet":6, "x":63}, "1f314":{"sheet":6, "x":64}, "1f315":{"sheet":6, "x":65}, "1f316":{"sheet":6, "x":66}, "1f317":{"sheet":6, "x":67}, "1f318":{"sheet":6, "x":68}, "1f31a":{"sheet":6, "x":69}, "1f31b":{"sheet":6, "x":70}, "1f31c":{"sheet":6, "x":71}, "1f31d":{"sheet":6, "x":72}, "1f31e":{"sheet":6, "x":73}, "1f320":{"sheet":6, "x":74}, 
-  "1f330":{"sheet":6, "x":75}, "1f331":{"sheet":6, "x":76}, "1f332":{"sheet":6, "x":77}, "1f333":{"sheet":6, "x":78}, "1f33c":{"sheet":7, "x":0}, "1f33d":{"sheet":7, "x":1}, "1f33f":{"sheet":7, "x":2}, "1f344":{"sheet":7, "x":3}, "1f347":{"sheet":7, "x":4}, "1f348":{"sheet":7, "x":5}, "1f34b":{"sheet":7, "x":6}, "1f34c":{"sheet":7, "x":7}, "1f34d":{"sheet":7, "x":8}, "1f34f":{"sheet":7, "x":9}, "1f350":{"sheet":7, "x":10}, "1f351":{"sheet":7, "x":11}, "1f352":{"sheet":7, "x":12}, "1f355":{"sheet":7, 
-  "x":13}, "1f356":{"sheet":7, "x":14}, "1f357":{"sheet":7, "x":15}, "1f360":{"sheet":7, "x":16}, "1f364":{"sheet":7, "x":17}, "1f365":{"sheet":7, "x":18}, "1f368":{"sheet":7, "x":19}, "1f369":{"sheet":7, "x":20}, "1f36a":{"sheet":7, "x":21}, "1f36b":{"sheet":7, "x":22}, "1f36c":{"sheet":7, "x":23}, "1f36d":{"sheet":7, "x":24}, "1f36e":{"sheet":7, "x":25}, "1f36f":{"sheet":7, "x":26}, "1f377":{"sheet":7, "x":27}, "1f379":{"sheet":7, "x":28}, "1f37c":{"sheet":7, "x":29}, "1f38a":{"sheet":7, "x":30}, 
-  "1f38b":{"sheet":7, "x":31}, "1f3a0":{"sheet":7, "x":32}, "1f3a3":{"sheet":7, "x":33}, "1f3aa":{"sheet":7, "x":34}, "1f3ad":{"sheet":7, "x":35}, "1f3ae":{"sheet":7, "x":36}, "1f3b2":{"sheet":7, "x":37}, "1f3b3":{"sheet":7, "x":38}, "1f3b4":{"sheet":7, "x":39}, "1f3b9":{"sheet":7, "x":40}, "1f3bb":{"sheet":7, "x":41}, "1f3bc":{"sheet":7, "x":42}, "1f3bd":{"sheet":7, "x":43}, "1f3c2":{"sheet":7, "x":44}, "1f3c7":{"sheet":7, "x":45}, "1f3c9":{"sheet":7, "x":46}, "1f3e1":{"sheet":7, "x":47}, "1f3e4":{"sheet":7, 
-  "x":48}, "1f3ee":{"sheet":7, "x":49}, "1f400":{"sheet":7, "x":50}, "1f401":{"sheet":7, "x":51}, "1f402":{"sheet":7, "x":52}, "1f403":{"sheet":7, "x":53}, "1f404":{"sheet":7, "x":54}, "1f405":{"sheet":7, "x":55}, "1f406":{"sheet":7, "x":56}, "1f407":{"sheet":7, "x":57}, "1f408":{"sheet":7, "x":58}, "1f409":{"sheet":7, "x":59}, "1f40a":{"sheet":7, "x":60}, "1f40b":{"sheet":7, "x":61}, "1f40c":{"sheet":7, "x":62}, "1f40f":{"sheet":7, "x":63}, "1f410":{"sheet":7, "x":64}, "1f413":{"sheet":7, "x":65}, 
-  "1f415":{"sheet":7, "x":66}, "1f416":{"sheet":7, "x":67}, "1f41c":{"sheet":7, "x":68}, "1f41d":{"sheet":7, "x":69}, "1f41e":{"sheet":7, "x":70}, "1f421":{"sheet":7, "x":71}, "1f422":{"sheet":7, "x":72}, "1f423":{"sheet":7, "x":73}, "1f425":{"sheet":7, "x":74}, "1f429":{"sheet":7, "x":75}, "1f42a":{"sheet":7, "x":76}, "1f432":{"sheet":7, "x":77}, "1f43c":{"sheet":7, "x":78}, "1f43d":{"sheet":8, "x":0}, "1f43e":{"sheet":8, "x":1}, "1f445":{"sheet":8, "x":2}, "1f453":{"sheet":8, "x":3}, "1f456":{"sheet":8, 
-  "x":4}, "1f45a":{"sheet":8, "x":5}, "1f45b":{"sheet":8, "x":6}, "1f45d":{"sheet":8, "x":7}, "1f45e":{"sheet":8, "x":8}, "1f464":{"sheet":8, "x":9}, "1f465":{"sheet":8, "x":10}, "1f46a":{"sheet":8, "x":11}, "1f46c":{"sheet":8, "x":12}, "1f46d":{"sheet":8, "x":13}, "1f470":{"sheet":8, "x":14}, "1f479":{"sheet":8, "x":15}, "1f47a":{"sheet":8, "x":16}, "1f48c":{"sheet":8, "x":17}, "1f495":{"sheet":8, "x":18}, "1f496":{"sheet":8, "x":19}, "1f49e":{"sheet":8, "x":20}, "1f4a0":{"sheet":8, "x":21}, "1f4a5":{"sheet":8, 
-  "x":22}, "1f4a7":{"sheet":8, "x":23}, "1f4ab":{"sheet":8, "x":24}, "1f4ac":{"sheet":8, "x":25}, "1f4ad":{"sheet":8, "x":26}, "1f4ae":{"sheet":8, "x":27}, "1f4af":{"sheet":8, "x":28}, "1f4b2":{"sheet":8, "x":29}, "1f4b3":{"sheet":8, "x":30}, "1f4b4":{"sheet":8, "x":31}, "1f4b5":{"sheet":8, "x":32}, "1f4b6":{"sheet":8, "x":33}, "1f4b7":{"sheet":8, "x":34}, "1f4b8":{"sheet":8, "x":35}, "1f4be":{"sheet":8, "x":36}, "1f4c1":{"sheet":8, "x":37}, "1f4c2":{"sheet":8, "x":38}, "1f4c3":{"sheet":8, "x":39}, 
-  "1f4c4":{"sheet":8, "x":40}, "1f4c5":{"sheet":8, "x":41}, "1f4c6":{"sheet":8, "x":42}, "1f4c7":{"sheet":8, "x":43}, "1f4c8":{"sheet":8, "x":44}, "1f4c9":{"sheet":8, "x":45}, "1f4ca":{"sheet":8, "x":46}, "1f4cb":{"sheet":8, "x":47}, "1f4cc":{"sheet":8, "x":48}, "1f4cd":{"sheet":8, "x":49}, "1f4ce":{"sheet":8, "x":50}, "1f4cf":{"sheet":8, "x":51}, "1f4d0":{"sheet":8, "x":52}, "1f4d1":{"sheet":8, "x":53}, "1f4d2":{"sheet":8, "x":54}, "1f4d3":{"sheet":8, "x":55}, "1f4d4":{"sheet":8, "x":56}, "1f4d5":{"sheet":8, 
-  "x":57}, "1f4d7":{"sheet":8, "x":58}, "1f4d8":{"sheet":8, "x":59}, "1f4d9":{"sheet":8, "x":60}, "1f4da":{"sheet":8, "x":61}, "1f4db":{"sheet":8, "x":62}, "1f4dc":{"sheet":8, "x":63}, "1f4de":{"sheet":8, "x":64}, "1f4df":{"sheet":8, "x":65}, "1f4e4":{"sheet":8, "x":66}, "1f4e5":{"sheet":8, "x":67}, "1f4e6":{"sheet":8, "x":68}, "1f4e7":{"sheet":8, "x":69}, "1f4e8":{"sheet":8, "x":70}, "1f4eb":{"sheet":8, "x":71}, "1f4ec":{"sheet":8, "x":72}, "1f4ed":{"sheet":8, "x":73}, "1f4ef":{"sheet":8, "x":74}, 
-  "1f4f0":{"sheet":8, "x":75}, "1f4f5":{"sheet":8, "x":76}, "1f4f9":{"sheet":8, "x":77}, "1f500":{"sheet":8, "x":78}, "1f501":{"sheet":9, "x":0}, "1f502":{"sheet":9, "x":1}, "1f503":{"sheet":9, "x":2}, "1f504":{"sheet":9, "x":3}, "1f505":{"sheet":9, "x":4}, "1f506":{"sheet":9, "x":5}, "1f507":{"sheet":9, "x":6}, "1f509":{"sheet":9, "x":7}, "1f50a":{"sheet":9, "x":8}, "1f50b":{"sheet":9, "x":9}, "1f50c":{"sheet":9, "x":10}, "1f50e":{"sheet":9, "x":11}, "1f50f":{"sheet":9, "x":12}, "1f510":{"sheet":9, 
-  "x":13}, "1f515":{"sheet":9, "x":14}, "1f516":{"sheet":9, "x":15}, "1f517":{"sheet":9, "x":16}, "1f518":{"sheet":9, "x":17}, "1f519":{"sheet":9, "x":18}, "1f51a":{"sheet":9, "x":19}, "1f51b":{"sheet":9, "x":20}, "1f51c":{"sheet":9, "x":21}, "1f51f":{"sheet":9, "x":22}, "1f520":{"sheet":9, "x":23}, "1f521":{"sheet":9, "x":24}, "1f522":{"sheet":9, "x":25}, "1f523":{"sheet":9, "x":26}, "1f524":{"sheet":9, "x":27}, "1f526":{"sheet":9, "x":28}, "1f527":{"sheet":9, "x":29}, "1f529":{"sheet":9, "x":30}, 
-  "1f52a":{"sheet":9, "x":31}, "1f52c":{"sheet":9, "x":32}, "1f52d":{"sheet":9, "x":33}, "1f52e":{"sheet":9, "x":34}, "1f535":{"sheet":9, "x":35}, "1f536":{"sheet":9, "x":36}, "1f537":{"sheet":9, "x":37}, "1f538":{"sheet":9, "x":38}, "1f539":{"sheet":9, "x":39}, "1f53a":{"sheet":9, "x":40}, "1f53b":{"sheet":9, "x":41}, "1f53c":{"sheet":9, "x":42}, "1f53d":{"sheet":9, "x":43}, "1f55c":{"sheet":9, "x":44}, "1f55d":{"sheet":9, "x":45}, "1f55e":{"sheet":9, "x":46}, "1f55f":{"sheet":9, "x":47}, "1f560":{"sheet":9, 
-  "x":48}, "1f561":{"sheet":9, "x":49}, "1f562":{"sheet":9, "x":50}, "1f563":{"sheet":9, "x":51}, "1f564":{"sheet":9, "x":52}, "1f565":{"sheet":9, "x":53}, "1f566":{"sheet":9, "x":54}, "1f567":{"sheet":9, "x":55}, "1f5fe":{"sheet":9, "x":56}, "1f5ff":{"sheet":9, "x":57}, "1f600":{"sheet":9, "x":58}, "1f605":{"sheet":9, "x":59}, "1f606":{"sheet":9, "x":60}, "1f607":{"sheet":9, "x":61}, "1f608":{"sheet":9, "x":62}, "1f60b":{"sheet":9, "x":63}, "1f60e":{"sheet":9, "x":64}, "1f610":{"sheet":9, "x":65}, 
-  "1f611":{"sheet":9, "x":66}, "1f615":{"sheet":9, "x":67}, "1f617":{"sheet":9, "x":68}, "1f619":{"sheet":9, "x":69}, "1f61b":{"sheet":9, "x":70}, "1f61f":{"sheet":9, "x":71}, "1f624":{"sheet":9, "x":72}, "1f626":{"sheet":9, "x":73}, "1f627":{"sheet":9, "x":74}, "1f629":{"sheet":9, "x":75}, "1f62b":{"sheet":9, "x":76}, "1f62c":{"sheet":9, "x":77}, "1f62e":{"sheet":9, "x":78}, "1f62f":{"sheet":10, "x":0}, "1f634":{"sheet":10, "x":1}, "1f635":{"sheet":10, "x":2}, "1f636":{"sheet":10, "x":3}, "1f638":{"sheet":10, 
-  "x":4}, "1f639":{"sheet":10, "x":5}, "1f63a":{"sheet":10, "x":6}, "1f63b":{"sheet":10, "x":7}, "1f63c":{"sheet":10, "x":8}, "1f63d":{"sheet":10, "x":9}, "1f63e":{"sheet":10, "x":10}, "1f63f":{"sheet":10, "x":11}, "1f640":{"sheet":10, "x":12}, "1f648":{"sheet":10, "x":13}, "1f649":{"sheet":10, "x":14}, "1f64a":{"sheet":10, "x":15}, "1f64b":{"sheet":10, "x":16}, "1f64d":{"sheet":10, "x":17}, "1f64e":{"sheet":10, "x":18}, "1f681":{"sheet":10, "x":19}, "1f682":{"sheet":10, "x":20}, "1f686":{"sheet":10, 
-  "x":21}, "1f688":{"sheet":10, "x":22}, "1f68a":{"sheet":10, "x":23}, "1f68b":{"sheet":10, "x":24}, "1f68d":{"sheet":10, "x":25}, "1f68e":{"sheet":10, "x":26}, "1f690":{"sheet":10, "x":27}, "1f694":{"sheet":10, "x":28}, "1f696":{"sheet":10, "x":29}, "1f698":{"sheet":10, "x":30}, "1f69b":{"sheet":10, "x":31}, "1f69c":{"sheet":10, "x":32}, "1f69d":{"sheet":10, "x":33}, "1f69e":{"sheet":10, "x":34}, "1f69f":{"sheet":10, "x":35}, "1f6a0":{"sheet":10, "x":36}, "1f6a1":{"sheet":10, "x":37}, "1f6a3":{"sheet":10, 
-  "x":38}, "1f6a6":{"sheet":10, "x":39}, "1f6a8":{"sheet":10, "x":40}, "1f6a9":{"sheet":10, "x":41}, "1f6aa":{"sheet":10, "x":42}, "1f6ab":{"sheet":10, "x":43}, "1f6ae":{"sheet":10, "x":44}, "1f6af":{"sheet":10, "x":45}, "1f6b0":{"sheet":10, "x":46}, "1f6b1":{"sheet":10, "x":47}, "1f6b3":{"sheet":10, "x":48}, "1f6b4":{"sheet":10, "x":49}, "1f6b5":{"sheet":10, "x":50}, "1f6b7":{"sheet":10, "x":51}, "1f6b8":{"sheet":10, "x":52}, "1f6bf":{"sheet":10, "x":53}, "1f6c1":{"sheet":10, "x":54}, "1f6c2":{"sheet":10, 
-  "x":55}, "1f6c3":{"sheet":10, "x":56}, "1f6c4":{"sheet":10, "x":57}, "1f6c5":{"sheet":10, "x":58}, "1f1ee-1f1f3":{"sheet":12, "x":0}, "1f1f2-1f1fd":{"sheet":12, "x":1}, "1f1e7-1f1f7":{"sheet":12, "x":2}, "1f1f8-1f1e6":{"sheet":12, "x":3}, "1f1ff-1f1e6":{"sheet":12, "x":4}, "1f1e6-1f1f7":{"sheet":12, "x":5}, "1f1f3-1f1f1":{"sheet":12, "x":6}, "1f1f9-1f1f7":{"sheet":12, "x":7}, "1f1f2-1f1fe":{"sheet":12, "x":8}, "1f1fb-1f1ea":{"sheet":12, "x":9}, "1f1e8-1f1f4":{"sheet":12, "x":10}, "1f1e8-1f1f1":{"sheet":12, 
-  "x":11}, "1f1ed-1f1f0":{"sheet":12, "x":12}, "1f1f3-1f1ec":{"sheet":12, "x":13}, "1f1e8-1f1ed":{"sheet":12, "x":14}, "1f1ee-1f1f1":{"sheet":12, "x":15}, "1f1f9-1f1ed":{"sheet":12, "x":16}, "1f1f8-1f1ec":{"sheet":12, "x":17}, "1f1e6-1f1ea":{"sheet":12, "x":18}, "1f1f9-1f1fc":{"sheet":12, "x":19}, "1f1ea-1f1ec":{"sheet":12, "x":20}, "1f1e8-1f1e6":{"sheet":12, "x":21}, "1f1f2-1f1e8":{"sheet":12, "x":22}, "1f1e6-1f1f9":{"sheet":12, "x":23}, "1f1e6-1f1fa":{"sheet":12, "x":24}, "1f1e7-1f1e6":{"sheet":12, 
-  "x":25}, "1f1e7-1f1ea":{"sheet":12, "x":26}, "1f1e8-1f1ee":{"sheet":12, "x":27}, "1f1e8-1f1f2":{"sheet":12, "x":28}, "1f1e8-1f1f7":{"sheet":12, "x":29}, "1f1e9-1f1ff":{"sheet":12, "x":30}, "1f1ea-1f1e8":{"sheet":12, "x":31}, "1f1ec-1f1ed":{"sheet":12, "x":32}, "1f1ec-1f1f7":{"sheet":12, "x":33}, "1f1ed-1f1f3":{"sheet":12, "x":34}, "1f1ed-1f1f7":{"sheet":12, "x":35}, "1f1ee-1f1f7":{"sheet":12, "x":36}, "1f1ef-1f1f4":{"sheet":12, "x":37}, "1f1f0-1f1ff":{"sheet":12, "x":38}, "1f1f1-1f1e7":{"sheet":12, 
+  var data = {"1f466":{"sheet":0, "x":0}, "1f467":{"sheet":0, "x":1}, "1f48b":{"sheet":0, "x":2}, "1f468":{"sheet":0, "x":3}, "1f469":{"sheet":0, "x":4}, "1f455":{"sheet":0, "x":5}, "1f45f":{"sheet":0, "x":6}, "1f4f7":{"sheet":0, "x":7}, "260e":{"sheet":0, "x":8}, "1f4f1":{"sheet":0, "x":9}, "1f4e0":{"sheet":0, "x":10}, "1f4bb":{"sheet":0, "x":11}, "1f44a":{"sheet":0, "x":12}, "1f44d":{"sheet":0, "x":13}, "261d":{"sheet":0, "x":14}, "270a":{"sheet":0, "x":15}, "270c":{"sheet":0, "x":16}, "270b":{"sheet":0,
+  "x":17}, "1f3bf":{"sheet":0, "x":18}, "26f3":{"sheet":0, "x":19}, "1f3be":{"sheet":0, "x":20}, "26be":{"sheet":0, "x":21}, "1f3c4":{"sheet":0, "x":22}, "26bd":{"sheet":0, "x":23}, "1f41f":{"sheet":0, "x":24}, "1f434":{"sheet":0, "x":25}, "1f697":{"sheet":0, "x":26}, "26f5":{"sheet":0, "x":27}, 2708:{"sheet":0, "x":28}, "1f683":{"sheet":0, "x":29}, "1f685":{"sheet":0, "x":30}, 2753:{"sheet":0, "x":31}, 2757:{"sheet":0, "x":32}, 2764:{"sheet":0, "x":33}, "1f494":{"sheet":0, "x":34}, "1f550":{"sheet":0,
+  "x":35}, "1f551":{"sheet":0, "x":36}, "1f552":{"sheet":0, "x":37}, "1f553":{"sheet":0, "x":38}, "1f554":{"sheet":0, "x":39}, "1f555":{"sheet":0, "x":40}, "1f556":{"sheet":0, "x":41}, "1f557":{"sheet":0, "x":42}, "1f558":{"sheet":0, "x":43}, "1f559":{"sheet":0, "x":44}, "1f55a":{"sheet":0, "x":45}, "1f55b":{"sheet":0, "x":46}, "1f338":{"sheet":0, "x":47}, "1f531":{"sheet":0, "x":48}, "1f339":{"sheet":0, "x":49}, "1f384":{"sheet":0, "x":50}, "1f48d":{"sheet":0, "x":51}, "1f48e":{"sheet":0, "x":52},
+  "1f3e0":{"sheet":0, "x":53}, "26ea":{"sheet":0, "x":54}, "1f3e2":{"sheet":0, "x":55}, "1f689":{"sheet":0, "x":56}, "26fd":{"sheet":0, "x":57}, "1f5fb":{"sheet":0, "x":58}, "1f3a4":{"sheet":0, "x":59}, "1f3a5":{"sheet":0, "x":60}, "1f3b5":{"sheet":0, "x":61}, "1f511":{"sheet":0, "x":62}, "1f3b7":{"sheet":0, "x":63}, "1f3b8":{"sheet":0, "x":64}, "1f3ba":{"sheet":0, "x":65}, "1f374":{"sheet":0, "x":66}, "1f378":{"sheet":0, "x":67}, 2615:{"sheet":0, "x":68}, "1f370":{"sheet":0, "x":69}, "1f37a":{"sheet":0,
+  "x":70}, "26c4":{"sheet":0, "x":71}, 2601:{"sheet":0, "x":72}, 2600:{"sheet":0, "x":73}, 2614:{"sheet":0, "x":74}, "1f319":{"sheet":0, "x":75}, "1f304":{"sheet":0, "x":76}, "1f47c":{"sheet":0, "x":77}, "1f431":{"sheet":0, "x":78}, "1f42f":{"sheet":0, "x":79}, "1f43b":{"sheet":0, "x":80}, "1f436":{"sheet":0, "x":81}, "1f42d":{"sheet":0, "x":82}, "1f433":{"sheet":0, "x":83}, "1f427":{"sheet":0, "x":84}, "1f60a":{"sheet":0, "x":85}, "1f603":{"sheet":0, "x":86}, "1f61e":{"sheet":0, "x":87}, "1f620":{"sheet":0,
+  "x":88}, "1f4a9":{"sheet":0, "x":89}, "1f4ea":{"sheet":1, "x":0}, "1f4ee":{"sheet":1, "x":1}, "1f4e9":{"sheet":1, "x":2}, "1f4f2":{"sheet":1, "x":3}, "1f61c":{"sheet":1, "x":4}, "1f60d":{"sheet":1, "x":5}, "1f631":{"sheet":1, "x":6}, "1f613":{"sheet":1, "x":7}, "1f435":{"sheet":1, "x":8}, "1f419":{"sheet":1, "x":9}, "1f437":{"sheet":1, "x":10}, "1f47d":{"sheet":1, "x":11}, "1f680":{"sheet":1, "x":12}, "1f451":{"sheet":1, "x":13}, "1f4a1":{"sheet":1, "x":14}, "1f340":{"sheet":1, "x":15}, "1f48f":{"sheet":1,
+  "x":16}, "1f381":{"sheet":1, "x":17}, "1f52b":{"sheet":1, "x":18}, "1f50d":{"sheet":1, "x":19}, "1f3c3":{"sheet":1, "x":20}, "1f528":{"sheet":1, "x":21}, "1f386":{"sheet":1, "x":22}, "1f341":{"sheet":1, "x":23}, "1f342":{"sheet":1, "x":24}, "1f47f":{"sheet":1, "x":25}, "1f47b":{"sheet":1, "x":26}, "1f480":{"sheet":1, "x":27}, "1f525":{"sheet":1, "x":28}, "1f4bc":{"sheet":1, "x":29}, "1f4ba":{"sheet":1, "x":30}, "1f354":{"sheet":1, "x":31}, "26f2":{"sheet":1, "x":32}, "26fa":{"sheet":1, "x":33},
+  2668:{"sheet":1, "x":34}, "1f3a1":{"sheet":1, "x":35}, "1f3ab":{"sheet":1, "x":36}, "1f4bf":{"sheet":1, "x":37}, "1f4c0":{"sheet":1, "x":38}, "1f4fb":{"sheet":1, "x":39}, "1f4fc":{"sheet":1, "x":40}, "1f4fa":{"sheet":1, "x":41}, "1f47e":{"sheet":1, "x":42}, "303d":{"sheet":1, "x":43}, "1f004":{"sheet":1, "x":44}, "1f19a":{"sheet":1, "x":45}, "1f4b0":{"sheet":1, "x":46}, "1f3af":{"sheet":1, "x":47}, "1f3c6":{"sheet":1, "x":48}, "1f3c1":{"sheet":1, "x":49}, "1f3b0":{"sheet":1, "x":50}, "1f40e":{"sheet":1,
+  "x":51}, "1f6a4":{"sheet":1, "x":52}, "1f6b2":{"sheet":1, "x":53}, "1f6a7":{"sheet":1, "x":54}, "1f6b9":{"sheet":1, "x":55}, "1f6ba":{"sheet":1, "x":56}, "1f6bc":{"sheet":1, "x":57}, "1f489":{"sheet":1, "x":58}, "1f4a4":{"sheet":1, "x":59}, "26a1":{"sheet":1, "x":60}, "1f460":{"sheet":1, "x":61}, "1f6c0":{"sheet":1, "x":62}, "1f6bd":{"sheet":1, "x":63}, "1f508":{"sheet":1, "x":64}, "1f4e2":{"sheet":1, "x":65}, "1f38c":{"sheet":1, "x":66}, "1f512":{"sheet":1, "x":67}, "1f513":{"sheet":1, "x":68},
+  "1f306":{"sheet":1, "x":69}, "1f373":{"sheet":1, "x":70}, "1f4d6":{"sheet":1, "x":71}, "1f4b1":{"sheet":1, "x":72}, "1f4b9":{"sheet":1, "x":73}, "1f4e1":{"sheet":1, "x":74}, "1f4aa":{"sheet":1, "x":75}, "1f3e6":{"sheet":1, "x":76}, "1f6a5":{"sheet":1, "x":77}, "1f17f":{"sheet":1, "x":78}, "1f68f":{"sheet":1, "x":79}, "1f6bb":{"sheet":1, "x":80}, "1f46e":{"sheet":1, "x":81}, "1f3e3":{"sheet":1, "x":82}, "1f3e7":{"sheet":1, "x":83}, "1f3e5":{"sheet":1, "x":84}, "1f3ea":{"sheet":1, "x":85}, "1f3eb":{"sheet":1,
+  "x":86}, "1f3e8":{"sheet":1, "x":87}, "1f68c":{"sheet":1, "x":88}, "1f695":{"sheet":1, "x":89}, "1f6b6":{"sheet":2, "x":0}, "1f6a2":{"sheet":2, "x":1}, "1f201":{"sheet":2, "x":2}, "1f49f":{"sheet":2, "x":3}, 2734:{"sheet":2, "x":4}, 2733:{"sheet":2, "x":5}, "1f51e":{"sheet":2, "x":6}, "1f6ad":{"sheet":2, "x":7}, "1f530":{"sheet":2, "x":8}, "267f":{"sheet":2, "x":9}, "1f4f6":{"sheet":2, "x":10}, 2665:{"sheet":2, "x":11}, 2666:{"sheet":2, "x":12}, 2660:{"sheet":2, "x":13}, 2663:{"sheet":2, "x":14},
+  "0023-20e3":{"sheet":2, "x":15}, "27bf":{"sheet":2, "x":16}, "1f195":{"sheet":2, "x":17}, "1f199":{"sheet":2, "x":18}, "1f192":{"sheet":2, "x":19}, "1f236":{"sheet":2, "x":20}, "1f21a":{"sheet":2, "x":21}, "1f237":{"sheet":2, "x":22}, "1f238":{"sheet":2, "x":23}, "1f534":{"sheet":2, "x":24}, "1f532":{"sheet":2, "x":25}, "1f533":{"sheet":2, "x":26}, "0031-20e3":{"sheet":2, "x":27}, "0032-20e3":{"sheet":2, "x":28}, "0033-20e3":{"sheet":2, "x":29}, "0034-20e3":{"sheet":2, "x":30}, "0035-20e3":{"sheet":2,
+  "x":31}, "0036-20e3":{"sheet":2, "x":32}, "0037-20e3":{"sheet":2, "x":33}, "0038-20e3":{"sheet":2, "x":34}, "0039-20e3":{"sheet":2, "x":35}, "0030-20e3":{"sheet":2, "x":36}, "1f250":{"sheet":2, "x":37}, "1f239":{"sheet":2, "x":38}, "1f202":{"sheet":2, "x":39}, "1f194":{"sheet":2, "x":40}, "1f235":{"sheet":2, "x":41}, "1f233":{"sheet":2, "x":42}, "1f22f":{"sheet":2, "x":43}, "1f23a":{"sheet":2, "x":44}, "1f446":{"sheet":2, "x":45}, "1f447":{"sheet":2, "x":46}, "1f448":{"sheet":2, "x":47}, "1f449":{"sheet":2,
+  "x":48}, "2b06":{"sheet":2, "x":49}, "2b07":{"sheet":2, "x":50}, "27a1":{"sheet":2, "x":51}, "2b05":{"sheet":2, "x":52}, 2197:{"sheet":2, "x":53}, 2196:{"sheet":2, "x":54}, 2198:{"sheet":2, "x":55}, 2199:{"sheet":2, "x":56}, "25b6":{"sheet":2, "x":57}, "25c0":{"sheet":2, "x":58}, "23e9":{"sheet":2, "x":59}, "23ea":{"sheet":2, "x":60}, "1f52f":{"sheet":2, "x":61}, 2648:{"sheet":2, "x":62}, 2649:{"sheet":2, "x":63}, "264a":{"sheet":2, "x":64}, "264b":{"sheet":2, "x":65}, "264c":{"sheet":2, "x":66},
+  "264d":{"sheet":2, "x":67}, "264e":{"sheet":2, "x":68}, "264f":{"sheet":2, "x":69}, 2650:{"sheet":2, "x":70}, 2651:{"sheet":2, "x":71}, 2652:{"sheet":2, "x":72}, 2653:{"sheet":2, "x":73}, "26ce":{"sheet":2, "x":74}, "1f51d":{"sheet":2, "x":75}, "1f197":{"sheet":2, "x":76}, "00a9":{"sheet":2, "x":77}, "00ae":{"sheet":2, "x":78}, "1f4f3":{"sheet":2, "x":79}, "1f4f4":{"sheet":2, "x":80}, "26a0":{"sheet":2, "x":81}, "1f481":{"sheet":2, "x":82}, "1f4dd":{"sheet":3, "x":0}, "1f454":{"sheet":3, "x":1},
+  "1f33a":{"sheet":3, "x":2}, "1f337":{"sheet":3, "x":3}, "1f33b":{"sheet":3, "x":4}, "1f490":{"sheet":3, "x":5}, "1f334":{"sheet":3, "x":6}, "1f335":{"sheet":3, "x":7}, "1f6be":{"sheet":3, "x":8}, "1f3a7":{"sheet":3, "x":9}, "1f376":{"sheet":3, "x":10}, "1f37b":{"sheet":3, "x":11}, 3297:{"sheet":3, "x":12}, "1f6ac":{"sheet":3, "x":13}, "1f48a":{"sheet":3, "x":14}, "1f388":{"sheet":3, "x":15}, "1f4a3":{"sheet":3, "x":16}, "1f389":{"sheet":3, "x":17}, 2702:{"sheet":3, "x":18}, "1f380":{"sheet":3,
+  "x":19}, 3299:{"sheet":3, "x":20}, "1f4bd":{"sheet":3, "x":21}, "1f4e3":{"sheet":3, "x":22}, "1f452":{"sheet":3, "x":23}, "1f457":{"sheet":3, "x":24}, "1f461":{"sheet":3, "x":25}, "1f462":{"sheet":3, "x":26}, "1f484":{"sheet":3, "x":27}, "1f485":{"sheet":3, "x":28}, "1f486":{"sheet":3, "x":29}, "1f487":{"sheet":3, "x":30}, "1f488":{"sheet":3, "x":31}, "1f458":{"sheet":3, "x":32}, "1f459":{"sheet":3, "x":33}, "1f45c":{"sheet":3, "x":34}, "1f3ac":{"sheet":3, "x":35}, "1f514":{"sheet":3, "x":36},
+  "1f3b6":{"sheet":3, "x":37}, "1f493":{"sheet":3, "x":38}, "1f497":{"sheet":3, "x":39}, "1f498":{"sheet":3, "x":40}, "1f499":{"sheet":3, "x":41}, "1f49a":{"sheet":3, "x":42}, "1f49b":{"sheet":3, "x":43}, "1f49c":{"sheet":3, "x":44}, 2728:{"sheet":3, "x":45}, "2b50":{"sheet":3, "x":46}, "1f4a8":{"sheet":3, "x":47}, "1f4a6":{"sheet":3, "x":48}, "2b55":{"sheet":3, "x":49}, "274c":{"sheet":3, "x":50}, "1f4a2":{"sheet":3, "x":51}, "1f31f":{"sheet":3, "x":52}, 2754:{"sheet":3, "x":53}, 2755:{"sheet":3,
+  "x":54}, "1f375":{"sheet":3, "x":55}, "1f35e":{"sheet":3, "x":56}, "1f366":{"sheet":3, "x":57}, "1f35f":{"sheet":3, "x":58}, "1f361":{"sheet":3, "x":59}, "1f358":{"sheet":3, "x":60}, "1f35a":{"sheet":3, "x":61}, "1f35d":{"sheet":3, "x":62}, "1f35c":{"sheet":3, "x":63}, "1f35b":{"sheet":3, "x":64}, "1f359":{"sheet":3, "x":65}, "1f362":{"sheet":3, "x":66}, "1f363":{"sheet":3, "x":67}, "1f34e":{"sheet":3, "x":68}, "1f34a":{"sheet":3, "x":69}, "1f353":{"sheet":3, "x":70}, "1f349":{"sheet":3, "x":71},
+  "1f345":{"sheet":3, "x":72}, "1f346":{"sheet":3, "x":73}, "1f382":{"sheet":3, "x":74}, "1f371":{"sheet":3, "x":75}, "1f372":{"sheet":3, "x":76}, "1f652":{"sheet":4, "x":0}, "1f60f":{"sheet":4, "x":1}, "1f614":{"sheet":4, "x":2}, "1f601":{"sheet":4, "x":3}, "1f609":{"sheet":4, "x":4}, "1f623":{"sheet":4, "x":5}, "1f616":{"sheet":4, "x":6}, "1f62a":{"sheet":4, "x":7}, "1f61d":{"sheet":4, "x":8}, "1f60c":{"sheet":4, "x":9}, "1f628":{"sheet":4, "x":10}, "1f637":{"sheet":4, "x":11}, "1f633":{"sheet":4,
+  "x":12}, "1f612":{"sheet":4, "x":13}, "1f630":{"sheet":4, "x":14}, "1f632":{"sheet":4, "x":15}, "1f62d":{"sheet":4, "x":16}, "1f602":{"sheet":4, "x":17}, "1f622":{"sheet":4, "x":18}, "263a":{"sheet":4, "x":19}, "1f604":{"sheet":4, "x":20}, "1f621":{"sheet":4, "x":21}, "1f61a":{"sheet":4, "x":22}, "1f618":{"sheet":4, "x":23}, "1f440":{"sheet":4, "x":24}, "1f443":{"sheet":4, "x":25}, "1f442":{"sheet":4, "x":26}, "1f444":{"sheet":4, "x":27}, "1f64f":{"sheet":4, "x":28}, "1f44b":{"sheet":4, "x":29},
+  "1f44f":{"sheet":4, "x":30}, "1f44c":{"sheet":4, "x":31}, "1f44e":{"sheet":4, "x":32}, "1f450":{"sheet":4, "x":33}, "1f645":{"sheet":4, "x":34}, "1f646":{"sheet":4, "x":35}, "1f491":{"sheet":4, "x":36}, "1f647":{"sheet":4, "x":37}, "1f64c":{"sheet":4, "x":38}, "1f46b":{"sheet":4, "x":39}, "1f46f":{"sheet":4, "x":40}, "1f3c0":{"sheet":4, "x":41}, "1f3c8":{"sheet":4, "x":42}, "1f3b1":{"sheet":4, "x":43}, "1f3ca":{"sheet":4, "x":44}, "1f699":{"sheet":4, "x":45}, "1f69a":{"sheet":4, "x":46}, "1f692":{"sheet":4,
+  "x":47}, "1f691":{"sheet":4, "x":48}, "1f693":{"sheet":4, "x":49}, "1f3a2":{"sheet":4, "x":50}, "1f687":{"sheet":4, "x":51}, "1f684":{"sheet":4, "x":52}, "1f38d":{"sheet":4, "x":53}, "1f49d":{"sheet":4, "x":54}, "1f38e":{"sheet":4, "x":55}, "1f393":{"sheet":4, "x":56}, "1f392":{"sheet":4, "x":57}, "1f38f":{"sheet":4, "x":58}, "1f302":{"sheet":4, "x":59}, "1f492":{"sheet":4, "x":60}, "1f30a":{"sheet":4, "x":61}, "1f367":{"sheet":4, "x":62}, "1f387":{"sheet":4, "x":63}, "1f41a":{"sheet":4, "x":64},
+  "1f390":{"sheet":4, "x":65}, "1f300":{"sheet":4, "x":66}, "1f33e":{"sheet":4, "x":67}, "1f383":{"sheet":4, "x":68}, "1f391":{"sheet":4, "x":69}, "1f343":{"sheet":4, "x":70}, "1f385":{"sheet":4, "x":71}, "1f305":{"sheet":4, "x":72}, "1f307":{"sheet":4, "x":73}, "1f303":{"sheet":4, "x":74}, "1f308":{"sheet":4, "x":75}, "1f3e9":{"sheet":5, "x":0}, "1f3a8":{"sheet":5, "x":1}, "1f3a9":{"sheet":5, "x":2}, "1f3ec":{"sheet":5, "x":3}, "1f3ef":{"sheet":5, "x":4}, "1f3f0":{"sheet":5, "x":5}, "1f3a6":{"sheet":5,
+  "x":6}, "1f3ed":{"sheet":5, "x":7}, "1f5fc":{"sheet":5, "x":8}, "UNKNOWN":{"sheet":5, "x":9}, "1f1ef-1f1f5":{"sheet":5, "x":10}, "1f1fa-1f1f8":{"sheet":5, "x":11}, "1f1eb-1f1f7":{"sheet":5, "x":12}, "1f1e9-1f1ea":{"sheet":5, "x":13}, "1f1ee-1f1f9":{"sheet":5, "x":14}, "1f1ec-1f1e7":{"sheet":5, "x":15}, "1f1ea-1f1f8":{"sheet":5, "x":16}, "1f1f7-1f1fa":{"sheet":5, "x":17}, "1f1e8-1f1f3":{"sheet":5, "x":18}, "1f1f0-1f1f7":{"sheet":5, "x":19}, "1f471":{"sheet":5, "x":20}, "1f472":{"sheet":5, "x":21},
+  "1f473":{"sheet":5, "x":22}, "1f474":{"sheet":5, "x":23}, "1f475":{"sheet":5, "x":24}, "1f476":{"sheet":5, "x":25}, "1f477":{"sheet":5, "x":26}, "1f478":{"sheet":5, "x":27}, "1f5fd":{"sheet":5, "x":28}, "1f482":{"sheet":5, "x":29}, "1f483":{"sheet":5, "x":30}, "1f42c":{"sheet":5, "x":31}, "1f426":{"sheet":5, "x":32}, "1f420":{"sheet":5, "x":33}, "1f424":{"sheet":5, "x":34}, "1f439":{"sheet":5, "x":35}, "1f41b":{"sheet":5, "x":36}, "1f418":{"sheet":5, "x":37}, "1f428":{"sheet":5, "x":38}, "1f412":{"sheet":5,
+  "x":39}, "1f411":{"sheet":5, "x":40}, "1f43a":{"sheet":5, "x":41}, "1f42e":{"sheet":5, "x":42}, "1f430":{"sheet":5, "x":43}, "1f40d":{"sheet":5, "x":44}, "1f414":{"sheet":5, "x":45}, "1f417":{"sheet":5, "x":46}, "1f42b":{"sheet":5, "x":47}, "1f438":{"sheet":5, "x":48}, "1f170":{"sheet":5, "x":49}, "1f171":{"sheet":5, "x":50}, "1f18e":{"sheet":5, "x":51}, "1f17e":{"sheet":5, "x":52}, "1f463":{"sheet":5, "x":53}, 2122:{"sheet":5, "x":54}, "203c":{"sheet":6, "x":0}, 2049:{"sheet":6, "x":1}, 2139:{"sheet":6,
+  "x":2}, 2194:{"sheet":6, "x":3}, 2195:{"sheet":6, "x":4}, "21a9":{"sheet":6, "x":5}, "21aa":{"sheet":6, "x":6}, "231a":{"sheet":6, "x":7}, "231b":{"sheet":6, "x":8}, "23eb":{"sheet":6, "x":9}, "23ec":{"sheet":6, "x":10}, "23f0":{"sheet":6, "x":11}, "23f3":{"sheet":6, "x":12}, "24c2":{"sheet":6, "x":13}, "25aa":{"sheet":6, "x":14}, "25ab":{"sheet":6, "x":15}, "2b1c":{"sheet":6, "x":16}, "2b1b":{"sheet":6, "x":17}, "25fd":{"sheet":6, "x":18}, "25fe":{"sheet":6, "x":19}, 2611:{"sheet":6, "x":20},
+  "267b":{"sheet":6, "x":21}, 2693:{"sheet":6, "x":22}, "26aa":{"sheet":6, "x":23}, "26ab":{"sheet":6, "x":24}, "26c5":{"sheet":6, "x":25}, "26d4":{"sheet":6, "x":26}, 2705:{"sheet":6, "x":27}, 2709:{"sheet":6, "x":28}, "270f":{"sheet":6, "x":29}, 2712:{"sheet":6, "x":30}, 2714:{"sheet":6, "x":31}, 2716:{"sheet":6, "x":32}, 2744:{"sheet":6, "x":33}, 2747:{"sheet":6, "x":34}, "274e":{"sheet":6, "x":35}, 2795:{"sheet":6, "x":36}, 2796:{"sheet":6, "x":37}, 2797:{"sheet":6, "x":38}, "27b0":{"sheet":6,
+  "x":39}, 2934:{"sheet":6, "x":40}, 2935:{"sheet":6, "x":41}, "25fc":{"sheet":6, "x":42}, "25fb":{"sheet":6, "x":43}, 3030:{"sheet":6, "x":44}, "1f0cf":{"sheet":6, "x":45}, "1f191":{"sheet":6, "x":46}, "1f193":{"sheet":6, "x":47}, "1f196":{"sheet":6, "x":48}, "1f198":{"sheet":6, "x":49}, "1f232":{"sheet":6, "x":50}, "1f234":{"sheet":6, "x":51}, "1f251":{"sheet":6, "x":52}, "1f301":{"sheet":6, "x":53}, "1f309":{"sheet":6, "x":54}, "1f30b":{"sheet":6, "x":55}, "1f30c":{"sheet":6, "x":56}, "1f30d":{"sheet":6,
+  "x":57}, "1f30e":{"sheet":6, "x":58}, "1f30f":{"sheet":6, "x":59}, "1f310":{"sheet":6, "x":60}, "1f311":{"sheet":6, "x":61}, "1f312":{"sheet":6, "x":62}, "1f313":{"sheet":6, "x":63}, "1f314":{"sheet":6, "x":64}, "1f315":{"sheet":6, "x":65}, "1f316":{"sheet":6, "x":66}, "1f317":{"sheet":6, "x":67}, "1f318":{"sheet":6, "x":68}, "1f31a":{"sheet":6, "x":69}, "1f31b":{"sheet":6, "x":70}, "1f31c":{"sheet":6, "x":71}, "1f31d":{"sheet":6, "x":72}, "1f31e":{"sheet":6, "x":73}, "1f320":{"sheet":6, "x":74},
+  "1f330":{"sheet":6, "x":75}, "1f331":{"sheet":6, "x":76}, "1f332":{"sheet":6, "x":77}, "1f333":{"sheet":6, "x":78}, "1f33c":{"sheet":7, "x":0}, "1f33d":{"sheet":7, "x":1}, "1f33f":{"sheet":7, "x":2}, "1f344":{"sheet":7, "x":3}, "1f347":{"sheet":7, "x":4}, "1f348":{"sheet":7, "x":5}, "1f34b":{"sheet":7, "x":6}, "1f34c":{"sheet":7, "x":7}, "1f34d":{"sheet":7, "x":8}, "1f34f":{"sheet":7, "x":9}, "1f350":{"sheet":7, "x":10}, "1f351":{"sheet":7, "x":11}, "1f352":{"sheet":7, "x":12}, "1f355":{"sheet":7,
+  "x":13}, "1f356":{"sheet":7, "x":14}, "1f357":{"sheet":7, "x":15}, "1f360":{"sheet":7, "x":16}, "1f364":{"sheet":7, "x":17}, "1f365":{"sheet":7, "x":18}, "1f368":{"sheet":7, "x":19}, "1f369":{"sheet":7, "x":20}, "1f36a":{"sheet":7, "x":21}, "1f36b":{"sheet":7, "x":22}, "1f36c":{"sheet":7, "x":23}, "1f36d":{"sheet":7, "x":24}, "1f36e":{"sheet":7, "x":25}, "1f36f":{"sheet":7, "x":26}, "1f377":{"sheet":7, "x":27}, "1f379":{"sheet":7, "x":28}, "1f37c":{"sheet":7, "x":29}, "1f38a":{"sheet":7, "x":30},
+  "1f38b":{"sheet":7, "x":31}, "1f3a0":{"sheet":7, "x":32}, "1f3a3":{"sheet":7, "x":33}, "1f3aa":{"sheet":7, "x":34}, "1f3ad":{"sheet":7, "x":35}, "1f3ae":{"sheet":7, "x":36}, "1f3b2":{"sheet":7, "x":37}, "1f3b3":{"sheet":7, "x":38}, "1f3b4":{"sheet":7, "x":39}, "1f3b9":{"sheet":7, "x":40}, "1f3bb":{"sheet":7, "x":41}, "1f3bc":{"sheet":7, "x":42}, "1f3bd":{"sheet":7, "x":43}, "1f3c2":{"sheet":7, "x":44}, "1f3c7":{"sheet":7, "x":45}, "1f3c9":{"sheet":7, "x":46}, "1f3e1":{"sheet":7, "x":47}, "1f3e4":{"sheet":7,
+  "x":48}, "1f3ee":{"sheet":7, "x":49}, "1f400":{"sheet":7, "x":50}, "1f401":{"sheet":7, "x":51}, "1f402":{"sheet":7, "x":52}, "1f403":{"sheet":7, "x":53}, "1f404":{"sheet":7, "x":54}, "1f405":{"sheet":7, "x":55}, "1f406":{"sheet":7, "x":56}, "1f407":{"sheet":7, "x":57}, "1f408":{"sheet":7, "x":58}, "1f409":{"sheet":7, "x":59}, "1f40a":{"sheet":7, "x":60}, "1f40b":{"sheet":7, "x":61}, "1f40c":{"sheet":7, "x":62}, "1f40f":{"sheet":7, "x":63}, "1f410":{"sheet":7, "x":64}, "1f413":{"sheet":7, "x":65},
+  "1f415":{"sheet":7, "x":66}, "1f416":{"sheet":7, "x":67}, "1f41c":{"sheet":7, "x":68}, "1f41d":{"sheet":7, "x":69}, "1f41e":{"sheet":7, "x":70}, "1f421":{"sheet":7, "x":71}, "1f422":{"sheet":7, "x":72}, "1f423":{"sheet":7, "x":73}, "1f425":{"sheet":7, "x":74}, "1f429":{"sheet":7, "x":75}, "1f42a":{"sheet":7, "x":76}, "1f432":{"sheet":7, "x":77}, "1f43c":{"sheet":7, "x":78}, "1f43d":{"sheet":8, "x":0}, "1f43e":{"sheet":8, "x":1}, "1f445":{"sheet":8, "x":2}, "1f453":{"sheet":8, "x":3}, "1f456":{"sheet":8,
+  "x":4}, "1f45a":{"sheet":8, "x":5}, "1f45b":{"sheet":8, "x":6}, "1f45d":{"sheet":8, "x":7}, "1f45e":{"sheet":8, "x":8}, "1f464":{"sheet":8, "x":9}, "1f465":{"sheet":8, "x":10}, "1f46a":{"sheet":8, "x":11}, "1f46c":{"sheet":8, "x":12}, "1f46d":{"sheet":8, "x":13}, "1f470":{"sheet":8, "x":14}, "1f479":{"sheet":8, "x":15}, "1f47a":{"sheet":8, "x":16}, "1f48c":{"sheet":8, "x":17}, "1f495":{"sheet":8, "x":18}, "1f496":{"sheet":8, "x":19}, "1f49e":{"sheet":8, "x":20}, "1f4a0":{"sheet":8, "x":21}, "1f4a5":{"sheet":8,
+  "x":22}, "1f4a7":{"sheet":8, "x":23}, "1f4ab":{"sheet":8, "x":24}, "1f4ac":{"sheet":8, "x":25}, "1f4ad":{"sheet":8, "x":26}, "1f4ae":{"sheet":8, "x":27}, "1f4af":{"sheet":8, "x":28}, "1f4b2":{"sheet":8, "x":29}, "1f4b3":{"sheet":8, "x":30}, "1f4b4":{"sheet":8, "x":31}, "1f4b5":{"sheet":8, "x":32}, "1f4b6":{"sheet":8, "x":33}, "1f4b7":{"sheet":8, "x":34}, "1f4b8":{"sheet":8, "x":35}, "1f4be":{"sheet":8, "x":36}, "1f4c1":{"sheet":8, "x":37}, "1f4c2":{"sheet":8, "x":38}, "1f4c3":{"sheet":8, "x":39},
+  "1f4c4":{"sheet":8, "x":40}, "1f4c5":{"sheet":8, "x":41}, "1f4c6":{"sheet":8, "x":42}, "1f4c7":{"sheet":8, "x":43}, "1f4c8":{"sheet":8, "x":44}, "1f4c9":{"sheet":8, "x":45}, "1f4ca":{"sheet":8, "x":46}, "1f4cb":{"sheet":8, "x":47}, "1f4cc":{"sheet":8, "x":48}, "1f4cd":{"sheet":8, "x":49}, "1f4ce":{"sheet":8, "x":50}, "1f4cf":{"sheet":8, "x":51}, "1f4d0":{"sheet":8, "x":52}, "1f4d1":{"sheet":8, "x":53}, "1f4d2":{"sheet":8, "x":54}, "1f4d3":{"sheet":8, "x":55}, "1f4d4":{"sheet":8, "x":56}, "1f4d5":{"sheet":8,
+  "x":57}, "1f4d7":{"sheet":8, "x":58}, "1f4d8":{"sheet":8, "x":59}, "1f4d9":{"sheet":8, "x":60}, "1f4da":{"sheet":8, "x":61}, "1f4db":{"sheet":8, "x":62}, "1f4dc":{"sheet":8, "x":63}, "1f4de":{"sheet":8, "x":64}, "1f4df":{"sheet":8, "x":65}, "1f4e4":{"sheet":8, "x":66}, "1f4e5":{"sheet":8, "x":67}, "1f4e6":{"sheet":8, "x":68}, "1f4e7":{"sheet":8, "x":69}, "1f4e8":{"sheet":8, "x":70}, "1f4eb":{"sheet":8, "x":71}, "1f4ec":{"sheet":8, "x":72}, "1f4ed":{"sheet":8, "x":73}, "1f4ef":{"sheet":8, "x":74},
+  "1f4f0":{"sheet":8, "x":75}, "1f4f5":{"sheet":8, "x":76}, "1f4f9":{"sheet":8, "x":77}, "1f500":{"sheet":8, "x":78}, "1f501":{"sheet":9, "x":0}, "1f502":{"sheet":9, "x":1}, "1f503":{"sheet":9, "x":2}, "1f504":{"sheet":9, "x":3}, "1f505":{"sheet":9, "x":4}, "1f506":{"sheet":9, "x":5}, "1f507":{"sheet":9, "x":6}, "1f509":{"sheet":9, "x":7}, "1f50a":{"sheet":9, "x":8}, "1f50b":{"sheet":9, "x":9}, "1f50c":{"sheet":9, "x":10}, "1f50e":{"sheet":9, "x":11}, "1f50f":{"sheet":9, "x":12}, "1f510":{"sheet":9,
+  "x":13}, "1f515":{"sheet":9, "x":14}, "1f516":{"sheet":9, "x":15}, "1f517":{"sheet":9, "x":16}, "1f518":{"sheet":9, "x":17}, "1f519":{"sheet":9, "x":18}, "1f51a":{"sheet":9, "x":19}, "1f51b":{"sheet":9, "x":20}, "1f51c":{"sheet":9, "x":21}, "1f51f":{"sheet":9, "x":22}, "1f520":{"sheet":9, "x":23}, "1f521":{"sheet":9, "x":24}, "1f522":{"sheet":9, "x":25}, "1f523":{"sheet":9, "x":26}, "1f524":{"sheet":9, "x":27}, "1f526":{"sheet":9, "x":28}, "1f527":{"sheet":9, "x":29}, "1f529":{"sheet":9, "x":30},
+  "1f52a":{"sheet":9, "x":31}, "1f52c":{"sheet":9, "x":32}, "1f52d":{"sheet":9, "x":33}, "1f52e":{"sheet":9, "x":34}, "1f535":{"sheet":9, "x":35}, "1f536":{"sheet":9, "x":36}, "1f537":{"sheet":9, "x":37}, "1f538":{"sheet":9, "x":38}, "1f539":{"sheet":9, "x":39}, "1f53a":{"sheet":9, "x":40}, "1f53b":{"sheet":9, "x":41}, "1f53c":{"sheet":9, "x":42}, "1f53d":{"sheet":9, "x":43}, "1f55c":{"sheet":9, "x":44}, "1f55d":{"sheet":9, "x":45}, "1f55e":{"sheet":9, "x":46}, "1f55f":{"sheet":9, "x":47}, "1f560":{"sheet":9,
+  "x":48}, "1f561":{"sheet":9, "x":49}, "1f562":{"sheet":9, "x":50}, "1f563":{"sheet":9, "x":51}, "1f564":{"sheet":9, "x":52}, "1f565":{"sheet":9, "x":53}, "1f566":{"sheet":9, "x":54}, "1f567":{"sheet":9, "x":55}, "1f5fe":{"sheet":9, "x":56}, "1f5ff":{"sheet":9, "x":57}, "1f600":{"sheet":9, "x":58}, "1f605":{"sheet":9, "x":59}, "1f606":{"sheet":9, "x":60}, "1f607":{"sheet":9, "x":61}, "1f608":{"sheet":9, "x":62}, "1f60b":{"sheet":9, "x":63}, "1f60e":{"sheet":9, "x":64}, "1f610":{"sheet":9, "x":65},
+  "1f611":{"sheet":9, "x":66}, "1f615":{"sheet":9, "x":67}, "1f617":{"sheet":9, "x":68}, "1f619":{"sheet":9, "x":69}, "1f61b":{"sheet":9, "x":70}, "1f61f":{"sheet":9, "x":71}, "1f624":{"sheet":9, "x":72}, "1f626":{"sheet":9, "x":73}, "1f627":{"sheet":9, "x":74}, "1f629":{"sheet":9, "x":75}, "1f62b":{"sheet":9, "x":76}, "1f62c":{"sheet":9, "x":77}, "1f62e":{"sheet":9, "x":78}, "1f62f":{"sheet":10, "x":0}, "1f634":{"sheet":10, "x":1}, "1f635":{"sheet":10, "x":2}, "1f636":{"sheet":10, "x":3}, "1f638":{"sheet":10,
+  "x":4}, "1f639":{"sheet":10, "x":5}, "1f63a":{"sheet":10, "x":6}, "1f63b":{"sheet":10, "x":7}, "1f63c":{"sheet":10, "x":8}, "1f63d":{"sheet":10, "x":9}, "1f63e":{"sheet":10, "x":10}, "1f63f":{"sheet":10, "x":11}, "1f640":{"sheet":10, "x":12}, "1f648":{"sheet":10, "x":13}, "1f649":{"sheet":10, "x":14}, "1f64a":{"sheet":10, "x":15}, "1f64b":{"sheet":10, "x":16}, "1f64d":{"sheet":10, "x":17}, "1f64e":{"sheet":10, "x":18}, "1f681":{"sheet":10, "x":19}, "1f682":{"sheet":10, "x":20}, "1f686":{"sheet":10,
+  "x":21}, "1f688":{"sheet":10, "x":22}, "1f68a":{"sheet":10, "x":23}, "1f68b":{"sheet":10, "x":24}, "1f68d":{"sheet":10, "x":25}, "1f68e":{"sheet":10, "x":26}, "1f690":{"sheet":10, "x":27}, "1f694":{"sheet":10, "x":28}, "1f696":{"sheet":10, "x":29}, "1f698":{"sheet":10, "x":30}, "1f69b":{"sheet":10, "x":31}, "1f69c":{"sheet":10, "x":32}, "1f69d":{"sheet":10, "x":33}, "1f69e":{"sheet":10, "x":34}, "1f69f":{"sheet":10, "x":35}, "1f6a0":{"sheet":10, "x":36}, "1f6a1":{"sheet":10, "x":37}, "1f6a3":{"sheet":10,
+  "x":38}, "1f6a6":{"sheet":10, "x":39}, "1f6a8":{"sheet":10, "x":40}, "1f6a9":{"sheet":10, "x":41}, "1f6aa":{"sheet":10, "x":42}, "1f6ab":{"sheet":10, "x":43}, "1f6ae":{"sheet":10, "x":44}, "1f6af":{"sheet":10, "x":45}, "1f6b0":{"sheet":10, "x":46}, "1f6b1":{"sheet":10, "x":47}, "1f6b3":{"sheet":10, "x":48}, "1f6b4":{"sheet":10, "x":49}, "1f6b5":{"sheet":10, "x":50}, "1f6b7":{"sheet":10, "x":51}, "1f6b8":{"sheet":10, "x":52}, "1f6bf":{"sheet":10, "x":53}, "1f6c1":{"sheet":10, "x":54}, "1f6c2":{"sheet":10,
+  "x":55}, "1f6c3":{"sheet":10, "x":56}, "1f6c4":{"sheet":10, "x":57}, "1f6c5":{"sheet":10, "x":58}, "1f1ee-1f1f3":{"sheet":12, "x":0}, "1f1f2-1f1fd":{"sheet":12, "x":1}, "1f1e7-1f1f7":{"sheet":12, "x":2}, "1f1f8-1f1e6":{"sheet":12, "x":3}, "1f1ff-1f1e6":{"sheet":12, "x":4}, "1f1e6-1f1f7":{"sheet":12, "x":5}, "1f1f3-1f1f1":{"sheet":12, "x":6}, "1f1f9-1f1f7":{"sheet":12, "x":7}, "1f1f2-1f1fe":{"sheet":12, "x":8}, "1f1fb-1f1ea":{"sheet":12, "x":9}, "1f1e8-1f1f4":{"sheet":12, "x":10}, "1f1e8-1f1f1":{"sheet":12,
+  "x":11}, "1f1ed-1f1f0":{"sheet":12, "x":12}, "1f1f3-1f1ec":{"sheet":12, "x":13}, "1f1e8-1f1ed":{"sheet":12, "x":14}, "1f1ee-1f1f1":{"sheet":12, "x":15}, "1f1f9-1f1ed":{"sheet":12, "x":16}, "1f1f8-1f1ec":{"sheet":12, "x":17}, "1f1e6-1f1ea":{"sheet":12, "x":18}, "1f1f9-1f1fc":{"sheet":12, "x":19}, "1f1ea-1f1ec":{"sheet":12, "x":20}, "1f1e8-1f1e6":{"sheet":12, "x":21}, "1f1f2-1f1e8":{"sheet":12, "x":22}, "1f1e6-1f1f9":{"sheet":12, "x":23}, "1f1e6-1f1fa":{"sheet":12, "x":24}, "1f1e7-1f1e6":{"sheet":12,
+  "x":25}, "1f1e7-1f1ea":{"sheet":12, "x":26}, "1f1e8-1f1ee":{"sheet":12, "x":27}, "1f1e8-1f1f2":{"sheet":12, "x":28}, "1f1e8-1f1f7":{"sheet":12, "x":29}, "1f1e9-1f1ff":{"sheet":12, "x":30}, "1f1ea-1f1e8":{"sheet":12, "x":31}, "1f1ec-1f1ed":{"sheet":12, "x":32}, "1f1ec-1f1f7":{"sheet":12, "x":33}, "1f1ed-1f1f3":{"sheet":12, "x":34}, "1f1ed-1f1f7":{"sheet":12, "x":35}, "1f1ee-1f1f7":{"sheet":12, "x":36}, "1f1ef-1f1f4":{"sheet":12, "x":37}, "1f1f0-1f1ff":{"sheet":12, "x":38}, "1f1f1-1f1e7":{"sheet":12,
   "x":39}, "1f1f5-1f1ea":{"sheet":12, "x":40}, "1f1f5-1f1f9":{"sheet":12, "x":41}, "1f1f8-1f1fe":{"sheet":12, "x":42}, "1f1fa-1f1e6":{"sheet":12, "x":43}, "1f1fa-1f1fe":{"sheet":12, "x":44}, "1f1fd-1f1ea":{"sheet":12, "x":45}};
   var images = [];
   var squareSize = 16;
@@ -6405,7 +6406,7 @@ if (typeof module !== "undefined" && module.exports) {
         updateCanvas();
       }
     }
-    function isFullscreen(id) { 
+    function isFullscreen(id) {
       return 0 !== map.get(id);
     }
     return {set:set, isFullscreen:isFullscreen};
@@ -6417,7 +6418,7 @@ if (typeof module !== "undefined" && module.exports) {
     }
   }
   function updateCanvas() {
-     
+
     var isFullscreen = FG.isFullscreen();
     //sidebar.style.display = header.style.display = isFullscreen ? "none" : "block";
     var headerHeight = isFullscreen ? 0 : header.offsetHeight;
@@ -6454,29 +6455,29 @@ if (typeof module !== "undefined" && module.exports) {
             deviceCanvas.style.width = deviceCanvas.width + "px";
             deviceCanvas.style.top = headerHeight + "px";
             try{
-            deviceCanvas.dispatchEvent(new Event("canvasresize")); 
+            deviceCanvas.dispatchEvent(new Event("canvasresize"));
           }catch(err){
             console.log(err);
           }
-        } 
+        }
         else{
             var canx ="100%";
-            var cany ="100%"; 
+            var cany ="100%";
             deviceCanvas.style.height = deviceCanvas.height;
             deviceCanvas.style.width = deviceCanvas.width;
             deviceCanvas.style.top = headerHeight + "px";
             try{
-            deviceCanvas.dispatchEvent(new Event("canvasresize")); 
+            deviceCanvas.dispatchEvent(new Event("canvasresize"));
           }catch(err){
             console.log(err);
           }
-            
+
         }
       }catch(err)
       {
-        
+
       }
-     
+
         if(config.gameresize)
         {
             var sca = 1;
@@ -6502,12 +6503,12 @@ if (typeof module !== "undefined" && module.exports) {
             } else  if(config.gameresize=="resize-3")
             {
               sca=3;
-            } 
+            }
             gamesca=sca;
 
 
-            var cxt = deviceCanvas.getContext("2d"); 
-            //cxt.scale( sca,sca);  
+            var cxt = deviceCanvas.getContext("2d");
+            //cxt.scale( sca,sca);
 
             var cany= parseInt(deviceCanvas.height*sca);
             var canx = parseInt(deviceCanvas.width *sca);
@@ -6524,22 +6525,22 @@ if (typeof module !== "undefined" && module.exports) {
             display_container.style.width = canx+ "px !important";
             display.style.height = cany + "px !important";
             display.style.width = canx+ "px !important";
-            
-            
-            
+
+
+
 
             deviceCanvas.style.top = headerHeight + "px";
             try{
-              deviceCanvas.dispatchEvent(new Event("canvasresize")); 
+              deviceCanvas.dispatchEvent(new Event("canvasresize"));
               }catch(err)
               {
                 console.log(err)
               }
- 
+
         }
 
-    } 
-    
+    }
+
   }
   function onWindowResize(evt) {
     var newPhysicalScreenWidth = window.outerWidth - horizontalChrome;
@@ -6641,7 +6642,7 @@ if (typeof module !== "undefined" && module.exports) {
     var thdata= J2ME.getClassInfo(th);
     console.log('com/sun/midp/events/EventQueue.handleFatalError.(Ljava/lang/Throwable;)V Enter '+ th + " ");
     console.log("handleFatalError:"+thdata._name);
-  }; 
+  };
   var loadingMIDletPromisesResolved = false;
   Native["com/sun/midp/main/MIDletSuiteUtils.vmBeginStartUp.(I)V"] = function(addr, midletIsolateId) {
     if (loadingMIDletPromisesResolved) {
@@ -6696,7 +6697,7 @@ if (typeof module !== "undefined" && module.exports) {
 
       case 'DisableStartupErrorAlert':
         value = "0";
-        break; 
+        break;
       default:
         console.warn("UNKNOWN PROPERTY (com/sun/midp/main/Configuration): " + key);
         value = null;
@@ -6705,7 +6706,7 @@ if (typeof module !== "undefined" && module.exports) {
     return J2ME.newString(value);
   };
   Native["com/sun/midp/util/ResourceHandler.loadRomizedResource0.(Ljava/lang/String;)[B"] = function(addr, fileAddr) {
-    var fileName = "assets/0/" + J2ME.fromStringAddr(fileAddr).replace("_", ".").replace("_png", ".png").replace("_raw", ".png");//modify to png 
+    var fileName = "assets/0/" + J2ME.fromStringAddr(fileAddr).replace("_", ".").replace("_png", ".png").replace("_raw", ".png");//modify to png
     var data = JARStore.loadFile(fileName);
     if (!data) {
       console.warn("ResourceHandler::loadRomizedResource0: file " + fileName + " not found");
@@ -6757,11 +6758,11 @@ if (typeof module !== "undefined" && module.exports) {
     };
   }
   function sendPenEvent(pt, whichType) {
-    
+
     FG.sendNativeEventToForeground({type:PEN_EVENT, intParam1:whichType, intParam2:pt.x, intParam3:pt.y}, true);
   }
   function sendGestureEvent(pt, distancePt, whichType, aFloatParam1, aIntParam7, aIntParam8, aIntParam9) {
-    
+
     FG.sendNativeEventToForeground({type:GESTURE_EVENT, intParam1:whichType, intParam2:distancePt && distancePt.x || 0, intParam3:distancePt && distancePt.y || 0, intParam5:pt.x, intParam6:pt.y, floatParam1:Math.fround(aFloatParam1 || 0), intParam7:aIntParam7 || 0, intParam8:aIntParam8 || 0, intParam9:aIntParam9 || 0, intParam10:0, intParam11:0, intParam12:0, intParam13:0, intParam14:0, intParam15:0, intParam16:0}, true);
   }
   var supportsTouch = "ontouchstart" in document.documentElement;
@@ -6771,14 +6772,14 @@ if (typeof module !== "undefined" && module.exports) {
     sendRotationEvent();
   });
   function getEventPoint(event) {
-  
-    var item = event.touches && event.touches[0] || event.changedTouches && event.changedTouches[0] || event; 
-    var ret = {x:item.pageX - (canvasRect.left | 0), y:item.pageY - (canvasRect.top | 0)}; 
-    if(gamesca!=1){ 
-      //兼容缩放后的触摸操作 
+
+    var item = event.touches && event.touches[0] || event.changedTouches && event.changedTouches[0] || event;
+    var ret = {x:item.pageX - (canvasRect.left | 0), y:item.pageY - (canvasRect.top | 0)};
+    if(gamesca!=1){
+      //兼容缩放后的触摸操作
       ret.x=parseInt(ret.x/gamesca);
-      ret.y=parseInt(ret.y/gamesca);    
-     } 
+      ret.y=parseInt(ret.y/gamesca);
+     }
     return ret;
   }
   var LONG_PRESS_TIMEOUT = 1E3;
@@ -6984,7 +6985,7 @@ if (typeof module !== "undefined" && module.exports) {
       firstWaiting();
     }
   };
-  function exit(code) { 
+  function exit(code) {
     $.stop();
     DumbPipe.open("exit", null, function(message) {
     });
@@ -7053,7 +7054,7 @@ if (typeof module !== "undefined" && module.exports) {
     obj.stringParam5 = J2ME.newString(e.stringParam5);
     obj.stringParam6 = J2ME.newString(e.stringParam6);
   }
-  function sendNativeEvent(e, isolateId) { 
+  function sendNativeEvent(e, isolateId) {
     var elem = waitingNativeEventQueue[isolateId];
     if (!elem) {
       nativeEventQueues[isolateId].push(e);
@@ -7124,8 +7125,8 @@ if (typeof module !== "undefined" && module.exports) {
   // window.addEventListener("keyup", function(ev) {
   //   sendKeyRelease(ev.which);
   // });
- 
-  
+
+
   //实现midi控制部分 MIDIControl
   Native["com/sun/mmedia/DirectMIDIControl.nShortMidiEvent.(IIII)V"] = function(addr,v1,v2,v3,v4) {
     console.log("com/sun/mmedia/DirectMIDIControl.nShortMidiEvent.(IIII)V")
@@ -7139,80 +7140,80 @@ if (typeof module !== "undefined" && module.exports) {
   };
   Native["com/sun/mmedia/DirectMIDIControl.nSetProgram.(IIII)V"] = function(addr,v1,v2,v3,v4) {
     console.log("com/sun/mmedia/DirectMIDIControl.nSetProgram.(IIII)V")
-  }; 
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nLongMidiEvent.(I[BII)I"] = function(addr,v1,v2,v3) {
     console.log("com/sun/mmedia/DirectMIDIControl.nLongMidiEvent.(I[BII)I")
     return 1;
-  };  
+  };
   //RateControl
 
   Native["com/sun/mmedia/DirectMIDIControl.nGetMaxRate.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetMaxRate.(I)I")
     return 10;
-  };  
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nGetMinRate.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetMinRate.(I)I")
     return 1;
-  };  
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nGetMinRate.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetMinRate.(I)I")
     return 1;
-  };  
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nSetRate.(II)I"] = function(addr,v1,v2) {
     console.log("com/sun/mmedia/DirectMIDIControl.nSetRate.(II)I")
     return 1;
-  };  
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nSetRate.(II)I"] = function(addr,v1,v2) {
     console.log("com/sun/mmedia/DirectMIDIControl.nSetRate.(II)I")
     return 1;
-  };  
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nGetRate.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetRate.(I)I")
     return 1;
-  };  
+  };
 
-  //PitchControl 
-  
+  //PitchControl
+
   Native["com/sun/mmedia/DirectMIDIControl.nGetMaxPitch.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetMaxPitch.(I)I")
     return 1;
-  };  
+  };
 
   Native["com/sun/mmedia/DirectMIDIControl.nGetMinPitch.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetMinPitch.(I)I")
     return 1;
-  };  
+  };
 
   Native["com/sun/mmedia/DirectMIDIControl.nGetMinPitch.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetMinPitch.(I)I")
     return 1;
-  };  
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nSetPitch.(II)I"] = function(addr,v1,v2) {
     console.log("com/sun/mmedia/DirectMIDIControl.nSetPitch.(II)I")
     return 1;
-  };  
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nGetPitch.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetPitch.(I)I")
     return 1;
-  };  
+  };
   // TempoControl
-  
+
   Native["com/sun/mmedia/DirectMIDIControl.nGetTempo.(I)I"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nGetTempo.(I)I")
     return 1;
-  };  
+  };
   Native["com/sun/mmedia/DirectMIDIControl.nSetTempo.(II)I"] = function(addr,v1,v2) {
     console.log("com/sun/mmedia/DirectMIDIControl.nSetTempo.(II)I")
     return 1;
-  };  
+  };
 
   // Bank Query
   Native["com/sun/mmedia/DirectMIDIControl.nIsBankQuerySupported.(I)Z"] = function(addr,v1) {
     console.log("com/sun/mmedia/DirectMIDIControl.nIsBankQuerySupported.(I)Z")
     return 0;
-  };   
+  };
 
-  
+
   Native["com/sun/midp/events/EventQueue.getNativeEventQueueHandle.()I"] = function(addr) {
     return 0;
   };
@@ -7221,7 +7222,7 @@ if (typeof module !== "undefined" && module.exports) {
   };
   Native["com/sun/midp/events/EventQueue.sendNativeEventToIsolate.(Lcom/sun/midp/events/NativeEvent;I)V"] = function(addr, eventAddr, isolateId) {
     var e = getHandle(eventAddr);
-    var obj = {type:e.type, intParam1:e.intParam1, intParam2:e.intParam2, intParam3:e.intParam3, intParam4:e.intParam4, intParam5:e.intParam5, intParam6:e.intParam6, intParam7:e.intParam7, intParam8:e.intParam8, intParam9:e.intParam9, intParam10:e.intParam10, intParam11:e.intParam11, intParam12:e.intParam12, intParam13:e.intParam13, intParam14:e.intParam14, intParam15:e.intParam15, intParam16:e.intParam16, floatParam1:e.floatParam1, stringParam1:J2ME.fromStringAddr(e.stringParam1), stringParam2:J2ME.fromStringAddr(e.stringParam2), 
+    var obj = {type:e.type, intParam1:e.intParam1, intParam2:e.intParam2, intParam3:e.intParam3, intParam4:e.intParam4, intParam5:e.intParam5, intParam6:e.intParam6, intParam7:e.intParam7, intParam8:e.intParam8, intParam9:e.intParam9, intParam10:e.intParam10, intParam11:e.intParam11, intParam12:e.intParam12, intParam13:e.intParam13, intParam14:e.intParam14, intParam15:e.intParam15, intParam16:e.intParam16, floatParam1:e.floatParam1, stringParam1:J2ME.fromStringAddr(e.stringParam1), stringParam2:J2ME.fromStringAddr(e.stringParam2),
     stringParam3:J2ME.fromStringAddr(e.stringParam3), stringParam4:J2ME.fromStringAddr(e.stringParam4), stringParam5:J2ME.fromStringAddr(e.stringParam5), stringParam6:J2ME.fromStringAddr(e.stringParam6)};
     sendNativeEvent(obj, isolateId);
   };
@@ -7423,9 +7424,9 @@ if (typeof module !== "undefined" && module.exports) {
     return 0;
   };
 
-  
+
   Native["java/lang/Object.LogName.(Ljava/lang/String;)V"] = function(addr, classNameAddr) {
-    try{ 
+    try{
     console.log(classNameAddr);
     console.log("LogName "+ J2ME.fromStringAddr(classNameAddr) );
     }catch(err)
@@ -7481,7 +7482,7 @@ if (typeof module !== "undefined" && module.exports) {
   function getKeyboardHeight() {
     return physicalScreenHeight - window.innerHeight;
   }
-  return {isVKVisible:isVKVisible, manifest:manifest, sendCommandEvent:sendCommandEvent, sendVirtualKeyboardEvent:sendVirtualKeyboardEvent, sendEndOfMediaEvent:sendEndOfMediaEvent, sendMediaSnapshotFinishedEvent:sendMediaSnapshotFinishedEvent, sendKeyPress:sendKeyPress, sendKeyRelease:sendKeyRelease, sendDestroyMIDletEvent:sendDestroyMIDletEvent, setDestroyedForRestart:setDestroyedForRestart, registerDestroyedListener:registerDestroyedListener, sendExecuteMIDletEvent:sendExecuteMIDletEvent, deviceContext:deviceContext, 
+  return {isVKVisible:isVKVisible, manifest:manifest, sendCommandEvent:sendCommandEvent, sendVirtualKeyboardEvent:sendVirtualKeyboardEvent, sendEndOfMediaEvent:sendEndOfMediaEvent, sendMediaSnapshotFinishedEvent:sendMediaSnapshotFinishedEvent, sendKeyPress:sendKeyPress, sendKeyRelease:sendKeyRelease, sendDestroyMIDletEvent:sendDestroyMIDletEvent, setDestroyedForRestart:setDestroyedForRestart, registerDestroyedListener:registerDestroyedListener, sendExecuteMIDletEvent:sendExecuteMIDletEvent, deviceContext:deviceContext,
   updatePhysicalScreenSize:updatePhysicalScreenSize, updateCanvas:updateCanvas, localizedStrings:localizedStrings};
 }();
 
@@ -8335,7 +8336,7 @@ var currentlyFocusedTextEditor;
     hideSplashScreen();
     if (!emoji.loaded) {
       asyncImpl("V", Promise.all(loadingFGPromises));
-    } 
+    }
   };
   Native["com/sun/midp/lcdui/DisplayDeviceAccess.vibrate0.(IZ)Z"] = function(addr, displayId, on) {
     return 1;
@@ -8362,7 +8363,7 @@ var currentlyFocusedTextEditor;
     }
     var ctx = $.ctx;
     window.requestAnimationFrame(function() {
-      MIDP.deviceContext.drawImage(offscreenCanvas, x1, y1, width, height, x1, y1, width, height); 
+      MIDP.deviceContext.drawImage(offscreenCanvas, x1, y1, width, height, x1, y1, width, height);
       J2ME.Scheduler.enqueue(ctx);
     });
     $.pause(refreshStr);
@@ -8467,7 +8468,7 @@ var currentlyFocusedTextEditor;
   // Native["javax/microedition/lcdui/ImageDataFactory.createImmutableImageDecodeImage.(Ljavax/microedition/lcdui/ImageData;[BII)V"] = function(addr, imageDataAddr, bytesAddr, offset, length) {
   //   var bytes = J2ME.getArrayFromAddr(bytesAddr);
   //   var ctx = $.ctx;
-    
+
   //   var blob = new Blob([bytes.subarray(offset, offset + length)], {type:"image/png"});
   //   var img = new Image;
   //   img.src = URL.createObjectURL(blob);
@@ -8482,7 +8483,7 @@ var currentlyFocusedTextEditor;
   //     ctx.setAsCurrentContext();
   //     return $.newIllegalArgumentException("error decoding image");
   //   };
-    
+
   // };
 
   Native["javax/microedition/lcdui/ImageDataFactory.createImmutableImageDataRegion.(Ljavax/microedition/lcdui/ImageData;Ljavax/microedition/lcdui/ImageData;IIIIIZ)V"] = function(addr, dataDestAddr, dataSourceAddr, x, y, width, height, transform, isMutable) {
@@ -8869,7 +8870,7 @@ var currentlyFocusedTextEditor;
     } else {
       throw $.newIllegalArgumentException("Format unsupported");
     }
-    
+
     tempContext.canvas.width = width;
     tempContext.canvas.height = height;
     var imageData = tempContext.createImageData(width, height);
@@ -8882,7 +8883,7 @@ var currentlyFocusedTextEditor;
     tempContext.canvas.height = 0;
   };
 
-function transRgba(arr) { 
+function transRgba(arr) {
 
     for (let i = 0; i < arr.length; i++) {
         arr[i] = trans10to16(arr[i]);
@@ -8898,19 +8899,19 @@ function trans10to16(num10) { //十进制转十六进制
     return result;
 }
 
-Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/Image;IIII)V"] = function(addr, imageAddr, x, y, anchor,unknow) { 
+Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/Image;IIII)V"] = function(addr, imageAddr, x, y, anchor,unknow) {
   if (imageAddr === J2ME.Constants.NULL) {
     throw $.newNullPointerException("image is null");
   }
-  
+
   var self = getHandle(addr);
   var image = getHandle(imageAddr);
   var imageData = getHandle(image.imageData);
   //console.log(imageData,x, y)
-  var c = NativeMap.get(self.graphics).getGraphicsContext(); 
+  var c = NativeMap.get(self.graphics).getGraphicsContext();
   renderRegion(c, NativeMap.get(image.imageData).context.canvas, 0, 0, imageData.width, imageData.height, TRANS_NONE, x, y, anchor);
 };
- 
+
   Native["com/nokia/mid/ui/DirectGraphicsImp.fillPolygon.([II[IIII)V"] = function(addr, xPointsAddr,  xOffset,  yPointsAddr,  yOffset,  nPoints,  argbColor) {
     if(nPoints<=0)
     {
@@ -8924,29 +8925,29 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
     var  yPoints = J2ME.getArrayFromAddr(yPointsAddr);
     if (!yPoints) {
       throw $.newNullPointerException("yPoints array is null");
-    }  
-    
+    }
+
     // tempContext.canvas.width = xPoints.length;
     // tempContext.canvas.height = yPoints.length;
- 
+
     var alpha = argbColor >>> 24;
     var red = argbColor >>> 16 & 255;
     var green = argbColor >>> 8 & 255;
     var blue = argbColor & 255;
     var color = transRgba([alpha,red,green,blue]);
- 
-    var c = NativeMap.get(self.graphics).getGraphicsContext(); 
 
-    //c.drawImage(tempContext.canvas, xOffset, yOffset); 
+    var c = NativeMap.get(self.graphics).getGraphicsContext();
+
+    //c.drawImage(tempContext.canvas, xOffset, yOffset);
     c.beginPath();
     c.moveTo(  xPoints[xOffset],  yPoints[yOffset]);
 
 
     c.fill();
 
-    
+
   };
- 
+
 
   Native["javax/microedition/lcdui/Graphics.render.(Ljavax/microedition/lcdui/Image;III)Z"] = function(addr, imageAddr, x, y, anchor) {
     var image = getHandle(imageAddr);
@@ -8961,7 +8962,7 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
     //console.log(addr, srcAddr, x_src, y_src, width, height, transform, x_dest, y_dest, anchor)
     renderRegion(NativeMap.get(addr).getGraphicsContext(), NativeMap.get(src.imageData).context.canvas, x_src, y_src, width, height, transform, x_dest, y_dest, anchor);
   };
-  Native["javax/microedition/lcdui/Graphics.drawImage.(Ljavax/microedition/lcdui/Image;III)V"] = function(addr, imageAddr, x, y, anchor) { 
+  Native["javax/microedition/lcdui/Graphics.drawImage.(Ljavax/microedition/lcdui/Image;III)V"] = function(addr, imageAddr, x, y, anchor) {
     if (imageAddr === J2ME.Constants.NULL) {
       throw $.newNullPointerException("image is null");
     }
@@ -9356,7 +9357,7 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
     c.stroke();
     c.closePath();
   };
-  Native["javax/microedition/lcdui/Graphics.drawRGB.([IIIIIIIZ)V"] = function(addr, rgbDataAddr, offset, scanlength, x, y, width, height, processAlpha) { 
+  Native["javax/microedition/lcdui/Graphics.drawRGB.([IIIIIIIZ)V"] = function(addr, rgbDataAddr, offset, scanlength, x, y, width, height, processAlpha) {
     var rgbData = J2ME.getArrayFromAddr(rgbDataAddr);
     tempContext.canvas.height = height;
     tempContext.canvas.width = width;
@@ -9367,7 +9368,7 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
     } else {
       ARGBTo1BGR(rgbData, abgrData, width, height, offset, scanlength);
     }
-    
+
     tempContext.putImageData(imageData, 0, 0);
     var c = NativeMap.get(addr).getGraphicsContext();
     c.drawImage(tempContext.canvas, x, y);
@@ -9498,7 +9499,7 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
     }
     setTextEditorCaretPosition(textEditor, self, index);
   };
-  
+
   Native["javax/microedition/lcdui/TextFieldLFImpl.getString0.(ILcom/sun/midp/lcdui/DynamicCharacterArray;)Z"] = function(addr,chars,buffer) {
     //var textEditor = J2ME.getHandle(buffer);
 	  var methodInfo = CLASSES.getClass("com/sun/midp/lcdui/DynamicCharacterArray").getMethodByNameString("set", "([CII)V");
@@ -9511,13 +9512,13 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
     var array = J2ME.getArrayFromAddr(chararray);
     for (var n = 0; n < mycontent.length; ++n) {
         array[n] = mycontent.charCodeAt(n);
-    }  
+    }
     J2ME.unsetUncollectable(chararray);
- 
+
 	  met(buffer,chararray,0,mycontent.length);
     return true;
-  }; 
-  
+  };
+
   Native["com/nokia/mid/ui/TextEditor.getCaretPosition.()I"] = function(addr) {
     var self = getHandle(addr);
     var nativeTextEditor = NativeMap.get(addr);
@@ -9716,9 +9717,9 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
     return 0;
   };
 
-  
+
   Native["javax/microedition/lcdui/ChoiceGroupLFImpl.createNativeResource0.(ILjava/lang/String;III[Ljavax/microedition/lcdui/ChoiceGroup$CGElement;II)I"] = function(addr, name,A2,A3,A4,A6,cGElementArr,selectedIndex,A7) {
-  
+
     console.log(name,J2ME.fromStringAddr(name),selectedIndex)
 
     var commands = J2ME.getArrayFromAddr(cGElementArr);
@@ -9728,18 +9729,18 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
         validCommands.push(getHandle(commands[i]));
       }
     }
-    
+
     var menu = document.getElementById("sidebar").querySelector("nav ul");
     var okCommand = null;
     var backCommand = null;
     var isSidebarEmpty = true;
-    validCommands.forEach(function(command) { 
+    validCommands.forEach(function(command) {
 
       var field =  command.classInfo.fields[0]
       var filedstring = i32[command._address + field.byteOffset >> 2];
       var text = J2ME.fromStringAddr(filedstring);
       console.log(text);
-      var li = document.createElement("li"); 
+      var li = document.createElement("li");
       var a = document.createElement("a");
       a.textContent = text;
       li.appendChild(a);
@@ -9788,9 +9789,9 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
   var OK = 4;
   var STOP = 6;
   Native["javax/microedition/lcdui/NativeMenu.updateCommands.([Ljavax/microedition/lcdui/Command;I[Ljavax/microedition/lcdui/Command;I)V"] = function(addr, itemCommandsAddr, numItemCommands, commandsAddr, numCommands) {
-    
+
   //return;
-  
+
     try{
     if (numItemCommands !== 0) {
       console.error("NativeMenu.updateCommands: item commands not yet supported");
@@ -9868,12 +9869,12 @@ Native["com/nokia/mid/ui/DirectGraphicsImp.drawImage.(Ljavax/microedition/lcdui/
       });
 
       var name = prompt(mytitle, mytitle);
-      if (name != null) { 
+      if (name != null) {
         mycontent=name;
         sendEvent(okCommand)
       }else{
-        sendEvent(backCommand) 
-      } 
+        sendEvent(backCommand)
+      }
     //   document.getElementById("header-drawer-button").style.display = isSidebarEmpty ? "none" : "block";
     //   var headerBtn = document.getElementById("header-ok-button");
     //   if (okCommand) {
@@ -11840,28 +11841,28 @@ if(!isIndex)
       downloadDialog.parentNode.removeChild(downloadDialog);
     }
   }
-  
+
 }
 
-function CloseWebPage() {   
-  if (navigator.userAgent.indexOf("MSIE") > 0) {   
-      if (navigator.userAgent.indexOf("MSIE 6.0") > 0) {   
-          window.opener = null; window.close();   
-      }   
-      else {   
-          window.open('', '_top'); window.top.close();   
-      }   
-  }   
-  else if (navigator.userAgent.indexOf("Firefox") > 0) {   
-      window.location.href = 'about:blank '; //火狐默认状态非window.open的页面window.close是无效的  
-      //window.history.go(-2);   
-  }   
-  else {   
-      window.opener = null;    
-      window.open('', '_self', '');   
-      window.close();   
-  }   
-}   
+function CloseWebPage() {
+  if (navigator.userAgent.indexOf("MSIE") > 0) {
+      if (navigator.userAgent.indexOf("MSIE 6.0") > 0) {
+          window.opener = null; window.close();
+      }
+      else {
+          window.open('', '_top'); window.top.close();
+      }
+  }
+  else if (navigator.userAgent.indexOf("Firefox") > 0) {
+      window.location.href = 'about:blank '; //火狐默认状态非window.open的页面window.close是无效的
+      //window.history.go(-2);
+  }
+  else {
+      window.opener = null;
+      window.open('', '_self', '');
+      window.close();
+  }
+}
 
 
 function showExitScreen() {
@@ -11922,8 +11923,8 @@ Media.extToFormat = new Map([["mp3", "MPEG_layer_3"], ["jpg", "JPEG"], ["jpeg", 
 Media.contentTypeToFormat = new Map([["audio/ogg", "ogg"],["audio/midi", "mid"], ["audio/mid", "mid"],["audio/amr", "amr"], ["audio/x-wav", "wav"], ["audio/mpeg", "MPEG_layer_3"], ["image/jpeg", "JPEG"], ["image/png", "PNG"], ["video/mp4", "MPEG4"], ["video/webm", "WebM"]]);
 Media.formatToContentType = new Map;
 var datas = Media.contentTypeToFormat;
-for (var i = 0; i < datas.length; i++) {   
-  var elem=datas[i];    
+for (var i = 0; i < datas.length; i++) {
+  var elem=datas[i];
   Media.formatToContentType.set(elem[1], elem[0]);
 }
 Media.supportedAudioFormats = ["MPEG_layer_3", "wav", "amr", "ogg", "mid"];
@@ -12079,7 +12080,7 @@ AudioPlayer.prototype.pause = function() {
   }
   if (this.paused) {
     return;
-  } 
+  }
   this.sender({type:"pause"});
   this.paused = true;
 };
@@ -12389,14 +12390,14 @@ function PlayerContainer(url, pId) {
   this.player = null;
   this.audioCtx = new AudioContext()
   if(midimode==1)
-  {  
+  {
     console.log('pAudio is removed!');
   }
   else if(midimode==2){
     this.tinysynth= new WebAudioTinySynth();
   }
   else if(midimode==3)
-  { 
+  {
     this.audio= new Audio();
   }
   //this.amr = new BenzAMRRecorder();
@@ -12434,7 +12435,7 @@ PlayerContainer.prototype.realize = function(contentType) {
     if (contentType) {
       this.contentType = contentType;
       this.mediaFormat = Media.contentTypeToFormat.get(contentType) || this.mediaFormat;
-      
+
       console.log("mediaFormat-",this.mediaFormat);
       if (this.mediaFormat === "UNKNOWN") {
         console.warn("Unsupported content type: " + contentType);
@@ -12447,10 +12448,10 @@ PlayerContainer.prototype.realize = function(contentType) {
     if (Media.supportedAudioFormats.indexOf(this.mediaFormat) !== -1) {
       if(this.mediaFormat=="mid")
       {
-        
-      } 
+
+      }
       this.player = new AudioPlayer(this);
-      
+
       if (this.isAudioCapture()) {
         this.audioRecorder = new AudioRecorder(contentType);
       }
@@ -12477,16 +12478,16 @@ PlayerContainer.prototype.realize = function(contentType) {
 };
 PlayerContainer.prototype.close = function() {
   this.data = null;
-  if(this.getMediaFormat()!='mid') 
+  if(this.getMediaFormat()!='mid')
   {
     if(this.getMediaFormat()=='amr')
     {
 
-      this.amr.stop();   
+      this.amr.stop();
       return;
     }
     if(this.source && this.source.stop)
-    { 
+    {
       this.source.stop();
     }
     return;
@@ -12496,35 +12497,35 @@ PlayerContainer.prototype.close = function() {
   }
 
   if(midimode==1)
-  {  
+  {
     console.log('pAudio is removed!');
   }
   else if(midimode==2){
     if(this.tinysynth)
-    { 
+    {
       this.tinysynth.stopMIDI();
     }
-  } 
+  }
   else if(midimode==3){
     if(this.audio)
-    { 
+    {
       this.audio.stop();
     }
   }
 };
-PlayerContainer.prototype.getMediaTime = function() { 
- 
+PlayerContainer.prototype.getMediaTime = function() {
+
   if(this.getMediaFormat()=='amr')
-  { 
-    return this.amr.getCurrentPosition()*100*10000; 
-  }  
+  {
+    return this.amr.getCurrentPosition()*100*10000;
+  }
   if(midimode==2)
   {
     //console.log(this.tinysynth.getAudioContext().currentTime);
-    if(this.tinysynth){ 
+    if(this.tinysynth){
       return this.tinysynth.getAudioContext().currentTime*100*10000;;
     }
-  } 
+  }
   if(midimode==3)
   {
     if(this.audio)
@@ -12533,24 +12534,24 @@ PlayerContainer.prototype.getMediaTime = function() {
     }
   }
 
-  //console.log("this.audioCtx.currentTime",this.audioCtx.currentTime); 
+  //console.log("this.audioCtx.currentTime",this.audioCtx.currentTime);
   return this.audioCtx.currentTime*100*10000;;
   //return this.player.getMediaTime();
 };
 
 PlayerContainer.prototype.setMediaTime = function(longtime) {
    console.log('setMediaTime ',longtime)
-   
+
    if(this.getMediaFormat()=='amr')
-   { 
+   {
       console.log(longtime/100/10000)
-       this.amr.setPosition(longtime/100/10000); 
+       this.amr.setPosition(longtime/100/10000);
        return longtime;
-  }  
+  }
   if(midimode==2)
   {
     //console.log(this.tinysynth.getAudioContext().currentTime);
-    if(this.tinysynth){ 
+    if(this.tinysynth){
         this.tinysynth.getAudioContext().currentTime=longtime;
         return this.tinysynth.getAudioContext().currentTime;
     }
@@ -12566,12 +12567,12 @@ PlayerContainer.prototype.setMediaTime = function(longtime) {
 
   //console.log(this.audioCtx.currentTime);
 
-  //  this.source = this.audioCtx.createBufferSource();  
+  //  this.source = this.audioCtx.createBufferSource();
   //   this.source.buffer = this.wavBuffer;
   //   // connect到扬声器
-  //   this.source.connect(this.audioCtx.destination); 
+  //   this.source.connect(this.audioCtx.destination);
   if(this.source)
-  { 
+  {
     this.source.stop();
   }
     this.audioCtx = new AudioContext()
@@ -12579,7 +12580,7 @@ PlayerContainer.prototype.setMediaTime = function(longtime) {
     return longtime;
     //  console.log('  this.audioCtx.currentTime ',  this.audioCtx.currentTime)
   //return this.player.getMediaTime();
-}; 
+};
 PlayerContainer.prototype.getBufferSize = function() {
   return this.wholeContentSize === -1 ? PlayerContainer.DEFAULT_BUFFER_SIZE : this.wholeContentSize;
 };
@@ -12661,7 +12662,7 @@ if(!isIndex)
 // 播放音频
 PlayerContainer.prototype.playSound = function(buffer) {
   this.wavBuffer = concatenateAudioBuffers(this.wavBuffer,buffer);
-  //console.log("this.wavBuffer ",this.wavBuffer ) 
+  //console.log("this.wavBuffer ",this.wavBuffer )
   this.loadSize+= parseInt(buffer.length);
   // var source = context.createBufferSource();
 
@@ -12682,7 +12683,7 @@ function base64ToUint8Array(base64String) {
   return outputArray;
 }
 
- 
+
 
 PlayerContainer.prototype.writeBuffer = function(buffer,resolve,bufferSize) {
   try{
@@ -12696,31 +12697,31 @@ PlayerContainer.prototype.writeBuffer = function(buffer,resolve,bufferSize) {
   //console.log("buffer.length",buffer.length,bufferSize)
 
   if(this.getMediaFormat()!='mid')
-  {  
+  {
     if(this.getMediaFormat()=='amr')
     {
       this.amr = new BenzAMRRecorder();
-      this.amr.initWithArrayBuffer(uint8).then(function(){ 
+      this.amr.initWithArrayBuffer(uint8).then(function(){
         resolve(bufferSize);
-      }); 
+      });
       return;
     }
     //非mid播放器
-    this.tinysynth = null; 
-    var that=this;  
+    this.tinysynth = null;
+    var that=this;
      this.audioCtx.decodeAudioData(uint8, function(buffer) {
               //console.log('1231231231231')
               //console.log(buffer.length)
               that.playSound(buffer);
               // if(that.wholeContentSize<=that.contentSize)
-              // { 
+              // {
                 resolve(that.contentSize);
               // }
           }, function() {
               console.log('error');
               resolve(that.contentSize);
           }
-          ); 
+          );
     // while(true)
     // {
     //   //伪同步
@@ -12733,43 +12734,43 @@ PlayerContainer.prototype.writeBuffer = function(buffer,resolve,bufferSize) {
       return;
   }
   if(midimode==1)
-  {  
+  {
     console.log('pAudio is removed!');
   }
   else if(midimode==2){
     if(this.tinysynth)
-    { 
+    {
       this.tinysynth.loadMIDI(uint8);
       resolve(bufferSize);
     }
-  }  
+  }
   else if(midimode==3){
     if(this.audio)
-    { 
-      var blob=new Blob([uint8],{"type":"audio/mid"});   
+    {
+      var blob=new Blob([uint8],{"type":"audio/mid"});
       this.audio.src = URL.createObjectURL(blob);
       resolve(bufferSize);
     }
-  }  
+  }
 }
   catch(err)
   {
     console.log(err);
     resolve(bufferSize);
-  } 
+  }
 };
 PlayerContainer.prototype.start = function() {
   try{
   //console.log("播放音乐");
-  if(this.getMediaFormat()!='mid') 
-  { 
+  if(this.getMediaFormat()!='mid')
+  {
     if(this.getMediaFormat()=='amr')
-    { 
+    {
       this.amr.playOrPauseOrResume();
       return;
     }
-    // 设置数据 
-    this.source = this.audioCtx.createBufferSource();  
+    // 设置数据
+    this.source = this.audioCtx.createBufferSource();
     this.source.buffer = this.wavBuffer;
     // connect到扬声器
     this.source.connect(this.audioCtx.destination);
@@ -12778,54 +12779,54 @@ PlayerContainer.prototype.start = function() {
   }
   this.player.start();
   if(midimode==1)
-  {  
+  {
     console.log('pAudio is removed!');
   }
   else if(midimode==2){
     if(this.tinysynth)
-    { 
+    {
       this.tinysynth.playMIDI();
     }
-  } 
+  }
   else if(midimode==3){
     if(this.audio)
-    { 
+    {
       this.audio.play();
     }
-  } 
+  }
   }catch(err)
   {
     console.log(err);
-  } 
+  }
 };
 PlayerContainer.prototype.pause = function() {
   try{
   //console.log("播放音乐");
-    if(this.getMediaFormat()!='mid') 
+    if(this.getMediaFormat()!='mid')
     {
       if(this.getMediaFormat()=='amr')
-      { 
+      {
         this.amr.playOrPauseOrResume();
         return;
       }
       if(this.source && this.source.stop)
-      { 
+      {
         this.source.stop();
-      } 
+      }
       return;
     }
     //this.player.pause();
     if(midimode==1)
-    {  
+    {
       console.log('pAudio is removed!');
     }
     else if(midimode==2){
       if(this.tinysynth)
-      { 
+      {
         this.tinysynth.stopMIDI();
       }
     }else if(midimode==3)
-    {  
+    {
       if(this.audio)
       {
         this.audio.pause();
@@ -12834,15 +12835,15 @@ PlayerContainer.prototype.pause = function() {
   }catch(err)
   {
     console.log(err);
-  } 
+  }
 };
 PlayerContainer.prototype.resume = function() {
   try{
   //console.log("播放音乐");
-  if(this.getMediaFormat()!='mid') 
+  if(this.getMediaFormat()!='mid')
   {
     if(this.getMediaFormat()=='amr')
-    { 
+    {
       this.amr.playOrPauseOrResume();
       return;
     }
@@ -12851,65 +12852,65 @@ PlayerContainer.prototype.resume = function() {
   }
   this.player.resume();
   if(midimode==1)
-  {  
+  {
     console.log('pAudio is removed!');
   }
   else if(midimode==2){
     if(this.tinysynth)
-    { 
+    {
       this.tinysynth.getAudioContext().play();
     }
-  } 
+  }
   else if(midimode==3){
     if(this.audio)
-    { 
+    {
       this.audio.play();
     }
-  } 
+  }
 
 }catch(err)
 {
   console.log(err);
-} 
+}
 };
 PlayerContainer.prototype.getVolume = function() {
   //console.log("播放音乐");
   if(midimode==1)
-  {  
+  {
     console.log('pAudio is removed!');
   }
   else if(midimode==2){
     if(this.tinysynth)
-    { 
+    {
       return this.tinysynth.getAudioContext().volume * 100;
     }
-  } 
+  }
   else if(midimode==3){
     if(this.audio)
-    { 
+    {
       return this.audio.volume * 100;
     }
-  } 
+  }
 
 };
 PlayerContainer.prototype.setVolume = function(level) {
-  console.log('设置音量： '+level) 
+  //console.log('设置音量： '+level)
   if(midimode==1)
-  {  
+  {
     console.log('pAudio is removed!');
   }
   else if(midimode==2){
     if(this.tinysynth)
-    { 
+    {
       this.tinysynth.setMasterVol(level/100);
     }
-  } 
+  }
   else if(midimode==3){
     if(this.audio)
-    { 
+    {
       this.audio.volume = level/100;
     }
-  } 
+  }
 
 };
 PlayerContainer.prototype.getMute = function() {
@@ -12960,10 +12961,10 @@ PlayerContainer.prototype.getSnapshotData = function() {
   J2ME.getArrayFromAddr(retArr).set(arr);
   return retArr;
 };
-PlayerContainer.prototype.getDuration = function() {  
+PlayerContainer.prototype.getDuration = function() {
   if(this.getMediaFormat()=='amr')
-  { 
-    return this.amr.getDuration()*100*10000; 
+  {
+    return this.amr.getDuration()*100*10000;
   }
   //console.log("播放音乐");
   if(this.tinysynth)
@@ -12971,10 +12972,10 @@ PlayerContainer.prototype.getDuration = function() {
     return this.tinysynth.getAudioContext().duration*100*10000;
   }
   if(this.wavBuffer)
-  { 
+  {
     return this.wavBuffer.duration*100*10000;
   }
-  
+
   return 4*100*10000;
   //return this.audioCtx.duration*100*10000;
 };
@@ -13040,7 +13041,7 @@ AudioRecorder.prototype.start = function() {
     this.sender({type:"start"});
   }.bind(this));
 };
-AudioRecorder.prototype.stop = function() { 
+AudioRecorder.prototype.stop = function() {
   console.log("停止音乐");
   return new Promise(function(resolve, reject) {
     this.ondata = function ondata(message) {
@@ -13065,7 +13066,7 @@ AudioRecorder.prototype.stop = function() {
   }.bind(this));
 };
 AudioRecorder.prototype.pause = function() {
-  
+
   return new Promise(function(resolve, reject) {
     this.ondata = function ondata(message) {
       this.ondata = null;
@@ -13080,7 +13081,7 @@ AudioRecorder.prototype.requestData = function() {
   this.sender({type:"requestData"});
 };
 AudioRecorder.prototype.close = function() {
-  
+
   if (this._closed) {
     return Promise.resolve(1);
   }
@@ -13090,7 +13091,7 @@ AudioRecorder.prototype.close = function() {
     return result;
   }.bind(this));
 };
- 
+
 
 Native["com/sun/mmedia/PlayerImpl.nInit.(IILjava/lang/String;)I"] = function(addr, appId, pId, URIAddr) {
   var url = J2ME.fromStringAddr(URIAddr);
@@ -13098,20 +13099,20 @@ Native["com/sun/mmedia/PlayerImpl.nInit.(IILjava/lang/String;)I"] = function(add
   Media.PlayerCache[id] = new PlayerContainer(url, pId);
   return id;
 };
- 
-Native["com/sun/mmedia/PlayerImpl.nSetWholeContentSize.(IJ)V"] = function(addr, v1,v2) { 
-  console.log("com/sun/mmedia/PlayerImpl.nSetWholeContentSize.(IJ)V",addr,v1,v2);
-}; 
 
-// Native["com/sun/mmedia/PlayerImpl.nSetPlayerBind.(IJ)V"] = function(addr, v1,v2) { 
+Native["com/sun/mmedia/PlayerImpl.nSetWholeContentSize.(IJ)V"] = function(addr, v1,v2) {
+  console.log("com/sun/mmedia/PlayerImpl.nSetWholeContentSize.(IJ)V",addr,v1,v2);
+};
+
+// Native["com/sun/mmedia/PlayerImpl.nSetPlayerBind.(IJ)V"] = function(addr, v1,v2) {
 //   console.log("com/sun/mmedia/PlayerImpl.nSetPlayerBind.(IJ)V",addr,v1,v2);
 
-// }; 
+// };
 
-Native["com/sun/mmedia/PlayerImpl.nBuffering.(I[BI)I"] = function(addr, v1,v2) { 
+Native["com/sun/mmedia/PlayerImpl.nBuffering.(I[BI)I"] = function(addr, v1,v2) {
   console.log("com/sun/mmedia/PlayerImpl.nBuffering.(I[BI)I",addr,v1,v2);
 
-  //var buffer = J2ME.getArrayFromAddr(v1); 
+  //var buffer = J2ME.getArrayFromAddr(v1);
   //console.log(buffer);
   return 1;
 };
@@ -13138,14 +13139,14 @@ Native["com/sun/mmedia/DirectPlayer.nGetContentType.(I)Ljava/lang/String;"] = fu
 Native["com/sun/mmedia/DirectPlayer.nFlushBuffer.(I)Z"] = function(addr, v1) {
   console.log("com/sun/mmedia/DirectPlayer.nFlushBuffer.(I)Z",addr,v1)
   return 1;
-}; 
+};
 
 Native["com/sun/mmedia/PlayerImpl.nIsHandledByDevice.(I)Z"] = function(addr, handle) {
   return Media.PlayerCache[handle].isHandledByDevice() ? 1 : 0;
 };
 Native["com/sun/mmedia/PlayerImpl.nRealize.(ILjava/lang/String;)Z"] = function(addr, handle, mimeAddr) {
   var mime = J2ME.fromStringAddr(mimeAddr);
-  var player = Media.PlayerCache[handle]; 
+  var player = Media.PlayerCache[handle];
   asyncImpl("Z", player.realize(mime));
 };
 Native["com/sun/mmedia/MediaDownload.nGetJavaBufferSize.(I)I"] = function(addr, handle) {
@@ -13155,7 +13156,7 @@ Native["com/sun/mmedia/MediaDownload.nGetJavaBufferSize.(I)I"] = function(addr, 
 Native["com/sun/mmedia/MediaDownload.nGetFirstPacketSize.(I)I"] = function(addr, handle) {
   var player = Media.PlayerCache[handle];
   //不要获取一半，一次获取整个流
-  //return player.getBufferSize() >>> 1; 
+  //return player.getBufferSize() >>> 1;
   return player.getBufferSize();
 };
 
@@ -13179,10 +13180,10 @@ Native["com/sun/mmedia/MediaDownload.nBuffering.(I[BII)I"] =   function(addr, ha
   var buffer = J2ME.getArrayFromAddr(bufferAddr);
 
   asyncImpl("I", new Promise(function(resolve, reject) {
-    setTimeout(function() { 
+    setTimeout(function() {
         player.writeBuffer(buffer.subarray(offset, offset + size),resolve,bufferSize);
     });
-  }));  
+  }));
 };
 Native["com/sun/mmedia/MediaDownload.nNeedMoreDataImmediatelly.(I)Z"] = function(addr, handle) {
   console.warn("com/sun/mmedia/MediaDownload.nNeedMoreDataImmediatelly.(I)Z not implemented");
@@ -13202,7 +13203,7 @@ Native["com/sun/mmedia/DirectPlayer.nIsMIDIControlSupported.(I)Z"] = function(ad
   return 1;
 };
 Native["com/sun/mmedia/DirectMIDI.nBuffering.([BI)I"] = function(addr, bufferAddr,len) {
-  // var buffer = J2ME.getArrayFromAddr(bufferAddr); 
+  // var buffer = J2ME.getArrayFromAddr(bufferAddr);
   // var bf=buffer.subarray(0, len);
   // console.log(bf)
   // var smfData = new Uint8Array(bf);
@@ -13213,7 +13214,7 @@ Native["com/sun/mmedia/DirectMIDI.nBuffering.([BI)I"] = function(addr, bufferAdd
   // pAudio.setData(parseData);
   return 1;
 };
- 
+
 function getPlayer(handle)
 {
   return  Media.PlayerCache[handle];
@@ -13225,22 +13226,22 @@ function getPlayer(handle)
     }
   });
   return ret;
-}  
-Native["com/sun/mmedia/DirectMIDI.ndoGetDuration.(I)J"] = function(addr, handle1) { 
-  var player1 = getPlayer(handle1); 
+}
+Native["com/sun/mmedia/DirectMIDI.ndoGetDuration.(I)J"] = function(addr, handle1) {
+  var player1 = getPlayer(handle1);
   var time1 = player1.getDuration();
   return J2ME.returnLongValue(time1);
 };
 
 Native["com/sun/mmedia/DirectMIDI.ndoGetMediaTime.(I)J"] =  function(addr, handle) {
-  var player = getPlayer(handle); 
+  var player = getPlayer(handle);
   var time =  player.getMediaTime();
   //console.log("getMediaTime:",time);
   return J2ME.returnLongValue(time);
 };
 
 Native["com/sun/mmedia/DirectMIDI.ndoSetMediaTime.(IJ)J"] = function(addr, handle,lndataL,lndataLH) {
-  var player = getPlayer(handle); 
+  var player = getPlayer(handle);
   var t = ( player.setMediaTime(J2ME.longToNumber(lndataL, lndataLH)));;
   return J2ME.returnLongValue(t);
 };
@@ -13259,20 +13260,20 @@ Native["com/sun/mmedia/DirectMIDI.nSetLoopCount.(II)V"] = function(addr,handle,c
   var player = getPlayer(handle);
   //console.log('com/sun/mmedia/DirectMIDI.nSetLoopCount.(II)V '+count);
   if(player.getMediaFormat()=='amr')
-  { 
-     player.amr.getCurrentPosition()*100*10000; 
+  {
+     player.amr.getCurrentPosition()*100*10000;
      return
-  } 
+  }
   if(player.getMediaFormat()=='wav')
   {
     player.playcount=count;
     return;
   }
-  
+
   if(midimode==2)
   {
     if(player.tinysynth)
-    { 
+    {
       player.tinysynth.setLoop(count);
     }
   }
@@ -13283,7 +13284,7 @@ Native["com/sun/mmedia/DirectMIDI.nSetLoopCount.(II)V"] = function(addr,handle,c
   // if(count==-1)
   // {
   //   console.log('pAudio is removed!');
-  // } 
+  // }
 };
 
 Native["javax/microedition/io/file/FileSystemEventHandlerBase.registerListener.()V"] = function(addr) {
@@ -13308,7 +13309,7 @@ Native["com/sun/mmedia/DirectPlayer.nIsVideoControlSupported.(I)Z"] = function(a
   return Media.PlayerCache[handle].isVideoControlSupported() ? 1 : 0;
 };
 Native["com/sun/mmedia/DirectPlayer.nIsVolumeControlSupported.(I)Z"] = function(addr, handle) {
-  var player = Media.PlayerCache[handle]; 
+  var player = Media.PlayerCache[handle];
   return player.isVolumeControlSupported() ? 1 : 0;
 };
 Native["com/sun/mmedia/DirectPlayer.nIsNeedBuffering.(I)Z"] = function(addr, handle) {
@@ -13649,14 +13650,14 @@ var Content = function() {
     invocation = null;
     return 1;
   };
-  
-  Native["com/sun/j2me/content/InvocationStore.size0.()I"] = function(addr) { 
+
+  Native["com/sun/j2me/content/InvocationStore.size0.()I"] = function(addr) {
     if (!invocation) {
       return 0;
     }
     return 1;
   };
-  
+
   addUnimplementedNative("com/sun/j2me/content/InvocationStore.setCleanup0.(ILjava/lang/String;Z)V");
   Native["com/sun/j2me/content/InvocationStore.getByTid0.(Lcom/sun/j2me/content/InvocationImpl;II)I"] = function(addr, invocAddr, tid, mode) {
     var invoc = getHandle(invocAddr);
@@ -13674,7 +13675,7 @@ var Content = function() {
     invoc.status = 2;
     invocation = null;
     return 1;
-  }; 
+  };
   addUnimplementedNative("com/sun/j2me/content/InvocationStore.resetFlags0.(I)V");
   return {addInvocation:addInvocation};
 }();
@@ -13797,7 +13798,7 @@ var createLongArrayFromDoubles = function() {
 }();
 AccelerometerSensor.channels = [{scale:0, name:"axis_x", unit:"m/s^2", dataType:1, accuracy:1, mrangeArray:createLongArrayFromDoubles([-19.6, 19.6, .153])}, {scale:0, name:"axis_y", unit:"m/s^2", dataType:1, accuracy:1, mrangeArray:createLongArrayFromDoubles([-19.6, 19.6, .153])}, {scale:0, name:"axis_z", unit:"m/s^2", dataType:1, accuracy:1, mrangeArray:createLongArrayFromDoubles([-19.6, 19.6, .153])}];
 AccelerometerSensor.simulator = {_intervalId:-1, start:function() {
-   
+
   var currentMouseX = -1;
   var currentMouseY = -1;
   var c = MIDP.deviceContext.canvas;
@@ -13981,6 +13982,7 @@ Native["com/sun/javame/sensor/NativeChannel.doMeasureData.(II)[B"] = function(ad
     ASM._gcFree(resultHolder);
   });
 };
+
 (function() {
   var windowConsole = window.console;
   var LOG_LEVELS = {trace:0, log:1, info:2, warn:3, error:4, silent:5};
@@ -14173,6 +14175,8 @@ Native["com/sun/javame/sensor/NativeChannel.doMeasureData.(II)[B"] = function(ad
   // };
   //window.console = Object.create(windowConsole, {trace:{value:logAtLevel.bind(null, "trace")}, log:{value:logAtLevel.bind(null, "log")}, info:{value:logAtLevel.bind(null, "info")}, warn:{value:logAtLevel.bind(null, "warn")}, error:{value:logAtLevel.bind(null, "error")}});
 })();
+
+
 var release = 1;
 var profile = 0;
 var jvm = new JVM;
@@ -14197,14 +14201,14 @@ var getMobileInfo = new Promise(function(resolve, reject) {
 
 if(config.enginemode)
   {
-    try{ 
+    try{
       enginemode=config.enginemode.split('-')[1];
     }
     catch(err){
 
     }
   }
- 
+
 if(!isIndex)
 {
   showDownloadScreen();
@@ -14226,13 +14230,16 @@ if(!isIndex)
     }
     console.log("buildin out");
   }));
-} 
-//console.log(config.localjar)
+}
+config.localjar = v_config.localjar
+
+console.log("config.localjar : ",config.localjar)
+
 
 if(!isIndex)
 {
-  if(config.localjar )
-  { 
+  if(config.localjar)
+  {
     JARStore.loadJAR(config.localjar).then(
       function(res){
         console.log(res);
@@ -14251,22 +14258,23 @@ if(!isIndex)
         processJAD(mfdata);
         var a=MIDP.manifest['MIDlet-1'];
         a=a.substr(a.lastIndexOf(',')+1).trim()
+        console.log("main class from jad:",a);
         config.midletClassName = a;
-        console.log("load main class :",config.midletClassName); 
-        
-        setTimeout(function(){ 
+        console.log("load main class :",config.midletClassName);
+
+        setTimeout(function(){
           hideDownloadScreen();
           isLoadJarFinished=true;
         },0)
       });
-    jars=config.localjar; 
+    jars=config.localjar;
   }
   else{
       jars.forEach(function(jar) {
       loadingMIDletPromises.push(load(jar, "arraybuffer").then(function(data) {
-        JARStore.addBuiltIn(jar, data,false);  
-        hideDownloadScreen(); 
-        setTimeout(function(){ 
+        JARStore.addBuiltIn(jar, data,false);
+        hideDownloadScreen();
+        setTimeout(function(){
           hideDownloadScreen();
           isLoadJarFinished=true;
         },0)
@@ -14284,7 +14292,7 @@ function processJAD(data) {
       MIDP.manifest[key] = val;
     }
   });
-} 
+}
 
 function performDownload(url, callback) {
   showDownloadScreen();
@@ -14365,12 +14373,12 @@ function startTimeline() {
     }
 
      var datas = J2ME.RuntimeTemplate.all;
-for (var i = 0; i < datas.length; i++) {   
-  var runtime=datas[i];     
+for (var i = 0; i < datas.length; i++) {
+  var runtime=datas[i];
 
   var ctxs = runtime.allCtxs;
-  for (var i = 0; i < ctxs.length; i++) {   
-    var ctx=ctxs[i];    
+  for (var i = 0; i < ctxs.length; i++) {
+    var ctx=ctxs[i];
         ctx.restartMethodTimeline();
       }
     }
@@ -14392,22 +14400,22 @@ function start() {
   if(isIndex){
     return;
   }
-  console.log("get jars ",JARStore.getjars());
+  console.log("Get Jars ",JARStore.getjars());
   var deferStartup = config.deferStartup | 0;
   if (deferStartup && typeof Benchmark !== "undefined") {
     setTimeout(function() {
       Benchmark.startup.setStartTime(performance.now());
       run();
     }, deferStartup);
-  } else {  
-    var interval = setInterval(function() {   
+  } else {
+    var interval = setInterval(function() {
       if(!isLoadJarFinished)
       {
         return;
       }
       if(JARStore.getjars().length > 1 && !isIndex)
       {
-        console.log('开始执行jars'); 
+        console.log('开始执行jars');
         run();
       } 
       clearInterval(interval);

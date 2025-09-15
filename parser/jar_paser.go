@@ -28,7 +28,7 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
     #%[1]s-wrapper {
       margin: 20px auto;
       padding: 20px;
-      background: linear-gradient(135deg, #1a1a2e 0%%, #16213e 100%%);
+      background: linear-gradient(135deg, #c2c2d9 0%%, #16213e 100%%);
       border-radius: 12px;
       max-width: fit-content;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -43,6 +43,12 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       align-items: center;
       gap: 20px;
     }
+
+	.joypad-row {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	}
     
     #%[1]s-wrapper .player-title {
       font-size: 18px;
@@ -226,7 +232,6 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       }
     }
   </style>
-  
   <div class="player-header">
     <div class="player-title">📱 %[3]s</div>
     <div class="player-controls">
@@ -236,10 +241,8 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       <a href="%[2]s" download class="ctrl-btn">⬇</a>
     </div>
   </div>
-  
   <!-- Hidden file input required by J2ME.js -->
   <input id="File" type="file" style="visibility:hidden;position:absolute;width:0;height:0">
-  
   <!-- Main display matching J2ME.js structure -->
   <div id="display-container">
     <div id="display">
@@ -279,7 +282,9 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       <button id="left" class="key">←</button>
       <button id="ok" class="key">&nbsp;</button>
       <button id="right" class="key">→</button><br>
-      <button id="down" class="key">↓</button>
+       <span style="width:44px;display:inline-block;"></span>
+	  <button id="down" class="key">↓</button>
+	  <span style="width:44px;display:inline-block;"></span>
     </div>
     <div id="numpad">
       <button id="num1" class="key">1</button>
@@ -299,6 +304,23 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       <button id="pound" class="key numpad">#</button>
     </div>
   </div>
+  <script>
+  // Pre-setup configuration before any J2ME.js scripts load
+  (function() {
+	const JAR_NAME = '%[3]s';
+    // Setup config object early
+    v_config = {};
+    v_config.localjar = JAR_NAME;
+    v_config.enginemode = 'enginemode2-classes2.jar';
+    v_config.gamepadSize = 'gamepad-3';
+    v_config.gamepad = 1;
+    v_config.canvasSize = 'size-240x320';
+    v_config.gameresize = 'resize-1';
+    //v_config.platform = 'Nokia503/14.0.4/java_runtime_version=Nokia_Asha_1_2';
+    //v_config.autosize = false;
+    console.log('Pre-configured v_config:', v_config);
+  })();
+  </script>
   <!-- Load J2ME.js dependencies first -->
   <script src="/jar_em/libs/encoding.js"></script>
   <script src="/jar_em/libs/webaudio-tinysynth.min.js"></script>
@@ -312,7 +334,7 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
   <script src="/jar_em/bld/main-all.js" defer></script>
   <script src="/jar_em/keymap.js" defer></script>
   <script>
-  // Initialize J2ME.js with proper configuration
+  // Main initialization after scripts load
   (function() {
     const JAR_URL = '%[2]s';
     const JAR_NAME = '%[3]s';
@@ -327,29 +349,6 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
         }
       }
     }
-    // Pre-configure global config object before J2ME.js loads
-    config = {};
-    config.localjar = JAR_NAME;
-    config.enginemode = 'enginemode2-classes2.jar';
-    config.gamepadSize = 'gamepad-3';
-    config.gamepad = 1;
-    config.canvasSize = 'size-240x320';
-    config.gameresize = 'resize-1';
-    config.platform = 'nokia/5800';
-    config.autosize = false;
-    config.rotate = false;
-    config.scanvas = 0;
-    config.jars = [];
-    config.jad = null;
-    config.midletClassName = '';
-    // Override urlParams to use our config
-	window.config = config; // Make sure config is global
-    window.urlParams = {
-      parse: function(url) {
-        console.log('urlParams.parse called, using pre-configured settings');
-        return config;
-      }
-    };
     // Function to download and install JAR using JARStore
     async function downloadAndInstallJAR() {
       const loadingMsg = document.getElementById(UNIQUE_ID + '-loading-msg');
@@ -406,12 +405,13 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
     async function autoStart() {
       const loadingMsg = document.getElementById(UNIQUE_ID + '-loading-msg');
       try {
-        // Wait a bit for main function to be ready
+        // Wait for main function to be ready
         await new Promise(resolve => {
           let checkCount = 0;
           const checkMain = setInterval(() => {
             checkCount++;
-            if (typeof start === 'function') {
+            // main function is defined in main-all.js
+            if (typeof main === 'function') {
               clearInterval(checkMain);
               resolve();
             } else if (checkCount > 50) { // 5 seconds timeout
@@ -420,17 +420,16 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
             }
           }, 100);
         });
-        // Call main() to start the game
+        // Call start() to start the game
         if (typeof start === 'function') {
-          console.log('Calling main() function with config:', config);
+          console.log('Calling start() with config:', v_config);
           updateStatus('🎮 Running', true);
           if (loadingMsg) loadingMsg.style.display = 'none';
-          // Call main after a small delay to ensure everything is ready
-          setTimeout(() => {
-            start();
-          }, 100);
+          // Call main directly - it will use config
+          console.log('call main-all.js start :', config);
+          start();
         } else {
-          throw new Error('main() function not found');
+          throw new Error('start() function not found');
         }
       } catch (error) {
         console.error('Failed to start game:', error);
@@ -445,9 +444,12 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
     async function initialize() {
       try {
         console.log('Starting J2ME initialization...');
+        console.log('Config at init:', v_config);
         // Step 1: Download and install JAR
         await downloadAndInstallJAR();
-        // Step 2: Auto start the game
+        // Step 2: Wait a bit to ensure everything is ready
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Step 3: Auto start the game
         await autoStart();
       } catch (error) {
         console.error('Initialization failed:', error);
@@ -460,9 +462,10 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
     }
     // Start when page is fully loaded
     window.addEventListener('load', function() {
-      console.log('Page loaded, starting J2ME initialization...');
-      // Delay to ensure all scripts are loaded
-      setTimeout(initialize, 1000);
+      console.log('Page loaded, config:', v_config);
+      console.log('Starting J2ME initialization...');
+      // Give time for all deferred scripts to initialize
+      setTimeout(initialize, 1500);
     });
   })();
   </script>
