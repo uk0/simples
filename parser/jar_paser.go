@@ -34,21 +34,19 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
-    
-    #%[1]s-wrapper .player-header {
+
+	#%[1]s-wrapper .player-header {
       color: #fff;
       margin-bottom: 20px;
+    }
+    
+    #%[1]s-wrapper .player-header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 20px;
+      margin-bottom: 10px;
     }
-
-	.joypad-row {
-	  display: flex;
-	  justify-content: center;
-	  align-items: center;
-	}
     
     #%[1]s-wrapper .player-title {
       font-size: 18px;
@@ -59,6 +57,23 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
     #%[1]s-wrapper .player-controls {
       display: flex;
       gap: 8px;
+    }
+    
+    #%[1]s-wrapper .player-tip {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border-left: 3px solid #ffd700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    #%[1]s-wrapper .player-tip .tip-icon {
+      color: #ffd700;
+      font-size: 16px;
     }
     
     #%[1]s-wrapper .ctrl-btn {
@@ -103,6 +118,7 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
     
     #%[1]s-wrapper #canvas {
       display: block;
+      margin: 8px 100px;    /* 水平居中 */
       image-rendering: pixelated;
       image-rendering: -moz-crisp-edges;
       image-rendering: crisp-edges;
@@ -150,7 +166,11 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       user-select: none;
     }
     
-    #%[1]s-wrapper #joypad,
+    #%[1]s-wrapper #joypad {
+      display: inline-block;
+      text-align: center;
+    }
+    
     #%[1]s-wrapper #numpad {
       display: inline-block;
     }
@@ -168,6 +188,7 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       font-weight: 500;
       transition: all 0.1s;
       vertical-align: top;
+      display: inline-block;
     }
     
     #%[1]s-wrapper .key:active {
@@ -178,6 +199,17 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
     #%[1]s-wrapper #choice { background: #4a5568; }
     #%[1]s-wrapper #back { background: #e53e3e; }
     #%[1]s-wrapper #ok { background: #38a169; }
+    
+    /* Joypad layout fix */
+    #%[1]s-wrapper .joypad-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    #%[1]s-wrapper .joypad-row.bottom {
+      justify-content: center;
+    }
     
     #%[1]s-wrapper .numpad2 { display: none; }
     #%[1]s-wrapper.gamepad-2 .numpad { display: none; }
@@ -230,15 +262,26 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
         height: 36px;
         font-size: 12px;
       }
+      
+      #%[1]s-wrapper .player-tip {
+        font-size: 12px;
+        padding: 5px 10px;
+      }
     }
   </style>
   <div class="player-header">
-    <div class="player-title">📱 %[3]s</div>
-    <div class="player-controls">
-      <button class="ctrl-btn" id="%[4]s-status-btn">⏳ Loading...</button>
-      <button class="ctrl-btn" onclick="document.getElementById('display-container').requestFullscreen?.()">⛶</button>
-      <button class="ctrl-btn" onclick="location.reload()">↻</button>
-      <a href="%[2]s" download class="ctrl-btn">⬇</a>
+    <div class="player-header-top">
+      <div class="player-title">📱 %[3]s</div>
+      <div class="player-controls">
+        <button class="ctrl-btn" id="%[4]s-status-btn">⏳ Loading...</button>
+        <!--<button class="ctrl-btn" onclick="document.getElementById('display-container').requestFullscreen?.()">⛶</button>-->
+        <button class="ctrl-btn" onclick="location.reload()">↻</button>
+        <a href="%[2]s" download class="ctrl-btn">⬇</a>
+      </div>
+    </div>
+    <div class="player-tip">
+      <span class="tip-icon">💡</span>
+      <span>提示：如果第一次加载出现卡顿，请刷新页面即可解决</span>
     </div>
   </div>
   <!-- Hidden file input required by J2ME.js -->
@@ -276,11 +319,11 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
   <!-- Virtual Keypad -->
   <div id="keypad" class="gamepad-3 row-reverse">
     <div id="joypad">
-      <button id="choice" class="key">&nbsp;</button>
+      <button id="choice" class="key">left</button>
       <button id="up" class="key">↑</button>
-      <button id="back" class="key">&nbsp;</button><br>
+      <button id="back" class="key">back</button><br>
       <button id="left" class="key">←</button>
-      <button id="ok" class="key">&nbsp;</button>
+      <button id="ok" class="key">OK</button>
       <button id="right" class="key">→</button><br>
        <span style="width:44px;display:inline-block;"></span>
 	  <button id="down" class="key">↓</button>
@@ -448,7 +491,7 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
         // Step 1: Download and install JAR
         await downloadAndInstallJAR();
         // Step 2: Wait a bit to ensure everything is ready
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // Step 3: Auto start the game
         await autoStart();
       } catch (error) {
@@ -465,7 +508,7 @@ func GenerateJARPlayerHTML(playerID, jarPath, fileName, fileExt string) string {
       console.log('Page loaded, config:', v_config);
       console.log('Starting J2ME initialization...');
       // Give time for all deferred scripts to initialize
-      setTimeout(initialize, 1500);
+      setTimeout(initialize, 3000);
     });
   })();
   </script>

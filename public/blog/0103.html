@@ -68,16 +68,14 @@
 <pre><code>#jar_dde9b5e8-wrapper .player-header {
   color: #fff;
   margin-bottom: 20px;
+}
+
+#jar_dde9b5e8-wrapper .player-header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-}
-
-.joypad-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-bottom: 10px;
 }
 
 #jar_dde9b5e8-wrapper .player-title {
@@ -89,6 +87,23 @@
 #jar_dde9b5e8-wrapper .player-controls {
   display: flex;
   gap: 8px;
+}
+
+#jar_dde9b5e8-wrapper .player-tip {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #ffd700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#jar_dde9b5e8-wrapper .player-tip .tip-icon {
+  color: #ffd700;
+  font-size: 16px;
 }
 
 #jar_dde9b5e8-wrapper .ctrl-btn {
@@ -133,6 +148,7 @@
 
 #jar_dde9b5e8-wrapper #canvas {
   display: block;
+  margin: 8px 100px;    /* 水平居中 */
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
@@ -180,7 +196,11 @@
   user-select: none;
 }
 
-#jar_dde9b5e8-wrapper #joypad,
+#jar_dde9b5e8-wrapper #joypad {
+  display: inline-block;
+  text-align: center;
+}
+
 #jar_dde9b5e8-wrapper #numpad {
   display: inline-block;
 }
@@ -198,6 +218,7 @@
   font-weight: 500;
   transition: all 0.1s;
   vertical-align: top;
+  display: inline-block;
 }
 
 #jar_dde9b5e8-wrapper .key:active {
@@ -208,6 +229,17 @@
 #jar_dde9b5e8-wrapper #choice { background: #4a5568; }
 #jar_dde9b5e8-wrapper #back { background: #e53e3e; }
 #jar_dde9b5e8-wrapper #ok { background: #38a169; }
+
+/* Joypad layout fix */
+#jar_dde9b5e8-wrapper .joypad-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#jar_dde9b5e8-wrapper .joypad-row.bottom {
+  justify-content: center;
+}
 
 #jar_dde9b5e8-wrapper .numpad2 { display: none; }
 #jar_dde9b5e8-wrapper.gamepad-2 .numpad { display: none; }
@@ -260,16 +292,27 @@
     height: 36px;
     font-size: 12px;
   }
+  
+  #jar_dde9b5e8-wrapper .player-tip {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
 }
 </code></pre>
 <p></style></p>
   <div class="player-header">
-    <div class="player-title">📱 ForgottenWarrior.jar</div>
-    <div class="player-controls">
-      <button class="ctrl-btn" id="jar_16d45272-status-btn">⏳ Loading...</button>
-      <button class="ctrl-btn" onclick="document.getElementById('display-container').requestFullscreen?.()">⛶</button>
-      <button class="ctrl-btn" onclick="location.reload()">↻</button>
-      <a href="0103/attachments/A8F4C5CC.dat" download class="ctrl-btn">⬇</a>
+    <div class="player-header-top">
+      <div class="player-title">📱 ForgottenWarrior.jar</div>
+      <div class="player-controls">
+        <button class="ctrl-btn" id="jar_16d45272-status-btn">⏳ Loading...</button>
+        <!--<button class="ctrl-btn" onclick="document.getElementById('display-container').requestFullscreen?.()">⛶</button>-->
+        <button class="ctrl-btn" onclick="location.reload()">↻</button>
+        <a href="0103/attachments/A8F4C5CC.dat" download class="ctrl-btn">⬇</a>
+      </div>
+    </div>
+    <div class="player-tip">
+      <span class="tip-icon">💡</span>
+      <span>提示：如果第一次加载出现卡顿，请刷新页面即可解决</span>
     </div>
   </div>
   <!-- Hidden file input required by J2ME.js -->
@@ -307,11 +350,11 @@
   <!-- Virtual Keypad -->
   <div id="keypad" class="gamepad-3 row-reverse">
     <div id="joypad">
-      <button id="choice" class="key">&nbsp;</button>
+      <button id="choice" class="key">left</button>
       <button id="up" class="key">↑</button>
-      <button id="back" class="key">&nbsp;</button><br>
+      <button id="back" class="key">back</button><br>
       <button id="left" class="key">←</button>
-      <button id="ok" class="key">&nbsp;</button>
+      <button id="ok" class="key">OK</button>
       <button id="right" class="key">→</button><br>
        <span style="width:44px;display:inline-block;"></span>
 	  <button id="down" class="key">↓</button>
@@ -479,7 +522,7 @@
         // Step 1: Download and install JAR
         await downloadAndInstallJAR();
         // Step 2: Wait a bit to ensure everything is ready
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // Step 3: Auto start the game
         await autoStart();
       } catch (error) {
@@ -496,7 +539,7 @@
       console.log('Page loaded, config:', v_config);
       console.log('Starting J2ME initialization...');
       // Give time for all deferred scripts to initialize
-      setTimeout(initialize, 1500);
+      setTimeout(initialize, 3000);
     });
   })();
   </script>
