@@ -482,6 +482,15 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 			}
 			log.Println("Embedding NES player for", name, "with ID", uniqueID)
 			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+		case ".jar":
+			uniqueID := fmt.Sprintf("jar_%x", md5.Sum([]byte(id)))[:12]
+			name := att.OriginalFilename
+			if name == "" {
+				name = filepath.Base(att.Path)
+			}
+			log.Println("Embedding Jar player for", name, "with ID", uniqueID)
+			html := parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+			return html
 		default:
 			name := att.OriginalFilename
 			if name == "" {

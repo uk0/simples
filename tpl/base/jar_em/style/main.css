@@ -1,0 +1,145 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 在上下方向上均匀分配空间 */
+  align-items: center; /* 水平居中对齐 */
+  height: 100vh; /* 使页面高度占满视口 */
+  margin: 0; /* 去掉默认的边距 */
+}
+
+#display-container {   
+  align-items: center; /* 水平居中对齐 */
+}
+
+#display {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 水平居中对齐 */
+  flex-grow: 1; /* 让display占据剩余空间 */
+}
+
+#canvas {
+  border: 1px solid #66666666; /* 可选：为canvas添加边框 */
+  display: block; /* 确保canvas以块级元素显示 */
+  margin: 0px; /* 上下留一些空间 */
+   
+} 
+
+#keypad {
+  text-align: center; 
+  font-size: 0;  
+  margin-top: 10px;
+}
+.gamepad-0
+{
+  display: none;
+}
+.gamepad-1
+{
+  display: block;
+  min-width: 240px;
+  min-height: 240px;
+}
+.gamepad-2
+{
+  display: block;
+  
+  min-width: 320px;
+  min-height: 320px;
+}
+.gamepad-3
+{
+  display: block;
+  min-width: 480px;
+  min-height: 480px;
+}
+.gamepad-4
+{
+  display: block;
+  min-width: 640px;
+  min-height: 640px;
+  
+}
+
+#keypad.column,
+#keypad.column2,
+#keypad.row,
+#keypad.row-reverse,
+#keypad.joypad,
+#keypad.numpad,
+#keypad.numpad2 {
+  display: flex;
+  flex-direction: column;
+}
+
+#keypad.row>div,
+#keypad.row-reverse>div {
+  flex: 1;
+}
+
+#keypad.row {
+  flex-direction: row;
+}
+
+#keypad.row-reverse {
+  flex-direction: row-reverse;
+}
+
+#keypad.joypad>#numpad {
+  display: none;
+}
+
+#keypad.numpad>#joypad,
+#keypad.numpad2>#joypad {
+  display: none;
+}
+
+.key {
+  font-size: 20px;
+  cursor: pointer;
+  margin: 1px 1px;
+  height: 40px;
+  line-height: 40px; 
+  width: calc(33.33% - 2px);
+  border: 1px solid #66666666;
+  background-color: rgba(239, 239, 239, 0.5); /* 设置半透明背景色 */
+  text-align: center;
+  border-radius: 3px;
+}
+
+#keypad.column2>#numpad>.key,
+#keypad.numpad2>#numpad>.key {
+  width: 24%;
+  width: calc(25% - 3px);
+} 
+.key.numpad2 {
+  display: none;
+}
+
+#keypad.column2>#numpad>.key.numpad,
+#keypad.numpad2>#numpad>.key.numpad {
+  display: none;
+}
+
+#keypad.column2>#numpad>.key.numpad2,
+#keypad.numpad2>#numpad>.key.numpad2 {
+  display: inline-block;
+}
+
+/* 可选：添加其他样式以增强视觉效果 */
+.title {
+  font-size: 24px;
+  margin: 10px 0;
+}
+
+.screen {
+  display: none; /* 默认隐藏所有屏幕 */
+}
+
+#download-screen, #splash-screen, #exit-screen {
+  display: flex; /* 让这些屏幕元素为flex布局 */
+  flex-direction: column;
+  align-items: center; /* 水平居中对齐 */
+  justify-content: center; /* 垂直居中对齐 */
+  height: 100%; /* 高度占满父元素 */
+}

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Test Nes Game</title>
+    <title>[NES] 三目童子</title>
     <link rel="icon" href="../favicon.ico">
 
 
@@ -27,7 +27,7 @@
                         </a>
                     </td>
                     <td class="titlebar" align="center">
-                        <h2 class="title" style="margin:4px 0;">Test Nes Game</h2>
+                        <h2 class="title" style="margin:4px 0;">[NES] 三目童子</h2>
                         <div class="post-category">Category: blog</div>
                     </td>
                     <td class="infobar" width="160" rowspan="2" align="center">
@@ -53,10 +53,8 @@
                 
                 <tr>
                     <td class="content" colspan="3">
-                        <div class="post-body"><h1>Test Nes Game</h1>
-<ol>
-<li>三木童子</li>
-</ol>
+                        <div class="post-body"><h1>[NE S ] 三 目 童子</h1>
+<p>点击游戏视窗开始游戏</p>
 <div class="nes-player-container" id="nes_f07d3470-container">
   <style>
     #nes_f07d3470-container {
@@ -242,9 +240,7 @@
     <div class="nes-controls">
       <button id="nes_f07d3470-pause">⏸ Pause</button>
       <button id="nes_f07d3470-resume" style="display: none;">▶ Resume</button>
-      <button id="nes_f07d3470-reset">🔄 Reset</button>
       <button id="nes_f07d3470-fullscreen">⛶ Fullscreen</button>
-      <button id="nes_f07d3470-mute">🔇 Mute</button>
     </div>
     <div class="canvas-wrapper">
       <canvas id="nes_f07d3470-canvas" width="256" height="240" tabindex="0"></canvas>
@@ -347,9 +343,7 @@
       focusHint: document.getElementById(PLAYER_ID + '-focus-hint'),
       pauseBtn: document.getElementById(PLAYER_ID + '-pause'),
       resumeBtn: document.getElementById(PLAYER_ID + '-resume'),
-      resetBtn: document.getElementById(PLAYER_ID + '-reset'),
       fullscreenBtn: document.getElementById(PLAYER_ID + '-fullscreen'),
-      muteBtn: document.getElementById(PLAYER_ID + '-mute')
     };
     
     // Show error
@@ -639,42 +633,6 @@
         }
       };
       
-      // Fixed reset button - use nes.reset() instead of nes.stop()
-      elements.resetBtn.onclick = function() {
-        if (nes && romData) {
-          try {
-            // Reset the NES
-            nes.reset();
-            
-            // Reset audio buffers
-            audio_write_cursor = 0;
-            audio_read_cursor = 0;
-            for (var i = 0; i < SAMPLE_COUNT; i++) {
-              audio_samples_L[i] = 0;
-              audio_samples_R[i] = 0;
-            }
-            
-            // Reset frame timing
-            lastFrameTime = 0;
-            
-            // Ensure not paused
-            paused = false;
-            elements.resumeBtn.style.display = 'none';
-            elements.pauseBtn.style.display = 'inline-block';
-            
-            // Restart animation if needed
-            if (!running) {
-              running = true;
-              window.requestAnimationFrame(onAnimationFrame);
-            }
-            
-            console.log('NES reset successfully');
-          } catch (e) {
-            console.error('Reset error:', e);
-          }
-        }
-      };
-      
       // Fullscreen button
       elements.fullscreenBtn.onclick = function() {
         var canvas = elements.canvas;
@@ -705,11 +663,6 @@
             document.msExitFullscreen();
           }
         }
-      };
-      
-      elements.muteBtn.onclick = function() {
-        muted = !muted;
-        this.textContent = muted ? '🔊 Unmute' : '🔇 Mute';
       };
     }
     

@@ -115,9 +115,12 @@ table.outer { border-collapse: separate; }
 /* Avatar cell */
 .avatar-cell{ background: var(--panel2); }
 .avatar{
+  height: 110px;
+  width: 110px;
   image-rendering: pixelated;
-  border: 2px outset var(--panel);
+  border: 1px outset var(--panel);
   background: var(--light);
+  border-radius: 55px;
 }
 
 /* Info bar on the right with inset panel look */
