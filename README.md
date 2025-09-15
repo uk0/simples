@@ -4,6 +4,10 @@
 
 
 ![img.png](img.png)
+
+* PyQt6 GUI
+
+![img_1.png](img_1.png)
  
 #### 简单干净
 

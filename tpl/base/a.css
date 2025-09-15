@@ -1,3 +1,17 @@
+/* 基本去掉下划线 */
+a {
+  text-decoration: none;
+  color: inherit;  /* 或者指定一个固定颜色，比如 color: #333; */
+}
+
+/* 确保各个状态都不改变 */
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none;
+  color: inherit;  /* 和普通状态一样的颜色 */
+}
 
 /* =========================================================
    IntelliJ IDEA Classic – light scheme (retro blog edition)
@@ -128,11 +142,11 @@ table.outer { border-collapse: separate; }
 }
 .nav a{
   color: #0000ee; /* classic link blue */
-  text-decoration: underline;
+  text-decoration: none;
   padding: 0 4px;
 }
-.nav a:visited{ color: #551a8b; } /* classic visited purple */
-.nav a:hover{ color: #ff0000; }    /* classic hover red */
+.nav a:visited{  text-decoration: none; color: #551a8b; } /* classic visited purple */
+.nav a:hover{  text-decoration: none; color: #ff0000; }    /* classic hover red */
 .sep{ color: #666; padding: 0 6px; }
 
 /* Divider */
@@ -181,12 +195,18 @@ table.outer { border-collapse: separate; }
 .postlist tr:hover td{
   background: #e9f0ff; /* gentle highlight */
 }
-.postlist a{
-  color: #0033cc;
-  text-decoration: underline;
+.postlist a {
+  text-decoration: none;
+  color: inherit;  /* 或者指定一个固定颜色，比如 color: #333; */
 }
-.postlist a:visited{ color: #5a2b8b; }
-.postlist a:hover{ color: #ff0000; }
+.postlist a:visited{
+  text-decoration: none;
+  color: inherit;
+}
+.postlist a:hover{
+  text-decoration: none;
+  color: inherit;
+}
 
 .date{
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
@@ -206,7 +226,7 @@ table.outer { border-collapse: separate; }
 }
 .footer a{
   color: #0000ee;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* Post body content */
