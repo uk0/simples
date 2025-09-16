@@ -6,8 +6,8 @@ import (
 	"html/template"
 )
 
-// GenerateNESPlayerHTML 生成用于在Web上运行NES游戏的HTML播放器（使用EmulatorJS）
-func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
+// GenerateGBAPlayerHTML 生成用于在Web上运行GBA游戏的HTML播放器（使用EmulatorJS）
+func GenerateGBAPlayerHTML(playerID, romPath, fileName, fileExt string) string {
 	// 确保所有用户输入都被正确转义
 	safePlayerID := template.HTMLEscapeString(playerID)
 	safeRomPath := template.HTMLEscapeString(romPath)
@@ -16,49 +16,92 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
 
 	// 生成唯一ID
 	h := md5.Sum([]byte(playerID))
-	uniqueID := fmt.Sprintf("nes_%x", h)[:12]
+	uniqueID := fmt.Sprintf("gba_%x", h)[:12]
 
-	return fmt.Sprintf(`<div class="nes-player-wrapper" id="%[1]s-wrapper">
+	return fmt.Sprintf(`<div class="gba-player-wrapper" id="%[1]s-wrapper">
   <style>
     #%[1]s-wrapper {
       margin: 20px auto;
-      padding: 20px;
-      background: linear-gradient(135deg, #8B0000 0%%, #2c0000 100%%);
-      border-radius: 12px;
-      max-width: fit-content;
+      padding: 0;
+      background: linear-gradient(135deg, #4B0082 0%%, #1a0033 100%%);
+      border-radius: 16px;
+      max-width: 720px;
+      width: 100%%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 15px 40px rgba(75, 0, 130, 0.6);
+      overflow: hidden;
+      border: 2px solid #6B46C1;
     }
 
-    #%[1]s-wrapper .player-header {
-      color: #fff;
-      margin-bottom: 20px;
+    /* GBA Style Header */
+    #%[1]s-wrapper .gba-header {
+      background: linear-gradient(135deg, #6B46C1 0%%, #4B0082 100%%);
+      padding: 15px 20px;
+      border-bottom: 3px solid #FFD700;
+      position: relative;
+      overflow: hidden;
     }
-    
+
+    #%[1]s-wrapper .gba-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      //left: -100%%;
+      //width: 200%%;
+      //height: 100%%;
+      //background: repeating-linear-gradient(
+      //  90deg,
+      //  transparent,
+      //  transparent 10px,
+      //  rgba(255, 255, 255, 0.05) 10px,
+      //  rgba(255, 255, 255, 0.05) 20px
+      //);
+      animation: slide 20s linear infinite;
+    }
+
+    @keyframes slide {
+      0%% { transform: translateX(0); }
+      100%% { transform: translateX(50%%); }
+    }
+
     #%[1]s-wrapper .player-header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 20px;
-      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
     }
     
     #%[1]s-wrapper .player-title {
       font-size: 20px;
       font-weight: 600;
-      opacity: 0.95;
+      color: #fff;
       display: flex;
       align-items: center;
       gap: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
 
-    #%[1]s-wrapper .nintendo-logo {
-      background: linear-gradient(90deg, #ff0000 50%%, #ffffff 50%%);
+    #%[1]s-wrapper .gba-logo {
+      background: linear-gradient(90deg, #FFD700 0%%, #FFA500 50%%, #FFD700 100%%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       font-weight: bold;
       font-style: italic;
+      letter-spacing: 2px;
+    }
+
+    #%[1]s-wrapper .advance-badge {
+      background: linear-gradient(135deg, #FFD700 0%%, #FFA500 100%%);
+      color: #4B0082;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     #%[1]s-wrapper .player-controls {
@@ -68,11 +111,13 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
     }
     
     #%[1]s-wrapper .player-info {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 20px;
       display: flex;
-      gap: 15px;
-      margin-bottom: 10px;
+      gap: 20px;
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid rgba(255, 215, 0, 0.3);
     }
 
     #%[1]s-wrapper .player-info-item {
@@ -80,30 +125,35 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       align-items: center;
       gap: 5px;
     }
+
+    #%[1]s-wrapper .player-info-item span:first-child {
+      color: #FFD700;
+    }
     
     #%[1]s-wrapper .player-tip {
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.8);
-      background: rgba(255, 0, 0, 0.15);
-      padding: 8px 12px;
-      border-radius: 6px;
-      border-left: 3px solid #ff4444;
+      color: rgba(255, 255, 255, 0.9);
+      background: linear-gradient(135deg, rgba(107, 70, 193, 0.3) 0%%, rgba(75, 0, 130, 0.3) 100%%);
+      padding: 10px 15px;
+      border-left: 3px solid #FFD700;
       display: flex;
       align-items: center;
       gap: 8px;
+      margin: 15px 20px;
+      border-radius: 6px;
     }
     
     #%[1]s-wrapper .player-tip .tip-icon {
-      color: #ff4444;
+      color: #FFD700;
       font-size: 16px;
     }
     
     #%[1]s-wrapper .ctrl-btn {
-      background: rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%%, rgba(255, 255, 255, 0.1) 100%%);
       color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.4);
       padding: 6px 12px;
-      border-radius: 6px;
+      border-radius: 20px;
       cursor: pointer;
       font-size: 13px;
       transition: all 0.2s;
@@ -111,11 +161,15 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      text-transform: uppercase;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
     
     #%[1]s-wrapper .ctrl-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%%, rgba(255, 165, 0, 0.3) 100%%);
       transform: translateY(-1px);
+      border-color: #FFD700;
     }
     
     #%[1]s-wrapper .ctrl-btn:disabled {
@@ -124,13 +178,13 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
     }
     
     #%[1]s-wrapper .ctrl-btn.success {
-      background: rgba(76, 175, 80, 0.3);
-      border-color: rgba(76, 175, 80, 0.5);
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.3) 0%%, rgba(56, 142, 60, 0.3) 100%%);
+      border-color: rgba(76, 175, 80, 0.6);
     }
 
     #%[1]s-wrapper .ctrl-btn.primary {
-      background: rgba(255, 0, 0, 0.3);
-      border-color: rgba(255, 0, 0, 0.5);
+      background: linear-gradient(135deg, rgba(107, 70, 193, 0.4) 0%%, rgba(75, 0, 130, 0.4) 100%%);
+      border-color: rgba(107, 70, 193, 0.6);
     }
     
     /* EmulatorJS Container */
@@ -138,17 +192,21 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       background: #000;
       border-radius: 8px;
       padding: 0;
-      display: inline-block;
+      display: block;
       position: relative;
-      min-width: 512px;
-      min-height: 480px;
+      max-width: 640px;
+      margin: 20px auto;
+      aspect-ratio: 3/2;
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(107, 70, 193, 0.2);
     }
     
     #%[1]s-wrapper #game {
       width: 100%%;
       height: 100%%;
       max-width: 100%%;
-      aspect-ratio: 256/240;
+      border-radius: 8px;
     }
     
     /* Loading overlay */
@@ -158,7 +216,7 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -172,10 +230,10 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
     }
     
     #%[1]s-wrapper .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 3px solid rgba(255, 0, 0, 0.3);
-      border-top-color: #ff4444;
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(107, 70, 193, 0.3);
+      border-top-color: #FFD700;
       border-radius: 50%%;
       animation: spin 1s linear infinite;
     }
@@ -185,31 +243,36 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
     }
     
     #%[1]s-wrapper .loading-text {
-      color: #fff;
+      color: #FFD700;
       margin-top: 20px;
       font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
     /* Control Instructions */
     #%[1]s-wrapper .controls-info {
-      margin-top: 20px;
+      margin: 20px;
       padding: 15px;
-      background: rgba(255, 255, 255, 0.05);
+      background: linear-gradient(135deg, rgba(107, 70, 193, 0.2) 0%%, rgba(75, 0, 130, 0.2) 100%%);
       border-radius: 8px;
-      color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      color: rgba(255, 255, 255, 0.9);
       font-size: 13px;
     }
 
     #%[1]s-wrapper .controls-info h4 {
       margin: 0 0 10px 0;
-      color: #ff4444;
+      color: #FFD700;
       font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     #%[1]s-wrapper .controls-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
       margin-top: 10px;
     }
 
@@ -217,26 +280,32 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       display: flex;
       align-items: center;
       gap: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 10px;
+      border-radius: 6px;
     }
 
     #%[1]s-wrapper .key {
-      background: rgba(255, 0, 0, 0.2);
-      border: 1px solid rgba(255, 0, 0, 0.4);
+      background: linear-gradient(135deg, #6B46C1 0%%, #4B0082 100%%);
+      border: 1px solid #FFD700;
       padding: 2px 6px;
       border-radius: 4px;
       font-family: monospace;
-      font-size: 12px;
+      font-size: 11px;
       color: #fff;
+      font-weight: bold;
+      min-width: 40px;
+      text-align: center;
     }
     
     /* Error message */
     #%[1]s-wrapper .error-message {
-      background: rgba(255, 0, 0, 0.1);
-      border: 1px solid rgba(255, 0, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%%, rgba(139, 0, 0, 0.2) 100%%);
+      border: 1px solid rgba(255, 0, 0, 0.4);
       color: #ff6b6b;
       padding: 10px 15px;
       border-radius: 6px;
-      margin: 10px 0;
+      margin: 10px 20px;
       display: none;
     }
     
@@ -247,20 +316,21 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
     /* Game options panel */
     #%[1]s-wrapper .game-options {
       display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 6px;
+      gap: 15px;
+      margin: 15px 20px;
+      padding: 12px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%%, rgba(0, 0, 0, 0.3) 100%%);
+      border-radius: 8px;
       flex-wrap: wrap;
       align-items: center;
+      border: 1px solid rgba(255, 215, 0, 0.2);
     }
 
     #%[1]s-wrapper .option-group {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.9);
       font-size: 13px;
     }
 
@@ -273,21 +343,23 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
 
     #%[1]s-wrapper .option-group input[type="checkbox"] {
       cursor: pointer;
+      accent-color: #FFD700;
     }
 
     #%[1]s-wrapper .option-group input[type="range"] {
       width: 100px;
+      accent-color: #FFD700;
     }
     
     @media (max-width: 768px) {
       #%[1]s-wrapper {
         margin: 10px;
-        padding: 15px;
+        border-radius: 12px;
       }
       
       #%[1]s-wrapper .emulator-container {
-        min-width: 100%%;
-        width: 100%%;
+        margin: 10px;
+        max-width: calc(100%% - 20px);
       }
       
       #%[1]s-wrapper .player-header-top {
@@ -303,14 +375,21 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
         width: 100%%;
         justify-content: flex-start;
       }
+
+      #%[1]s-wrapper .player-info {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
     }
   </style>
   
-  <div class="player-header">
+  <div class="gba-header">
     <div class="player-header-top">
       <div class="player-title">
-        <span class="nintendo-logo">Nintendo</span>
-        <span>NES - %[3]s</span>
+        <span class="gba-logo">GAME BOY</span>
+        <span class="advance-badge">ADVANCE</span>
+        <span style="color: #FFD700;">•</span>
+        <span>%[3]s</span>
       </div>
       <div class="player-controls">
         <button class="ctrl-btn" id="%[4]s-status-btn">
@@ -319,44 +398,34 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
         </button>
         <button class="ctrl-btn" id="%[4]s-fullscreen-btn">
           <span>⛶</span>
-          <span>Fullscreen</span>
+          <span>Full</span>
         </button>
-         <!-- <button class="ctrl-btn" id="%[4]s-save-btn">
-          <span>💾</span>
-          <span>Save</span>
-        </button>
-        <button class="ctrl-btn" id="%[4]s-load-btn">
-          <span>📂</span>
-          <span>Load</span>
-        </button>
-        <button class="ctrl-btn" id="%[4]s-reset-btn">
-          <span>🔄</span>
-          <span>Reset</span>
-        </button> -->
         <a href="%[2]s" download class="ctrl-btn">
           <span>⬇</span>
           <span>ROM</span>
         </a>
       </div>
     </div>
-    <div class="player-info">
-      <div class="player-info-item">
-        <span>📦 Format:</span>
-        <span>%[5]s</span>
-      </div>
-      <div class="player-info-item">
-        <span>🎮 System:</span>
-        <span>Nintendo Entertainment System</span>
-      </div>
-      <div class="player-info-item">
-        <span>🏷️ Core:</span>
-        <span>FCEUmm / Nestopia</span>
-      </div>
+  </div>
+  
+  <div class="player-info">
+    <div class="player-info-item">
+      <span>📦</span>
+      <span>Format: %[5]s</span>
     </div>
-    <div class="player-tip">
-      <span class="tip-icon">💡</span>
-      <span>提示：按 Tab 键打开模拟器菜单。支持手柄控制和键盘映射自定义。</span>
+    <div class="player-info-item">
+      <span>🎮</span>
+      <span>System: Game Boy Advance</span>
     </div>
+    <div class="player-info-item">
+      <span>🏷️</span>
+      <span>Core: mGBA</span>
+    </div>
+  </div>
+
+  <div class="player-tip">
+    <span class="tip-icon">💡</span>
+    <span>提示：按 Tab 键打开模拟器菜单。支持手柄控制和键盘映射自定义。</span>
   </div>
   
   <div class="error-message" id="%[4]s-error"></div>
@@ -365,7 +434,7 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
   <div class="emulator-container" id="%[4]s-container">
     <div class="loading-overlay" id="%[4]s-loading">
       <div class="loading-spinner"></div>
-      <div class="loading-text">Initializing NES Emulator...</div>
+      <div class="loading-text">Initializing GBA...</div>
     </div>
     <div id="game"></div>
   </div>
@@ -386,18 +455,18 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
     </div>
     <div class="option-group">
       <label>
-        <input type="checkbox" id="%[4]s-crt" />
-        <span>📺 CRT Filter</span>
+        <input type="checkbox" id="%[4]s-lcd" />
+        <span>📱 LCD Filter</span>
       </label>
     </div>
   </div>
 
   <!-- Controls Information -->
   <div class="controls-info">
-    <h4>🎮 Default Keyboard Controls</h4>
+    <h4>🎮 Keyboard Controls</h4>
     <div class="controls-grid">
       <div class="control-item">
-        <span class="key">WSAD</span> D-Pad
+        <span class="key">WASD</span> D-Pad
       </div>
       <div class="control-item">
         <span class="key">U</span> A Button
@@ -406,10 +475,10 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
         <span class="key">I</span> B Button
       </div>
       <div class="control-item">
-        <span class="key">O</span> Turbo A
+        <span class="key">[</span> L Button
       </div>
       <div class="control-item">
-        <span class="key">P</span> Turbo B
+        <span class="key">]</span> R Button
       </div>
       <div class="control-item">
         <span class="key">K</span> Start
@@ -420,9 +489,12 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       <div class="control-item">
         <span class="key">Tab</span> Menu
       </div>
+      <div class="control-item">
+        <span class="key">1/3</span> Save/Load
+      </div>
     </div>
-    <p style="margin-top: 10px; color: rgba(255,255,255,0.6); font-size: 12px;">
-      💡 支持 USB/蓝牙游戏手柄。可以在菜单中自定义按键映射。
+    <p style="margin-top: 10px; color: rgba(255,255,255,0.7); font-size: 12px;">
+      💡 支持 USB/蓝牙游戏手柄。GBA 游戏支持存档和即时存档功能。
     </p>
   </div>
   
@@ -437,7 +509,7 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       let emulatorReady = false;
       let volumeControl = null;
       let turboMode = false;
-      let crtFilter = false;
+      let lcdFilter = false;
       
       // Status update function
       function updateStatus(message, type = 'loading') {
@@ -491,58 +563,55 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
         try {
           updateStatus('Initializing...', 'loading');
 	
-		// 设置键盘映射
-		updateStatus('Setting Keyboard...', 'loading');
-    	window.EJS_defaultControls = {
-			0: {
-				// WASD 方向
-				4: { 'value': 'w', 'value2': 'DPAD_UP' },
-				5: { 'value': 's', 'value2': 'DPAD_DOWN' },
-				6: { 'value': 'a', 'value2': 'DPAD_LEFT' },
-				7: { 'value': 'd', 'value2': 'DPAD_RIGHT' },
-				
-				// JKL; 动作键
-				0: { 'value': 'i', 'value2': 'BUTTON_2' },    // B
-				8: { 'value': 'u', 'value2': 'BUTTON_1' },    // A
-				1: { 'value': 'o', 'value2': 'BUTTON_4' },    // Y
-				9: { 'value': 'p', 'value2': 'BUTTON_3' },    // X
-				
-				// UI 系统键
-				2: { 'value': 'j', 'value2': 'SELECT' },
-				3: { 'value': 'k', 'value2': 'START' },
-				
-				// OP 肩键
-				10: { 'value': '[', 'value2': 'LEFT_TOP_SHOULDER' },
-				11: { 'value': ']', 'value2': 'RIGHT_TOP_SHOULDER' },
-				
-				// 功能键
-				24: { 'value': '1' },
-				25: { 'value': '3' },
-				27: { 'value': 'space' }
-			},
-			1: {}, 2: {}, 3: {}
-   	 	 };
+          // 设置键盘映射
+          updateStatus('Setting Controls...', 'loading');
+          window.EJS_defaultControls = {
+            0: {
+              // WASD 方向
+              4: { 'value': 'w', 'value2': 'DPAD_UP' },
+              5: { 'value': 's', 'value2': 'DPAD_DOWN' },
+              6: { 'value': 'a', 'value2': 'DPAD_LEFT' },
+              7: { 'value': 'd', 'value2': 'DPAD_RIGHT' },
+              
+              // UI 动作键 (GBA布局)
+              8: { 'value': 'u', 'value2': 'BUTTON_1' },    // A
+              0: { 'value': 'i', 'value2': 'BUTTON_2' },    // B
+              
+              // JK 系统键
+              2: { 'value': 'j', 'value2': 'SELECT' },
+              3: { 'value': 'k', 'value2': 'START' },
+              
+              // [] 肩键
+              10: { 'value': '[', 'value2': 'LEFT_TOP_SHOULDER' },   // L
+              11: { 'value': ']', 'value2': 'RIGHT_TOP_SHOULDER' },  // R
+              
+              // 功能键
+              24: { 'value': '1' },      // Quick Save
+              25: { 'value': '3' },      // Quick Load  
+              27: { 'value': 'space' }   // Fast Forward
+            },
+            1: {}, 2: {}, 3: {}
+          };
 
-          updateLoadingText('Setting up EmulatorJS configuration...');
+          updateLoadingText('Setting up GBA emulator...');
           
           // EmulatorJS configuration
           window.EJS_player = '#game';
           window.EJS_gameUrl = ROM_URL;
-          window.EJS_core = 'nes'; // NES core
+          window.EJS_core = 'gba'; // GBA core
           window.EJS_gameName = ROM_NAME;
-          window.EJS_language = 'zh-CN'; //language
           
           // Optional configurations
-          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/'; // Path to EmulatorJS data files
+          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/';
           window.EJS_startOnLoaded = true;
-          window.EJS_biosUrl = ''; // NES doesn't need BIOS
-          window.EJS_DEBUG_XX = false; // Set to true for debugging
+          window.EJS_biosUrl = ''; // GBA BIOS (optional, but recommended)
+          window.EJS_DEBUG_XX = false;
           
           // Color and theme
-          window.EJS_color = '#ff4444';
+          window.EJS_color = '#6B46C1';
           
           // Features
-          window.EJS_cheats = true; // Enable Game Genie codes
+          window.EJS_cheats = true;
           window.EJS_saveStateName = ROM_NAME + '.state';
           
           // Language
@@ -551,8 +620,8 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
           // Settings menu
           window.EJS_settingsMenu = true;
           
-          // Screen settings
-          window.EJS_aspectRatio = '256:240';
+          // Screen settings (GBA native resolution)
+          window.EJS_aspectRatio = '3:2';
           
           // Virtual gamepad for mobile
           window.EJS_VirtualGamepadSettings = {
@@ -563,7 +632,7 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
           
           // Callbacks
           window.EJS_onGameStart = function() {
-            console.log('NES game started:', ROM_NAME);
+            console.log('GBA game started:', ROM_NAME);
             updateStatus('Running', 'running');
             hideLoading();
             emulatorReady = true;
@@ -593,14 +662,14 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
           // Load EmulatorJS loader script
           updateLoadingText('Loading EmulatorJS core...');
           const script = document.createElement('script');
-          script.src = '/emulatorjs/loader.js'; // Path to EmulatorJS loader
+          script.src = '/emulatorjs/loader.js';
           script.onerror = function() {
             showError('Failed to load EmulatorJS. Please check if EmulatorJS is properly installed.');
             hideLoading();
           };
           script.onload = function() {
             console.log('EmulatorJS loader loaded successfully');
-            updateLoadingText('Starting NES emulator...');
+            updateLoadingText('Starting GBA emulator...');
             updateStatus('Starting...', 'loading');
           };
           document.body.appendChild(script);
@@ -644,42 +713,6 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
             }
           });
         }
-        
-        // Save state button
-        const saveBtn = document.getElementById(UNIQUE_ID + '-save-btn');
-        if (saveBtn) {
-          saveBtn.addEventListener('click', function() {
-            if (window.EJS_emulator && window.EJS_emulator.saveState) {
-              window.EJS_emulator.saveState();
-            } else {
-              console.warn('Save state not available yet');
-            }
-          });
-        }
-        
-        // Load state button
-        const loadBtn = document.getElementById(UNIQUE_ID + '-load-btn');
-        if (loadBtn) {
-          loadBtn.addEventListener('click', function() {
-            if (window.EJS_emulator && window.EJS_emulator.loadState) {
-              window.EJS_emulator.loadState();
-            } else {
-              console.warn('Load state not available yet');
-            }
-          });
-        }
-        
-        // Reset button
-        const resetBtn = document.getElementById(UNIQUE_ID + '-reset-btn');
-        if (resetBtn) {
-          resetBtn.addEventListener('click', function() {
-            if (window.EJS_emulator && window.EJS_emulator.reset) {
-              window.EJS_emulator.reset();
-              updateStatus('Reset', 'success');
-              setTimeout(() => updateStatus('Running', 'running'), 1000);
-            }
-          });
-        }
       }
       
       // Setup game option handlers
@@ -695,13 +728,13 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
           });
         }
         
-        // CRT filter toggle
-        const crtCheckbox = document.getElementById(UNIQUE_ID + '-crt');
-        if (crtCheckbox) {
-          crtCheckbox.addEventListener('change', function() {
-            crtFilter = this.checked;
+        // LCD filter toggle
+        const lcdCheckbox = document.getElementById(UNIQUE_ID + '-lcd');
+        if (lcdCheckbox) {
+          lcdCheckbox.addEventListener('change', function() {
+            lcdFilter = this.checked;
             if (window.EJS_emulator && window.EJS_emulator.setShader) {
-              window.EJS_emulator.setShader(crtFilter ? 'crt' : 'none');
+              window.EJS_emulator.setShader(lcdFilter ? 'lcd' : 'none');
             }
           });
         }
@@ -709,11 +742,10 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       
       // Check ROM format
       function checkRomFormat() {
-        const validFormats = ['nes', 'fds', 'unif', 'unf'];
+        const validFormats = ['gba', 'agb', 'bin', 'mb', 'gbc', 'gb'];
         if (!validFormats.includes(FILE_EXT)) {
-          console.warn('Unusual file format for NES:', FILE_EXT);
-          // Still try to load it, EmulatorJS might support it
-          return true;
+          console.warn('Unusual file format for GBA:', FILE_EXT);
+          return true; // Still try to load
         }
         return true;
       }
@@ -722,13 +754,13 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
           if (!checkRomFormat()) {
-            showError('Warning: Unusual file format. Expected: .nes, .fds, .unif, .unf');
+            showError('Warning: Unusual file format. Expected: .gba, .agb');
           }
           initializeEmulator();
         });
       } else {
         if (!checkRomFormat()) {
-          showError('Warning: Unusual file format. Expected: .nes, .fds, .unif, .unf');
+          showError('Warning: Unusual file format. Expected: .gba, .agb');
         }
         initializeEmulator();
       }

@@ -473,8 +473,6 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 </audio>`
 
 		case ".nes":
-			// Generate unique ID for this NES player instance
-			// Use a hash of the attachment ID to ensure consistency
 			uniqueID := fmt.Sprintf("nes_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
@@ -482,6 +480,23 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 			}
 			log.Println("Embedding NES player for", name, "with ID", uniqueID)
 			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+
+		case ".pbp", ".chd", ".7z":
+			uniqueID := fmt.Sprintf("pbp_%x", md5.Sum([]byte(id)))[:12]
+			name := att.OriginalFilename
+			if name == "" {
+				name = filepath.Base(att.Path)
+			}
+			log.Println("Embedding PSX player for", name, "with ID", uniqueID)
+			return parser.GeneratePlayStationPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+		case ".gba":
+			uniqueID := fmt.Sprintf("gba_%x", md5.Sum([]byte(id)))[:12]
+			name := att.OriginalFilename
+			if name == "" {
+				name = filepath.Base(att.Path)
+			}
+			log.Println("Embedding GBA player for", name, "with ID", uniqueID)
+			return parser.GenerateGBAPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
 		case ".jar":
 			uniqueID := fmt.Sprintf("jar_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
@@ -490,6 +505,15 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 			}
 			log.Println("Embedding Jar player for", name, "with ID", uniqueID)
 			html := parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+			return html
+		case ".md", ".smd", ".gen", ".bin", ".sms", ".gg", ".32x", ".cue", ".iso":
+			uniqueID := fmt.Sprintf("sega_%x", md5.Sum([]byte(id)))[:12]
+			name := att.OriginalFilename
+			if name == "" {
+				name = filepath.Base(att.Path)
+			}
+			log.Println("EmbeddingJS Sega player for", name, "with ID", uniqueID)
+			html := parser.GenerateSegaMDPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
 			return html
 		default:
 			name := att.OriginalFilename

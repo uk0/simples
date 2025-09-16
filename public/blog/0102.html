@@ -53,665 +53,715 @@
     </p>
     <article>
         <h1>[NES] <strong>激龟快打忍者神龟格斗版中文</strong></h1>
-<p><strong>来源</strong>**：** **<a href="http://www.downyi.com/downinfo/174435.html">http://www.downyi.com/downinfo/174435.html</a>****<div class="nes-player-container" id="nes_bb97c7fe-container"></p>
+<p><strong>来源</strong>**：** **<a href="http://www.downyi.com/downinfo/174435.html">http://www.downyi.com/downinfo/174435.html</a>****<div class="nes-player-wrapper" id="nes_bb97c7fe-wrapper"></p>
   <style>
-    #nes_bb97c7fe-container {
-      margin: 20px 0;
+    #nes_bb97c7fe-wrapper {
+      margin: 20px auto;
       padding: 20px;
+      background: linear-gradient(135deg, #8B0000 0%, #2c0000 100%);
+      border-radius: 12px;
+      max-width: fit-content;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    #nes_bb97c7fe-wrapper .player-header {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    
+    #nes_bb97c7fe-wrapper .player-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 10px;
+    }
+    
+    #nes_bb97c7fe-wrapper .player-title {
+      font-size: 20px;
+      font-weight: 600;
+      opacity: 0.95;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #nes_bb97c7fe-wrapper .nintendo-logo {
+      background: linear-gradient(90deg, #ff0000 50%, #ffffff 50%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: bold;
+      font-style: italic;
+    }
+    
+    #nes_bb97c7fe-wrapper .player-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    #nes_bb97c7fe-wrapper .player-info {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    #nes_bb97c7fe-wrapper .player-info-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    #nes_bb97c7fe-wrapper .player-tip {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 0, 0, 0.15);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-left: 3px solid #ff4444;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    #nes_bb97c7fe-wrapper .player-tip .tip-icon {
+      color: #ff4444;
+      font-size: 16px;
+    }
+    
+    #nes_bb97c7fe-wrapper .ctrl-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    #nes_bb97c7fe-wrapper .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+    
+    #nes_bb97c7fe-wrapper .ctrl-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    #nes_bb97c7fe-wrapper .ctrl-btn.success {
+      background: rgba(76, 175, 80, 0.3);
+      border-color: rgba(76, 175, 80, 0.5);
+    }
+
+    #nes_bb97c7fe-wrapper .ctrl-btn.primary {
+      background: rgba(255, 0, 0, 0.3);
+      border-color: rgba(255, 0, 0, 0.5);
+    }
+    
+    /* EmulatorJS Container */
+    #nes_bb97c7fe-wrapper .emulator-container {
       background: #000;
       border-radius: 8px;
+      padding: 0;
       display: inline-block;
-      max-width: 100%;
-      font-family: Arial, sans-serif;
-    }
-    #nes_bb97c7fe-container .nes-header {
-      color: #fff;
-      margin-bottom: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    #nes_bb97c7fe-container .nes-title {
-      font-size: 16px;
-      font-weight: bold;
-      word-break: break-word;
-    }
-    #nes_bb97c7fe-container .nes-controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    #nes_bb97c7fe-container button {
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.3s;
-    }
-    #nes_bb97c7fe-container button:hover:not(:disabled) {
-      background: #45a049;
-    }
-    #nes_bb97c7fe-container button:disabled {
-      background: #666;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-    #nes_bb97c7fe-container .canvas-wrapper {
       position: relative;
-      display: inline-block;
+      min-width: 512px;
+      min-height: 480px;
     }
-    #nes_bb97c7fe-container canvas {
-      width: 512px;
-      max-width: 100%;
-      image-rendering: pixelated;
-      image-rendering: -moz-crisp-edges;
-      image-rendering: crisp-edges;
-      border: 2px solid #333;
-      display: block;
-      background: #000;
-      cursor: pointer;
-    }
-    #nes_bb97c7fe-container canvas:fullscreen {
+    
+    #nes_bb97c7fe-wrapper #game {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      max-width: 100%;
+      aspect-ratio: 256/240;
     }
-    #nes_bb97c7fe-container .nes-loading {
+    
+    /* Loading overlay */
+    #nes_bb97c7fe-wrapper .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      border-radius: 8px;
+    }
+    
+    #nes_bb97c7fe-wrapper .loading-overlay.hidden {
+      display: none;
+    }
+    
+    #nes_bb97c7fe-wrapper .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 0, 0, 0.3);
+      border-top-color: #ff4444;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    #nes_bb97c7fe-wrapper .loading-text {
       color: #fff;
-      text-align: center;
-      padding: 50px;
-    }
-    #nes_bb97c7fe-container .nes-error {
-      color: #ff4444;
-      padding: 20px;
-      background: rgba(255, 68, 68, 0.1);
-      border-radius: 4px;
-      margin-top: 10px;
-    }
-    #nes_bb97c7fe-container .nes-warning {
-      color: #ffa500;
-      padding: 10px;
-      background: rgba(255, 165, 0, 0.1);
-      border-radius: 4px;
-      margin-top: 10px;
-      font-size: 12px;
-      text-align: center;
-    }
-    #nes_bb97c7fe-container .nes-instructions {
-      margin-top: 15px;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
-      color: #fff;
-      font-size: 13px;
-      line-height: 1.8;
-    }
-    #nes_bb97c7fe-container .nes-instructions h4 {
-      margin: 0 0 10px 0;
-      color: #4CAF50;
+      margin-top: 20px;
       font-size: 14px;
     }
-    #nes_bb97c7fe-container .key-mapping {
+
+    /* Control Instructions */
+    #nes_bb97c7fe-wrapper .controls-info {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+    }
+
+    #nes_bb97c7fe-wrapper .controls-info h4 {
+      margin: 0 0 10px 0;
+      color: #ff4444;
+      font-size: 14px;
+    }
+
+    #nes_bb97c7fe-wrapper .controls-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
       margin-top: 10px;
     }
-    #nes_bb97c7fe-container .key-group {
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-    }
-    #nes_bb97c7fe-container .key-group-title {
-      color: #4CAF50;
-      font-weight: bold;
-      margin-bottom: 8px;
-      font-size: 13px;
-      text-align: center;
-    }
-    #nes_bb97c7fe-container .key-item {
+
+    #nes_bb97c7fe-wrapper .control-item {
       display: flex;
-      justify-content: space-between;
-      padding: 3px 0;
-      font-size: 12px;
-      color: #aaa;
       align-items: center;
+      gap: 8px;
     }
-    #nes_bb97c7fe-container .key-item .action {
+
+    #nes_bb97c7fe-wrapper .key {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid rgba(255, 0, 0, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
       color: #fff;
     }
-    #nes_bb97c7fe-container .key-item .key {
-      color: #4CAF50;
-      font-family: monospace;
-      background: rgba(76, 175, 80, 0.2);
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-weight: bold;
-      text-transform: uppercase;
+    
+    /* Error message */
+    #nes_bb97c7fe-wrapper .error-message {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      color: #ff6b6b;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin: 10px 0;
+      display: none;
     }
-    #nes_bb97c7fe-container .nes-info {
-      color: #888;
-      font-size: 11px;
-      margin-top: 5px;
+    
+    #nes_bb97c7fe-wrapper .error-message.show {
+      display: block;
     }
-    #nes_bb97c7fe-container .focus-hint {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: #4CAF50;
-      padding: 10px 20px;
-      border-radius: 4px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s;
-      z-index: 10;
+
+    /* Game options panel */
+    #nes_bb97c7fe-wrapper .game-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      flex-wrap: wrap;
+      align-items: center;
     }
-    #nes_bb97c7fe-container .canvas-wrapper:hover .focus-hint.show {
-      opacity: 1;
+
+    #nes_bb97c7fe-wrapper .option-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
     }
-    @media (max-width: 600px) {
-      #nes_bb97c7fe-container canvas {
+
+    #nes_bb97c7fe-wrapper .option-group label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #nes_bb97c7fe-wrapper .option-group input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    #nes_bb97c7fe-wrapper .option-group input[type="range"] {
+      width: 100px;
+    }
+    
+    @media (max-width: 768px) {
+      #nes_bb97c7fe-wrapper {
+        margin: 10px;
+        padding: 15px;
+      }
+      
+      #nes_bb97c7fe-wrapper .emulator-container {
+        min-width: 100%;
         width: 100%;
       }
-      #nes_bb97c7fe-container .key-mapping {
+      
+      #nes_bb97c7fe-wrapper .player-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      #nes_bb97c7fe-wrapper .controls-grid {
         grid-template-columns: 1fr;
+      }
+
+      #nes_bb97c7fe-wrapper .player-controls {
+        width: 100%;
+        justify-content: flex-start;
       }
     }
   </style>
-  <div class="nes-header">
-    <div class="nes-title">🎮 rzsg3.nes</div>
-    <a href="0102/attachments/36C0FE45.dat" download style="color: #4CAF50; text-decoration: none; font-size: 14px;">⬇ Download ROM</a>
-  </div>
-  <div id="nes_bb97c7fe-loading" class="nes-loading">
-    <div>Loading NES emulator...</div>
-  </div>
-  <div id="nes_bb97c7fe-player" style="display: none;">
-    <div class="nes-controls">
-      <button id="nes_bb97c7fe-pause">⏸ Pause</button>
-      <button id="nes_bb97c7fe-resume" style="display: none;">▶ Resume</button>
-      <button id="nes_bb97c7fe-fullscreen">⛶ Fullscreen</button>
-    </div>
-    <div class="canvas-wrapper">
-      <canvas id="nes_bb97c7fe-canvas" width="256" height="240" tabindex="0"></canvas>
-      <div class="focus-hint" id="nes_bb97c7fe-focus-hint">Click to focus</div>
-    </div>
-    <div class="nes-warning">
-      ⚠️ 请关闭与相关键位冲突的浏览器插件或快捷键 (如 Vimium, Surfingkeys 等)
-    </div>
-    <div class="nes-instructions">
-      <h4>🎮 键盘控制</h4>
-      <div class="key-mapping">
-        <div class="key-group">
-          <div class="key-group-title">方向控制</div>
-          <div class="key-item">
-            <span class="action">上</span>
-            <span class="key">W</span>
-          </div>
-          <div class="key-item">
-            <span class="action">下</span>
-            <span class="key">S</span>
-          </div>
-          <div class="key-item">
-            <span class="action">左</span>
-            <span class="key">A</span>
-          </div>
-          <div class="key-item">
-            <span class="action">右</span>
-            <span class="key">D</span>
-          </div>
-        </div>
-        <div class="key-group">
-          <div class="key-group-title">动作按钮</div>
-          <div class="key-item">
-            <span class="action">A 按钮</span>
-            <span class="key">K</span>
-          </div>
-          <div class="key-item">
-            <span class="action">B 按钮</span>
-            <span class="key">L</span>
-          </div>
-          <div class="key-item">
-            <span class="action">选择 (Select)</span>
-            <span class="key">I</span>
-          </div>
-          <div class="key-item">
-            <span class="action">开始 (Start)</span>
-            <span class="key">O</span>
-          </div>
-        </div>
+  <div class="player-header">
+    <div class="player-header-top">
+      <div class="player-title">
+        <span class="nintendo-logo">Nintendo</span>
+        <span>NES - rzsg3.nes</span>
+      </div>
+      <div class="player-controls">
+        <button class="ctrl-btn" id="nes_14f5d832-status-btn">
+          <span>⏳</span>
+          <span>Loading...</span>
+        </button>
+        <button class="ctrl-btn" id="nes_14f5d832-fullscreen-btn">
+          <span>⛶</span>
+          <span>Fullscreen</span>
+        </button>
+         <!-- <button class="ctrl-btn" id="nes_14f5d832-save-btn">
+          <span>💾</span>
+          <span>Save</span>
+        </button>
+        <button class="ctrl-btn" id="nes_14f5d832-load-btn">
+          <span>📂</span>
+          <span>Load</span>
+        </button>
+        <button class="ctrl-btn" id="nes_14f5d832-reset-btn">
+          <span>🔄</span>
+          <span>Reset</span>
+        </button> -->
+        <a href="0102/attachments/36C0FE45.dat" download class="ctrl-btn">
+          <span>⬇</span>
+          <span>ROM</span>
+        </a>
       </div>
     </div>
-    <div id="nes_bb97c7fe-info" class="nes-info"></div>
+    <div class="player-info">
+      <div class="player-info-item">
+        <span>📦 Format:</span>
+        <span>.dat</span>
+      </div>
+      <div class="player-info-item">
+        <span>🎮 System:</span>
+        <span>Nintendo Entertainment System</span>
+      </div>
+      <div class="player-info-item">
+        <span>🏷️ Core:</span>
+        <span>FCEUmm / Nestopia</span>
+      </div>
+    </div>
+    <div class="player-tip">
+      <span class="tip-icon">💡</span>
+      <span>提示：按 Tab 键打开模拟器菜单。支持手柄控制和键盘映射自定义。</span>
+    </div>
   </div>
-  <div id="nes_bb97c7fe-error" class="nes-error" style="display: none;"></div>
+  <div class="error-message" id="nes_14f5d832-error"></div>
+  <!-- EmulatorJS Container -->
+  <div class="emulator-container" id="nes_14f5d832-container">
+    <div class="loading-overlay" id="nes_14f5d832-loading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Initializing NES Emulator...</div>
+    </div>
+    <div id="game"></div>
+  </div>
+  <!-- Game Options -->
+  <div class="game-options">
+    <div class="option-group">
+      <label>
+        <input type="checkbox" id="nes_14f5d832-turbo" />
+        <span>⚡ Turbo Mode</span>
+      </label>
+    </div>
+    <div class="option-group">
+      <label>
+        <span>🔊 Volume:</span>
+        <input type="range" id="nes_14f5d832-volume" min="0" max="100" value="50" />
+      </label>
+    </div>
+    <div class="option-group">
+      <label>
+        <input type="checkbox" id="nes_14f5d832-crt" />
+        <span>📺 CRT Filter</span>
+      </label>
+    </div>
+  </div>
+  <!-- Controls Information -->
+  <div class="controls-info">
+    <h4>🎮 Default Keyboard Controls</h4>
+    <div class="controls-grid">
+      <div class="control-item">
+        <span class="key">WSAD</span> D-Pad
+      </div>
+      <div class="control-item">
+        <span class="key">U</span> A Button
+      </div>
+      <div class="control-item">
+        <span class="key">I</span> B Button
+      </div>
+      <div class="control-item">
+        <span class="key">O</span> Turbo A
+      </div>
+      <div class="control-item">
+        <span class="key">P</span> Turbo B
+      </div>
+      <div class="control-item">
+        <span class="key">K</span> Start
+      </div>
+      <div class="control-item">
+        <span class="key">J</span> Select
+      </div>
+      <div class="control-item">
+        <span class="key">Tab</span> Menu
+      </div>
+    </div>
+    <p style="margin-top: 10px; color: rgba(255,255,255,0.6); font-size: 12px;">
+      💡 支持 USB/蓝牙游戏手柄。可以在菜单中自定义按键映射。
+    </p>
+  </div>
+  <!-- EmulatorJS Scripts -->
   <script>
-  (function() {
-    'use strict';
-    
-    // Configuration
-    const PLAYER_ID = 'nes_bb97c7fe';
-    const ROM_PATH = '0102/attachments/36C0FE45.dat';
-    
-    // Constants from official example
-    var SCREEN_WIDTH = 256;
-    var SCREEN_HEIGHT = 240;
-    var FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
-    
-    var canvas_ctx, image;
-    var framebuffer_u8, framebuffer_u32;
-    
-    var AUDIO_BUFFERING = 512;
-    var SAMPLE_COUNT = 4 * 1024;
-    var SAMPLE_MASK = SAMPLE_COUNT - 1;
-    var audio_samples_L = new Float32Array(SAMPLE_COUNT);
-    var audio_samples_R = new Float32Array(SAMPLE_COUNT);
-    var audio_write_cursor = 0, audio_read_cursor = 0;
-    
-    var nes = null;
-    var running = false;
-    var paused = false;
-    var muted = false;
-    var audio_ctx = null;
-    var script_processor = null;
-    var romData = null;
-    var canvasHasFocus = false;
-    
-    // Frame timing control
-    var frameTime = 0;
-    var lastFrameTime = 0;
-    var targetFrameTime = 1000 / 60; // 60 FPS for NTSC
-    
-    // DOM elements
-    const elements = {
-      container: document.getElementById(PLAYER_ID + '-container'),
-      loading: document.getElementById(PLAYER_ID + '-loading'),
-      player: document.getElementById(PLAYER_ID + '-player'),
-      error: document.getElementById(PLAYER_ID + '-error'),
-      info: document.getElementById(PLAYER_ID + '-info'),
-      canvas: document.getElementById(PLAYER_ID + '-canvas'),
-      focusHint: document.getElementById(PLAYER_ID + '-focus-hint'),
-      pauseBtn: document.getElementById(PLAYER_ID + '-pause'),
-      resumeBtn: document.getElementById(PLAYER_ID + '-resume'),
-      fullscreenBtn: document.getElementById(PLAYER_ID + '-fullscreen'),
-    };
-    
-    // Show error
-    function showError(message) {
-      console.error('[NES Player]', message);
-      if (elements.error) {
-        elements.error.textContent = message;
-        elements.error.style.display = 'block';
-      }
-      if (elements.loading) {
-        elements.loading.style.display = 'none';
-      }
-    }
-    
-    // Frame-limited animation loop
-    function onAnimationFrame(currentTime) {
-      if (!running || paused) return;
+    (function() {
+      const ROM_URL = '0102/attachments/36C0FE45.dat';
+      const ROM_NAME = 'rzsg3.nes';
+      const UNIQUE_ID = 'nes_14f5d832';
+      const FILE_EXT = '.dat'.toLowerCase();
       
-      window.requestAnimationFrame(onAnimationFrame);
+      let emulatorReady = false;
+      let volumeControl = null;
+      let turboMode = false;
+      let crtFilter = false;
       
-      // Calculate time since last frame
-      if (!lastFrameTime) lastFrameTime = currentTime;
-      frameTime = currentTime - lastFrameTime;
-      
-      // Only run frame if enough time has passed (frame limiting)
-      if (frameTime >= targetFrameTime) {
-        image.data.set(framebuffer_u8);
-        canvas_ctx.putImageData(image, 0, 0);
-        
-        // Don't run extra frames here - let audio callback handle timing
-        lastFrameTime = currentTime - (frameTime % targetFrameTime);
-      }
-    }
-    
-    // Audio functions from official example
-    function audio_remain() {
-      return (audio_write_cursor - audio_read_cursor) & SAMPLE_MASK;
-    }
-    
-    function audio_callback(event) {
-      if (muted) {
-        var dst = event.outputBuffer;
-        var len = dst.length;
-        var dst_l = dst.getChannelData(0);
-        var dst_r = dst.getChannelData(1);
-        for (var i = 0; i < len; i++) {
-          dst_l[i] = 0;
-          dst_r[i] = 0;
-        }
-        return;
-      }
-      
-      var dst = event.outputBuffer;
-      var len = dst.length;
-      
-      // Attempt to avoid buffer underruns - this drives the frame timing
-      if (audio_remain() < AUDIO_BUFFERING && running && !paused) {
-        nes.frame();
-      }
-      
-      var dst_l = dst.getChannelData(0);
-      var dst_r = dst.getChannelData(1);
-      for (var i = 0; i < len; i++) {
-        var src_idx = (audio_read_cursor + i) & SAMPLE_MASK;
-        dst_l[i] = audio_samples_L[src_idx];
-        dst_r[i] = audio_samples_R[src_idx];
-      }
-      
-      audio_read_cursor = (audio_read_cursor + len) & SAMPLE_MASK;
-    }
-    
-    // New keyboard handler with WASD + IOKL mapping
-    function keyboard(callback, event) {
-      var player = 1;
-      var handled = true;
-      
-      // Convert to uppercase for consistent checking
-      var key = event.key ? event.key.toUpperCase() : '';
-      var keyCode = event.keyCode;
-      
-      // WASD for directions
-      if (key === 'W' || keyCode === 87) {
-        callback(player, jsnes.Controller.BUTTON_UP);
-      } else if (key === 'S' || keyCode === 83) {
-        callback(player, jsnes.Controller.BUTTON_DOWN);
-      } else if (key === 'A' || keyCode === 65) {
-        callback(player, jsnes.Controller.BUTTON_LEFT);
-      } else if (key === 'D' || keyCode === 68) {
-        callback(player, jsnes.Controller.BUTTON_RIGHT);
-      }
-      // IOKL for buttons
-      else if (key === 'K' || keyCode === 75) {
-        callback(player, jsnes.Controller.BUTTON_A);
-      } else if (key === 'L' || keyCode === 76) {
-        callback(player, jsnes.Controller.BUTTON_B);
-      } else if (key === 'I' || keyCode === 73) {
-        callback(player, jsnes.Controller.BUTTON_SELECT);
-      } else if (key === 'O' || keyCode === 79) {
-        callback(player, jsnes.Controller.BUTTON_START);
-      } else {
-        handled = false;
-      }
-      
-      if (handled) {
-        event.preventDefault();
-      }
-    }
-    
-    // Initialize NES (based on official nes_init)
-    function nes_init(canvas_id) {
-      var canvas = document.getElementById(canvas_id);
-      canvas_ctx = canvas.getContext("2d");
-      image = canvas_ctx.getImageData(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-      
-      canvas_ctx.fillStyle = "black";
-      canvas_ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-      
-      // Allocate framebuffer array
-      var buffer = new ArrayBuffer(image.data.length);
-      framebuffer_u8 = new Uint8ClampedArray(buffer);
-      framebuffer_u32 = new Uint32Array(buffer);
-      
-      // Setup audio
-      try {
-        audio_ctx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Make sure sample rate is correct
-        var sampleRate = audio_ctx.sampleRate;
-        console.log('Audio context sample rate:', sampleRate);
-        
-        script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
-        script_processor.onaudioprocess = audio_callback;
-        script_processor.connect(audio_ctx.destination);
-      } catch (e) {
-        console.warn('Audio setup failed:', e);
-      }
-      
-      // Create NES instance with proper sample rate
-      nes = new jsnes.NES({
-        onFrame: function(framebuffer_24) {
-          for (var i = 0; i < FRAMEBUFFER_SIZE; i++) {
-            framebuffer_u32[i] = 0xFF000000 | framebuffer_24[i];
+      // Status update function
+      function updateStatus(message, type = 'loading') {
+        const statusBtn = document.getElementById(UNIQUE_ID + '-status-btn');
+        if (statusBtn) {
+          const icons = {
+            loading: '⏳',
+            success: '✅',
+            error: '❌',
+            running: '🎮',
+            paused: '⏸️'
+          };
+          statusBtn.innerHTML = '<span>' + (icons[type] || '⏳') + '</span><span>' + message + '</span>';
+          statusBtn.className = 'ctrl-btn';
+          if (type === 'success' || type === 'running') {
+            statusBtn.classList.add('success');
+          } else if (type === 'loading') {
+            statusBtn.classList.add('primary');
           }
-        },
-        onAudioSample: function(l, r) {
-          audio_samples_L[audio_write_cursor] = l;
-          audio_samples_R[audio_write_cursor] = r;
-          audio_write_cursor = (audio_write_cursor + 1) & SAMPLE_MASK;
-        },
-        sampleRate: audio_ctx ? audio_ctx.sampleRate : 44100
-      });
-      
-      // Setup keyboard - only respond when canvas has focus
-      document.addEventListener('keydown', function(event) {
-        if (running && !paused && canvasHasFocus) {
-          keyboard(nes.buttonDown, event);
         }
-      });
+      }
       
-      document.addEventListener('keyup', function(event) {
-        if (running && !paused && canvasHasFocus) {
-          keyboard(nes.buttonUp, event);
+      // Show error message
+      function showError(message) {
+        const errorEl = document.getElementById(UNIQUE_ID + '-error');
+        if (errorEl) {
+          errorEl.textContent = '⚠️ ' + message;
+          errorEl.classList.add('show');
         }
-      });
+        updateStatus('Error', 'error');
+      }
       
-      // Canvas focus management
-      canvas.addEventListener('focus', function() {
-        canvasHasFocus = true;
-        elements.focusHint.classList.remove('show');
-      });
-      
-      canvas.addEventListener('blur', function() {
-        canvasHasFocus = false;
-      });
-      
-      canvas.addEventListener('click', function() {
-        this.focus();
-        // Resume audio context on user interaction
-        if (audio_ctx && audio_ctx.state === 'suspended') {
-          audio_ctx.resume();
+      // Hide loading overlay
+      function hideLoading() {
+        const loadingEl = document.getElementById(UNIQUE_ID + '-loading');
+        if (loadingEl) {
+          loadingEl.classList.add('hidden');
         }
-      });
+      }
       
-      // Show focus hint when hovering over unfocused canvas
-      canvas.addEventListener('mouseenter', function() {
-        if (!canvasHasFocus) {
-          elements.focusHint.classList.add('show');
+      // Update loading text
+      function updateLoadingText(text) {
+        const loadingTextEl = document.querySelector('#' + UNIQUE_ID + '-loading .loading-text');
+        if (loadingTextEl) {
+          loadingTextEl.textContent = text;
         }
-      });
+      }
       
-      canvas.addEventListener('mouseleave', function() {
-        elements.focusHint.classList.remove('show');
-      });
-    }
-    
-    // Boot the NES with ROM data (based on official nes_boot)
-    function nes_boot(rom_data_string) {
-      try {
-        // Store the ROM data for reset functionality
-        romData = rom_data_string;
-        
-        nes.loadROM(rom_data_string);
-        
-        // Display ROM info
-        if (elements.info && rom_data_string.length > 16) {
-          var header = new Uint8Array(rom_data_string.length);
-          for (var i = 0; i < rom_data_string.length; i++) {
-            header[i] = rom_data_string.charCodeAt(i) & 0xFF;
-          }
+      // Initialize EmulatorJS
+      function initializeEmulator() {
+        try {
+          updateStatus('Initializing...', 'loading');
+	
+		// 设置键盘映射
+		updateStatus('Setting Keyboard...', 'loading');
+    	window.EJS_defaultControls = {
+			0: {
+				// WASD 方向
+				4: { 'value': 'w', 'value2': 'DPAD_UP' },
+				5: { 'value': 's', 'value2': 'DPAD_DOWN' },
+				6: { 'value': 'a', 'value2': 'DPAD_LEFT' },
+				7: { 'value': 'd', 'value2': 'DPAD_RIGHT' },
+				
+				// JKL; 动作键
+				0: { 'value': 'i', 'value2': 'BUTTON_2' },    // B
+				8: { 'value': 'u', 'value2': 'BUTTON_1' },    // A
+				1: { 'value': 'o', 'value2': 'BUTTON_4' },    // Y
+				9: { 'value': 'p', 'value2': 'BUTTON_3' },    // X
+				
+				// UI 系统键
+				2: { 'value': 'j', 'value2': 'SELECT' },
+				3: { 'value': 'k', 'value2': 'START' },
+				
+				// OP 肩键
+				10: { 'value': '[', 'value2': 'LEFT_TOP_SHOULDER' },
+				11: { 'value': ']', 'value2': 'RIGHT_TOP_SHOULDER' },
+				
+				// 功能键
+				24: { 'value': '1' },
+				25: { 'value': '3' },
+				27: { 'value': 'space' }
+			},
+			1: {}, 2: {}, 3: {}
+   	 	 };
+
+          updateLoadingText('Setting up EmulatorJS configuration...');
           
-          if (header[0] === 0x4E && header[1] === 0x45 && header[2] === 0x53) {
-            var prg = header[4] * 16;
-            var chr = header[5] * 8;
-            var mapper = ((header[7] & 0xF0) | ((header[6] & 0xF0) >> 4));
-            elements.info.textContent = 'Mapper: ' + mapper + ' | PRG: ' + prg + 'KB | CHR: ' + chr + 'KB | 点击画面获取键盘焦点';
-          }
+          // EmulatorJS configuration
+          window.EJS_player = '#game';
+          window.EJS_gameUrl = ROM_URL;
+          window.EJS_core = 'nes'; // NES core
+          window.EJS_gameName = ROM_NAME;
+          window.EJS_language = 'zh-CN'; //language
+          
+          // Optional configurations
+          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/'; // Path to EmulatorJS data files
+          window.EJS_startOnLoaded = true;
+          window.EJS_biosUrl = ''; // NES doesn't need BIOS
+          window.EJS_DEBUG_XX = false; // Set to true for debugging
+          
+          // Color and theme
+          window.EJS_color = '#ff4444';
+          
+          // Features
+          window.EJS_cheats = true; // Enable Game Genie codes
+          window.EJS_saveStateName = ROM_NAME + '.state';
+          
+          // Language
+          window.EJS_language = 'en-US';
+          
+          // Settings menu
+          window.EJS_settingsMenu = true;
+          
+          // Screen settings
+          window.EJS_aspectRatio = '256:240';
+          
+          // Virtual gamepad for mobile
+          window.EJS_VirtualGamepadSettings = {
+            scale: 1.5,
+            opacity: 0.8,
+            enabled: true
+          };
+          
+          // Callbacks
+          window.EJS_onGameStart = function() {
+            console.log('NES game started:', ROM_NAME);
+            updateStatus('Running', 'running');
+            hideLoading();
+            emulatorReady = true;
+            
+            // Initialize custom controls
+            initializeCustomControls();
+          };
+          
+          window.EJS_onLoadState = function() {
+            console.log('State loaded');
+            updateStatus('State Loaded', 'success');
+            setTimeout(() => updateStatus('Running', 'running'), 2000);
+          };
+          
+          window.EJS_onSaveState = function() {
+            console.log('State saved');
+            updateStatus('State Saved', 'success');
+            setTimeout(() => updateStatus('Running', 'running'), 2000);
+          };
+          
+          // Setup button handlers
+          setupButtonHandlers();
+          
+          // Setup option handlers
+          setupOptionHandlers();
+          
+          // Load EmulatorJS loader script
+          updateLoadingText('Loading EmulatorJS core...');
+          const script = document.createElement('script');
+          script.src = '/emulatorjs/loader.js'; // Path to EmulatorJS loader
+          script.onerror = function() {
+            showError('Failed to load EmulatorJS. Please check if EmulatorJS is properly installed.');
+            hideLoading();
+          };
+          script.onload = function() {
+            console.log('EmulatorJS loader loaded successfully');
+            updateLoadingText('Starting NES emulator...');
+            updateStatus('Starting...', 'loading');
+          };
+          document.body.appendChild(script);
+          
+        } catch (error) {
+          console.error('Failed to initialize emulator:', error);
+          showError('Failed to initialize emulator: ' + error.message);
+          hideLoading();
         }
-        
-        elements.loading.style.display = 'none';
-        elements.player.style.display = 'block';
-        
-        running = true;
-        
-        // Auto-focus canvas for immediate play
-        elements.canvas.focus();
-        
-        // Start animation loop with proper timing
-        window.requestAnimationFrame(onAnimationFrame);
-        
-        // Setup controls
-        setupControls();
-        
-        console.log('NES emulator started successfully');
-      } catch (e) {
-        showError('Failed to load ROM: ' + e.message);
-        console.error('ROM loading error:', e);
-      }
-    }
-    
-    // Load ROM from URL (based on official nes_load_url)
-    function nes_load_url(canvas_id, path) {
-      nes_init(canvas_id);
-      
-      var req = new XMLHttpRequest();
-      req.open("GET", path);
-      req.overrideMimeType("text/plain; charset=x-user-defined");
-      req.onerror = function() {
-        showError('Error loading ROM: ' + req.statusText);
-      };
-      
-      req.onload = function() {
-        if (this.status === 200) {
-          console.log('ROM loaded, size:', this.responseText.length, 'bytes');
-          nes_boot(this.responseText);
-        } else if (this.status === 0) {
-          // Aborted, so ignore error
-        } else {
-          req.onerror();
-        }
-      };
-      
-      req.send();
-    }
-    
-    // Setup control buttons
-    function setupControls() {
-      elements.pauseBtn.onclick = function() {
-        paused = true;
-        this.style.display = 'none';
-        elements.resumeBtn.style.display = 'inline-block';
-      };
-      
-      elements.resumeBtn.onclick = function() {
-        paused = false;
-        lastFrameTime = 0; // Reset frame timing
-        this.style.display = 'none';
-        elements.pauseBtn.style.display = 'inline-block';
-        
-        // Resume animation if it was stopped
-        if (running) {
-          window.requestAnimationFrame(onAnimationFrame);
-        }
-        
-        // Resume audio context
-        if (audio_ctx && audio_ctx.state === 'suspended') {
-          audio_ctx.resume();
-        }
-      };
-      
-      // Fullscreen button
-      elements.fullscreenBtn.onclick = function() {
-        var canvas = elements.canvas;
-        
-        if (!document.fullscreenElement && 
-            !document.mozFullScreenElement && 
-            !document.webkitFullscreenElement && 
-            !document.msFullscreenElement) {
-          // Enter fullscreen
-          if (canvas.requestFullscreen) {
-            canvas.requestFullscreen();
-          } else if (canvas.mozRequestFullScreen) {
-            canvas.mozRequestFullScreen();
-          } else if (canvas.webkitRequestFullscreen) {
-            canvas.webkitRequestFullscreen();
-          } else if (canvas.msRequestFullscreen) {
-            canvas.msRequestFullscreen();
-          }
-        } else {
-          // Exit fullscreen
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
-          } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-          }
-        }
-      };
-    }
-    
-    // Load JSNES library
-    function loadJSNES() {
-      if (window.jsnes && window.jsnes.NES) {
-        console.log('JSNES already loaded');
-        nes_load_url(PLAYER_ID + '-canvas', ROM_PATH);
-        return;
       }
       
-      // Check if already loading
-      var existingScript = document.querySelector('script[data-jsnes="true"]');
-      if (existingScript) {
-        console.log('JSNES script already loading');
-        existingScript.addEventListener('load', function() {
-          nes_load_url(PLAYER_ID + '-canvas', ROM_PATH);
+      // Initialize custom controls after emulator starts
+      function initializeCustomControls() {
+        // Get volume control reference
+        volumeControl = document.getElementById(UNIQUE_ID + '-volume');
+        if (volumeControl && window.EJS_emulator) {
+          volumeControl.addEventListener('input', function() {
+            const volume = this.value / 100;
+            if (window.EJS_emulator.setVolume) {
+              window.EJS_emulator.setVolume(volume);
+            }
+          });
+        }
+      }
+      
+      // Setup button handlers
+      function setupButtonHandlers() {
+        // Fullscreen button
+        const fullscreenBtn = document.getElementById(UNIQUE_ID + '-fullscreen-btn');
+        if (fullscreenBtn) {
+          fullscreenBtn.addEventListener('click', function() {
+            const container = document.getElementById(UNIQUE_ID + '-container');
+            if (container) {
+              if (container.requestFullscreen) {
+                container.requestFullscreen();
+              } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+              } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+              }
+            }
+          });
+        }
+        
+        // Save state button
+        const saveBtn = document.getElementById(UNIQUE_ID + '-save-btn');
+        if (saveBtn) {
+          saveBtn.addEventListener('click', function() {
+            if (window.EJS_emulator && window.EJS_emulator.saveState) {
+              window.EJS_emulator.saveState();
+            } else {
+              console.warn('Save state not available yet');
+            }
+          });
+        }
+        
+        // Load state button
+        const loadBtn = document.getElementById(UNIQUE_ID + '-load-btn');
+        if (loadBtn) {
+          loadBtn.addEventListener('click', function() {
+            if (window.EJS_emulator && window.EJS_emulator.loadState) {
+              window.EJS_emulator.loadState();
+            } else {
+              console.warn('Load state not available yet');
+            }
+          });
+        }
+        
+        // Reset button
+        const resetBtn = document.getElementById(UNIQUE_ID + '-reset-btn');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', function() {
+            if (window.EJS_emulator && window.EJS_emulator.reset) {
+              window.EJS_emulator.reset();
+              updateStatus('Reset', 'success');
+              setTimeout(() => updateStatus('Running', 'running'), 1000);
+            }
+          });
+        }
+      }
+      
+      // Setup game option handlers
+      function setupOptionHandlers() {
+        // Turbo mode toggle
+        const turboCheckbox = document.getElementById(UNIQUE_ID + '-turbo');
+        if (turboCheckbox) {
+          turboCheckbox.addEventListener('change', function() {
+            turboMode = this.checked;
+            if (window.EJS_emulator && window.EJS_emulator.setSpeed) {
+              window.EJS_emulator.setSpeed(turboMode ? 2.0 : 1.0);
+            }
+          });
+        }
+        
+        // CRT filter toggle
+        const crtCheckbox = document.getElementById(UNIQUE_ID + '-crt');
+        if (crtCheckbox) {
+          crtCheckbox.addEventListener('change', function() {
+            crtFilter = this.checked;
+            if (window.EJS_emulator && window.EJS_emulator.setShader) {
+              window.EJS_emulator.setShader(crtFilter ? 'crt' : 'none');
+            }
+          });
+        }
+      }
+      
+      // Check ROM format
+      function checkRomFormat() {
+        const validFormats = ['nes', 'fds', 'unif', 'unf'];
+        if (!validFormats.includes(FILE_EXT)) {
+          console.warn('Unusual file format for NES:', FILE_EXT);
+          // Still try to load it, EmulatorJS might support it
+          return true;
+        }
+        return true;
+      }
+      
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          if (!checkRomFormat()) {
+            showError('Warning: Unusual file format. Expected: .nes, .fds, .unif, .unf');
+          }
+          initializeEmulator();
         });
-        return;
+      } else {
+        if (!checkRomFormat()) {
+          showError('Warning: Unusual file format. Expected: .nes, .fds, .unif, .unf');
+        }
+        initializeEmulator();
       }
-      
-      // Load JSNES
-      console.log('Loading JSNES library...');
-      var script = document.createElement('script');
-      script.src = 'https://unpkg.com/jsnes/dist/jsnes.min.js';
-      script.setAttribute('data-jsnes', 'true');
-      script.onload = function() {
-        console.log('JSNES loaded successfully');
-        nes_load_url(PLAYER_ID + '-canvas', ROM_PATH);
-      };
-      script.onerror = function() {
-        showError('Failed to load JSNES library. Please check your internet connection.');
-      };
-      document.head.appendChild(script);
-    }
-    
-    // Cleanup
-    window.addEventListener('beforeunload', function() {
-      running = false;
-      if (audio_ctx) {
-        audio_ctx.close();
-      }
-    });
-    
-    // Start loading
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadJSNES);
-    } else {
-      loadJSNES();
-    }
-  })();
+    })();
   </script>
 </div>**  
     </article>
