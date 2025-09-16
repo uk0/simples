@@ -2,79 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NeoJ Blog</title>
+    <title>NeoJ's Web Page</title>
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="a.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-<body class="win95-bg">
+<body>
+<header>
+    <nav>
+        <table width="620" border="1" class="center">
+            <tbody>
+            <tr>
+                <td width="64" rowspan="2">
+                    <img src="avatar.png" width="64">
+                </td>
+                <td align="center" colspan="5">
+                    <font size="5"><b><font color="#008000">NeoJ</font>'s Web Page</b></font>
+                </td>
+                <td width="100" align="center" rowspan="2">
+                    Last Update:<br> {{.Now}}
+                </td>
+            </tr>
+            <tr>
+                <td align="center" width="82">
+                    <a href="./">Index</a>
+                </td>
+                <td class="active" align="center" width="82">
+                    <a href="./">Blog</a>
+                </td>
+                <td align="center" width="82">
+                    <a href="https://github.com/uk0">Projects</a>
+                </td>
+                <td align="center" width="82">
+                    <a href="https://github.com/uk0">GitHub</a>
+                </td>
+                <td align="center" width="82">
+                    <a href="about.html">About</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </nav>
+</header>
 
-<table class="outer" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-        <td align="center" valign="top">
-            <table class="frame" width="650" border="0" cellspacing="0" cellpadding="6">
-
-                <!-- Header: avatar + title + update time -->
-                <tr>
-                    <td class="avatar-cell" width="64" rowspan="2" align="center">
-                        <a href="index.html"><img class="avatar" src="avatar.png" width="48" height="48" alt="avatar"></a>
-                    </td>
-                    <td class="titlebar" align="center">
-                        <h2 class="title">NeoJ Blog</h2>
-                    </td>
-                    <td class="infobar" width="160" rowspan="2" align="center">
-                        <div class="infotitle">Last Update:</div>
-                        <div class="infovalue">{{ .Now }}</div>
-                    </td>
-                </tr>
-
-                <!-- Secondary navigation -->
-                <tr>
-                    <td class="nav" align="center">
-                        <a href="index.html">Index</a>
-                        <span class="sep">|</span>
-                        <a href="about.html">About</a>
-                        <span class="sep">|</span>
-                        <a href="https://github.com/uk0">GitHub</a>
-                    </td>
-                </tr>
-
-                <!-- Article list grouped by category -->
-                <tr>
-                    <td class="content" colspan="3">
-                        {{ range .Categories }}
-                        <div class="cat-header">
-                            <h3 id="{{ .Name }}" class="cat-title">{{ .Name }}</h3>
-                        </div>
-                        <table class="postlist" width="100%" border="1" cellpadding="5" cellspacing="0">
-                            {{ range .Posts }}
-                            <tr>
-                                <td width="70%">
-                                    <a href="{{ .File }}">{{ .Title }}</a>
-                                </td>
-                                <td width="30%" align="right" class="date">
-                                    {{ .Date.Format "2006-01-02" }}
-                                </td>
-                            </tr>
-                            {{ end }}
-                        </table>
-                        {{ end }}
-                    </td>
-                </tr>
-
-            </table>
-        </td>
-    </tr>
+{{ range .Categories }}
+{{ $year := "" }}
+{{ range .Posts }}
+{{ $postYear := .Date.Format "2006" }}
+{{ if ne $year $postYear }}
+{{ if ne $year "" }}
+</tbody>
 </table>
+{{ end }}
+{{ $year = $postYear }}
+<h4 class="text_center">{{.Category}}/{{ $year }} </h4>
+<table width="620" border="1" class="content center">
+    <tbody>
+    {{ end }}
+    <tr>
+        <td width="58">{{ .Date.Format "1/2/06" }}</td>
+        <td><a href="{{ .File }}">{{ .Title }} </a></td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}
 
-<footer class="footer">
-    Last generated: {{ .Now }}<br>
-    Content licensed under
-    <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">
-        CC BY 4.0
-    </a>
+<footer>
+    <div class="footer center text_center">
+        <p><font size="2">Website is best viewed in 800x600 or higher equivalent resolution.</font></p>
+        <hr>
+        <p><img src="CC-BY-SA.png" height="31">&nbsp;<img src="linuxnow.gif">&nbsp;<img src="anybrowser.gif"></p>
+        <p><font size="2">Copyright © 2015-2025 Jianxin Zhang. All rights reserved.<br>
+            Unless otherwise noted, content on this site is licensed under CC BY 4.0.</font></p>
+    </div>
 </footer>
-
 </body>
 </html>

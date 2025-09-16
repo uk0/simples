@@ -1,60 +1,9 @@
-/* 基本去掉下划线 */
-a {
-  text-decoration: none;
-  color: inherit;  /* 或者指定一个固定颜色，比如 color: #333; */
-}
-
-/* 确保各个状态都不改变 */
-a:link,
-a:visited,
-a:hover,
-a:active {
-  text-decoration: none;
-  color: inherit;  /* 和普通状态一样的颜色 */
-}
-
 /* =========================================================
-   IntelliJ IDEA Classic – light scheme (retro blog edition)
-   License: CC BY-4.0
+   复古博客样式 - Windows 95/98 + 经典网页风格
    ========================================================= */
-/* 限制文章主体不超过 650px（与表格保持一致） */
-.post-body{
-  max-width:650px;
-}
 
-/* 图片太宽时按比例缩小 */
-.post-body img{
-  max-width:100%;
-  height:auto;
-}
-
-/* 代码块太长时出现水平滚动条，而不是把表格撑破 */
-.post-body pre{
-  max-width:100%;
-  overflow-x:auto;   /* 鼠标/触屏横向滚动 */
-  white-space:pre;   /* 保留原有换行 */
-}
-
-/* 行内 code 遇到长单词/路径时自动断行，避免撑宽 */
-.post-body code{
-  word-break:break-all;
-}
-img { max-width: 650px; max-height: 650px; }
-video { max-width: 650px; max-height: 650px; }
-audio { max-width: 650px; max-height: 66px; }
-td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
-span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
-td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
-span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
-
-.post-category {
-  color: #666;
-  font-size: 0.9em;
-}
-
-/* Retro-ish Windows 95/98 vibe; keeps default table borders for that classic "engraved" look */
-
-:root{
+/* CSS 变量定义 */
+:root {
   --win95-bg: #c0c0c0;
   --panel: #dcdcdc;
   --panel2: #d0d0d0;
@@ -63,48 +12,122 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
   --light: #ffffff;
   --titlebar1: #1a4599;
   --titlebar2: #0b2f7a;
-  --titletext: #ffffff;
+  --titletext: #008000;
   --ink: #222;
-  --muted: #444;
+  --muted: #666;
+  --link-blue: #0000ee;
+  --link-purple: #551a8b;
+  --link-red: #ff0000;
 }
 
-html, body { height: 100%; margin: 0; }
+/* ========== 基础样式 ========== */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
-body.win95-bg{
+body {
+  background-image: url('/syslogo.png');
+  background-color: transparent;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--ink);
-  font-family: "Segoe UI", Tahoma, Verdana, "Helvetica Neue", Arial, sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
-  /* Use site background image for both index and post pages */
-  background-color: var(--win95-bg);
+  padding: 20px;
+}
+
+body.win95-bg {
+  background-color: transparent;
   background-image: url('syslogo.png');
   background-repeat: repeat;
   background-attachment: fixed;
-  background-size: auto;
+  font-family: "Segoe UI", Tahoma, Verdana, Arial, sans-serif;
+  font-size: 15px;
 }
 
-/* Outer container keeps your layout centered */
-table.outer { border-collapse: separate; }
+/* ========== 布局助手类 ========== */
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
 
-/* Main frame panel with classic 3D border */
-.frame{
+.text_center {
+  text-align: center;
+}
+
+/* ========== 表格样式 ========== */
+table {
+  background-color: transparent;
+}
+
+td {
+  padding: 4px 8px;
+  background-color: transparent;
+}
+
+/* 复古表格边框样式 */
+table[border="1"] {
+  border: 1px solid #c0c0c0;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+}
+
+table[border="1"] td {
+  border: 1px solid #c0c0c0;
+  border-left-color: #808080;
+  border-top-color: #808080;
+}
+
+/* Windows 95 风格表格 */
+table.outer {
+}
+
+.frame {
   background: var(--panel);
   border-width: 2px;
   border-style: solid;
-  border-color: var(--light) var(--dark) var(--dark) var(--light); /* TL light, BR dark */
+  border-color: var(--light) var(--dark) var(--dark) var(--light);
   box-shadow: 0 0 0 1px var(--mid) inset;
 }
 
-/* Title bar */
-.titlebar{
-  padding: 6px 10px;
-  background: linear-gradient(180deg, var(--titlebar1), var(--titlebar2));
-  border-width: 2px;
-  border-style: solid;
-  border-color: var(--dark) var(--light) var(--light) var(--dark); /* TL dark, BR light */
+/* ========== 导航栏样式 ========== */
+nav table {
+  margin-bottom: 20px;
 }
 
-.title{
+nav td {
+  background-color: transparent;
+}
+
+nav td.active {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+/* Windows 95 导航栏 */
+.nav {
+  background: var(--panel2);
+  padding: 8px 10px;
+  border-top: 1px solid var(--mid);
+  border-bottom: 1px solid var(--light);
+}
+
+.nav .sep {
+  color: #666;
+  padding: 0 6px;
+}
+
+/* ========== 标题栏样式 ========== */
+.titlebar {
+  padding: 6px 10px;
+  background: linear-gradient(62deg, #0b0c10, #adadad);
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--dark) var(--light) var(--light) var(--dark);
+}
+
+.title {
   margin: 4px 0;
   color: var(--titletext);
   font-weight: 700;
@@ -112,9 +135,19 @@ table.outer { border-collapse: separate; }
   text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
 }
 
-/* Avatar cell */
-.avatar-cell{ background: var(--panel2); }
-.avatar{
+/* ========== 头像样式 ========== */
+.avatar-cell {
+  background: var(--panel2);
+}
+
+.avatar {
+  height: 64px;
+  width: 64px;
+  border: 1px solid #c0c0c0;
+}
+
+/* Windows 95 风格头像 */
+body.win95-bg .avatar {
   height: 110px;
   width: 110px;
   image-rendering: pixelated;
@@ -123,8 +156,8 @@ table.outer { border-collapse: separate; }
   border-radius: 55px;
 }
 
-/* Info bar on the right with inset panel look */
-.infobar{
+/* ========== 信息栏样式 ========== */
+.infobar {
   background: var(--panel2);
   border-width: 2px;
   border-style: inset;
@@ -133,46 +166,67 @@ table.outer { border-collapse: separate; }
   font-size: 13px;
   color: var(--muted);
 }
-.infotitle{ font-weight: 700; margin-bottom: 4px; color: #333; }
-.infovalue{ font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace; }
 
-/* Navigation strip */
-.nav{
-  background: var(--panel2);
-  padding: 8px 10px;
-  border-top: 1px solid var(--mid);
-  border-bottom: 1px solid var(--light);
-}
-.nav a{
-  color: #0000ee; /* classic link blue */
-  text-decoration: none;
-  padding: 0 4px;
-}
-.nav a:visited{  text-decoration: none; color: #551a8b; } /* classic visited purple */
-.nav a:hover{  text-decoration: none; color: #ff0000; }    /* classic hover red */
-.sep{ color: #666; padding: 0 6px; }
-
-/* Divider */
-.hr-etched{
-  border: 0;
-  border-top: 1px solid #ccc;
-  height: 0;
+.infotitle {
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #333;
 }
 
-/* Content area */
-.content{
-  background: var(--panel);
+.infovalue {
+  font-family: ui-monospace, "Courier New", Consolas, monospace;
+}
+
+/* ========== 内容区域样式 ========== */
+.content {
+  margin-bottom: 10px;
+  background: transparent;
   padding: 8px 4px 18px;
 }
 
-/* Category header with a subtle etched line */
-.cat-header{
+.content td {
+  background-color: transparent;
+}
+
+.content td:first-child {
+  text-align: right;
+  font-family: monospace;
+  color: #666666;
+}
+
+/* ========== 文章列表样式 ========== */
+.postlist {
+  width: 100%;
+  background: var(--light);
+  font-size: 14px;
+}
+
+.postlist td {
+  background: #fbfbfb;
+}
+
+.postlist tr:nth-child(even) td {
+  background: #f3f3f3;
+}
+
+.postlist tr:hover td {
+  background: #e9f0ff;
+}
+
+.date {
+  font-family: ui-monospace, "Courier New", Consolas, monospace;
+  color: #333;
+}
+
+/* ========== 分类标题样式 ========== */
+.cat-header {
   margin: 16px 0 6px;
   background: linear-gradient(180deg, #efefef, #dbdbdb);
   border: 1px solid var(--mid);
   box-shadow: 0 0 0 1px var(--light) inset;
 }
-.cat-title{
+
+.cat-title {
   margin: 0;
   padding: 6px 8px;
   font-size: 16px;
@@ -180,156 +234,120 @@ table.outer { border-collapse: separate; }
   color: #1f1f1f;
 }
 
-/* Posts table:
-   DO NOT override table border styling to keep default "engraved" look.
-   We can style text, spacing, and hover without touching borders.
-*/
-.postlist{
-  width: 100%;
-  background: var(--light);
-  font-size: 14px;
-}
-.postlist td{
-  background: #fbfbfb;
-}
-.postlist tr:nth-child(even) td{
-  background: #f3f3f3;
-}
-.postlist tr:hover td{
-  background: #e9f0ff; /* gentle highlight */
-}
-.postlist a {
-  text-decoration: none;
-  color: inherit;  /* 或者指定一个固定颜色，比如 color: #333; */
-}
-.postlist a:visited{
-  text-decoration: none;
-  color: inherit;
-}
-.postlist a:hover{
-  text-decoration: none;
-  color: inherit;
+/* ========== 文章内容样式 ========== */
+.post-content {
+  padding: 20px;
 }
 
-.date{
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
-  color: #333;
-}
-
-/* Footer: fixed at bottom, minimal */
-.footer{
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  height: 60px; line-height: 18px;
-  text-align: center;
-  background: transparent;
-  font-size: 12px;
-  color: #222;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
-}
-.footer a{
-  color: #0000ee;
-  text-decoration: none;
-}
-
-/* Post body content */
-.post-body{
+.post-body {
+  max-width: 650px;
   background: #fff;
   padding: 10px 12px;
   border: 2px inset var(--panel);
 }
-.post-body img{
+
+.post-meta {
+  color: #666666;
+  font-size: 13px;
+  margin: 10px 0;
+}
+
+.post-category {
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* ========== 标题样式 ========== */
+h1 { font-size: 25px; }
+h2 { font-size: 22px; margin: 20px 0 10px 0; color: #333333; }
+h3 { font-size: 19px; }
+h4 { font-size: 17px; margin: 20px 0 10px 0; color: #333333; }
+h5 { font-size: 15px; }
+h6 { font-size: 13px; }
+
+/* ========== 链接样式 ========== */
+a {
+  color: var(--link-blue);
+  text-decoration: underline;
+}
+
+a:visited {
+  color: var(--link-purple);
+}
+
+a:hover {
+  color: var(--link-red);
+}
+
+/* 导航链接特殊样式 */
+.nav a, .postlist a {
+  text-decoration: none;
+}
+
+/* ========== 媒体内容样式 ========== */
+img, video {
+  max-width: 650px;
+  max-height: 650px;
+}
+
+audio {
+  max-width: 650px;
+  max-height: 66px;
+}
+
+.post-body img {
   max-width: 100%;
   height: auto;
   border: 2px inset var(--panel);
   background: #fff;
 }
-.post-body pre{
+
+article img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+}
+
+/* ========== 代码样式 ========== */
+pre {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  padding: 10px;
+  overflow-x: auto;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  max-width: 100%;
+  white-space: pre;
+}
+
+code {
+  background-color: #f4f4f4;
+  padding: 2px 4px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.post-body pre {
   background: #f4f4f4;
   border: 1px solid #ccc;
   padding: 8px;
-  overflow: auto;
 }
-.post-body code{
+
+.post-body code {
   background: #f4f4f4;
   padding: 0 3px;
   border: 1px solid #ddd;
 }
-.post-body blockquote{
-  margin: 8px 0;
-  padding: 6px 10px;
-  background: #f9f9f9;
-  border-left: 4px solid #bbb;
-}
 
-/* Small screens: keep layout readable without breaking retro tables */
-@media (max-width: 760px){
-  .frame { width: 96% !important; }
-  .infobar{ display: none; }
-  .date{ display: none; }
-  .title{ font-size: 18px; }
-}
-
-
-/* =========================================================
-           代码块样式 - 融入 Windows 95/98 复古风格
-           ========================================================= */
-
-/* 代码块容器 - 模拟 Win95 窗口 */
-.code-container {
-  margin: 16px 0;
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #ffffff #808080 #808080 #ffffff;
-  box-shadow: 1px 1px 0 #000000;
-}
-
-/* 代码块标题栏 - 模拟窗口标题栏 */
-.code-titlebar {
-  background: linear-gradient(90deg, #000080, #1084d0);
-  color: #ffffff;
-  padding: 2px 4px;
-  font-size: 11px;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.code-titlebar .language {
-  text-transform: uppercase;
-  font-family: "MS Sans Serif", Tahoma, sans-serif;
-}
-
-.code-titlebar .buttons {
-  display: flex;
-  gap: 2px;
-}
-
-.code-titlebar .btn {
-  width: 16px;
-  height: 14px;
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #ffffff #808080 #808080 #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  cursor: pointer;
-}
-
-
-
-/*higlines*/
-/* 代码块容器样式 */
+/* ========== 代码高亮样式 ========== */
 pre code.hljs {
   border: 2px inset #c0c0c0;
   background: #ffffff;
   font-family: "Courier New", monospace;
   font-size: 13px;
   padding: 8px;
-  padding-left: 10px !important; /* 为行号留出空间 */
+  padding-left: 10px !important;
   position: relative;
 }
 
@@ -337,11 +355,9 @@ pre code.hljs {
 .hljs-ln-numbers {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
-  -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-
   text-align: right;
   color: #999;
   border-right: 1px solid #ddd;
@@ -352,15 +368,12 @@ pre code.hljs {
   white-space: nowrap;
 }
 
-/* 代码内容 */
 .hljs-ln-code {
   padding-left: 5px !important;
   white-space: pre;
 }
 
-/* 行号表格 */
 table.hljs-ln {
-  border-collapse: collapse;
   margin: 0;
   padding: 0;
   border: none;
@@ -371,7 +384,94 @@ table.hljs-ln td {
   padding: 0;
 }
 
-/* 当前行高亮（可选） */
-.hljs-ln-line.hljs-ln-n:hover {
-  background-color: #f5f5f5;
+/* ========== 其他元素样式 ========== */
+blockquote {
+  border-left: 4px solid #ddd;
+  margin: 10px 0;
+  padding-left: 15px;
+  color: #666;
 }
+
+.post-body blockquote {
+  margin: 8px 0;
+  padding: 6px 10px;
+  background: #f9f9f9;
+  border-left: 4px solid #bbb;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #cccccc;
+  margin: 20px 0;
+}
+
+.hr-etched {
+  border: 0;
+  border-top: 1px solid #ccc;
+  height: 0;
+}
+
+/* ========== 页脚样式 ========== */
+.footer {
+  margin-top: 40px;
+  padding: 20px;
+}
+
+.footer hr {
+  width: 300px;
+  margin: 10px auto;
+}
+
+/* Windows 95 风格页脚 */
+body.win95-bg .footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60px;
+  line-height: 18px;
+  text-align: center;
+  background: transparent;
+  font-size: 12px;
+  color: #222;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 760px) {
+  .frame {
+    width: 96% !important;
+  }
+  .infobar {
+    display: none;
+  }
+  .date {
+    display: none;
+  }
+  .title {
+    font-size: 18px;
+  }
+}
+
+/* ========== 文章表格样式 ========== */
+article table,
+article th,
+article td {
+  border: 1px solid black;
+}
+
+
+div.page {
+  display: block;
+  width: 612px;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text_center {
+  text-align: center;
+}
+

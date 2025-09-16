@@ -2,58 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Nuitka for Python</title>
-    <link rel="icon" href="../favicon.ico">
-
-
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/routeros.min.css">
-
-    <link rel="stylesheet" href="../a.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nuitka for Python — NeoJ's Web Page</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/a.css">
+    <link rel="stylesheet" href="/pygments.css">
 </head>
+<body>
+<header>
+    <nav>
+        <table width="620" border="1" class="center">
+            <tbody>
+            <tr>
+                <td width="64" rowspan="2">
+                    <img src="/avatar.png" width="64">
+                </td>
+                <td align="center" colspan="5">
+                    <font size="5"><b><font color="#008000">NeoJ</font>'s Web Page</b></font>
+                </td>
+                <td width="100" align="center" rowspan="2">
+                    Last Update:<br>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" width="82">
+                    <a href="/">Index</a>
+                </td>
+                <td class="active" align="center" width="82">
+                    <a href="/">Blog</a>
+                </td>
+                <td align="center" width="82">
+                    <a href="https://github.com/uk0">Projects</a>
+                </td>
+                <td align="center" width="82">
+                    <a href="https://github.com/uk0">GitHub</a>
+                </td>
+                <td align="center" width="82">
+                    <a href="/about/">About</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </nav>
+</header>
 
-<body class="win95-bg">
+<div class="page center">
+    <h1 class="text_center">Nuitka for Python</h1>
 
-<table class="outer" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-        <td align="center" valign="top">
-            <table class="frame" width="650" border="0" cellspacing="0" cellpadding="6">
-                
-                <tr>
-                    <td class="avatar-cell" width="64" rowspan="2" align="center">
-                        <a href="../index.html">
-                            <img class="avatar" src="../avatar.png" width="48" height="48" alt="avatar">
-                        </a>
-                    </td>
-                    <td class="titlebar" align="center">
-                        <h2 class="title" style="margin:4px 0;">Nuitka for Python</h2>
-                        <div class="post-category">Category: blog</div>
-                    </td>
-                    <td class="infobar" width="160" rowspan="2" align="center">
-                        <a href="../index.html">Home</a>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td class="nav" align="center">
-                        <a href="../index.html">Index</a>
-                        <span class="sep">|</span>
-                        <a href="../about.html">About</a>
-                    </td>
-                </tr>
-
-                
-                <tr>
-                    <td colspan="3">
-                        <hr class="hr-etched">
-                    </td>
-                </tr>
-
-                
-                <tr>
-                    <td class="content" colspan="3">
-                        <div class="post-body"><h1><strong>Nuitka</strong> <strong>for</strong> <strong>Python</strong></h1>
+    <p class="meta text_center">
+        
+    </p>
+    <article>
+        <h1><strong>Nuitka</strong> <strong>for</strong> <strong>Python</strong></h1>
 <img src="0095/attachments/D51F0966.webp" alt="nuitka-banner.webp" loading="lazy" />  
 # Nuitka 实现原理与功能点（面向开发者）  
 <blockquote>
@@ -118,55 +117,18 @@
 <li>“Nuitka developer manual AST optimization code generation C11”</li>
 </ul>
 <p>Nuitka 的原理是一边做静态分析一边把 Python 代码转译成调用 CPython API（libpython）的 C 源码，连同它自带的运行时代码一起用本地 C 编译器编译成可执行文件/扩展模块，从而在保持与 CPython 语义兼容的前提下减少解释器循环开销、获得加速并便于打包，虽然没有混淆 但是 一般的菜鸡逆向也费劲 。</p>
+
+    </article>
 </div>
-                    </td>
-                </tr>
 
-                
-                <tr>
-                    <td colspan="3" align="right" style="font-size:small;">
-                        <a href="#">↑ Back to top</a>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-
-    
-    <tr>
-        <td align="center" valign="bottom" height="60">
-            <font size="-1">
-                <a href="../index.html">Back to Home</a>
-            </font>
-        </td>
-    </tr>
-</table>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/bash.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/shell.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/javascript.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/css.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
-<script>
-
-    if (document.readyState === "loading") {
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            hljs.highlightAll();
-            hljs.initLineNumbersOnLoad();
-        });
-    } else {
-        
-        hljs.highlightAll();
-        hljs.initLineNumbersOnLoad();
-    }
-
-
-</script>
+<footer>
+    <div class="footer center text_center">
+        <p><font size="2">Website is best viewed in 800x600 or higher equivalent resolution.</font></p>
+        <hr>
+        <p><img src="/CC-BY-SA.png" height="31">&nbsp;<img src="/linuxnow.gif">&nbsp;<img src="/anybrowser.gif"></p>
+        <p><font size="2">Copyright © 2015-2025 Jianxin Zhang. All rights reserved.<br>
+            Unless otherwise noted, content on this site is licensed under CC BY-SA 4.0.</font></p>
+    </div>
+</footer>
 </body>
 </html>
