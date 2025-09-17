@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Arksec 的日子 — NeoJ's Web Page</title>
+    <title>Arksec 的日子 — NeoJ's Web Page[建新的Blog]</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/a.css">
     <link rel="stylesheet" href="/pygments.css">
+    <meta name="keywords" content="Arksec 的日子 - 建新的Blog" />
+    <meta name="description" content="这是一个关于建新的个人网站的博客页面。" />
     <style>
         .password-modal {
             display: none;
@@ -95,7 +97,7 @@
                     <font size="5"><b><font color="#008000">NeoJ</font>'s Web Page</b></font>
                 </td>
                 <td width="100" align="center" rowspan="2">
-                    Last Update:<br>Sep. 17, 2025
+                    Last Update:<br>Sep. 18, 2025
                 </td>
             </tr>
             <tr>
@@ -124,19 +126,251 @@
     <h1 class="text_center">Arksec 的日子</h1>
 
     <p class="meta text_center">
-        2025-09-17
+        2025-09-18
     </p>
 
     <article id="article-content">
         <h1>Arksec 的日子</h1>
-<h3>思念</h3>
-<img src="0088/attachments/E75584C5.jpg" alt="team02.jpg" loading="lazy" />  
-<img src="0088/attachments/39844B21.jpg" alt="f1ad6e49b83d737b144eeb7d300f6308d76d925473e23447952cbf1afa97b5384b94f8f7074c3b9e.jpeg" loading="lazy" />  
 
+
+        
+        <div class="password-notice">
+            <p><strong>🔒 This content is password protected</strong></p>
+            <p>Enter the password to view the full article and attachments.</p>
+            <button class="password-submit" onclick="showPasswordModal()">Unlock Content</button>
+        </div>
         
     </article>
 </div>
 
+
+<div id="passwordModal" class="password-modal">
+    <div class="password-content">
+        <h3>🔐 Enter Password</h3>
+        <input type="password" id="passwordInput" class="password-input" placeholder="Password" onkeypress="if(event.key==='Enter')submitPassword()">
+        <br>
+        <button class="password-submit" id="submitBtn" onclick="submitPassword()">Submit</button>
+        <button class="password-submit" onclick="closePasswordModal()" style="background-color: #666;">Cancel</button>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+</div>
+
+<script>
+    const postPath = "blog\/0088";
+    let isSubmitting = false;
+
+    
+    window.addEventListener('load', function() {
+        checkAuthentication();
+    });
+
+    function checkAuthentication() {
+        const authCookie = getCookie('auth_' + hashString(postPath));
+        if (authCookie) {
+            const cached = sessionStorage.getItem('content_' + postPath);
+            if (cached) {
+                updateContent(cached);
+            }
+        }
+    }
+
+    function showPasswordModal() {
+        document.getElementById('passwordModal').style.display = 'block';
+        document.getElementById('passwordInput').focus();
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('errorMessage').textContent = '';
+        isSubmitting = false;
+    }
+
+    async function submitPassword() {
+        if (isSubmitting) return;
+
+        const password = document.getElementById('passwordInput').value;
+        const errorMsg = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (!password) {
+            errorMsg.textContent = 'Please enter a password';
+            return;
+        }
+
+        isSubmitting = true;
+        submitBtn.innerHTML = '<span class="loading"></span>';
+        errorMsg.textContent = '';
+
+        try {
+            const response = await fetch('/api/unlock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    path: postPath,
+                    password: password
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                updateContent(data.content);
+                
+                sessionStorage.setItem('content_' + postPath, data.content);
+                closePasswordModal();
+            } else if (response.status === 401) {
+                errorMsg.textContent = 'Invalid password. Please try again.';
+            } else {
+                errorMsg.textContent = 'An error occurred. Please try again.';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            errorMsg.textContent = 'Network error. Please try again.';
+        } finally {
+            isSubmitting = false;
+            submitBtn.textContent = 'Submit';
+        }
+    }
+
+    function updateContent(htmlContent) {
+        const container = document.getElementById('article-content');
+
+        
+        const temp = document.createElement('div');
+        temp.innerHTML = htmlContent;
+
+        
+        const scripts = [];
+        const scriptElements = temp.querySelectorAll('script');
+        scriptElements.forEach(script => {
+            scripts.push({
+                src: script.src,
+                text: script.textContent,
+                type: script.type || 'text/javascript',
+                async: script.async,
+                defer: script.defer
+            });
+            script.remove();
+        });
+
+        
+        container.innerHTML = temp.innerHTML;
+
+        
+        scripts.forEach((scriptInfo, index) => {
+            setTimeout(() => {
+                const newScript = document.createElement('script');
+                newScript.type = scriptInfo.type;
+
+                if (scriptInfo.src) {
+                    newScript.src = scriptInfo.src;
+                    newScript.async = scriptInfo.async;
+                    newScript.defer = scriptInfo.defer;
+                } else {
+                    
+                    try {
+                        
+                        const scriptFunction = new Function(scriptInfo.text);
+                        scriptFunction();
+                    } catch (e) {
+                        
+                        newScript.textContent = scriptInfo.text;
+                        container.appendChild(newScript);
+                    }
+                }
+
+                if (scriptInfo.src) {
+                    container.appendChild(newScript);
+                }
+            }, index * 100); 
+        });
+
+        
+        setTimeout(() => {
+            reinitializeElements(container);
+        }, scripts.length * 100 + 100);
+    }
+
+    function reinitializeElements(container) {
+        
+        const emulatorContainers = container.querySelectorAll('[id^="nes_"], [id^="gba_"], [id^="pbp_"], [id^="jar_"], [id^="sega_"]');
+        emulatorContainers.forEach(element => {
+            console.log('Found emulator container:', element.id);
+
+            
+            const buttons = element.querySelectorAll('button[onclick]');
+            buttons.forEach(button => {
+                const onclickAttr = button.getAttribute('onclick');
+                if (onclickAttr) {
+                    
+                    button.onclick = function() {
+                        try {
+                            eval(onclickAttr);
+                        } catch(e) {
+                            console.error('Error executing onclick:', e);
+                        }
+                    };
+                }
+            });
+        });
+
+        
+        const allButtons = container.querySelectorAll('button[onclick]');
+        allButtons.forEach(button => {
+            const onclickAttr = button.getAttribute('onclick');
+            if (onclickAttr && !button.onclick) {
+                button.onclick = function() {
+                    try {
+                        eval(onclickAttr);
+                    } catch(e) {
+                        console.error('Error executing onclick:', e);
+                    }
+                };
+            }
+        });
+
+        
+        window.dispatchEvent(new Event('contentUpdated'));
+
+        
+        if (typeof window.initEmulators === 'function') {
+            window.initEmulators();
+        }
+
+        
+        container.offsetHeight;
+    }
+
+    function getCookie(name) {
+        const value = '; ' + document.cookie;
+        const parts = value.split('; ' + name + '=');
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    function hashString(str) {
+        
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(16).substring(0, 16);
+    }
+
+    
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('passwordModal')) {
+            
+            
+        }
+    }
+</script>
 
 
 <footer>

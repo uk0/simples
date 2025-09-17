@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"flag"
 	"fmt"
@@ -33,6 +34,7 @@ var (
 	srcDir         string
 	outDir         string
 	addr           string
+	baseURL        string // Base URL for sitemap
 	attachmentsDir = "attachments"
 	postTpl        *template.Template
 	indexTpl       *template.Template
@@ -49,14 +51,60 @@ var (
 	rebuildingMu sync.Mutex
 )
 
+// Sitemap XML structures
+type urlset struct {
+	XMLName           xml.Name     `xml:"urlset"`
+	Xmlns             string       `xml:"xmlns,attr"`
+	XmlnsXsi          string       `xml:"xmlns:xsi,attr,omitempty"`
+	XsiSchemaLocation string       `xml:"xsi:schemaLocation,attr,omitempty"`
+	URLs              []sitemapURL `xml:"url"`
+}
+
+type sitemapURL struct {
+	Loc        string  `xml:"loc"`
+	LastMod    string  `xml:"lastmod,omitempty"`
+	ChangeFreq string  `xml:"changefreq,omitempty"`
+	Priority   float64 `xml:"priority,omitempty"`
+}
+
+// RSS Feed structures
+type rss struct {
+	XMLName xml.Name `xml:"rss"`
+	Version string   `xml:"version,attr"`
+	Channel channel  `xml:"channel"`
+}
+
+type channel struct {
+	Title       string    `xml:"title"`
+	Link        string    `xml:"link"`
+	Description string    `xml:"description"`
+	Language    string    `xml:"language"`
+	LastBuild   string    `xml:"lastBuildDate"`
+	Items       []rssItem `xml:"item"`
+}
+
+type rssItem struct {
+	Title       string `xml:"title"`
+	Link        string `xml:"link"`
+	Description string `xml:"description"`
+	PubDate     string `xml:"pubDate"`
+	GUID        string `xml:"guid"`
+	Category    string `xml:"category,omitempty"`
+}
+
 func init() {
 	flag.StringVar(&srcDir, "src", "./apple_notes_export", "Notes source directory")
 	flag.StringVar(&outDir, "out", "./public", "Output directory")
 	flag.StringVar(&addr, "addr", ":8080", "HTTP listen address")
+	flag.StringVar(&baseURL, "url", "https://firsh.me", "Base URL for sitemap (e.g., https://example.com)")
 }
 
 func main() {
 	flag.Parse()
+
+	// Clean up baseURL - remove trailing slash
+	baseURL = strings.TrimRight(baseURL, "/")
+
 	loadTemplates()
 	mdConv = goldmark.New(
 		goldmark.WithRendererOptions(
@@ -108,6 +156,7 @@ func main() {
 	})
 
 	log.Printf("serving %s at http://%s …", outDir, addr)
+	log.Printf("Site base URL: %s", baseURL)
 	log.Fatal(http.ListenAndServe(addr, mux))
 }
 
@@ -210,10 +259,12 @@ func loadTemplates() {
 }
 
 type post struct {
-	Category string
-	Title    string
-	File     string
-	Date     time.Time
+	Category    string
+	Title       string
+	File        string
+	Date        time.Time
+	IsProtected bool   // Track if post is password protected
+	Description string // For meta description
 }
 
 type categoryGroup struct {
@@ -290,6 +341,7 @@ func rebuildAll() error {
 				if protectedInfo != nil {
 					tempProtectedPosts[protectedInfo.path] = protectedInfo.passwordHash
 					tempFullContent[protectedInfo.path] = protectedInfo.fullContent
+					p.IsProtected = true
 				}
 
 				allPosts = append(allPosts, p)
@@ -299,6 +351,27 @@ func rebuildAll() error {
 
 	if err := buildIndex(allPosts); err != nil {
 		return err
+	}
+
+	// Generate sitemap.xml
+	if err := buildSitemap(allPosts); err != nil {
+		log.Printf("Warning: failed to build sitemap: %v", err)
+	} else {
+		log.Println("Generated sitemap.xml")
+	}
+
+	// Generate RSS feed
+	if err := buildRSSFeed(allPosts); err != nil {
+		log.Printf("Warning: failed to build RSS feed: %v", err)
+	} else {
+		log.Println("Generated rss.xml")
+	}
+
+	// Generate robots.txt
+	if err := buildRobotsTxt(); err != nil {
+		log.Printf("Warning: failed to build robots.txt: %v", err)
+	} else {
+		log.Println("Generated robots.txt")
 	}
 
 	// Atomically replace the protection maps
@@ -314,6 +387,222 @@ func rebuildAll() error {
 	}
 
 	return nil
+}
+
+// buildSitemap generates sitemap.xml for SEO
+func buildSitemap(posts []post) error {
+	sitemap := urlset{
+		Xmlns:             "http://www.sitemaps.org/schemas/sitemap/0.9",
+		XmlnsXsi:          "http://www.w3.org/2001/XMLSchema-instance",
+		XsiSchemaLocation: "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd",
+		URLs:              []sitemapURL{},
+	}
+
+	// Add home page
+	sitemap.URLs = append(sitemap.URLs, sitemapURL{
+		Loc:        baseURL + "/",
+		LastMod:    time.Now().Format("2006-01-02"),
+		ChangeFreq: "daily",
+		Priority:   1.0,
+	})
+
+	// Add all posts (except protected ones for better SEO)
+	for _, p := range posts {
+		if !p.IsProtected { // Only include public posts in sitemap
+			sitemap.URLs = append(sitemap.URLs, sitemapURL{
+				Loc:        baseURL + "/" + p.File,
+				LastMod:    p.Date.Format("2006-01-02"),
+				ChangeFreq: "weekly",
+				Priority:   0.8,
+			})
+		}
+	}
+
+	// Sort URLs by priority and then by location for consistent output
+	sort.Slice(sitemap.URLs, func(i, j int) bool {
+		if sitemap.URLs[i].Priority != sitemap.URLs[j].Priority {
+			return sitemap.URLs[i].Priority > sitemap.URLs[j].Priority
+		}
+		return sitemap.URLs[i].Loc < sitemap.URLs[j].Loc
+	})
+
+	// Marshal to XML
+	output, err := xml.MarshalIndent(sitemap, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal sitemap: %w", err)
+	}
+
+	// Add XML declaration
+	xmlContent := []byte(xml.Header + string(output))
+
+	// Write to file
+	sitemapPath := filepath.Join(outDir, "sitemap.xml")
+	if err := os.WriteFile(sitemapPath, xmlContent, 0644); err != nil {
+		return fmt.Errorf("failed to write sitemap: %w", err)
+	}
+
+	log.Printf("Sitemap generated with %d URLs (excluded %d protected posts)",
+		len(sitemap.URLs), countProtectedPosts(posts))
+	return nil
+}
+
+// buildRSSFeed generates RSS feed for subscribers
+func buildRSSFeed(posts []post) error {
+	feed := rss{
+		Version: "2.0",
+		Channel: channel{
+			Title:       "NeoJ's Web Page",
+			Link:        baseURL,
+			Description: "Personal blog and notes",
+			Language:    "en-US",
+			LastBuild:   time.Now().Format(time.RFC1123Z),
+			Items:       []rssItem{},
+		},
+	}
+
+	// Sort posts by date (newest first)
+	sortedPosts := make([]post, len(posts))
+	copy(sortedPosts, posts)
+	sort.Slice(sortedPosts, func(i, j int) bool {
+		return sortedPosts[i].Date.After(sortedPosts[j].Date)
+	})
+
+	// Add up to 20 most recent public posts to RSS
+	count := 0
+	for _, p := range sortedPosts {
+		if !p.IsProtected && count < 20 {
+			desc := p.Description
+			if desc == "" {
+				desc = fmt.Sprintf("Post from %s category", p.Category)
+			}
+
+			feed.Channel.Items = append(feed.Channel.Items, rssItem{
+				Title:       p.Title,
+				Link:        baseURL + "/" + p.File,
+				Description: desc,
+				PubDate:     p.Date.Format(time.RFC1123Z),
+				GUID:        baseURL + "/" + p.File,
+				Category:    p.Category,
+			})
+			count++
+		}
+	}
+
+	// Marshal to XML
+	output, err := xml.MarshalIndent(feed, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal RSS feed: %w", err)
+	}
+
+	// Add XML declaration
+	xmlContent := []byte(xml.Header + string(output))
+
+	// Write to file
+	rssPath := filepath.Join(outDir, "rss.xml")
+	if err := os.WriteFile(rssPath, xmlContent, 0644); err != nil {
+		return fmt.Errorf("failed to write RSS feed: %w", err)
+	}
+
+	log.Printf("RSS feed generated with %d items", len(feed.Channel.Items))
+	return nil
+}
+
+// buildRobotsTxt generates robots.txt for search engines
+func buildRobotsTxt() error {
+	robotsContent := fmt.Sprintf(`# Robots.txt for %s
+User-agent: *
+Disallow: /*api/
+Allow: /blog/*
+
+User-agent: Baiduspider
+Disallow: /api/*
+Allow: /blog/*
+
+User-agent: HaoSouSpider
+Disallow: /api/*
+Allow: /blog/*
+
+User-agent: Sogou web spider
+Disallow: /api/*
+Allow: /blog/*
+
+User-agent: Sogou inst spider
+Disallow: /api/*
+Allow: /blog/*
+
+User-agent: Sogou spider2
+Disallow: /api/*
+Allow: /blog/*
+
+# Sitemap
+Sitemap: %s/sitemap.xml
+
+# RSS Feed
+# RSS: %s/rss.xml
+`, baseURL, baseURL, baseURL)
+
+	robotsPath := filepath.Join(outDir, "robots.txt")
+	if err := os.WriteFile(robotsPath, []byte(robotsContent), 0644); err != nil {
+		return fmt.Errorf("failed to write robots.txt: %w", err)
+	}
+
+	return nil
+}
+
+// Helper function to count protected posts
+func countProtectedPosts(posts []post) int {
+	count := 0
+	for _, p := range posts {
+		if p.IsProtected {
+			count++
+		}
+	}
+	return count
+}
+
+// extractDescription extracts a description from markdown content
+func extractDescription(body string) string {
+	// Remove markdown formatting
+	desc := body
+
+	// Remove headers
+	desc = regexp.MustCompile(`(?m)^#+\s+.*$`).ReplaceAllString(desc, "")
+
+	// Remove links but keep link text
+	desc = regexp.MustCompile(`\[([^\]]+)\]\([^\)]+\)`).ReplaceAllString(desc, "$1")
+
+	// Remove images
+	desc = regexp.MustCompile(`!\[([^\]]*)\]\([^\)]+\)`).ReplaceAllString(desc, "")
+
+	// Remove bold/italic
+	desc = regexp.MustCompile(`\*+([^\*]+)\*+`).ReplaceAllString(desc, "$1")
+	desc = regexp.MustCompile(`_+([^_]+)_+`).ReplaceAllString(desc, "$1")
+
+	// Remove code blocks
+	desc = regexp.MustCompile("(?s)```[^`]*```").ReplaceAllString(desc, "")
+	desc = regexp.MustCompile("`([^`]+)`").ReplaceAllString(desc, "$1")
+
+	// Remove HTML tags
+	desc = regexp.MustCompile(`<[^>]+>`).ReplaceAllString(desc, "")
+
+	// Remove attachment tags
+	desc = regexp.MustCompile(`\[Attachment:[^\]]+\]`).ReplaceAllString(desc, "")
+
+	// Clean up whitespace
+	desc = strings.TrimSpace(desc)
+	desc = regexp.MustCompile(`\s+`).ReplaceAllString(desc, " ")
+
+	// Truncate to 160 characters for SEO
+	if len(desc) > 160 {
+		// Try to cut at word boundary
+		if idx := strings.LastIndex(desc[:157], " "); idx > 100 {
+			desc = desc[:idx] + "..."
+		} else {
+			desc = desc[:157] + "..."
+		}
+	}
+
+	return desc
 }
 
 // Structure to hold protection info during build
@@ -377,6 +666,9 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 	if isProtected {
 		processBody = truncatedBody
 	}
+
+	// Extract description for SEO
+	description := extractDescription(processBody)
 
 	// Transform attachments
 	if meta.Attachments != nil && len(meta.Attachments) > 0 {
@@ -443,6 +735,8 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 		"Date":        modTime,
 		"IsProtected": isProtected,
 		"PostPath":    postPath,
+		"Description": description,
+		"BaseURL":     baseURL,
 	}
 
 	if err := postTpl.Execute(f, templateData); err != nil {
@@ -471,10 +765,12 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 	}
 
 	return post{
-		Category: category,
-		Title:    title,
-		File:     filepath.ToSlash(filepath.Join(category, htmlName)),
-		Date:     modTime,
+		Category:    category,
+		Title:       title,
+		File:        filepath.ToSlash(filepath.Join(category, htmlName)),
+		Date:        modTime,
+		IsProtected: isProtected,
+		Description: description,
 	}, protInfo, nil
 }
 
@@ -976,7 +1272,11 @@ func computeExpectedOutputs(outAbs string) (map[string]struct{}, error) {
 
 	add := func(p string) { expected[filepath.Clean(p)] = struct{}{} }
 
+	// Core files
 	add(filepath.Join(outAbs, "index.html"))
+	add(filepath.Join(outAbs, "sitemap.xml"))
+	add(filepath.Join(outAbs, "rss.xml"))
+	add(filepath.Join(outAbs, "robots.txt"))
 
 	baseDir := filepath.Join("tpl", "base")
 	if fi, err := os.Stat(baseDir); err == nil && fi.IsDir() {
