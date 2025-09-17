@@ -5,8 +5,13 @@
 
 ![img.png](img.png)
 
+* index page
 
 ![img_2.png](img_2.png)
+
+* password protected
+
+![img_3.png](img_3.png)
 
 * PyQt6 GUI
 

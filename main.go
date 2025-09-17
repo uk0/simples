@@ -3,6 +3,9 @@ package main
 import (
 	"bytes"
 	"crypto/md5"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -18,6 +21,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -29,10 +33,20 @@ var (
 	srcDir         string
 	outDir         string
 	addr           string
-	attachmentsDir = "attachments" // attachments folder inside each note dir
+	attachmentsDir = "attachments"
 	postTpl        *template.Template
 	indexTpl       *template.Template
 	mdConv         goldmark.Markdown
+
+	// Password protection - use temporary maps during rebuild
+	protectedMu    sync.RWMutex
+	protectedPosts = make(map[string]string) // path -> password hash
+	fullContent    = make(map[string]string) // path -> full HTML content
+	passRe         = regexp.MustCompile(`(?i)\[PASS:\s*([^\]]+)\]`)
+
+	// Flag to indicate rebuild is in progress
+	rebuilding   bool
+	rebuildingMu sync.Mutex
 )
 
 func init() {
@@ -44,7 +58,6 @@ func init() {
 func main() {
 	flag.Parse()
 	loadTemplates()
-	// Allow raw HTML in markdown so that we can inject HTML tags for attachments.
 	mdConv = goldmark.New(
 		goldmark.WithRendererOptions(
 			ghtml.WithUnsafe(),
@@ -58,9 +71,130 @@ func main() {
 
 	go watch()
 
+	// Setup HTTP handlers
+	mux := http.NewServeMux()
+
+	// API endpoint for password verification
+	mux.HandleFunc("/api/unlock", handleUnlock)
+
+	// Protected content handler
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+
+		// Check if this is an attachment request for a protected post
+		if strings.Contains(path, "/attachments/") {
+			parts := strings.Split(strings.Trim(path, "/"), "/")
+			if len(parts) >= 3 {
+				// Reconstruct post path (e.g., "category/slug")
+				postPath := parts[0] + "/" + strings.TrimSuffix(parts[1], ".html")
+
+				protectedMu.RLock()
+				_, isProtected := protectedPosts[postPath]
+				protectedMu.RUnlock()
+
+				if isProtected {
+					// Check session cookie for authorization
+					cookie, err := r.Cookie("auth_" + hashString(postPath))
+					if err != nil || !verifyAuthCookie(postPath, cookie.Value) {
+						http.Error(w, "Unauthorized - Please unlock the post first", http.StatusUnauthorized)
+						return
+					}
+				}
+			}
+		}
+
+		// Serve static files
+		http.FileServer(http.Dir(outDir)).ServeHTTP(w, r)
+	})
+
 	log.Printf("serving %s at http://%s …", outDir, addr)
-	http.Handle("/", http.FileServer(http.Dir(outDir)))
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Fatal(http.ListenAndServe(addr, mux))
+}
+
+func handleUnlock(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Path     string `json:"path"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	// Clean the path
+	req.Path = strings.Trim(req.Path, "/")
+
+	// Wait for any ongoing rebuild to complete
+	rebuildingMu.Lock()
+	isRebuilding := rebuilding
+	rebuildingMu.Unlock()
+
+	if isRebuilding {
+		// Wait a bit for rebuild to complete
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	// Verify password
+	protectedMu.RLock()
+	expectedHash, ok := protectedPosts[req.Path]
+	content, hasContent := fullContent[req.Path]
+	protectedMu.RUnlock()
+
+	if !ok {
+		log.Printf("Post %s not found in protected posts. Available posts: %v", req.Path, getProtectedPaths())
+		http.Error(w, "Post not protected", http.StatusBadRequest)
+		return
+	}
+
+	if hashPassword(req.Password) != expectedHash {
+		http.Error(w, "Invalid password", http.StatusUnauthorized)
+		return
+	}
+
+	if !hasContent {
+		log.Printf("Content not found for protected post: %s", req.Path)
+		http.Error(w, "Content not found", http.StatusInternalServerError)
+		return
+	}
+
+	// Generate auth token
+	authToken := generateAuthToken(req.Path, req.Password)
+
+	// Set cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_" + hashString(req.Path),
+		Value:    authToken,
+		Path:     "/",
+		MaxAge:   86400, // 24 hours
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Secure:   false, // Set to true if using HTTPS
+	})
+
+	// Return full content
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"content": content,
+		"status":  "success",
+	})
+}
+
+// Helper function to get list of protected paths for debugging
+func getProtectedPaths() []string {
+	protectedMu.RLock()
+	defer protectedMu.RUnlock()
+
+	paths := make([]string, 0, len(protectedPosts))
+	for path := range protectedPosts {
+		paths = append(paths, path)
+	}
+	return paths
 }
 
 func loadTemplates() {
@@ -88,24 +222,35 @@ type categoryGroup struct {
 }
 
 func rebuildAll() error {
-	// Create output directory if it doesn't exist
+	// Set rebuilding flag
+	rebuildingMu.Lock()
+	rebuilding = true
+	rebuildingMu.Unlock()
+
+	defer func() {
+		rebuildingMu.Lock()
+		rebuilding = false
+		rebuildingMu.Unlock()
+	}()
+
+	// Use temporary maps during rebuild
+	tempProtectedPosts := make(map[string]string)
+	tempFullContent := make(map[string]string)
+
 	if err := os.MkdirAll(outDir, 0755); err != nil {
 		return err
 	}
 
-	// Copy base assets (tpl/base -> public)
 	if err := copyBaseAssets(); err != nil {
 		return err
 	}
 
-	// Copy any top-level assets from src root (css, images, favicon, etc.)
 	if err := copyTopLevelAssets(); err != nil {
 		return err
 	}
 
 	var allPosts []post
 
-	// Only scan first-level directories as categories
 	cats, err := os.ReadDir(srcDir)
 	if err != nil {
 		return err
@@ -118,12 +263,10 @@ func rebuildAll() error {
 		catName := ce.Name()
 		catPath := filepath.Join(srcDir, catName)
 
-		// Create category directory in output
 		if err := os.MkdirAll(filepath.Join(outDir, catName), 0755); err != nil {
 			return err
 		}
 
-		// Scan each subdir under category for a note.md
 		entries, err := os.ReadDir(catPath)
 		if err != nil {
 			log.Printf("Failed to read category dir %s: %v", catPath, err)
@@ -137,22 +280,35 @@ func rebuildAll() error {
 			postDir := filepath.Join(catPath, pe.Name())
 			noteFile := filepath.Join(postDir, "note.md")
 			if fi, err := os.Stat(noteFile); err == nil && !fi.IsDir() {
-				p, err := buildPage(noteFile, catName)
+				p, protectedInfo, err := buildPageWithProtection(noteFile, catName)
 				if err != nil {
 					log.Printf("Failed to build page from %s: %v", noteFile, err)
 					continue
 				}
+
+				// Store protection info in temporary maps
+				if protectedInfo != nil {
+					tempProtectedPosts[protectedInfo.path] = protectedInfo.passwordHash
+					tempFullContent[protectedInfo.path] = protectedInfo.fullContent
+				}
+
 				allPosts = append(allPosts, p)
 			}
 		}
 	}
 
-	// Build index after all pages
 	if err := buildIndex(allPosts); err != nil {
 		return err
 	}
 
-	// After rebuild, prune outDir to keep it in sync with srcDir + tpl/base
+	// Atomically replace the protection maps
+	protectedMu.Lock()
+	protectedPosts = tempProtectedPosts
+	fullContent = tempFullContent
+	protectedMu.Unlock()
+
+	log.Printf("Rebuild complete. Protected posts: %v", getProtectedPaths())
+
 	if err := pruneOutToMatchSource(); err != nil {
 		log.Printf("Warning: prune failed: %v", err)
 	}
@@ -160,11 +316,18 @@ func rebuildAll() error {
 	return nil
 }
 
-func buildPage(noteMDPath, category string) (post, error) {
+// Structure to hold protection info during build
+type protectionInfo struct {
+	path         string
+	passwordHash string
+	fullContent  string
+}
+
+func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo, error) {
 	postDir := filepath.Dir(noteMDPath)
 	slug := filepath.Base(postDir)
 
-	// 1) Load meta.txt (optional but recommended)
+	// Load meta.txt
 	metaPath := filepath.Join(postDir, "meta.txt")
 	var meta NoteMeta
 	var metaErr error
@@ -177,41 +340,90 @@ func buildPage(noteMDPath, category string) (post, error) {
 		log.Printf("Warning: meta.txt not found in %s, attachments won't be auto-transformed", postDir)
 	}
 
-	// 2) Read note.md as markdown source
+	// Read note.md
 	bodyBytes, err := os.ReadFile(noteMDPath)
 	if err != nil {
-		return post{}, err
+		return post{}, nil, err
 	}
 	body := string(bodyBytes)
 
-	// 3) Transform [Attachment: ID] placeholders based on meta
+	// Check for password protection
+	postPath := category + "/" + slug
+	var protInfo *protectionInfo
+	var isProtected bool
+	var truncatedBody string
+
+	if matches := passRe.FindStringSubmatch(body); len(matches) == 2 {
+		isProtected = true
+		password := strings.TrimSpace(matches[1])
+
+		// Find the position of [PASS: xxx] and truncate
+		loc := passRe.FindStringIndex(body)
+		if loc != nil {
+			truncatedBody = body[:loc[0]]
+		}
+
+		log.Printf("Post %s is password protected", postPath)
+
+		// Create protection info
+		protInfo = &protectionInfo{
+			path:         postPath,
+			passwordHash: hashPassword(password),
+		}
+	}
+
+	// Process the appropriate body
+	processBody := body
+	if isProtected {
+		processBody = truncatedBody
+	}
+
+	// Transform attachments
 	if meta.Attachments != nil && len(meta.Attachments) > 0 {
-		body = transformAttachmentTagsByMeta(body, slug, meta)
+		processBody = transformAttachmentTagsByMeta(processBody, slug, meta)
 	}
 
-	// 4) Convert markdown to HTML
+	// Convert to HTML
 	var buf bytes.Buffer
-	if err := mdConv.Convert([]byte(body), &buf); err != nil {
-		return post{}, err
+	if err := mdConv.Convert([]byte(processBody), &buf); err != nil {
+		return post{}, nil, err
 	}
 
-	// 5) Prepare output path: outDir/<category>/<slug>.html
+	// If protected, generate and store full content
+	if isProtected && protInfo != nil {
+		// Process full body with attachments
+		fullBody := body
+		// Remove the [PASS: xxx] tag from full content
+		fullBody = passRe.ReplaceAllString(fullBody, "")
+
+		if meta.Attachments != nil && len(meta.Attachments) > 0 {
+			fullBody = transformAttachmentTagsByMeta(fullBody, slug, meta)
+		}
+
+		var fullBuf bytes.Buffer
+		if err := mdConv.Convert([]byte(fullBody), &fullBuf); err != nil {
+			return post{}, nil, err
+		}
+
+		protInfo.fullContent = fullBuf.String()
+	}
+
+	// Prepare output
 	dirOut := filepath.Join(outDir, category)
 	if err := os.MkdirAll(dirOut, 0755); err != nil {
-		return post{}, err
+		return post{}, nil, err
 	}
 	htmlName := slug + ".html"
 	outFile := filepath.Join(dirOut, htmlName)
 
 	f, err := os.Create(outFile)
 	if err != nil {
-		return post{}, err
+		return post{}, nil, err
 	}
 	defer f.Close()
 
 	title := meta.Title
 	if strings.TrimSpace(title) == "" {
-		// fallback to first heading line from markdown, if any
 		if t := extractFirstHeading(body); t != "" {
 			title = t
 		} else {
@@ -219,15 +431,25 @@ func buildPage(noteMDPath, category string) (post, error) {
 		}
 	}
 
-	if err := postTpl.Execute(f, map[string]any{
-		"Title":    title,
-		"Body":     template.HTML(buf.String()),
-		"Category": category,
-	}); err != nil {
-		return post{}, err
+	// Get file modification time
+	st, _ := os.Stat(noteMDPath)
+	modTime := st.ModTime()
+
+	// Prepare template data
+	templateData := map[string]interface{}{
+		"Title":       title,
+		"Body":        template.HTML(buf.String()),
+		"Category":    category,
+		"Date":        modTime,
+		"IsProtected": isProtected,
+		"PostPath":    postPath,
 	}
 
-	// 6) Copy attachments folder if it exists
+	if err := postTpl.Execute(f, templateData); err != nil {
+		return post{}, nil, err
+	}
+
+	// Copy attachments
 	srcAttach := filepath.Join(postDir, attachmentsDir)
 	if fi, err := os.Stat(srcAttach); err == nil && fi.IsDir() {
 		dstAttach := filepath.Join(outDir, category, slug, attachmentsDir)
@@ -248,45 +470,74 @@ func buildPage(noteMDPath, category string) (post, error) {
 		}
 	}
 
-	// 7) Use note.md modification time as date
-	st, _ := os.Stat(noteMDPath)
 	return post{
 		Category: category,
 		Title:    title,
 		File:     filepath.ToSlash(filepath.Join(category, htmlName)),
-		Date:     st.ModTime(),
-	}, nil
+		Date:     modTime,
+	}, protInfo, nil
+}
+
+// Keep original buildPage for compatibility but redirect to new function
+func buildPage(noteMDPath, category string) (post, error) {
+	p, _, err := buildPageWithProtection(noteMDPath, category)
+	return p, err
 }
 
 func buildIndex(posts []post) error {
-	// Group by category
 	groups := map[string][]post{}
 	for _, p := range posts {
 		groups[p.Category] = append(groups[p.Category], p)
 	}
 
-	// Prepare sorted categories
 	var cats []categoryGroup
 	for cat, ps := range groups {
-		// Sort posts in each category by date desc
 		sort.Slice(ps, func(i, j int) bool { return ps[i].Date.After(ps[j].Date) })
 		cats = append(cats, categoryGroup{Name: cat, Posts: ps})
 	}
 
-	// Sort categories by name
 	sort.Slice(cats, func(i, j int) bool { return cats[i].Name < cats[j].Name })
 
-	// Render index.html
 	f, err := os.Create(filepath.Join(outDir, "index.html"))
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	return indexTpl.Execute(f, map[string]any{
+	return indexTpl.Execute(f, map[string]interface{}{
 		"Categories": cats,
 		"Now":        time.Now().Format("2006-01-02 15:04"),
 	})
+}
+
+// Password helper functions
+func hashPassword(password string) string {
+	hash := sha256.Sum256([]byte(password))
+	return hex.EncodeToString(hash[:])
+}
+
+func hashString(s string) string {
+	hash := md5.Sum([]byte(s))
+	return hex.EncodeToString(hash[:])[:16]
+}
+
+func generateAuthToken(path, password string) string {
+	combined := path + ":" + password + ":" + time.Now().Format("2006-01-02")
+	hash := sha256.Sum256([]byte(combined))
+	return hex.EncodeToString(hash[:])
+}
+
+func verifyAuthCookie(path, token string) bool {
+	protectedMu.RLock()
+	_, ok := protectedPosts[path]
+	protectedMu.RUnlock()
+
+	if !ok {
+		return false
+	}
+
+	// Basic verification - check token format
+	return len(token) == 64 // SHA256 hex string length
 }
 
 // copyBaseAssets copies everything inside tpl/base into the public root directory.
@@ -294,7 +545,6 @@ func copyBaseAssets() error {
 	baseDir := filepath.Join("tpl", "base")
 	fi, err := os.Stat(baseDir)
 	if err != nil {
-		// If base dir doesn't exist, nothing to copy.
 		if os.IsNotExist(err) {
 			return nil
 		}
@@ -326,12 +576,10 @@ func copyTopLevelAssets() error {
 			return err
 		}
 
-		// Only copy top-level files, not files in subdirectories
 		if filepath.Dir(path) != srcDir {
 			return nil
 		}
 
-		// Skip note files
 		if strings.HasSuffix(strings.ToLower(d.Name()), ".txt") || strings.HasSuffix(strings.ToLower(d.Name()), ".md") {
 			return nil
 		}
@@ -342,7 +590,6 @@ func copyTopLevelAssets() error {
 }
 
 func copyFile(src, dest string) error {
-	// Ensure the destination directory exists
 	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
 		return err
 	}
@@ -384,10 +631,31 @@ func watch() {
 		})
 	}
 
-	// Watch source notes and templates so that base assets changes also trigger rebuild
 	addTree(srcDir)
 	if _, err := os.Stat("tpl"); err == nil {
 		addTree("tpl")
+	}
+
+	// Debounce mechanism to avoid multiple rebuilds
+	var debounceTimer *time.Timer
+	var debounceMu sync.Mutex
+
+	triggerRebuild := func() {
+		debounceMu.Lock()
+		defer debounceMu.Unlock()
+
+		if debounceTimer != nil {
+			debounceTimer.Stop()
+		}
+
+		debounceTimer = time.AfterFunc(500*time.Millisecond, func() {
+			log.Printf("Triggering rebuild...")
+			if err := rebuildAll(); err != nil {
+				log.Printf("Rebuild error: %v", err)
+			} else {
+				log.Printf("Rebuild successful")
+			}
+		})
 	}
 
 	for {
@@ -408,11 +676,7 @@ func watch() {
 			if ev.Has(fsnotify.Write) || ev.Has(fsnotify.Create) ||
 				ev.Has(fsnotify.Remove) || ev.Has(fsnotify.Rename) {
 				log.Printf("Change detected: %s", ev)
-				if err := rebuildAll(); err != nil {
-					log.Printf("Rebuild error: %v", err)
-				} else {
-					log.Printf("Rebuild successful")
-				}
+				triggerRebuild()
 			}
 
 		case err, ok := <-w.Errors:
@@ -424,8 +688,7 @@ func watch() {
 	}
 }
 
-// ================= Attachment transform based on meta.txt =================
-
+// Attachment transform based on meta.txt
 var attachmentRefRe = regexp.MustCompile(`\[Attachment:\s*([A-Za-z0-9_-]+)\]`)
 
 func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
@@ -437,12 +700,8 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 		id := m[1]
 		att, ok := meta.Attachments[id]
 		if !ok {
-			// No mapping found, keep original text
 			return match
 		}
-		// att.Path is relative to note dir (e.g., "attachments/111680A9.jpg")
-		// HTML page lives at: out/<category>/<slug>.html
-		// Copied file lives at: out/<category>/<slug>/attachments/...
 		rel := filepath.ToSlash(filepath.Join(slug, att.Path))
 		ext := strings.ToLower(filepath.Ext(att.Path))
 		ext_v2 := strings.ToLower(filepath.Ext(att.OriginalFilename))
@@ -457,7 +716,6 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 			}
 			return `<img src="` + rel + `" alt="` + htmlEscapeAttr(alt) + `" loading="lazy" />`
 		case ".pdf":
-			// Prefer an embed with a fallback link
 			return `<object data="` + rel + `" type="application/pdf" width="100%" height="800">
   <a href="` + rel + `" target="_blank" rel="noopener">Open PDF</a>
 </object>`
@@ -471,7 +729,6 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
   <source src="` + rel + `" type="audio/` + strings.TrimPrefix(ext_v2, ".") + `">
   <a href="` + rel + `">Download audio</a>
 </audio>`
-
 		case ".nes":
 			uniqueID := fmt.Sprintf("nes_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
@@ -480,7 +737,6 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 			}
 			log.Println("Embedding NES player for", name, "with ID", uniqueID)
 			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
-
 		case ".pbp", ".chd", ".7z":
 			uniqueID := fmt.Sprintf("pbp_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
@@ -504,8 +760,7 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 				name = filepath.Base(att.Path)
 			}
 			log.Println("Embedding Jar player for", name, "with ID", uniqueID)
-			html := parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
-			return html
+			return parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
 		case ".md", ".smd", ".gen", ".bin", ".sms", ".gg", ".32x", ".cue", ".iso":
 			uniqueID := fmt.Sprintf("sega_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
@@ -513,8 +768,7 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 				name = filepath.Base(att.Path)
 			}
 			log.Println("EmbeddingJS Sega player for", name, "with ID", uniqueID)
-			html := parser.GenerateSegaMDPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
-			return html
+			return parser.GenerateSegaMDPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
 		default:
 			name := att.OriginalFilename
 			if name == "" {
@@ -529,7 +783,6 @@ func extractFirstHeading(md string) string {
 	for _, line := range strings.Split(md, "\n") {
 		l := strings.TrimSpace(line)
 		if strings.HasPrefix(l, "#") {
-			// strip leading # and spaces
 			return strings.TrimSpace(strings.TrimLeft(l, "#"))
 		}
 	}
@@ -537,7 +790,6 @@ func extractFirstHeading(md string) string {
 }
 
 func htmlEscapeAttr(s string) string {
-	// Minimal escaping for attributes
 	s = strings.ReplaceAll(s, `"`, "&quot;")
 	s = strings.ReplaceAll(s, "<", "&lt;")
 	s = strings.ReplaceAll(s, ">", "&gt;")
@@ -551,15 +803,13 @@ func htmlEscape(s string) string {
 	return s
 }
 
-// ===================== meta.txt parser =====================
-
 // NoteMeta reflects the meta.txt content with attachment details.
 type NoteMeta struct {
 	NoteID              int
 	Title               string
 	Folder              string
 	AttachmentsDeclared *int
-	Attachments         map[string]AttachmentMeta // keyed by ID
+	Attachments         map[string]AttachmentMeta
 }
 
 type AttachmentMeta struct {
@@ -596,7 +846,6 @@ func ParseMeta(text string) (NoteMeta, error) {
 
 	t := normalizeNewlines(text)
 
-	// Required header fields
 	if id, err := findInt(reNoteID, t); err == nil {
 		m.NoteID = id
 	} else {
@@ -613,14 +862,12 @@ func ParseMeta(text string) (NoteMeta, error) {
 		return m, errors.New("meta missing Folder")
 	}
 
-	// Optional attachment count
 	if ms := reAttachCount.FindStringSubmatch(t); len(ms) == 2 {
 		if v, err := strconv.Atoi(ms[1]); err == nil {
 			m.AttachmentsDeclared = &v
 		}
 	}
 
-	// Extract attachment section
 	attachSec := extractAttachmentSection(t)
 	if strings.TrimSpace(attachSec) == "" {
 		return m, nil
@@ -634,7 +881,6 @@ func ParseMeta(text string) (NoteMeta, error) {
 			if cur.ID != "" {
 				m.Attachments[cur.ID] = *cur
 			} else if cur.SavedAs != "" {
-				// fallback key if ID missing
 				key := strings.TrimSuffix(cur.SavedAs, filepath.Ext(cur.SavedAs))
 				m.Attachments[key] = *cur
 			}
@@ -705,7 +951,6 @@ func findInt(re *regexp.Regexp, s string) (int, error) {
 }
 
 func extractAttachmentSection(s string) string {
-	// Find the "Attachment Details:" sentinel in a tolerant way
 	i := strings.Index(s, "Attachment Details:")
 	if i == -1 {
 		return ""
@@ -713,10 +958,7 @@ func extractAttachmentSection(s string) string {
 	return s[i:]
 }
 
-// ===================== pruning (sync public to src) =====================
-
-// pruneOutToMatchSource scans srcDir and tpl/base to compute all expected outputs,
-// then removes any files/empty directories under outDir that are not expected.
+// Pruning functions
 func pruneOutToMatchSource() error {
 	outAbs, err := filepath.Abs(outDir)
 	if err != nil {
@@ -734,10 +976,8 @@ func computeExpectedOutputs(outAbs string) (map[string]struct{}, error) {
 
 	add := func(p string) { expected[filepath.Clean(p)] = struct{}{} }
 
-	// index.html
 	add(filepath.Join(outAbs, "index.html"))
 
-	// tpl/base files copied to public root
 	baseDir := filepath.Join("tpl", "base")
 	if fi, err := os.Stat(baseDir); err == nil && fi.IsDir() {
 		filepath.WalkDir(baseDir, func(path string, d fs.DirEntry, err error) error {
@@ -753,7 +993,6 @@ func computeExpectedOutputs(outAbs string) (map[string]struct{}, error) {
 		})
 	}
 
-	// top-level assets from srcDir root (non .md/.txt)
 	entries, err := os.ReadDir(srcDir)
 	if err != nil {
 		return nil, err
@@ -770,7 +1009,6 @@ func computeExpectedOutputs(outAbs string) (map[string]struct{}, error) {
 		add(filepath.Join(outAbs, name))
 	}
 
-	// posts: out/<cat>/<slug>.html and attachments
 	for _, ce := range entries {
 		if !ce.IsDir() {
 			continue
@@ -785,9 +1023,7 @@ func computeExpectedOutputs(outAbs string) (map[string]struct{}, error) {
 			noteDir := filepath.Join(catPath, pe.Name())
 			noteMD := filepath.Join(noteDir, "note.md")
 			if stat, err := os.Stat(noteMD); err == nil && !stat.IsDir() {
-				// expected page
 				add(filepath.Join(outAbs, cat, pe.Name()+".html"))
-				// expected attachments
 				srcAttach := filepath.Join(noteDir, attachmentsDir)
 				if fi, err := os.Stat(srcAttach); err == nil && fi.IsDir() {
 					filepath.WalkDir(srcAttach, func(p string, d fs.DirEntry, err error) error {
@@ -805,8 +1041,6 @@ func computeExpectedOutputs(outAbs string) (map[string]struct{}, error) {
 	return expected, nil
 }
 
-// pruneDirRecursive removes files not in expected and deletes empty directories.
-// root must be the absolute outDir. dir is the current directory being pruned.
 func pruneDirRecursive(root, dir string, expected map[string]struct{}) error {
 	ents, err := os.ReadDir(dir)
 	if err != nil {
@@ -815,11 +1049,9 @@ func pruneDirRecursive(root, dir string, expected map[string]struct{}) error {
 	for _, e := range ents {
 		p := filepath.Join(dir, e.Name())
 		if e.IsDir() {
-			// Recurse first
 			if err := pruneDirRecursive(root, p, expected); err != nil {
 				return err
 			}
-			// After recursion, remove directory if empty
 			rem, _ := os.ReadDir(p)
 			if len(rem) == 0 {
 				if err := os.Remove(p); err == nil {

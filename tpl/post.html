@@ -6,6 +6,81 @@
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/a.css">
     <link rel="stylesheet" href="/pygments.css">
+    <style>
+        .password-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .password-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .password-input {
+            width: 200px;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .password-submit {
+            padding: 8px 15px;
+            background-color: #008000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 5px;
+        }
+
+        .password-submit:hover {
+            background-color: #006600;
+        }
+
+        .password-notice {
+            background-color: #ffffcc;
+            border: 2px solid #ffcc00;
+            padding: 15px;
+            margin: 30px 0;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #008000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -51,10 +126,249 @@
     <p class="meta text_center">
         {{ .Date.Format "2006-01-02" }}
     </p>
-    <article>
+
+    <article id="article-content">
         {{ .Body }}
+
+        {{ if .IsProtected }}
+        <div class="password-notice">
+            <p><strong>🔒 This content is password protected</strong></p>
+            <p>Enter the password to view the full article and attachments.</p>
+            <button class="password-submit" onclick="showPasswordModal()">Unlock Content</button>
+        </div>
+        {{ end }}
     </article>
 </div>
+
+{{ if .IsProtected }}
+<div id="passwordModal" class="password-modal">
+    <div class="password-content">
+        <h3>🔐 Enter Password</h3>
+        <input type="password" id="passwordInput" class="password-input" placeholder="Password" onkeypress="if(event.key==='Enter')submitPassword()">
+        <br>
+        <button class="password-submit" id="submitBtn" onclick="submitPassword()">Submit</button>
+        <button class="password-submit" onclick="closePasswordModal()" style="background-color: #666;">Cancel</button>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+</div>
+
+<script>
+    const postPath = "{{ .PostPath }}";
+    let isSubmitting = false;
+
+    // Check if already authenticated on load
+    window.addEventListener('load', function() {
+        checkAuthentication();
+    });
+
+    function checkAuthentication() {
+        const authCookie = getCookie('auth_' + hashString(postPath));
+        if (authCookie) {
+            const cached = sessionStorage.getItem('content_' + postPath);
+            if (cached) {
+                updateContent(cached);
+            }
+        }
+    }
+
+    function showPasswordModal() {
+        document.getElementById('passwordModal').style.display = 'block';
+        document.getElementById('passwordInput').focus();
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('errorMessage').textContent = '';
+        isSubmitting = false;
+    }
+
+    async function submitPassword() {
+        if (isSubmitting) return;
+
+        const password = document.getElementById('passwordInput').value;
+        const errorMsg = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (!password) {
+            errorMsg.textContent = 'Please enter a password';
+            return;
+        }
+
+        isSubmitting = true;
+        submitBtn.innerHTML = '<span class="loading"></span>';
+        errorMsg.textContent = '';
+
+        try {
+            const response = await fetch('/api/unlock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    path: postPath,
+                    password: password
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Update content
+                updateContent(data.content);
+                // Store in sessionStorage for this session
+                sessionStorage.setItem('content_' + postPath, data.content);
+                closePasswordModal();
+            } else if (response.status === 401) {
+                errorMsg.textContent = 'Invalid password. Please try again.';
+            } else {
+                errorMsg.textContent = 'An error occurred. Please try again.';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            errorMsg.textContent = 'Network error. Please try again.';
+        } finally {
+            isSubmitting = false;
+            submitBtn.textContent = 'Submit';
+        }
+    }
+
+    function updateContent(htmlContent) {
+        const container = document.getElementById('article-content');
+
+        // Create a temporary container to parse the HTML
+        const temp = document.createElement('div');
+        temp.innerHTML = htmlContent;
+
+        // Extract and temporarily store scripts
+        const scripts = [];
+        const scriptElements = temp.querySelectorAll('script');
+        scriptElements.forEach(script => {
+            scripts.push({
+                src: script.src,
+                text: script.textContent,
+                type: script.type || 'text/javascript',
+                async: script.async,
+                defer: script.defer
+            });
+            script.remove();
+        });
+
+        // Update the content without scripts first
+        container.innerHTML = temp.innerHTML;
+
+        // Re-execute scripts in order
+        scripts.forEach((scriptInfo, index) => {
+            setTimeout(() => {
+                const newScript = document.createElement('script');
+                newScript.type = scriptInfo.type;
+
+                if (scriptInfo.src) {
+                    newScript.src = scriptInfo.src;
+                    newScript.async = scriptInfo.async;
+                    newScript.defer = scriptInfo.defer;
+                } else {
+                    // For inline scripts, wrap in a function to ensure proper execution context
+                    try {
+                        // Create a new function from the script text and execute it
+                        const scriptFunction = new Function(scriptInfo.text);
+                        scriptFunction();
+                    } catch (e) {
+                        // If that fails, fall back to setting textContent
+                        newScript.textContent = scriptInfo.text;
+                        container.appendChild(newScript);
+                    }
+                }
+
+                if (scriptInfo.src) {
+                    container.appendChild(newScript);
+                }
+            }, index * 100); // Stagger script execution
+        });
+
+        // Reinitialize any event handlers or special elements
+        setTimeout(() => {
+            reinitializeElements(container);
+        }, scripts.length * 100 + 100);
+    }
+
+    function reinitializeElements(container) {
+        // Look for emulator containers and reinitialize them
+        const emulatorContainers = container.querySelectorAll('[id^="nes_"], [id^="gba_"], [id^="pbp_"], [id^="jar_"], [id^="sega_"]');
+        emulatorContainers.forEach(element => {
+            console.log('Found emulator container:', element.id);
+
+            // Check for onclick handlers in buttons
+            const buttons = element.querySelectorAll('button[onclick]');
+            buttons.forEach(button => {
+                const onclickAttr = button.getAttribute('onclick');
+                if (onclickAttr) {
+                    // Re-bind the onclick handler
+                    button.onclick = function() {
+                        try {
+                            eval(onclickAttr);
+                        } catch(e) {
+                            console.error('Error executing onclick:', e);
+                        }
+                    };
+                }
+            });
+        });
+
+        // Re-bind any other dynamic elements
+        const allButtons = container.querySelectorAll('button[onclick]');
+        allButtons.forEach(button => {
+            const onclickAttr = button.getAttribute('onclick');
+            if (onclickAttr && !button.onclick) {
+                button.onclick = function() {
+                    try {
+                        eval(onclickAttr);
+                    } catch(e) {
+                        console.error('Error executing onclick:', e);
+                    }
+                };
+            }
+        });
+
+        // Trigger any custom initialization events
+        window.dispatchEvent(new Event('contentUpdated'));
+
+        // If there are any global initialization functions for emulators, call them
+        if (typeof window.initEmulators === 'function') {
+            window.initEmulators();
+        }
+
+        // Force a reflow to ensure all styles are applied
+        container.offsetHeight;
+    }
+
+    function getCookie(name) {
+        const value = '; ' + document.cookie;
+        const parts = value.split('; ' + name + '=');
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    function hashString(str) {
+        // Simple client-side hash for cookie name (matches server-side MD5 truncation)
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(16).substring(0, 16);
+    }
+
+    // Prevent modal close on outside click
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('passwordModal')) {
+            // Optional: allow closing by clicking outside
+            // closePasswordModal();
+        }
+    }
+</script>
+{{ end }}
 
 <footer>
     <div class="footer center text_center">

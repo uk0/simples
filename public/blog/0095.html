@@ -6,6 +6,81 @@
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/a.css">
     <link rel="stylesheet" href="/pygments.css">
+    <style>
+        .password-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .password-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .password-input {
+            width: 200px;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .password-submit {
+            padding: 8px 15px;
+            background-color: #008000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 5px;
+        }
+
+        .password-submit:hover {
+            background-color: #006600;
+        }
+
+        .password-notice {
+            background-color: #ffffcc;
+            border: 2px solid #ffcc00;
+            padding: 15px;
+            margin: 30px 0;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #008000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -20,7 +95,7 @@
                     <font size="5"><b><font color="#008000">NeoJ</font>'s Web Page</b></font>
                 </td>
                 <td width="100" align="center" rowspan="2">
-                    Last Update:<br>
+                    Last Update:<br>Sep. 17, 2025
                 </td>
             </tr>
             <tr>
@@ -37,7 +112,7 @@
                     <a href="https://github.com/uk0">GitHub</a>
                 </td>
                 <td align="center" width="82">
-                    <a href="/about/">About</a>
+                    <a href="/about.html">About</a>
                 </td>
             </tr>
             </tbody>
@@ -49,9 +124,10 @@
     <h1 class="text_center">Nuitka for Python</h1>
 
     <p class="meta text_center">
-        
+        2025-09-17
     </p>
-    <article>
+
+    <article id="article-content">
         <h1><strong>Nuitka</strong> <strong>for</strong> <strong>Python</strong></h1>
 <img src="0095/attachments/D51F0966.webp" alt="nuitka-banner.webp" loading="lazy" />  
 # Nuitka 实现原理与功能点（面向开发者）  
@@ -118,8 +194,12 @@
 </ul>
 <p>Nuitka 的原理是一边做静态分析一边把 Python 代码转译成调用 CPython API（libpython）的 C 源码，连同它自带的运行时代码一起用本地 C 编译器编译成可执行文件/扩展模块，从而在保持与 CPython 语义兼容的前提下减少解释器循环开销、获得加速并便于打包，虽然没有混淆 但是 一般的菜鸡逆向也费劲 。</p>
 
+
+        
     </article>
 </div>
+
+
 
 <footer>
     <div class="footer center text_center">
