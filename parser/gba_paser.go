@@ -602,7 +602,7 @@ func GenerateGBAPlayerHTML(playerID, romPath, fileName, fileExt string) string {
           window.EJS_gameName = ROM_NAME;
           
           // Optional configurations
-          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/';
+          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
           window.EJS_startOnLoaded = true;
           window.EJS_biosUrl = ''; // GBA BIOS (optional, but recommended)
           window.EJS_DEBUG_XX = false;

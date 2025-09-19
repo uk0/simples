@@ -73,3 +73,13 @@ Version C compiler: /opt/homebrew/opt/llvm/bin/clang (clang 20.1.7).
 ```
 
 * Nuitka
+
+
+
+### parse game 
+
+* nes [done]
+* gba [done]
+* ps  [done]
+* md  [done]
+* Arcade 有点小问题(neogeo bios 只能支持部分游戏很少)

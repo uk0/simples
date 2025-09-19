@@ -1041,6 +1041,18 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 			}
 			log.Println("Embedding PSX player for", name, "with ID", uniqueID)
 			return parser.GeneratePlayStationPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+		case ".zip":
+			uniqueID := fmt.Sprintf("arc_%x", md5.Sum([]byte(id)))[:12]
+			name := att.OriginalFilename
+			if name == "" {
+				name = filepath.Base(att.Path)
+			}
+			if strings.HasSuffix(strings.ToLower(name), ".arc.zip") {
+				log.Println("Embedding Arcade player for", name, "with ID", uniqueID)
+				return parser.GenerateArcadePlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+			}
+			//TODO 默认下载
+			return `<a href="` + rel + `" download>` + htmlEscape(name) + `</a>`
 		case ".gba":
 			uniqueID := fmt.Sprintf("gba_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename

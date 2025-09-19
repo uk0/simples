@@ -677,7 +677,7 @@ func GenerateSegaMDPlayerHTML(playerID, romPath, fileName, fileExt string) strin
           window.EJS_language = 'zh-CN'; //language
 
           // Paths
-          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/';
+          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
           window.EJS_startOnLoaded = true;
           
           // Visual settings

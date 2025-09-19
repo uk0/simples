@@ -533,7 +533,7 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
           window.EJS_language = 'zh-CN'; //language
           
           // Optional configurations
-          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/'; // Path to EmulatorJS data files
+          window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; // Path to EmulatorJS data files
           window.EJS_startOnLoaded = true;
           window.EJS_biosUrl = ''; // NES doesn't need BIOS
           window.EJS_DEBUG_XX = false; // Set to true for debugging
