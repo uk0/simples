@@ -481,9 +481,9 @@ class ExportServiceWindow(QMainWindow):
             exporter = AppleNotesExporter(db, self.out_input.text().strip())
             folders = exporter.list_all_folders()
             self.log("📂 Available folders:")
-            for fid, title, title1, title2, name, total, with_data in folders:
-                display_name = title or title1 or title2 or name or f"Folder_{fid}"
-                self.log(f"  • ID {fid}: '{display_name}' ({with_data} notes)")
+            for folder_id, title, title1, title2, name, identifier, z_ent, total, with_data  in folders:
+                display_name = title or title1 or title2 or name or f"Folder_{folder_id}"
+                self.log(f"  • ID {folder_id}: '{display_name}' ({with_data} notes)")
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 

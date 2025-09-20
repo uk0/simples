@@ -1111,7 +1111,7 @@ class AppleNotesExporter:
         }
 
     def export_all(self, folder_name: str = None):
-        """导出所有笔记或指定文件夹的笔记"""
+        """导出所有笔记或指定文件夹的笔记（兼容新版本）"""
         if not os.path.exists(self.db_path):
             raise FileNotFoundError(f"Database not found: {self.db_path}")
 
@@ -1120,52 +1120,108 @@ class AppleNotesExporter:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        # [保留原有的文件夹查询逻辑]
         folder_id = None
         if folder_name:
             print(f"Searching for folder: '{folder_name}'")
 
+            # 新版本：检查 ZTITLE2 字段
             folder_search_query = """
-                                  SELECT DISTINCT Z_PK, ZTITLE, ZTITLE1, ZTITLE2, ZNAME
-                                  FROM ZICCLOUDSYNCINGOBJECT
-                                  WHERE Z_ENT = 14
-                                    AND (
-                                      LOWER(ZTITLE) = LOWER(?) OR
-                                      LOWER(ZTITLE1) = LOWER(?) OR
-                                      LOWER(ZTITLE2) = LOWER(?) OR
-                                      LOWER(ZNAME) = LOWER(?)
-                                      )
-                                  """
+                SELECT DISTINCT Z_PK, ZTITLE, ZTITLE1, ZTITLE2, ZNAME, Z_ENT
+                FROM ZICCLOUDSYNCINGOBJECT
+                WHERE Z_ENT IN (14, 15)  -- 兼容新旧版本
+                  AND (
+                    LOWER(ZTITLE2) = LOWER(?) OR  -- 新版本主要在这里
+                    LOWER(ZTITLE) = LOWER(?) OR
+                    LOWER(ZTITLE1) = LOWER(?) OR
+                    LOWER(ZNAME) = LOWER(?)
+                  )
+            """
 
             cursor.execute(folder_search_query, (folder_name, folder_name, folder_name, folder_name))
             folder_results = cursor.fetchall()
 
             if folder_results:
                 folder_id = folder_results[0][0]
-                actual_folder_name = folder_results[0][2] or folder_results[0][3] or folder_results[0][1] or \
+                # 优先使用 ZTITLE2
+                actual_folder_name = folder_results[0][3] or folder_results[0][1] or folder_results[0][2] or \
                                      folder_results[0][4] or folder_name
-                print(f"✓ Found folder '{actual_folder_name}' (ID: {folder_id})")
+                z_ent = folder_results[0][5]
+                print(f"✓ Found folder '{actual_folder_name}' (ID: {folder_id}, Z_ENT: {z_ent})")
 
-        # 构建查询
+                # 验证文件夹中的笔记数量
+                cursor.execute("""
+                    SELECT COUNT(*)
+                    FROM ZICCLOUDSYNCINGOBJECT n
+                    INNER JOIN ZICNOTEDATA nd ON nd.ZNOTE = n.Z_PK
+                    WHERE n.ZFOLDER = ?
+                      AND nd.ZDATA IS NOT NULL
+                """, (folder_id,))
+                note_count = cursor.fetchone()[0]
+                print(f"  Folder contains {note_count} notes")
+
+            else:
+                # 如果没找到，列出所有文件夹供选择
+                print(f"⚠️ Folder '{folder_name}' not found.")
+                print("\nAvailable folders:")
+
+                cursor.execute("""
+                    SELECT f.Z_PK,
+                           f.ZTITLE,
+                           f.ZTITLE1,
+                           f.ZTITLE2,
+                           COUNT(DISTINCT n.Z_PK) as note_count
+                    FROM ZICCLOUDSYNCINGOBJECT f
+                    INNER JOIN ZICCLOUDSYNCINGOBJECT n ON n.ZFOLDER = f.Z_PK
+                    INNER JOIN ZICNOTEDATA nd ON nd.ZNOTE = n.Z_PK
+                    WHERE f.Z_ENT IN (14, 15)
+                      AND nd.ZDATA IS NOT NULL
+                    GROUP BY f.Z_PK
+                    ORDER BY note_count DESC
+                """)
+
+                all_folders = cursor.fetchall()
+
+                if all_folders:
+                    for fid, title, title1, title2, count in all_folders:
+                        # 优先使用 ZTITLE2
+                        display_name = title2 or title or title1 or f"Folder_{fid}"
+
+                        if folder_name.lower() in display_name.lower():
+                            print(f"  ✓ ID {fid}: '{display_name}' ({count} notes) <- POSSIBLE MATCH")
+                            folder_id = fid
+                            folder_name = display_name
+                        else:
+                            print(f"    ID {fid}: '{display_name}' ({count} notes)")
+
+                    # 特殊处理：对于 blog 文件夹
+                    if not folder_id and folder_name.lower() == 'blog':
+                        # 直接使用 ID 122
+                        print(f"\n⭐ Using known folder ID 122 for blog")
+                        folder_id = 122
+
+                if not folder_id:
+                    print("\nNo matching folder found. Exporting all notes instead.")
+
+        # 构建查询（使用 ZTITLE2）
         if folder_id:
             print(f"\nExporting notes from folder ID {folder_id} ('{folder_name}')")
 
             query = """
-                    SELECT nd.Z_PK                                              as note_id,
-                           nd.ZDATA                                             as data,
-                           n.ZTITLE                                             as title,
-                           n.ZSNIPPET                                           as snippet,
-                           n.ZCREATIONDATE                                      as created,
-                           n.ZMODIFICATIONDATE                                  as modified,
-                           n.ZFOLDER                                            as folder_id,
-                           COALESCE(f.ZTITLE, f.ZTITLE1, f.ZTITLE2, f.ZNAME, ?) as folder_name
-                    FROM ZICNOTEDATA nd
-                             INNER JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
-                             LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
-                    WHERE nd.ZDATA IS NOT NULL
-                      AND n.ZFOLDER = ?
-                    ORDER BY n.ZMODIFICATIONDATE DESC
-                    """
+                SELECT nd.Z_PK as note_id,
+                       nd.ZDATA as data,
+                       n.ZTITLE as title,
+                       n.ZSNIPPET as snippet,
+                       n.ZCREATIONDATE as created,
+                       n.ZMODIFICATIONDATE as modified,
+                       n.ZFOLDER as folder_id,
+                       COALESCE(f.ZTITLE2, f.ZTITLE, f.ZTITLE1, f.ZNAME, ?) as folder_name
+                FROM ZICNOTEDATA nd
+                INNER JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
+                LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
+                WHERE nd.ZDATA IS NOT NULL
+                  AND n.ZFOLDER = ?
+                ORDER BY n.ZMODIFICATIONDATE DESC
+            """
 
             results = cursor.execute(query, (folder_name, folder_id)).fetchall()
 
@@ -1173,20 +1229,20 @@ class AppleNotesExporter:
             print("\nExporting all notes...")
 
             query = """
-                    SELECT nd.Z_PK                                                      as note_id,
-                           nd.ZDATA                                                     as data,
-                           n.ZTITLE                                                     as title,
-                           n.ZSNIPPET                                                   as snippet,
-                           n.ZCREATIONDATE                                              as created,
-                           n.ZMODIFICATIONDATE                                          as modified,
-                           n.ZFOLDER                                                    as folder_id,
-                           COALESCE(f.ZTITLE, f.ZTITLE1, f.ZTITLE2, f.ZNAME, 'Unknown') as folder_name
-                    FROM ZICNOTEDATA nd
-                             INNER JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
-                             LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
-                    WHERE nd.ZDATA IS NOT NULL
-                    ORDER BY n.ZFOLDER, n.ZMODIFICATIONDATE DESC
-                    """
+                SELECT nd.Z_PK as note_id,
+                       nd.ZDATA as data,
+                       n.ZTITLE as title,
+                       n.ZSNIPPET as snippet,
+                       n.ZCREATIONDATE as created,
+                       n.ZMODIFICATIONDATE as modified,
+                       n.ZFOLDER as folder_id,
+                       COALESCE(f.ZTITLE2, f.ZTITLE, f.ZTITLE1, f.ZNAME, 'Unknown') as folder_name
+                FROM ZICNOTEDATA nd
+                INNER JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
+                LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
+                WHERE nd.ZDATA IS NOT NULL
+                ORDER BY n.ZFOLDER, n.ZMODIFICATIONDATE DESC
+            """
 
             results = cursor.execute(query).fetchall()
 
@@ -1440,53 +1496,61 @@ class AppleNotesExporter:
         return self._current_notes_ids
 
     def list_all_folders(self):
-        """列出所有可用的文件夹"""
-        self.auto_delete_empty_dirs()
+        """列出所有可用的文件夹（适配新版本 macOS 15+）"""
         conn = sqlite3.connect(self.db_path)
         try:
             cursor = conn.cursor()
             print("\nAnalyzing all folders in database...")
             print("=" * 60)
 
+            # 新版本使用 Z_ENT=15 表示文件夹，名称在 ZTITLE2
             cursor.execute("""
-                           SELECT f.Z_PK                  as folder_id,
-                                  f.ZTITLE,
-                                  f.ZTITLE1,
-                                  f.ZTITLE2,
-                                  f.ZNAME,
-                                  COUNT(DISTINCT n.Z_PK)  as total_notes,
-                                  COUNT(DISTINCT nd.Z_PK) as notes_with_data
-                           FROM ZICCLOUDSYNCINGOBJECT f
-                                    LEFT JOIN ZICCLOUDSYNCINGOBJECT n ON n.ZFOLDER = f.Z_PK
-                                    LEFT JOIN ZICNOTEDATA nd ON nd.ZNOTE = n.Z_PK AND nd.ZDATA IS NOT NULL
-                           WHERE f.Z_ENT = 14 -- ICFolder entity
-                           GROUP BY f.Z_PK
-                           ORDER BY notes_with_data DESC
-                           """)
+                SELECT f.Z_PK as folder_id,
+                       f.ZTITLE,
+                       f.ZTITLE1,
+                       f.ZTITLE2,  -- 新版本的文件夹名在这里！
+                       f.ZNAME,
+                       f.ZIDENTIFIER,
+                       f.Z_ENT,
+                       COUNT(DISTINCT n.Z_PK) as total_notes,
+                       COUNT(DISTINCT nd.Z_PK) as notes_with_data
+                FROM ZICCLOUDSYNCINGOBJECT f
+                LEFT JOIN ZICCLOUDSYNCINGOBJECT n ON n.ZFOLDER = f.Z_PK
+                LEFT JOIN ZICNOTEDATA nd ON nd.ZNOTE = n.Z_PK AND nd.ZDATA IS NOT NULL
+                WHERE f.Z_ENT IN (14, 15)  -- 兼容旧版(14)和新版(15)
+                GROUP BY f.Z_PK
+                ORDER BY notes_with_data DESC
+            """)
 
             folders = cursor.fetchall()
 
             if folders:
                 print("Available folders:")
-                for folder_id, title, title1, title2, name, total, with_data in folders:
-                    # 使用COALESCE逻辑获取文件夹名称
-                    folder_name = title or title1 or title2 or name or f"Folder_{folder_id}"
+                for folder_id, title, title1, title2, name, identifier, z_ent, total, with_data in folders:
+                    # 新版本优先使用 ZTITLE2
+                    folder_name = title2 or title or title1 or name or f"Folder_{folder_id}"
 
                     print(f"\n  Folder ID {folder_id}: '{folder_name}'")
                     print(f"    • Total items: {total}")
                     print(f"    • Notes with data: {with_data}")
+                    print(f"    • Entity type: {z_ent}")
 
                     # 特殊标记
                     if 'blog' in folder_name.lower():
                         print(f"    ⭐ This is your blog folder!")
-                    elif with_data == 5:
-                        print(f"    ⭐ Has 5 notes (might be your blog folder)")
+
                 return folders
+            else:
+                print("No folders found.")
+                return []
 
         except Exception as e:
-            print(f"\n{e}")
+            print(f"\nError: {e}")
+            import traceback
+            traceback.print_exc()
         finally:
             conn.close()
+
 
     def _print_stats(self):
         """打印统计信息"""
@@ -1520,6 +1584,9 @@ def main():
 
     try:
         exporter = AppleNotesExporter(db_path, output_dir)
+
+        print(exporter.list_all_folders())
+
         exporter.export_all(folder_name='blog')
     except Exception as e:
         print(f"Error: {e}")
