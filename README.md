@@ -83,3 +83,9 @@ Version C compiler: /opt/homebrew/opt/llvm/bin/clang (clang 20.1.7).
 * ps  [done]
 * md  [done]
 * Arcade 有点小问题(neogeo bios 只能支持部分游戏很少)
+
+
+### changelog 
+
+* support macos 15 [文件夹 Z_ENT 14]
+* support macos 26 [文件夹 Z_ENT 从 14 变成了 15]
