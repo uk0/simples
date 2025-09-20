@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"encoding/xml"
 	"errors"
 	"flag"
 	"fmt"
@@ -34,114 +33,66 @@ var (
 	srcDir         string
 	outDir         string
 	addr           string
-	baseURL        string // Base URL for sitemap
+	baseURL        string
 	attachmentsDir = "attachments"
 	postTpl        *template.Template
 	indexTpl       *template.Template
 	mdConv         goldmark.Markdown
 
-	// Password protection - use temporary maps during rebuild
 	protectedMu    sync.RWMutex
-	protectedPosts = make(map[string]string) // path -> password hash
-	fullContent    = make(map[string]string) // path -> full HTML content
-	passRe         = regexp.MustCompile(`(?i)\[PASS:\s*([^\]]+)\]`)
+	protectedPosts = make(map[string]string)
+	fullContent    = make(map[string]string)
+	// 新增：记录哪些附件路径是受保护的
+	protectedAttachments = make(map[string]bool)
+	passRe               = regexp.MustCompile(`(?i)\[PASS:\s*([^\]]+)\]`)
 
-	// Flag to indicate rebuild is in progress
 	rebuilding   bool
 	rebuildingMu sync.Mutex
 )
-
-// Sitemap XML structures
-type urlset struct {
-	XMLName           xml.Name     `xml:"urlset"`
-	Xmlns             string       `xml:"xmlns,attr"`
-	XmlnsXsi          string       `xml:"xmlns:xsi,attr,omitempty"`
-	XsiSchemaLocation string       `xml:"xsi:schemaLocation,attr,omitempty"`
-	URLs              []sitemapURL `xml:"url"`
-}
-
-type sitemapURL struct {
-	Loc        string  `xml:"loc"`
-	LastMod    string  `xml:"lastmod,omitempty"`
-	ChangeFreq string  `xml:"changefreq,omitempty"`
-	Priority   float64 `xml:"priority,omitempty"`
-}
-
-// RSS Feed structures
-type rss struct {
-	XMLName xml.Name `xml:"rss"`
-	Version string   `xml:"version,attr"`
-	Channel channel  `xml:"channel"`
-}
-
-type channel struct {
-	Title       string    `xml:"title"`
-	Link        string    `xml:"link"`
-	Description string    `xml:"description"`
-	Language    string    `xml:"language"`
-	LastBuild   string    `xml:"lastBuildDate"`
-	Items       []rssItem `xml:"item"`
-}
-
-type rssItem struct {
-	Title       string `xml:"title"`
-	Link        string `xml:"link"`
-	Description string `xml:"description"`
-	PubDate     string `xml:"pubDate"`
-	GUID        string `xml:"guid"`
-	Category    string `xml:"category,omitempty"`
-}
 
 func init() {
 	flag.StringVar(&srcDir, "src", "./apple_notes_export", "Notes source directory")
 	flag.StringVar(&outDir, "out", "./public", "Output directory")
 	flag.StringVar(&addr, "addr", ":8080", "HTTP listen address")
-	flag.StringVar(&baseURL, "url", "https://firsh.me", "Base URL for sitemap (e.g., https://example.com)")
+	flag.StringVar(&baseURL, "url", "https://firsh.me", "Base URL for sitemap")
 }
 
 func main() {
 	flag.Parse()
-
-	// Clean up baseURL - remove trailing slash
 	baseURL = strings.TrimRight(baseURL, "/")
-
 	loadTemplates()
 	mdConv = goldmark.New(
 		goldmark.WithRendererOptions(
 			ghtml.WithUnsafe(),
 		),
 	)
-
 	if err := rebuildAll(); err != nil {
 		log.Fatalf("initial build failed: %v", err)
 	}
 	log.Println("initial build done.")
-
 	go watch()
 
-	// Setup HTTP handlers
 	mux := http.NewServeMux()
-
-	// API endpoint for password verification
 	mux.HandleFunc("/api/unlock", handleUnlock)
-
-	// Protected content handler
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 
-		// Check if this is an attachment request for a protected post
+		// 检查是否是附件请求
 		if strings.Contains(path, "/attachments/") {
-			parts := strings.Split(strings.Trim(path, "/"), "/")
-			if len(parts) >= 3 {
-				// Reconstruct post path (e.g., "category/slug")
-				postPath := parts[0] + "/" + strings.TrimSuffix(parts[1], ".html")
+			// 构建完整的附件路径
+			fullPath := strings.TrimPrefix(path, "/")
 
-				protectedMu.RLock()
-				_, isProtected := protectedPosts[postPath]
-				protectedMu.RUnlock()
+			protectedMu.RLock()
+			isProtected := protectedAttachments[fullPath]
+			protectedMu.RUnlock()
 
-				if isProtected {
-					// Check session cookie for authorization
+			if isProtected {
+				// 从路径中提取文章路径
+				parts := strings.Split(fullPath, "/")
+				if len(parts) >= 2 {
+					postPath := parts[0] + "/" + parts[1]
+					postPath = strings.TrimSuffix(postPath, ".html")
+
 					cookie, err := r.Cookie("auth_" + hashString(postPath))
 					if err != nil || !verifyAuthCookie(postPath, cookie.Value) {
 						http.Error(w, "Unauthorized - Please unlock the post first", http.StatusUnauthorized)
@@ -151,7 +102,6 @@ func main() {
 			}
 		}
 
-		// Serve static files
 		http.FileServer(http.Dir(outDir)).ServeHTTP(w, r)
 	})
 
@@ -176,27 +126,22 @@ func handleUnlock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Clean the path
 	req.Path = strings.Trim(req.Path, "/")
 
-	// Wait for any ongoing rebuild to complete
 	rebuildingMu.Lock()
 	isRebuilding := rebuilding
 	rebuildingMu.Unlock()
 
 	if isRebuilding {
-		// Wait a bit for rebuild to complete
 		time.Sleep(100 * time.Millisecond)
 	}
 
-	// Verify password
 	protectedMu.RLock()
 	expectedHash, ok := protectedPosts[req.Path]
 	content, hasContent := fullContent[req.Path]
 	protectedMu.RUnlock()
 
 	if !ok {
-		log.Printf("Post %s not found in protected posts. Available posts: %v", req.Path, getProtectedPaths())
 		http.Error(w, "Post not protected", http.StatusBadRequest)
 		return
 	}
@@ -207,43 +152,26 @@ func handleUnlock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !hasContent {
-		log.Printf("Content not found for protected post: %s", req.Path)
 		http.Error(w, "Content not found", http.StatusInternalServerError)
 		return
 	}
 
-	// Generate auth token
 	authToken := generateAuthToken(req.Path, req.Password)
-
-	// Set cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     "auth_" + hashString(req.Path),
 		Value:    authToken,
 		Path:     "/",
-		MaxAge:   86400, // 24 hours
+		MaxAge:   86400,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
-		Secure:   false, // Set to true if using HTTPS
+		Secure:   false,
 	})
 
-	// Return full content
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"content": content,
 		"status":  "success",
 	})
-}
-
-// Helper function to get list of protected paths for debugging
-func getProtectedPaths() []string {
-	protectedMu.RLock()
-	defer protectedMu.RUnlock()
-
-	paths := make([]string, 0, len(protectedPosts))
-	for path := range protectedPosts {
-		paths = append(paths, path)
-	}
-	return paths
 }
 
 func loadTemplates() {
@@ -258,22 +186,7 @@ func loadTemplates() {
 	}
 }
 
-type post struct {
-	Category    string
-	Title       string
-	File        string
-	Date        time.Time
-	IsProtected bool   // Track if post is password protected
-	Description string // For meta description
-}
-
-type categoryGroup struct {
-	Name  string
-	Posts []post
-}
-
 func rebuildAll() error {
-	// Set rebuilding flag
 	rebuildingMu.Lock()
 	rebuilding = true
 	rebuildingMu.Unlock()
@@ -284,9 +197,9 @@ func rebuildAll() error {
 		rebuildingMu.Unlock()
 	}()
 
-	// Use temporary maps during rebuild
 	tempProtectedPosts := make(map[string]string)
 	tempFullContent := make(map[string]string)
+	tempProtectedAttachments := make(map[string]bool)
 
 	if err := os.MkdirAll(outDir, 0755); err != nil {
 		return err
@@ -301,7 +214,6 @@ func rebuildAll() error {
 	}
 
 	var allPosts []post
-
 	cats, err := os.ReadDir(srcDir)
 	if err != nil {
 		return err
@@ -330,6 +242,7 @@ func rebuildAll() error {
 			}
 			postDir := filepath.Join(catPath, pe.Name())
 			noteFile := filepath.Join(postDir, "note.md")
+
 			if fi, err := os.Stat(noteFile); err == nil && !fi.IsDir() {
 				p, protectedInfo, err := buildPageWithProtection(noteFile, catName)
 				if err != nil {
@@ -337,10 +250,15 @@ func rebuildAll() error {
 					continue
 				}
 
-				// Store protection info in temporary maps
 				if protectedInfo != nil {
 					tempProtectedPosts[protectedInfo.path] = protectedInfo.passwordHash
 					tempFullContent[protectedInfo.path] = protectedInfo.fullContent
+
+					// 记录受保护的附件路径
+					for _, attachPath := range protectedInfo.protectedFilePaths {
+						tempProtectedAttachments[attachPath] = true
+					}
+
 					p.IsProtected = true
 				}
 
@@ -353,263 +271,29 @@ func rebuildAll() error {
 		return err
 	}
 
-	// Generate sitemap.xml
 	if err := buildSitemap(allPosts); err != nil {
 		log.Printf("Warning: failed to build sitemap: %v", err)
-	} else {
-		log.Println("Generated sitemap.xml")
 	}
 
-	// Generate RSS feed
 	if err := buildRSSFeed(allPosts); err != nil {
 		log.Printf("Warning: failed to build RSS feed: %v", err)
-	} else {
-		log.Println("Generated rss.xml")
 	}
 
-	// Generate robots.txt
 	if err := buildRobotsTxt(); err != nil {
 		log.Printf("Warning: failed to build robots.txt: %v", err)
-	} else {
-		log.Println("Generated robots.txt")
 	}
 
-	// Atomically replace the protection maps
 	protectedMu.Lock()
 	protectedPosts = tempProtectedPosts
 	fullContent = tempFullContent
+	protectedAttachments = tempProtectedAttachments
 	protectedMu.Unlock()
-
-	log.Printf("Rebuild complete. Protected posts: %v", getProtectedPaths())
 
 	if err := pruneOutToMatchSource(); err != nil {
 		log.Printf("Warning: prune failed: %v", err)
 	}
 
 	return nil
-}
-
-// buildSitemap generates sitemap.xml for SEO
-func buildSitemap(posts []post) error {
-	sitemap := urlset{
-		Xmlns:             "http://www.sitemaps.org/schemas/sitemap/0.9",
-		XmlnsXsi:          "http://www.w3.org/2001/XMLSchema-instance",
-		XsiSchemaLocation: "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd",
-		URLs:              []sitemapURL{},
-	}
-
-	// Add home page
-	sitemap.URLs = append(sitemap.URLs, sitemapURL{
-		Loc:        baseURL + "/",
-		LastMod:    time.Now().Format("2006-01-02"),
-		ChangeFreq: "daily",
-		Priority:   1.0,
-	})
-
-	// Add all posts (except protected ones for better SEO)
-	for _, p := range posts {
-		if !p.IsProtected { // Only include public posts in sitemap
-			sitemap.URLs = append(sitemap.URLs, sitemapURL{
-				Loc:        baseURL + "/" + p.File,
-				LastMod:    p.Date.Format("2006-01-02"),
-				ChangeFreq: "weekly",
-				Priority:   0.8,
-			})
-		}
-	}
-
-	// Sort URLs by priority and then by location for consistent output
-	sort.Slice(sitemap.URLs, func(i, j int) bool {
-		if sitemap.URLs[i].Priority != sitemap.URLs[j].Priority {
-			return sitemap.URLs[i].Priority > sitemap.URLs[j].Priority
-		}
-		return sitemap.URLs[i].Loc < sitemap.URLs[j].Loc
-	})
-
-	// Marshal to XML
-	output, err := xml.MarshalIndent(sitemap, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal sitemap: %w", err)
-	}
-
-	// Add XML declaration
-	xmlContent := []byte(xml.Header + string(output))
-
-	// Write to file
-	sitemapPath := filepath.Join(outDir, "sitemap.xml")
-	if err := os.WriteFile(sitemapPath, xmlContent, 0644); err != nil {
-		return fmt.Errorf("failed to write sitemap: %w", err)
-	}
-
-	log.Printf("Sitemap generated with %d URLs (excluded %d protected posts)",
-		len(sitemap.URLs), countProtectedPosts(posts))
-	return nil
-}
-
-// buildRSSFeed generates RSS feed for subscribers
-func buildRSSFeed(posts []post) error {
-	feed := rss{
-		Version: "2.0",
-		Channel: channel{
-			Title:       "NeoJ's Web Page",
-			Link:        baseURL,
-			Description: "Personal blog and notes",
-			Language:    "en-US",
-			LastBuild:   time.Now().Format(time.RFC1123Z),
-			Items:       []rssItem{},
-		},
-	}
-
-	// Sort posts by date (newest first)
-	sortedPosts := make([]post, len(posts))
-	copy(sortedPosts, posts)
-	sort.Slice(sortedPosts, func(i, j int) bool {
-		return sortedPosts[i].Date.After(sortedPosts[j].Date)
-	})
-
-	// Add up to 20 most recent public posts to RSS
-	count := 0
-	for _, p := range sortedPosts {
-		if !p.IsProtected && count < 20 {
-			desc := p.Description
-			if desc == "" {
-				desc = fmt.Sprintf("Post from %s category", p.Category)
-			}
-
-			feed.Channel.Items = append(feed.Channel.Items, rssItem{
-				Title:       p.Title,
-				Link:        baseURL + "/" + p.File,
-				Description: desc,
-				PubDate:     p.Date.Format(time.RFC1123Z),
-				GUID:        baseURL + "/" + p.File,
-				Category:    p.Category,
-			})
-			count++
-		}
-	}
-
-	// Marshal to XML
-	output, err := xml.MarshalIndent(feed, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal RSS feed: %w", err)
-	}
-
-	// Add XML declaration
-	xmlContent := []byte(xml.Header + string(output))
-
-	// Write to file
-	rssPath := filepath.Join(outDir, "rss.xml")
-	if err := os.WriteFile(rssPath, xmlContent, 0644); err != nil {
-		return fmt.Errorf("failed to write RSS feed: %w", err)
-	}
-
-	log.Printf("RSS feed generated with %d items", len(feed.Channel.Items))
-	return nil
-}
-
-// buildRobotsTxt generates robots.txt for search engines
-func buildRobotsTxt() error {
-	robotsContent := fmt.Sprintf(`# Robots.txt for %s
-User-agent: *
-Disallow: /*api/
-Allow: /blog/*
-
-User-agent: Baiduspider
-Disallow: /api/*
-Allow: /blog/*
-
-User-agent: HaoSouSpider
-Disallow: /api/*
-Allow: /blog/*
-
-User-agent: Sogou web spider
-Disallow: /api/*
-Allow: /blog/*
-
-User-agent: Sogou inst spider
-Disallow: /api/*
-Allow: /blog/*
-
-User-agent: Sogou spider2
-Disallow: /api/*
-Allow: /blog/*
-
-# Sitemap
-Sitemap: %s/sitemap.xml
-
-# RSS Feed
-# RSS: %s/rss.xml
-`, baseURL, baseURL, baseURL)
-
-	robotsPath := filepath.Join(outDir, "robots.txt")
-	if err := os.WriteFile(robotsPath, []byte(robotsContent), 0644); err != nil {
-		return fmt.Errorf("failed to write robots.txt: %w", err)
-	}
-
-	return nil
-}
-
-// Helper function to count protected posts
-func countProtectedPosts(posts []post) int {
-	count := 0
-	for _, p := range posts {
-		if p.IsProtected {
-			count++
-		}
-	}
-	return count
-}
-
-// extractDescription extracts a description from markdown content
-func extractDescription(body string) string {
-	// Remove markdown formatting
-	desc := body
-
-	// Remove headers
-	desc = regexp.MustCompile(`(?m)^#+\s+.*$`).ReplaceAllString(desc, "")
-
-	// Remove links but keep link text
-	desc = regexp.MustCompile(`\[([^\]]+)\]\([^\)]+\)`).ReplaceAllString(desc, "$1")
-
-	// Remove images
-	desc = regexp.MustCompile(`!\[([^\]]*)\]\([^\)]+\)`).ReplaceAllString(desc, "")
-
-	// Remove bold/italic
-	desc = regexp.MustCompile(`\*+([^\*]+)\*+`).ReplaceAllString(desc, "$1")
-	desc = regexp.MustCompile(`_+([^_]+)_+`).ReplaceAllString(desc, "$1")
-
-	// Remove code blocks
-	desc = regexp.MustCompile("(?s)```[^`]*```").ReplaceAllString(desc, "")
-	desc = regexp.MustCompile("`([^`]+)`").ReplaceAllString(desc, "$1")
-
-	// Remove HTML tags
-	desc = regexp.MustCompile(`<[^>]+>`).ReplaceAllString(desc, "")
-
-	// Remove attachment tags
-	desc = regexp.MustCompile(`\[Attachment:[^\]]+\]`).ReplaceAllString(desc, "")
-
-	// Clean up whitespace
-	desc = strings.TrimSpace(desc)
-	desc = regexp.MustCompile(`\s+`).ReplaceAllString(desc, " ")
-
-	// Truncate to 160 characters for SEO
-	if len(desc) > 160 {
-		// Try to cut at word boundary
-		if idx := strings.LastIndex(desc[:157], " "); idx > 100 {
-			desc = desc[:idx] + "..."
-		} else {
-			desc = desc[:157] + "..."
-		}
-	}
-
-	return desc
-}
-
-// Structure to hold protection info during build
-type protectionInfo struct {
-	path         string
-	passwordHash string
-	fullContent  string
 }
 
 func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo, error) {
@@ -619,77 +303,81 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 	// Load meta.txt
 	metaPath := filepath.Join(postDir, "meta.txt")
 	var meta NoteMeta
-	var metaErr error
 	if fi, err := os.Stat(metaPath); err == nil && !fi.IsDir() {
-		meta, metaErr = ParseMetaFile(metaPath)
-		if metaErr != nil {
-			log.Printf("Warning: failed to parse meta.txt at %s: %v", metaPath, metaErr)
-		}
-	} else {
-		log.Printf("Warning: meta.txt not found in %s, attachments won't be auto-transformed", postDir)
+		meta, _ = ParseMetaFile(metaPath)
 	}
 
-	// Read note.md
 	bodyBytes, err := os.ReadFile(noteMDPath)
 	if err != nil {
 		return post{}, nil, err
 	}
 	body := string(bodyBytes)
-
-	// Check for password protection
 	postPath := category + "/" + slug
+
 	var protInfo *protectionInfo
 	var isProtected bool
-	var truncatedBody string
+	var publicBody string
+	var protectedBody string
+	var protectedAttachmentIDs []string
 
+	// 查找 [PASS: xxx] 标记
 	if matches := passRe.FindStringSubmatch(body); len(matches) == 2 {
 		isProtected = true
 		password := strings.TrimSpace(matches[1])
 
-		// Find the position of [PASS: xxx] and truncate
 		loc := passRe.FindStringIndex(body)
 		if loc != nil {
-			truncatedBody = body[:loc[0]]
-		}
+			// 分割内容：公开部分和受保护部分
+			publicBody = body[:loc[0]]
+			protectedBody = body[loc[1]:] // 从 [PASS: xxx] 之后开始
 
-		log.Printf("Post %s is password protected", postPath)
+			// 找出受保护部分中的附件ID
+			protectedAttachmentIDs = findAttachmentIDs(protectedBody)
 
-		// Create protection info
-		protInfo = &protectionInfo{
-			path:         postPath,
-			passwordHash: hashPassword(password),
+			// 构建受保护的附件路径列表
+			var protectedPaths []string
+			for _, id := range protectedAttachmentIDs {
+				if att, ok := meta.Attachments[id]; ok {
+					// 构建完整的输出路径
+					attachPath := filepath.Join(category, slug, attachmentsDir, filepath.Base(att.Path))
+					protectedPaths = append(protectedPaths, attachPath)
+				}
+			}
+
+			protInfo = &protectionInfo{
+				path:               postPath,
+				passwordHash:       hashPassword(password),
+				protectedFilePaths: protectedPaths,
+			}
+
+			log.Printf("Post %s has %d protected attachments", postPath, len(protectedPaths))
 		}
+	} else {
+		// 没有密码保护，全部公开
+		publicBody = body
 	}
 
-	// Process the appropriate body
-	processBody := body
-	if isProtected {
-		processBody = truncatedBody
-	}
+	// 处理公开部分
+	description := ExtractDescription(publicBody)
 
-	// Extract description for SEO
-	description := extractDescription(processBody)
-
-	// Transform attachments
+	// 转换公开部分的附件
 	if meta.Attachments != nil && len(meta.Attachments) > 0 {
-		processBody = transformAttachmentTagsByMeta(processBody, slug, meta)
+		publicBody = transformAttachmentTagsByMeta(publicBody, slug, meta, false)
 	}
 
-	// Convert to HTML
-	var buf bytes.Buffer
-	if err := mdConv.Convert([]byte(processBody), &buf); err != nil {
+	// 转换公开部分为HTML
+	var publicBuf bytes.Buffer
+	if err := mdConv.Convert([]byte(publicBody), &publicBuf); err != nil {
 		return post{}, nil, err
 	}
 
-	// If protected, generate and store full content
+	// 如果有受保护内容，处理完整内容
 	if isProtected && protInfo != nil {
-		// Process full body with attachments
-		fullBody := body
-		// Remove the [PASS: xxx] tag from full content
-		fullBody = passRe.ReplaceAllString(fullBody, "")
+		fullBody := publicBody + "\n" + protectedBody
 
+		// 转换完整内容的附件
 		if meta.Attachments != nil && len(meta.Attachments) > 0 {
-			fullBody = transformAttachmentTagsByMeta(fullBody, slug, meta)
+			fullBody = transformAttachmentTagsByMeta(fullBody, slug, meta, false)
 		}
 
 		var fullBuf bytes.Buffer
@@ -700,11 +388,12 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 		protInfo.fullContent = fullBuf.String()
 	}
 
-	// Prepare output
+	// 生成HTML文件
 	dirOut := filepath.Join(outDir, category)
 	if err := os.MkdirAll(dirOut, 0755); err != nil {
 		return post{}, nil, err
 	}
+
 	htmlName := slug + ".html"
 	outFile := filepath.Join(dirOut, htmlName)
 
@@ -723,14 +412,12 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 		}
 	}
 
-	// Get file modification time
 	st, _ := os.Stat(noteMDPath)
 	modTime := st.ModTime()
 
-	// Prepare template data
 	templateData := map[string]interface{}{
 		"Title":       title,
-		"Body":        template.HTML(buf.String()),
+		"Body":        template.HTML(publicBuf.String()),
 		"Category":    category,
 		"Date":        modTime,
 		"IsProtected": isProtected,
@@ -743,7 +430,7 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 		return post{}, nil, err
 	}
 
-	// Copy attachments
+	// 复制附件
 	srcAttach := filepath.Join(postDir, attachmentsDir)
 	if fi, err := os.Stat(srcAttach); err == nil && fi.IsDir() {
 		dstAttach := filepath.Join(outDir, category, slug, attachmentsDir)
@@ -774,10 +461,16 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 	}, protInfo, nil
 }
 
-// Keep original buildPage for compatibility but redirect to new function
-func buildPage(noteMDPath, category string) (post, error) {
-	p, _, err := buildPageWithProtection(noteMDPath, category)
-	return p, err
+// 查找内容中的附件ID
+func findAttachmentIDs(content string) []string {
+	var ids []string
+	matches := attachmentRefRe.FindAllStringSubmatch(content, -1)
+	for _, match := range matches {
+		if len(match) > 1 {
+			ids = append(ids, match[1])
+		}
+	}
+	return ids
 }
 
 func buildIndex(posts []post) error {
@@ -806,7 +499,7 @@ func buildIndex(posts []post) error {
 	})
 }
 
-// Password helper functions
+// Helper functions
 func hashPassword(password string) string {
 	hash := sha256.Sum256([]byte(password))
 	return hex.EncodeToString(hash[:])
@@ -832,11 +525,9 @@ func verifyAuthCookie(path, token string) bool {
 		return false
 	}
 
-	// Basic verification - check token format
-	return len(token) == 64 // SHA256 hex string length
+	return len(token) == 64
 }
 
-// copyBaseAssets copies everything inside tpl/base into the public root directory.
 func copyBaseAssets() error {
 	baseDir := filepath.Join("tpl", "base")
 	fi, err := os.Stat(baseDir)
@@ -932,7 +623,6 @@ func watch() {
 		addTree("tpl")
 	}
 
-	// Debounce mechanism to avoid multiple rebuilds
 	var debounceTimer *time.Timer
 	var debounceMu sync.Mutex
 
@@ -984,10 +674,9 @@ func watch() {
 	}
 }
 
-// Attachment transform based on meta.txt
 var attachmentRefRe = regexp.MustCompile(`\[Attachment:\s*([A-Za-z0-9_-]+)\]`)
 
-func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
+func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta, isProtected bool) string {
 	return attachmentRefRe.ReplaceAllStringFunc(body, func(match string) string {
 		m := attachmentRefRe.FindStringSubmatch(match)
 		if len(m) != 2 {
@@ -998,11 +687,9 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 		if !ok {
 			return match
 		}
-		rel := filepath.ToSlash(filepath.Join(slug, att.Path))
-		ext := strings.ToLower(filepath.Ext(att.Path))
-		ext_v2 := strings.ToLower(filepath.Ext(att.OriginalFilename))
 
-		log.Printf("Transforming attachment ID %s (%s) ext (%s) to HTML tag", id, att.Path, ext_v2)
+		rel := filepath.ToSlash(filepath.Join(slug, att.Path))
+		ext_v2 := strings.ToLower(filepath.Ext(att.OriginalFilename))
 
 		switch ext_v2 {
 		case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg":
@@ -1031,16 +718,14 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
-			log.Println("Embedding NES player for", name, "with ID", uniqueID)
-			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		case ".pbp", ".chd", ".7z":
 			uniqueID := fmt.Sprintf("pbp_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
-			log.Println("Embedding PSX player for", name, "with ID", uniqueID)
-			return parser.GeneratePlayStationPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+			return parser.GeneratePlayStationPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		case ".zip":
 			uniqueID := fmt.Sprintf("arc_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
@@ -1048,10 +733,8 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 				name = filepath.Base(att.Path)
 			}
 			if strings.HasSuffix(strings.ToLower(name), ".arc.zip") {
-				log.Println("Embedding Arcade player for", name, "with ID", uniqueID)
-				return parser.GenerateArcadePlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+				return parser.GenerateArcadePlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 			}
-			//TODO 默认下载
 			return `<a href="` + rel + `" download>` + htmlEscape(name) + `</a>`
 		case ".gba":
 			uniqueID := fmt.Sprintf("gba_%x", md5.Sum([]byte(id)))[:12]
@@ -1059,24 +742,21 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta) string {
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
-			log.Println("Embedding GBA player for", name, "with ID", uniqueID)
-			return parser.GenerateGBAPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+			return parser.GenerateGBAPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		case ".jar":
 			uniqueID := fmt.Sprintf("jar_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
-			log.Println("Embedding Jar player for", name, "with ID", uniqueID)
-			return parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+			return parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		case ".md", ".smd", ".gen", ".bin", ".sms", ".gg", ".32x", ".cue", ".iso":
 			uniqueID := fmt.Sprintf("sega_%x", md5.Sum([]byte(id)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
-			log.Println("EmbeddingJS Sega player for", name, "with ID", uniqueID)
-			return parser.GenerateSegaMDPlayerHTML(uniqueID, rel, htmlEscape(name), ext)
+			return parser.GenerateSegaMDPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		default:
 			name := att.OriginalFilename
 			if name == "" {
@@ -1111,7 +791,7 @@ func htmlEscape(s string) string {
 	return s
 }
 
-// NoteMeta reflects the meta.txt content with attachment details.
+// NoteMeta and related structures remain the same
 type NoteMeta struct {
 	NoteID              int
 	Title               string
@@ -1131,11 +811,10 @@ type AttachmentMeta struct {
 }
 
 var (
-	reNoteID      = regexp.MustCompile(`(?m)^Note ID:\s*(\d+)\s*$`)
-	reTitle       = regexp.MustCompile(`(?m)^Title:\s*(.+)\s*$`)
-	reFolder      = regexp.MustCompile(`(?m)^Folder:\s*(.+)\s*$`)
-	reAttachCount = regexp.MustCompile(`(?m)^Attachments:\s*(\d+)\s*file\(s\)\s*$`)
-
+	reNoteID          = regexp.MustCompile(`(?m)^Note ID:\s*(\d+)\s*$`)
+	reTitle           = regexp.MustCompile(`(?m)^Title:\s*(.+)\s*$`)
+	reFolder          = regexp.MustCompile(`(?m)^Folder:\s*(.+)\s*$`)
+	reAttachCount     = regexp.MustCompile(`(?m)^Attachments:\s*(\d+)\s*file\(s\)\s*$`)
 	reAttachmentStart = regexp.MustCompile(`(?i)^\s*\d+\.\s*Saved\s*as:\s*(.+?)\s*$`)
 	reKeyVal          = regexp.MustCompile(`^\s*([A-Za-z ]+):\s*(.*?)\s*$`)
 	reFirstInt        = regexp.MustCompile(`(\d+)`)
@@ -1151,7 +830,6 @@ func ParseMetaFile(path string) (NoteMeta, error) {
 
 func ParseMeta(text string) (NoteMeta, error) {
 	m := NoteMeta{Attachments: map[string]AttachmentMeta{}}
-
 	t := normalizeNewlines(text)
 
 	if id, err := findInt(reNoteID, t); err == nil {
@@ -1266,7 +944,6 @@ func extractAttachmentSection(s string) string {
 	return s[i:]
 }
 
-// Pruning functions
 func pruneOutToMatchSource() error {
 	outAbs, err := filepath.Abs(outDir)
 	if err != nil {
@@ -1281,10 +958,8 @@ func pruneOutToMatchSource() error {
 
 func computeExpectedOutputs(outAbs string) (map[string]struct{}, error) {
 	expected := make(map[string]struct{})
-
 	add := func(p string) { expected[filepath.Clean(p)] = struct{}{} }
 
-	// Core files
 	add(filepath.Join(outAbs, "index.html"))
 	add(filepath.Join(outAbs, "sitemap.xml"))
 	add(filepath.Join(outAbs, "rss.xml"))
@@ -1309,6 +984,7 @@ func computeExpectedOutputs(outAbs string) (map[string]struct{}, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	for _, e := range entries {
 		if e.IsDir() {
 			continue
@@ -1358,6 +1034,7 @@ func pruneDirRecursive(root, dir string, expected map[string]struct{}) error {
 	if err != nil {
 		return err
 	}
+
 	for _, e := range ents {
 		p := filepath.Join(dir, e.Name())
 		if e.IsDir() {
@@ -1378,6 +1055,7 @@ func pruneDirRecursive(root, dir string, expected map[string]struct{}) error {
 			}
 		}
 	}
+
 	return nil
 }
 
