@@ -1,21 +1,24 @@
 ## simples
 
 * Sync Mac Notes to web page
+* 根据自己的MacOS版本选择符合自己的分支即可。
+
+> 注意：如果你使用的是MacOS 26.0及以上版本，请使用`release/macos_26.x`分支。如果你使用的是MacOS 15.x及以下版本，请使用`release/macos_15.x`分支。
 
 
-![img.png](img.png)
+![img.png](image/img.png)
 
 * index page
 
-![img_2.png](img_2.png)
+![img_2.png](image/img_2.png)
 
 * password protected
 
-![img_3.png](img_3.png)
+![img_3.png](image/img_3.png)
 
 * PyQt6 GUI
 
-![img_1.png](img_1.png)
+![img_1.png](image/img_1.png)
  
 #### 简单干净
 
@@ -51,35 +54,3 @@ python watch_notes_service_v2/qt_main.py
 * https://github.com/keithvassallomt/taskbridge
 * https://www.ciofecaforensics.com/2024/12/10/ios18-notes/
 * https://github.com/threeplanetssoftware/apple_cloud_notes_parser
-
-
-
-### build package 
-
-```bash
-python -m pip install -U pip setuptools wheel
-python -m pip install PySide6 nuitka ordered-set zstandard
-❯ python -m nuitka --version
-2.7.13
-Commercial: None
-Python: 3.13.7 | packaged by Anaconda, Inc. | (main, Sep  9 2025, 19:54:17) [Clang 17.0.6 ]
-Flavor: Anaconda Python
-GIL: yes
-Executable: ~/miniconda/envs/zlibs/bin/python
-OS: Darwin
-Arch: arm64
-macOSRelease: 15.5
-Version C compiler: /opt/homebrew/opt/llvm/bin/clang (clang 20.1.7).
-```
-
-* Nuitka
-
-
-
-### parse game 
-
-* nes [done]
-* gba [done]
-* ps  [done]
-* md  [done]
-* Arcade 有点小问题(neogeo bios 只能支持部分游戏很少)
