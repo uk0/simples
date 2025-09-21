@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"retroblog/parser"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -333,7 +334,7 @@ func buildPageWithProtection(noteMDPath, category string) (post, *protectionInfo
 
 			// 找出受保护部分中的附件ID
 			protectedAttachmentIDs = findAttachmentIDs(protectedBody)
-
+			fmt.Println("Protected attachment IDs:", protectedAttachmentIDs)
 			// 构建受保护的附件路径列表
 			var protectedPaths []string
 			for _, id := range protectedAttachmentIDs {
@@ -674,22 +675,25 @@ func watch() {
 	}
 }
 
-var attachmentRefRe = regexp.MustCompile(`\[Attachment:\s*([A-Za-z0-9_-]+)\]`)
+var attachmentRefRe = regexp.MustCompile(`\[Attachment:\s*([\p{Han}A-Za-z0-9_.-]+)\]`)
 
 func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta, isProtected bool) string {
 	return attachmentRefRe.ReplaceAllStringFunc(body, func(match string) string {
 		m := attachmentRefRe.FindStringSubmatch(match)
+		fmt.Println("Found attachment tag:", match, "->", m)
 		if len(m) != 2 {
 			return match
 		}
-		id := m[1]
-		att, ok := meta.Attachments[id]
+		originalFilename := m[1]
+		att, ok := meta.Attachments[originalFilename]
 		if !ok {
 			return match
 		}
 
 		rel := filepath.ToSlash(filepath.Join(slug, att.Path))
 		ext_v2 := strings.ToLower(filepath.Ext(att.OriginalFilename))
+
+		fmt.Println("Processing attachment:", att.OriginalFilename, "as", rel, "ext:", ext_v2)
 
 		switch ext_v2 {
 		case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg":
@@ -713,45 +717,47 @@ func transformAttachmentTagsByMeta(body, slug string, meta NoteMeta, isProtected
   <a href="` + rel + `">Download audio</a>
 </audio>`
 		case ".nes":
-			uniqueID := fmt.Sprintf("nes_%x", md5.Sum([]byte(id)))[:12]
+			uniqueID := fmt.Sprintf("nes_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
 			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		case ".pbp", ".chd", ".7z":
-			uniqueID := fmt.Sprintf("pbp_%x", md5.Sum([]byte(id)))[:12]
+			uniqueID := fmt.Sprintf("pbp_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
 			return parser.GeneratePlayStationPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		case ".zip":
-			uniqueID := fmt.Sprintf("arc_%x", md5.Sum([]byte(id)))[:12]
+			uniqueID := fmt.Sprintf("arc_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
-			if strings.HasSuffix(strings.ToLower(name), ".arc.zip") {
+			// name
+
+			if slices.Contains([]string{"kof97.zip", "pbobbl2n.zip", "kof98.zip"}, name) {
 				return parser.GenerateArcadePlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 			}
 			return `<a href="` + rel + `" download>` + htmlEscape(name) + `</a>`
 		case ".gba":
-			uniqueID := fmt.Sprintf("gba_%x", md5.Sum([]byte(id)))[:12]
+			uniqueID := fmt.Sprintf("gba_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
 			return parser.GenerateGBAPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		case ".jar":
-			uniqueID := fmt.Sprintf("jar_%x", md5.Sum([]byte(id)))[:12]
+			uniqueID := fmt.Sprintf("jar_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
 			return parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 		case ".md", ".smd", ".gen", ".bin", ".sms", ".gg", ".32x", ".cue", ".iso":
-			uniqueID := fmt.Sprintf("sega_%x", md5.Sum([]byte(id)))[:12]
+			uniqueID := fmt.Sprintf("sega_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
@@ -865,7 +871,8 @@ func ParseMeta(text string) (NoteMeta, error) {
 	flush := func() {
 		if cur != nil {
 			if cur.ID != "" {
-				m.Attachments[cur.ID] = *cur
+				//TODO 因为部分加载器无法使用ID获取的文件进行加载，所以这里改为使用OriginalFilename作为key
+				m.Attachments[cur.OriginalFilename] = *cur
 			} else if cur.SavedAs != "" {
 				key := strings.TrimSuffix(cur.SavedAs, filepath.Ext(cur.SavedAs))
 				m.Attachments[key] = *cur

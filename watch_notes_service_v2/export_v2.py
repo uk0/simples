@@ -232,6 +232,7 @@ class AppleNote:
         self.styles = []
         self.raw_data = None
         self.raw_protobuf = None
+        self.attachment_extractor = None # 父执行器
         self.formatted_text = ""
         self.html_content = ""  # HTML格式的内容
         self.folder_name = ""
@@ -705,10 +706,9 @@ class AppleNote:
         # 附件
         if attr_run.attachment_info:
             att = attr_run.attachment_info
-            if att.filename:
-                result.append(f'<img src="attachments/{html.escape(att.filename)}" alt="attachment">')
-            else:
-                result.append(f'[Attachment: {html.escape(att.identifier[:8])}]')
+            details = self.attachment_extractor.get_attachment_details(att.identifier)
+            print("Processing attachment in HTML:", att.identifier, details)
+            result.append(f'[Attachment: {html.escape(details.get("media_filename", details.get("original_filename", "unknown")))}]')
         else:
             # 添加文本内容
             escaped_text = html.escape(text)
@@ -966,9 +966,11 @@ class AttachmentExtractor:
 
             attachment.original_filename = details.get('original_filename', '')
 
+            print("      - Extracting attachment:", details)
+
             filename = None
-            if details.get('filename'):
-                filename = details['filename']
+            if details.get('media_filename') == details['original_filename']:
+                filename = details['media_filename']
 
             if not filename:
                 ext = self._uti_to_extension(attachment.type_uti)
@@ -1033,6 +1035,10 @@ class AttachmentExtractor:
 
         uti_map = {
             'public.jpeg': '.jpg',
+            'com.sun.java-archive': '.jar',
+            'public.python-script': '.py',
+            'org.webmproject.webp': '.webp',
+            'public.zip-archive': '.zip',
             'public.png': '.png',
             'public.heic': '.heic',
             'public.heif': '.heif',
@@ -1275,8 +1281,10 @@ class AppleNotesExporter:
         note.snippet = snippet or ""
         note.creation_date = created
         note.modification_date = modified
+        note.attachment_extractor = self.attachment_extractor
 
         if note.parse_from_blob(data):
+            #TODO 先倒出文件
             self._save_note(note_id, note, folder_name, data)
             self.stats['success'] += 1
 
@@ -1403,7 +1411,9 @@ class AppleNotesExporter:
             os.makedirs(attachments_dir, exist_ok=True)
 
             print(f"    Extracting {len(note.attachments)} attachment(s)...")
+
             for att in note.attachments:
+                print(f"attachment Info {att.type_uti}")
                 success = self.attachment_extractor.extract_attachment(
                     att, Path(attachments_dir)
                 )
