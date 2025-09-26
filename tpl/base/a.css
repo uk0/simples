@@ -4,79 +4,79 @@
 
 /* CSS 变量定义 */
 :root {
-  --win95-bg: #c0c0c0;
-  --panel: #dcdcdc;
-  --panel2: #d0d0d0;
-  --dark: #707070;
-  --mid: #9a9a9a;
-  --light: #ffffff;
-  --titlebar1: #1a4599;
-  --titlebar2: #0b2f7a;
-  --titletext: #008000;
-  --ink: #222;
-  --muted: #666;
-  --link-blue: #0000ee;
-  --link-purple: #551a8b;
-  --link-red: #ff0000;
+    --win95-bg: #c0c0c0;
+    --panel: #dcdcdc;
+    --panel2: #d0d0d0;
+    --dark: #707070;
+    --mid: #9a9a9a;
+    --light: #ffffff;
+    --titlebar1: #1a4599;
+    --titlebar2: #0b2f7a;
+    --titletext: #008000;
+    --ink: #222;
+    --muted: #666;
+    --link-blue: #0000ee;
+    --link-purple: #551a8b;
+    --link-red: #ff0000;
 }
 
 /* ========== 基础样式 ========== */
 html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  background-image: url('/syslogo.png');
-  background-color: transparent;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--ink);
-  padding: 20px;
+    background-image: url('/syslogo.png');
+    background-color: transparent;
+    font-family: "LXGW WenKai Screen";
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+    padding: 20px;
 }
 
 body.win95-bg {
-  background-color: transparent;
-  background-image: url('syslogo.png');
-  background-repeat: repeat;
-  background-attachment: fixed;
-  font-family: "Segoe UI", Tahoma, Verdana, Arial, sans-serif;
-  font-size: 15px;
+    background-color: transparent;
+    background-image: url('syslogo.png');
+    background-repeat: repeat;
+    background-attachment: fixed;
+    font-family: "Segoe UI", Tahoma, Verdana, Arial, sans-serif;
+    font-size: 15px;
 }
 
 /* ========== 布局助手类 ========== */
 .center {
-  margin-left: auto;
-  margin-right: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .text_center {
-  text-align: center;
+    text-align: center;
 }
 
 /* ========== 表格样式 ========== */
 table {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 td {
-  padding: 4px 8px;
-  background-color: transparent;
+    padding: 4px 8px;
+    background-color: transparent;
 }
 
 /* 复古表格边框样式 */
 table[border="1"] {
-  border: 1px solid #c0c0c0;
-  border-right-color: #808080;
-  border-bottom-color: #808080;
+    border: 1px solid #c0c0c0;
+    border-right-color: #808080;
+    border-bottom-color: #808080;
 }
 
 table[border="1"] td {
-  border: 1px solid #c0c0c0;
-  border-left-color: #808080;
-  border-top-color: #808080;
+    border: 1px solid #c0c0c0;
+    border-left-color: #808080;
+    border-top-color: #808080;
 }
 
 /* Windows 95 风格表格 */
@@ -84,394 +84,418 @@ table.outer {
 }
 
 .frame {
-  background: var(--panel);
-  border-width: 2px;
-  border-style: solid;
-  border-color: var(--light) var(--dark) var(--dark) var(--light);
-  box-shadow: 0 0 0 1px var(--mid) inset;
+    background: var(--panel);
+    border-width: 2px;
+    border-style: solid;
+    border-color: var(--light) var(--dark) var(--dark) var(--light);
+    box-shadow: 0 0 0 1px var(--mid) inset;
 }
 
 /* ========== 导航栏样式 ========== */
 nav table {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 nav td {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 nav td.active {
-  background-color: #e0e0e0;
-  font-weight: bold;
+    background-color: #e0e0e0;
+    font-weight: bold;
 }
 
 /* Windows 95 导航栏 */
 .nav {
-  background: var(--panel2);
-  padding: 8px 10px;
-  border-top: 1px solid var(--mid);
-  border-bottom: 1px solid var(--light);
+    background: var(--panel2);
+    padding: 8px 10px;
+    border-top: 1px solid var(--mid);
+    border-bottom: 1px solid var(--light);
 }
 
 .nav .sep {
-  color: #666;
-  padding: 0 6px;
+    color: #666;
+    padding: 0 6px;
 }
 
 /* ========== 标题栏样式 ========== */
 .titlebar {
-  padding: 6px 10px;
-  background: linear-gradient(62deg, #0b0c10, #adadad);
-  border-width: 2px;
-  border-style: solid;
-  border-color: var(--dark) var(--light) var(--light) var(--dark);
+    padding: 6px 10px;
+    background: linear-gradient(62deg, #0b0c10, #adadad);
+    border-width: 2px;
+    border-style: solid;
+    border-color: var(--dark) var(--light) var(--light) var(--dark);
 }
 
 .title {
-  margin: 4px 0;
-  color: var(--titletext);
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+    margin: 4px 0;
+    color: var(--titletext);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 /* ========== 头像样式 ========== */
 .avatar-cell {
-  background: var(--panel2);
+    background: var(--panel2);
 }
 
 .avatar {
-  height: 64px;
-  width: 64px;
-  border: 1px solid #c0c0c0;
+    height: 64px;
+    width: 64px;
+    border: 1px solid #c0c0c0;
 }
 
 /* Windows 95 风格头像 */
 body.win95-bg .avatar {
-  height: 110px;
-  width: 110px;
-  image-rendering: pixelated;
-  border: 1px outset var(--panel);
-  background: var(--light);
-  border-radius: 55px;
+    height: 110px;
+    width: 110px;
+    image-rendering: pixelated;
+    border: 1px outset var(--panel);
+    background: var(--light);
+    border-radius: 55px;
 }
 
 /* ========== 信息栏样式 ========== */
 .infobar {
-  background: var(--panel2);
-  border-width: 2px;
-  border-style: inset;
-  border-color: var(--dark);
-  padding: 6px 10px;
-  font-size: 13px;
-  color: var(--muted);
+    background: var(--panel2);
+    border-width: 2px;
+    border-style: inset;
+    border-color: var(--dark);
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--muted);
 }
 
 .infotitle {
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: #333;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #333;
 }
 
 .infovalue {
-  font-family: ui-monospace, "Courier New", Consolas, monospace;
+    font-family: ui-monospace, "Courier New", Consolas, monospace;
 }
 
 /* ========== 内容区域样式 ========== */
 .content {
-  margin-bottom: 10px;
-  background: transparent;
-  padding: 8px 4px 18px;
+    margin-bottom: 10px;
+    background: transparent;
+    padding: 8px 4px 18px;
 }
 
 .content td {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .content td:first-child {
-  text-align: right;
-  font-family: monospace;
-  color: #666666;
+    text-align: right;
+    font-family: "LXGW WenKai Screen";
+    color: #666666;
 }
 
 /* ========== 文章列表样式 ========== */
 .postlist {
-  width: 100%;
-  background: var(--light);
-  font-size: 14px;
+    width: 100%;
+    background: var(--light);
+    font-size: 14px;
 }
 
 .postlist td {
-  background: #fbfbfb;
+    background: #fbfbfb;
 }
 
 .postlist tr:nth-child(even) td {
-  background: #f3f3f3;
+    background: #f3f3f3;
 }
 
 .postlist tr:hover td {
-  background: #e9f0ff;
+    background: #e9f0ff;
 }
 
 .date {
-  font-family: ui-monospace, "Courier New", Consolas, monospace;
-  color: #333;
+    font-family: "LXGW WenKai Screen";
+    color: #333;
 }
 
 /* ========== 分类标题样式 ========== */
 .cat-header {
-  margin: 16px 0 6px;
-  background: linear-gradient(180deg, #efefef, #dbdbdb);
-  border: 1px solid var(--mid);
-  box-shadow: 0 0 0 1px var(--light) inset;
+    margin: 16px 0 6px;
+    background: linear-gradient(180deg, #efefef, #dbdbdb);
+    border: 1px solid var(--mid);
+    box-shadow: 0 0 0 1px var(--light) inset;
 }
 
 .cat-title {
-  margin: 0;
-  padding: 6px 8px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #1f1f1f;
+    margin: 0;
+    padding: 6px 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f1f1f;
 }
 
 /* ========== 文章内容样式 ========== */
 .post-content {
-  padding: 20px;
+    padding: 20px;
 }
 
 .post-body {
-  max-width: 650px;
-  background: #fff;
-  padding: 10px 12px;
-  border: 2px inset var(--panel);
+    max-width: 650px;
+    background: #fff;
+    padding: 10px 12px;
+    border: 2px inset var(--panel);
 }
 
 .post-meta {
-  color: #666666;
-  font-size: 13px;
-  margin: 10px 0;
+    color: #666666;
+    font-size: 13px;
+    margin: 10px 0;
 }
 
 .post-category {
-  color: #666;
-  font-size: 0.9em;
+    color: #666;
+    font-size: 0.9em;
 }
 
 /* ========== 标题样式 ========== */
-h1 { font-size: 25px; }
-h2 { font-size: 22px; margin: 20px 0 10px 0; color: #333333; }
-h3 { font-size: 19px; }
-h4 { font-size: 17px; margin: 20px 0 10px 0; color: #333333; }
-h5 { font-size: 15px; }
-h6 { font-size: 13px; }
+h1 {
+    font-size: 25px;
+}
+
+h2 {
+    font-size: 22px;
+    margin: 20px 0 10px 0;
+    color: #333333;
+}
+
+h3 {
+    font-size: 19px;
+}
+
+h4 {
+    font-size: 17px;
+    margin: 20px 0 10px 0;
+    color: #333333;
+}
+
+h5 {
+    font-size: 15px;
+}
+
+h6 {
+    font-size: 13px;
+}
 
 /* ========== 链接样式 ========== */
 a {
-  color: var(--link-blue);
-  text-decoration: underline;
+    color: var(--link-blue);
+    text-decoration: underline;
 }
 
 a:visited {
-  color: var(--link-purple);
+    color: var(--link-purple);
 }
 
 a:hover {
-  color: var(--link-red);
+    color: var(--link-red);
 }
 
 /* 导航链接特殊样式 */
 .nav a, .postlist a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 /* ========== 媒体内容样式 ========== */
 img, video {
-  max-width: 650px;
-  max-height: 650px;
+    max-width: 650px;
+    max-height: 650px;
 }
 
 audio {
-  max-width: 650px;
-  max-height: 66px;
+    max-width: 650px;
+    max-height: 66px;
 }
 
 .post-body img {
-  max-width: 100%;
-  height: auto;
-  border: 2px inset var(--panel);
-  background: #fff;
+    max-width: 100%;
+    height: auto;
+    border: 2px inset var(--panel);
+    background: #fff;
 }
 
 article img {
-  max-width: 100%;
-  height: auto;
-  border: 1px solid #ddd;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
 }
 
 /* ========== 代码样式 ========== */
 pre {
-  background-color: #f4f4f4;
-  border: 1px solid #ddd;
-  padding: 10px;
-  overflow-x: auto;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 13px;
-  max-width: 100%;
-  white-space: pre;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 10px;
+    overflow-x: auto;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 13px;
+    max-width: 100%;
+    white-space: pre;
 }
 
 code {
-  background-color: #f4f4f4;
-  padding: 2px 4px;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 13px;
-  word-break: break-all;
+    background-color: #f4f4f4;
+    padding: 2px 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 13px;
+    word-break: break-all;
 }
 
 .post-body pre {
-  background: #f4f4f4;
-  border: 1px solid #ccc;
-  padding: 8px;
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    padding: 8px;
 }
 
 .post-body code {
-  background: #f4f4f4;
-  padding: 0 3px;
-  border: 1px solid #ddd;
+    background: #f4f4f4;
+    padding: 0 3px;
+    border: 1px solid #ddd;
 }
 
 /* ========== 代码高亮样式 ========== */
 pre code.hljs {
-  border: 2px inset #c0c0c0;
-  background: #ffffff;
-  font-family: "Courier New", monospace;
-  font-size: 13px;
-  padding: 8px;
-  padding-left: 10px !important;
-  position: relative;
+    border: 2px inset #c0c0c0;
+    background: #ffffff;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    padding: 8px;
+    padding-left: 10px !important;
+    position: relative;
 }
 
 /* 行号样式 */
 .hljs-ln-numbers {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  text-align: right;
-  color: #999;
-  border-right: 1px solid #ddd;
-  vertical-align: top;
-  padding-right: 5px !important;
-  padding-left: 2px !important;
-  width: 20px;
-  white-space: nowrap;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    text-align: right;
+    color: #999;
+    border-right: 1px solid #ddd;
+    vertical-align: top;
+    padding-right: 5px !important;
+    padding-left: 2px !important;
+    width: 20px;
+    white-space: nowrap;
 }
 
 .hljs-ln-code {
-  padding-left: 5px !important;
-  white-space: pre;
+    padding-left: 5px !important;
+    white-space: pre;
 }
 
 table.hljs-ln {
-  margin: 0;
-  padding: 0;
-  border: none;
+    margin: 0;
+    padding: 0;
+    border: none;
 }
 
 table.hljs-ln td {
-  border: none;
-  padding: 0;
+    border: none;
+    padding: 0;
 }
 
 /* ========== 其他元素样式 ========== */
 blockquote {
-  border-left: 4px solid #ddd;
-  margin: 10px 0;
-  padding-left: 15px;
-  color: #666;
+    border-left: 4px solid #ddd;
+    margin: 10px 0;
+    padding-left: 15px;
+    color: #666;
 }
 
 .post-body blockquote {
-  margin: 8px 0;
-  padding: 6px 10px;
-  background: #f9f9f9;
-  border-left: 4px solid #bbb;
+    margin: 8px 0;
+    padding: 6px 10px;
+    background: #f9f9f9;
+    border-left: 4px solid #bbb;
 }
 
 hr {
-  border: none;
-  border-top: 1px solid #cccccc;
-  margin: 20px 0;
+    border: none;
+    border-top: 1px solid #cccccc;
+    margin: 20px 0;
 }
 
 .hr-etched {
-  border: 0;
-  border-top: 1px solid #ccc;
-  height: 0;
+    border: 0;
+    border-top: 1px solid #ccc;
+    height: 0;
 }
 
 /* ========== 页脚样式 ========== */
 .footer {
-  margin-top: 40px;
-  padding: 20px;
+    margin-top: 40px;
+    padding: 20px;
 }
 
 .footer hr {
-  width: 300px;
-  margin: 10px auto;
+    width: 300px;
+    margin: 10px auto;
 }
 
 /* Windows 95 风格页脚 */
 body.win95-bg .footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 60px;
-  line-height: 18px;
-  text-align: center;
-  background: transparent;
-  font-size: 12px;
-  color: #222;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 60px;
+    line-height: 18px;
+    text-align: center;
+    background: transparent;
+    font-size: 12px;
+    color: #222;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 /* ========== 响应式设计 ========== */
 @media (max-width: 760px) {
-  .frame {
-    width: 96% !important;
-  }
-  .infobar {
-    display: none;
-  }
-  .date {
-    display: none;
-  }
-  .title {
-    font-size: 18px;
-  }
+    .frame {
+        width: 96% !important;
+    }
+
+    .infobar {
+        display: none;
+    }
+
+    .date {
+        display: none;
+    }
+
+    .title {
+        font-size: 18px;
+    }
 }
 
 /* ========== 文章表格样式 ========== */
 article table,
 article th,
 article td {
-  border: 1px solid black;
+    border: 1px solid black;
 }
 
 
 div.page {
-  display: block;
-  width: 612px;
+    display: block;
+    width: 612px;
 }
 
 .center {
-  margin-left: auto;
-  margin-right: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .text_center {
-  text-align: center;
+    text-align: center;
 }
 
