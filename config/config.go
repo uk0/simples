@@ -7,6 +7,8 @@ import (
 	"sync"
 
 	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
 	ghtml "github.com/yuin/goldmark/renderer/html"
 )
 
@@ -39,9 +41,14 @@ var (
 func Initialize() {
 	BaseURL = strings.TrimRight(BaseURL, "/")
 	LoadTemplates()
-
 	MdConv = goldmark.New(
+		goldmark.WithExtensions(extension.GFM, extension.Table, extension.TaskList, extension.Strikethrough, extension.CJK),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
 		goldmark.WithRendererOptions(
+			ghtml.WithHardWraps(),
+			ghtml.WithXHTML(),
 			ghtml.WithUnsafe(),
 		),
 	)
