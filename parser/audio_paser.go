@@ -11,6 +11,7 @@ import (
 
 // GenerateAudioWarpHTML 生成用于在Web上展示音频内容的模块
 // macOS Sequoia 风格透明毛玻璃设计，高对比度优化
+// 原生HTML5音频，完美支持多实例
 func GenerateAudioWarpHTML(audioId, audioPath string) string {
 	safeAudioId := template.HTMLEscapeString(audioId)
 	safeAudioPath := template.HTMLEscapeString(audioPath)
@@ -115,10 +116,15 @@ func GenerateAudioWarpHTML(audioId, audioPath string) string {
 const UNIQUE_ID='%[1]s';
 const AUDIO_URL='%[2]s';
 const elements={wrapper:document.getElementById(UNIQUE_ID+'-wrapper'),loading:document.getElementById(UNIQUE_ID+'-loading'),error:document.getElementById(UNIQUE_ID+'-error'),audioEl:document.getElementById(UNIQUE_ID+'-player'),playBtn:document.getElementById(UNIQUE_ID+'-play'),prevBtn:document.getElementById(UNIQUE_ID+'-prev'),nextBtn:document.getElementById(UNIQUE_ID+'-next'),progress:document.getElementById(UNIQUE_ID+'-progress'),progressBar:document.getElementById(UNIQUE_ID+'-progress-bar'),currentTime:document.getElementById(UNIQUE_ID+'-current-time'),duration:document.getElementById(UNIQUE_ID+'-duration'),volumeIcon:document.getElementById(UNIQUE_ID+'-volume-icon'),volumeSlider:document.getElementById(UNIQUE_ID+'-volume-slider'),volumeBar:document.getElementById(UNIQUE_ID+'-volume-bar'),visualizer:document.getElementById(UNIQUE_ID+'-visualizer')};
+if(!elements.wrapper||!elements.audioEl){
+console.error('Audio player elements not found for:',UNIQUE_ID);
+return;
+}
 let isPlaying=false;
 let isDragging=false;
 let visualizerBars=[];
 let loadingHidden=false;
+let animationId=null;
 function formatTime(seconds){
 if(isNaN(seconds)||!isFinite(seconds))return'0:00';
 const mins=Math.floor(seconds/60);
@@ -126,12 +132,13 @@ const secs=Math.floor(seconds%%60);
 return mins+':'+(secs<10?'0':'')+secs;
 }
 function hideLoading(){
-if(!loadingHidden){
+if(!loadingHidden&&elements.loading){
 elements.loading.style.display='none';
 loadingHidden=true;
 }
 }
 function initVisualizer(){
+if(!elements.visualizer)return;
 for(let i=0;i<50;i++){
 const bar=document.createElement('div');
 bar.className='audio-bar';
@@ -146,29 +153,43 @@ visualizerBars.forEach(bar=>{
 const height=Math.random()*24+6;
 bar.style.height=height+'px';
 });
-requestAnimationFrame(animateVisualizer);
+animationId=requestAnimationFrame(animateVisualizer);
 }else{
+if(animationId){
+cancelAnimationFrame(animationId);
+animationId=null;
+}
 visualizerBars.forEach(bar=>{
 bar.style.height='6px';
 });
 }
 }
 function togglePlay(){
+if(!elements.audioEl)return;
 if(isPlaying){
 elements.audioEl.pause();
-elements.playBtn.innerHTML='▶';
+if(elements.playBtn)elements.playBtn.innerHTML='▶';
 isPlaying=false;
+animateVisualizer();
 }else{
-elements.audioEl.play().then(()=>{
-elements.playBtn.innerHTML='⏸';
+const playPromise=elements.audioEl.play();
+if(playPromise!==undefined){
+playPromise.then(()=>{
+if(elements.playBtn)elements.playBtn.innerHTML='⏸';
 isPlaying=true;
 animateVisualizer();
 }).catch(err=>{
 console.error('Play error:',err);
+if(elements.error){
+elements.error.style.display='flex';
+elements.error.textContent='❌ Playback failed';
+}
 });
 }
 }
+}
 function updateProgress(){
+if(!elements.audioEl||!elements.progressBar||!elements.currentTime)return;
 if(!isDragging&&elements.audioEl.duration){
 const percent=(elements.audioEl.currentTime/elements.audioEl.duration)*100;
 elements.progressBar.style.width=percent+'%%';
@@ -176,6 +197,7 @@ elements.currentTime.textContent=formatTime(elements.audioEl.currentTime);
 }
 }
 function seekAudio(e){
+if(!elements.audioEl||!elements.progress)return;
 const rect=elements.progress.getBoundingClientRect();
 const percent=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
 const time=percent*elements.audioEl.duration;
@@ -185,6 +207,7 @@ updateProgress();
 }
 }
 function updateVolume(e){
+if(!elements.audioEl||!elements.volumeSlider||!elements.volumeBar)return;
 const rect=elements.volumeSlider.getBoundingClientRect();
 const percent=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
 elements.audioEl.volume=percent;
@@ -192,14 +215,18 @@ elements.volumeBar.style.width=(percent*100)+'%%';
 updateVolumeIcon(percent);
 }
 function updateVolumeIcon(volume){
+if(!elements.volumeIcon)return;
 if(volume===0)elements.volumeIcon.textContent='🔇';
 else if(volume<0.5)elements.volumeIcon.textContent='🔉';
 else elements.volumeIcon.textContent='🔊';
 }
 function initPlayer(){
+if(!elements.audioEl)return;
 elements.audioEl.addEventListener('loadedmetadata',function(){
 hideLoading();
+if(elements.duration){
 elements.duration.textContent=formatTime(elements.audioEl.duration);
+}
 console.log('Audio loaded:',elements.audioEl.duration+'s');
 });
 elements.audioEl.addEventListener('loadeddata',hideLoading);
@@ -207,43 +234,61 @@ elements.audioEl.addEventListener('canplay',hideLoading);
 elements.audioEl.addEventListener('canplaythrough',hideLoading);
 elements.audioEl.addEventListener('timeupdate',updateProgress);
 elements.audioEl.addEventListener('ended',function(){
-elements.playBtn.innerHTML='▶';
+if(elements.playBtn)elements.playBtn.innerHTML='▶';
 isPlaying=false;
 elements.audioEl.currentTime=0;
 updateProgress();
+animateVisualizer();
 });
 elements.audioEl.addEventListener('error',function(e){
 hideLoading();
+if(elements.error){
 elements.error.style.display='flex';
+}
 console.error('Audio error:',e);
 });
+if(elements.playBtn){
 elements.playBtn.addEventListener('click',togglePlay);
+}
+if(elements.progress){
 elements.progress.addEventListener('click',seekAudio);
 elements.progress.addEventListener('mousedown',function(){isDragging=true;});
+}
 document.addEventListener('mouseup',function(){isDragging=false;});
 document.addEventListener('mousemove',function(e){
 if(isDragging)seekAudio(e);
 });
+if(elements.volumeSlider){
 elements.volumeSlider.addEventListener('click',updateVolume);
+}
+if(elements.volumeIcon){
 elements.volumeIcon.addEventListener('click',function(){
+if(!elements.audioEl)return;
 if(elements.audioEl.volume>0){
 elements.audioEl.volume=0;
-elements.volumeBar.style.width='0%%';
+if(elements.volumeBar)elements.volumeBar.style.width='0%%';
 updateVolumeIcon(0);
 }else{
 elements.audioEl.volume=0.7;
-elements.volumeBar.style.width='70%%';
+if(elements.volumeBar)elements.volumeBar.style.width='70%%';
 updateVolumeIcon(0.7);
 }
 });
+}
+if(elements.prevBtn){
 elements.prevBtn.addEventListener('click',function(){
+if(elements.audioEl){
 elements.audioEl.currentTime=Math.max(0,elements.audioEl.currentTime-10);
+}
 });
+}
+if(elements.nextBtn){
 elements.nextBtn.addEventListener('click',function(){
-if(elements.audioEl.duration){
+if(elements.audioEl&&elements.audioEl.duration){
 elements.audioEl.currentTime=Math.min(elements.audioEl.duration,elements.audioEl.currentTime+10);
 }
 });
+}
 document.addEventListener('keydown',function(e){
 if(!elements.wrapper)return;
 const activeElement=document.activeElement;
@@ -257,40 +302,63 @@ togglePlay();
 e.preventDefault();
 break;
 case 'ArrowLeft':
+if(elements.audioEl){
 elements.audioEl.currentTime=Math.max(0,elements.audioEl.currentTime-5);
+}
 e.preventDefault();
 break;
 case 'ArrowRight':
-if(elements.audioEl.duration){
+if(elements.audioEl&&elements.audioEl.duration){
 elements.audioEl.currentTime=Math.min(elements.audioEl.duration,elements.audioEl.currentTime+5);
 }
 e.preventDefault();
 break;
 case 'ArrowUp':
+if(elements.audioEl){
 elements.audioEl.volume=Math.min(1,elements.audioEl.volume+0.1);
-elements.volumeBar.style.width=(elements.audioEl.volume*100)+'%%';
+if(elements.volumeBar)elements.volumeBar.style.width=(elements.audioEl.volume*100)+'%%';
 updateVolumeIcon(elements.audioEl.volume);
+}
 e.preventDefault();
 break;
 case 'ArrowDown':
+if(elements.audioEl){
 elements.audioEl.volume=Math.max(0,elements.audioEl.volume-0.1);
-elements.volumeBar.style.width=(elements.audioEl.volume*100)+'%%';
+if(elements.volumeBar)elements.volumeBar.style.width=(elements.audioEl.volume*100)+'%%';
 updateVolumeIcon(elements.audioEl.volume);
+}
 e.preventDefault();
 break;
 case 'm':
-elements.volumeIcon.click();
+if(elements.volumeIcon)elements.volumeIcon.click();
 e.preventDefault();
 break;
 }
 });
 initVisualizer();
+if(elements.audioEl){
 elements.audioEl.volume=0.7;
+}
+if(elements.volumeBar){
 elements.volumeBar.style.width='70%%';
+}
 setTimeout(hideLoading,3000);
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initPlayer);
-else initPlayer();
+if(document.readyState==='loading'){
+document.addEventListener('DOMContentLoaded',initPlayer);
+}else{
+initPlayer();
+}
+window.addEventListener('beforeunload',function(){
+if(animationId){
+cancelAnimationFrame(animationId);
+}
+if(elements.audioEl){
+elements.audioEl.pause();
+elements.audioEl.src='';
+elements.audioEl.load();
+}
+});
 })();
 </script>`, uniqueId, safeAudioPath, audioType, fileNameWithoutExt, strings.ToUpper(strings.TrimPrefix(ext, ".")))
 }

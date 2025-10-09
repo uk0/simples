@@ -180,7 +180,18 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
-			return parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
+			// 这些是已知的Java游戏，可以直接运行
+			EnableJavaGames := []string{
+				"bomberman.jar", "bomberman2.jar", "bomberman3.jar",
+				"tankwars.jar", "tankwars2.jar",
+				"snake.jar", "snake2.jar",
+				"minesweeper.jar",
+				"tetris.jar", "tetris2.jar", "ForgottenWarrior.jar"}
+			if slices.Contains(EnableJavaGames, name) {
+				return parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
+			}
+			//默认下载
+			return parser.GenerateDownloadLinkHTML(uniqueID, rel, htmlEscape(name))
 
 		case ".zip":
 			uniqueID := fmt.Sprintf("arc_%x", md5.Sum([]byte(originalFilename)))[:12]

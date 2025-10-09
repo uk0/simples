@@ -1,3 +1,6 @@
+
+ CGO_ENABLED=0 GOOS=linux  GOARCH=amd64 go build -o blog
+
  rsync -av \
 --exclude='.git'  \
 --exclude='.DS_Store'  \
