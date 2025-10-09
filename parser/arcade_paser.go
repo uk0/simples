@@ -607,7 +607,7 @@ func GenerateArcadePlayerHTML(playerID, romPath, fileName, fileExt string) strin
         <input type="range" id="%[4]s-volume" min="0" max="100" value="70" />
       </label>
     </div>
-    <div class="option-group">
+    <!-- <div class="option-group">
       <label>
         <input type="checkbox" id="%[4]s-scanlines" />
         <span>📺 Scanlines</span>
@@ -618,7 +618,7 @@ func GenerateArcadePlayerHTML(playerID, romPath, fileName, fileExt string) strin
         <input type="checkbox" id="%[4]s-smooth" />
         <span>🎨 Smooth</span>
       </label>
-    </div>
+    </div> -->
   </div>
 
   <!-- Controls Information -->

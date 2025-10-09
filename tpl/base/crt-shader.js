@@ -699,7 +699,7 @@ function crt_shader_init() {
         crt.setParams({
             intensity: 1.0,
             scanlineStrength: 0.8,
-            scanlineCount: 600,// 根据分辨率调整600线一般够用了
+            scanlineCount: 750,// 根据分辨率调整600线一般够用了
             phosphorGlow: 0.3,
             rgbShift: 0.5,
             curvature: 0.12,
