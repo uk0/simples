@@ -611,12 +611,6 @@ func GeneratePlayStationPlayerHTML(playerID, romPath, fileName, fileExt string) 
     </div>
     <div class="option-group">
       <label>
-        <input type="checkbox" id="%[4]s-crt" />
-        <span>📺 CRT Filter</span>
-      </label>
-    </div>
-    <div class="option-group">
-      <label>
         <input type="checkbox" id="%[4]s-vibration" />
         <span>📳 Vibration</span>
       </label>
@@ -839,6 +833,10 @@ func GeneratePlayStationPlayerHTML(playerID, romPath, fileName, fileExt string) 
           // Callbacks
           window.EJS_onGameStart = function() {
             console.log('PlayStation game started:', ROM_NAME);
+			// try check if game loaded successfully after 0.5 seconds
+			setTimeout(() => {
+				crt_shader_init()
+			}, 1000);
             updateStatus('Running', 'running');
             hideLoading();
             emulatorReady = true;
@@ -934,16 +932,7 @@ func GeneratePlayStationPlayerHTML(playerID, romPath, fileName, fileExt string) 
           });
         }
         
-        // CRT filter toggle
-        const crtCheckbox = document.getElementById(UNIQUE_ID + '-crt');
-        if (crtCheckbox) {
-          crtCheckbox.addEventListener('change', function() {
-            crtFilter = this.checked;
-            if (window.EJS_emulator && window.EJS_emulator.setShader) {
-              window.EJS_emulator.setShader(crtFilter ? 'crt' : 'none');
-            }
-          });
-        }
+        
         
         // Vibration toggle
         const vibrationCheckbox = document.getElementById(UNIQUE_ID + '-vibration');

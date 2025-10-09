@@ -38,6 +38,9 @@
                 refreshRate: 85,
                 resolution: 1.0,
 
+                // CRT效果强度控制
+                crtIntensity: 1.0,  // 总体CRT效果强度 (0-2, 1为标准)
+
                 // 扫描线
                 scanlineIntensity: 0.15,
                 scanlineCount: 1080,
@@ -120,6 +123,7 @@
                 uniform float u_noiseAmount;
                 uniform float u_convergence;
                 uniform float u_halation;
+                uniform float u_crtIntensity;
                 
                 // Varyings
                 varying vec2 v_texCoord;
@@ -225,13 +229,13 @@
                     return color;
                 }
                 
-                // 光晕效果（亮区溢出）
+                // 光晕效果（亮区溢出）- 修复循环问题
                 vec3 halation(vec2 uv, vec3 color) {
                     vec3 halo = vec3(0.0);
-                    float samples = 5.0;
+                    const int SAMPLES = 5;  // 使用常量定义循环次数
                     
-                    for (float i = 0.0; i < samples; i++) {
-                        float angle = (i / samples) * PI * 2.0;
+                    for (int i = 0; i < SAMPLES; i++) {
+                        float angle = (float(i) / float(SAMPLES)) * PI * 2.0;
                         vec2 offset = vec2(cos(angle), sin(angle)) * u_halation * 0.01;
                         vec3 sample = texture2D(u_texture, uv + offset).rgb;
                         
@@ -242,7 +246,7 @@
                         }
                     }
                     
-                    return color + (halo / samples) * 0.3;
+                    return color + (halo / float(SAMPLES)) * 0.3;
                 }
                 
                 // 暗角效果
@@ -347,26 +351,35 @@
                         }
                     }
                     
-                    // 应用Trinitron磷光栅格
-                    color = trinitronPhosphor(uv, color);
+                    // 保存原始颜色
+                    vec3 originalColor = color;
                     
-                    // 应用扫描线
-                    color *= scanline(uv);
+                    // 应用Trinitron磷光栅格（带强度控制）
+                    color = mix(originalColor, trinitronPhosphor(uv, color), u_crtIntensity);
                     
-                    // Trinitron支撑线
-                    color *= trinitronWires(uv);
+                    // 应用扫描线（带强度控制）
+                    float scanlineEffect = scanline(uv);
+                    color *= mix(1.0, scanlineEffect, u_crtIntensity);
                     
-                    // 电子束扫描
-                    color *= electronBeam(uv);
+                    // Trinitron支撑线（带强度控制）
+                    float wireEffect = trinitronWires(uv);
+                    color *= mix(1.0, wireEffect, u_crtIntensity * 0.5);
                     
-                    // 光晕效果
-                    color = halation(uv, color);
+                    // 电子束扫描（带强度控制）
+                    float beamEffect = electronBeam(uv);
+                    color *= mix(1.0, beamEffect, u_crtIntensity * 0.3);
                     
-                    // 暗角
-                    color *= vignette(uv);
+                    // 光晕效果（带强度控制）
+                    vec3 haloColor = halation(uv, color);
+                    color = mix(color, haloColor, u_crtIntensity);
                     
-                    // 信号噪声
-                    color = signalNoise(uv, color);
+                    // 暗角（带强度控制）
+                    float vignetteEffect = vignette(uv);
+                    color *= mix(1.0, vignetteEffect, u_crtIntensity);
+                    
+                    // 信号噪声（带强度控制）
+                    vec3 noisyColor = signalNoise(uv, color);
+                    color = mix(color, noisyColor, u_crtIntensity * 0.5);
                     
                     // 色彩调整
                     color = colorGrading(color);
@@ -385,18 +398,6 @@
         }
 
         init() {
-            const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
-            console.log(`%c
-╔═══════════════════════════════════════════════════════════════╗
-║         CRT WebGL FW900 Complete Edition v${this.version}        ║
-║        Sony GDM-FW900 Professional CRT Simulation            ║
-║               Trinitron FD Technology                        ║
-║                     by ${this.padRight('uk0', 10)}                        ║
-║                  ${timestamp}                  ║
-╚═══════════════════════════════════════════════════════════════╝`,
-                'color: #00ff00; background: #000; font-family: "Courier New", monospace; font-weight: bold; text-shadow: 0 0 10px #00ff00');
-
-            this.printSpecs();
             this.printQuickStart();
         }
 
@@ -404,21 +405,6 @@
             return str + ' '.repeat(Math.max(0, length - str.length));
         }
 
-        printSpecs() {
-            console.log(`%c
-📺 Sony FW900 技术规格:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• 型号: ${this.fw900Specs.model}
-• 技术: ${this.fw900Specs.type}
-• 尺寸: ${this.fw900Specs.size}
-• 分辨率: ${this.fw900Specs.maxResolution}
-• 刷新率: ${this.fw900Specs.refreshRate}Hz
-• 点距: ${this.fw900Specs.dotPitch}mm
-• 磷光粉: ${this.fw900Specs.phosphorType}
-• 显像管: ${this.fw900Specs.tubeType}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-                'color: #00ffff; font-family: monospace');
-        }
 
         printQuickStart() {
             console.log(`%c
@@ -427,6 +413,7 @@
 CRT.on()          - 开启CRT效果
 CRT.off()         - 关闭CRT效果
 CRT.preset()      - 查看预设
+CRT.quickSet()    - 快速设置强度
 CRT.adjust()      - 调整参数
 CRT.status()      - 查看状态
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
@@ -623,6 +610,8 @@ CRT.status()      - 查看状态
                 this.canvas.width, this.canvas.height);
 
             // CRT参数
+            gl.uniform1f(gl.getUniformLocation(program, 'u_crtIntensity'),
+                this.config.crtIntensity);
             gl.uniform1f(gl.getUniformLocation(program, 'u_scanlineIntensity'),
                 this.config.scanlineIntensity);
             gl.uniform1f(gl.getUniformLocation(program, 'u_scanlineCount'),
@@ -655,23 +644,13 @@ CRT.status()      - 查看状态
                 return this;
             }
 
-            console.log('%c🔌 正在启动Sony FW900 CRT模拟...',
-                'color: #00ff00; font-weight: bold; text-shadow: 0 0 5px #00ff00');
-
             if (this.createCanvas()) {
                 this.enabled = true;
                 this.startTime = Date.now();
-
                 // 添加页面滤镜
                 this.applyPageFilters();
-
                 // 开机动画
                 this.powerOnAnimation();
-
-                console.log('%c✅ Sony FW900 CRT效果已开启',
-                    'color: #00ff00; font-size: 16px; font-weight: bold; text-shadow: 0 0 10px #00ff00');
-                console.log('%c📺 体验专业级CRT显示效果',
-                    'color: #ffff00; font-style: italic');
             }
 
             return this;
@@ -682,8 +661,6 @@ CRT.status()      - 查看状态
                 console.warn('⚠️ CRT效果已经关闭');
                 return this;
             }
-
-            console.log('%c🔌 正在关闭CRT效果...', 'color: #ff8800; font-weight: bold');
 
             this.enabled = false;
 
@@ -712,8 +689,6 @@ CRT.status()      - 查看状态
 
                 // 移除页面滤镜
                 this.removePageFilters();
-
-                console.log('%c✅ CRT效果已关闭', 'color: #ff0000; font-weight: bold');
             });
 
             return this;
@@ -775,97 +750,95 @@ CRT.status()      - 查看状态
 
             requestAnimationFrame(animate);
         }
-// 找到 applyPageFilters() 方法，替换其中的滚动条样式部分
 
         applyPageFilters() {
             const style = document.createElement('style');
             style.id = 'crt-fw900-page-filters';
             style.textContent = `
-        /* FW900 页面滤镜效果 */
-        body.crt-fw900-active {
-            /* 轻微的色彩调整 */
-            filter: 
-                contrast(${this.config.contrast * 0.95})
-                brightness(${this.config.brightness * 0.98})
-                saturate(${this.config.saturation});
-            
-            /* 防止滚动条被覆盖 */
-            overflow: auto !important;
-            
-            /* 启用 macOS 风格的滚动条 */
-            scrollbar-width: thin;
-            scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
-        }
-        
-        /* 文字渲染优化 */
-        body.crt-fw900-active * {
-            text-rendering: geometricPrecision;
-            -webkit-font-smoothing: none;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        /* macOS 风格滚动条 - WebKit (Chrome, Safari, Edge) */
-        body.crt-fw900-active::-webkit-scrollbar {
-            width: 8px;  /* 更细的宽度 */
-            height: 8px; /* 水平滚动条高度 */
-        }
-        
-        body.crt-fw900-active::-webkit-scrollbar-track {
-            background: transparent; /* 透明轨道 */
-            border-radius: 10px;
-        }
-        
-        body.crt-fw900-active::-webkit-scrollbar-thumb {
-            background: rgba(128, 128, 128, 0.3); /* 半透明灰色 */
-            border-radius: 10px;
-            border: 2px solid transparent; /* 边距 */
-            background-clip: padding-box;
-            transition: background-color 0.2s ease;
-        }
-        
-        body.crt-fw900-active::-webkit-scrollbar-thumb:hover {
-            background: rgba(128, 128, 128, 0.5); /* 悬停时稍微深一点 */
-            background-clip: padding-box;
-        }
-        
-        body.crt-fw900-active::-webkit-scrollbar-thumb:active {
-            background: rgba(128, 128, 128, 0.6); /* 点击时更深 */
-            background-clip: padding-box;
-        }
-        
-        /* 角落（当两个滚动条都显示时） */
-        body.crt-fw900-active::-webkit-scrollbar-corner {
-            background: transparent;
-        }
-        
-        /* 隐藏滚动条按钮 (macOS 风格不显示按钮) */
-        body.crt-fw900-active::-webkit-scrollbar-button {
-            display: none;
-        }
-        
-        /* Firefox 滚动条样式 */
-        @supports (scrollbar-width: thin) {
-            body.crt-fw900-active {
-                scrollbar-width: thin;
-                scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
-            }
-        }
-        
-        /* 自动隐藏效果（可选）- 仅在滚动时显示 */
-        body.crt-fw900-active::-webkit-scrollbar-thumb {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        body.crt-fw900-active:hover::-webkit-scrollbar-thumb {
-            opacity: 1;
-        }
-    `;
+                /* FW900 页面滤镜效果 */
+                body.crt-fw900-active {
+                    /* 轻微的色彩调整 */
+                    filter: 
+                        contrast(${this.config.contrast * 0.95})
+                        brightness(${this.config.brightness * 0.98})
+                        saturate(${this.config.saturation});
+                    
+                    /* 防止滚动条被覆盖 */
+                    overflow: auto !important;
+                    
+                    /* 启用 macOS 风格的滚动条 */
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+                }
+                
+                /* 文字渲染优化 */
+                body.crt-fw900-active * {
+                    text-rendering: geometricPrecision;
+                    -webkit-font-smoothing: none;
+                    -moz-osx-font-smoothing: grayscale;
+                }
+                
+                /* macOS 风格滚动条 - WebKit (Chrome, Safari, Edge) */
+                body.crt-fw900-active::-webkit-scrollbar {
+                    width: 8px;  /* 更细的宽度 */
+                    height: 8px; /* 水平滚动条高度 */
+                }
+                
+                body.crt-fw900-active::-webkit-scrollbar-track {
+                    background: transparent; /* 透明轨道 */
+                    border-radius: 10px;
+                }
+                
+                body.crt-fw900-active::-webkit-scrollbar-thumb {
+                    background: rgba(128, 128, 128, 0.3); /* 半透明灰色 */
+                    border-radius: 10px;
+                    border: 2px solid transparent; /* 边距 */
+                    background-clip: padding-box;
+                    transition: background-color 0.2s ease;
+                }
+                
+                body.crt-fw900-active::-webkit-scrollbar-thumb:hover {
+                    background: rgba(128, 128, 128, 0.5); /* 悬停时稍微深一点 */
+                    background-clip: padding-box;
+                }
+                
+                body.crt-fw900-active::-webkit-scrollbar-thumb:active {
+                    background: rgba(128, 128, 128, 0.6); /* 点击时更深 */
+                    background-clip: padding-box;
+                }
+                
+                /* 角落（当两个滚动条都显示时） */
+                body.crt-fw900-active::-webkit-scrollbar-corner {
+                    background: transparent;
+                }
+                
+                /* 隐藏滚动条按钮 (macOS 风格不显示按钮) */
+                body.crt-fw900-active::-webkit-scrollbar-button {
+                    display: none;
+                }
+                
+                /* Firefox 滚动条样式 */
+                @supports (scrollbar-width: thin) {
+                    body.crt-fw900-active {
+                        scrollbar-width: thin;
+                        scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+                    }
+                }
+                
+                /* 自动隐藏效果（可选）- 仅在滚动时显示 */
+                body.crt-fw900-active::-webkit-scrollbar-thumb {
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+                
+                body.crt-fw900-active:hover::-webkit-scrollbar-thumb {
+                    opacity: 1;
+                }
+            `;
 
             document.head.appendChild(style);
             document.body.classList.add('crt-fw900-active');
         }
-
 
         removePageFilters() {
             const style = document.getElementById('crt-fw900-page-filters');
@@ -875,6 +848,92 @@ CRT.status()      - 查看状态
 
         toggle() {
             return this.enabled ? this.off() : this.on();
+        }
+
+        // 设置CRT效果强度
+        intensity(value) {
+            if (value === undefined) {
+                console.log(`%c当前CRT效果强度: ${this.config.crtIntensity}`, 'color: #00ff00');
+                console.log('%c调整范围: 0-2 (0=无效果, 1=标准, 2=强烈)', 'color: #ffff00');
+                return this;
+            }
+
+            this.config.crtIntensity = Math.max(0, Math.min(2, value));
+            console.log(`%c✅ CRT效果强度已设置为: ${this.config.crtIntensity}`, 'color: #00ff00; font-weight: bold');
+
+            if (this.config.crtIntensity === 0) {
+                console.log('%c💡 提示: 强度为0时CRT效果将完全关闭', 'color: #ffff00');
+            } else if (this.config.crtIntensity > 1.5) {
+                console.log('%c⚠️ 警告: 强度过高可能影响视觉体验', 'color: #ff8800');
+            }
+
+            return this;
+        }
+
+        // 快捷预设方法
+        quickSet(mode) {
+            const modes = {
+                'subtle': {
+                    name: '轻微效果',
+                    crtIntensity: 0.3,
+                    scanlineIntensity: 0.05,
+                    vignette: 0.1,
+                    noiseAmount: 0.005
+                },
+                'moderate': {
+                    name: '中等效果',
+                    crtIntensity: 0.7,
+                    scanlineIntensity: 0.1,
+                    vignette: 0.2,
+                    noiseAmount: 0.008
+                },
+                'standard': {
+                    name: '标准效果',
+                    crtIntensity: 1.0,
+                    scanlineIntensity: 0.15,
+                    vignette: 0.25,
+                    noiseAmount: 0.01
+                },
+                'intense': {
+                    name: '强烈效果',
+                    crtIntensity: 1.5,
+                    scanlineIntensity: 0.25,
+                    vignette: 0.35,
+                    noiseAmount: 0.02
+                },
+                'extreme': {
+                    name: '极限效果',
+                    crtIntensity: 2.0,
+                    scanlineIntensity: 0.35,
+                    vignette: 0.45,
+                    noiseAmount: 0.03
+                }
+            };
+
+            if (!mode) {
+                console.log('%c🎚️ CRT效果强度快速设置:', 'color: #00ff00; font-weight: bold');
+                for (const [key, value] of Object.entries(modes)) {
+                    console.log(`  %c${key}%c - ${value.name} (强度: ${value.crtIntensity})`,
+                        'color: #ffff00; font-weight: bold',
+                        'color: #ffffff');
+                }
+                console.log('\n使用: CRT.quickSet("moderate")');
+                return this;
+            }
+
+            const preset = modes[mode];
+            if (!preset) {
+                console.error(`❌ 未找到模式: ${mode}`);
+                this.quickSet();
+                return this;
+            }
+
+            // 应用设置
+            Object.assign(this.config, preset);
+            console.log(`✅ 已应用CRT效果: %c${preset.name}`, 'color: #00ff00; font-weight: bold');
+            console.log(`   强度: ${preset.crtIntensity}, 扫描线: ${preset.scanlineIntensity}`);
+
+            return this;
         }
 
         // 预设配置
@@ -959,6 +1018,7 @@ CRT.status()      - 查看状态
             if (param === undefined) {
                 console.log('%c可调整的参数:', 'color: #00ff00; font-weight: bold');
                 console.table({
+                    crtIntensity: { 当前值: this.config.crtIntensity, 范围: '0-2', 说明: 'CRT总体强度' },
                     scanlineIntensity: { 当前值: this.config.scanlineIntensity, 范围: '0-1' },
                     scanlineCount: { 当前值: this.config.scanlineCount, 范围: '240-2160' },
                     brightness: { 当前值: this.config.brightness, 范围: '0.5-2' },
@@ -993,6 +1053,7 @@ CRT.status()      - 查看状态
 ║  分辨率: ${this.canvas ? this.canvas.width + 'x' + this.canvas.height : 'N/A'}                         ║
 ║  刷新率: ${this.config.refreshRate}Hz                              ║
 ║  扫描线: ${this.config.scanlineCount} lines                       ║
+║  CRT强度: ${this.config.crtIntensity}                                ║
 ║  帧数: ${this.frameCount}                                  ║
 ╚════════════════════════════════════════════════════╝`,
                 'color: #00ff00; font-family: monospace');
@@ -1009,6 +1070,12 @@ CRT.status()      - 查看状态
 ║    CRT.on()              - 开启CRT效果             ║
 ║    CRT.off()             - 关闭CRT效果             ║
 ║    CRT.toggle()          - 切换开关                ║
+║                                                    ║
+║  效果强度:                                          ║
+║    CRT.intensity()       - 查看当前强度            ║
+║    CRT.intensity(1.5)    - 设置强度(0-2)           ║
+║    CRT.quickSet()        - 查看快速预设            ║
+║    CRT.quickSet('mode')  - 应用快速预设            ║
 ║                                                    ║
 ║  预设配置:                                          ║
 ║    CRT.preset()          - 查看所有预设            ║
@@ -1035,7 +1102,9 @@ CRT.status()      - 查看状态
     // 启动提示
     setTimeout(() => {
         console.log(
-            '%c💡 输入 %cCRT.on()%c 开启Sony FW900 CRT效果',
+            '%c💡 输入 %cCRT.on()%c 开启效果, %cCRT.quickSet("moderate")%c 调整强度',
+            'color: #888888',
+            'color: #00ff00; background: #000; padding: 2px 4px; border-radius: 3px; font-weight: bold',
             'color: #888888',
             'color: #00ff00; background: #000; padding: 2px 4px; border-radius: 3px; font-weight: bold',
             'color: #888888'
@@ -1043,3 +1112,15 @@ CRT.status()      - 查看状态
     }, 500);
 
 })(window);
+
+
+setTimeout(function (){
+    // CRT.on()
+    // CRT.off()
+    // 调整参数
+    // CRT.adjust('scanlineIntensity', 0.05)
+    // CRT.adjust('scanlineCount', 1080)
+    // CRT.adjust('crtIntensity', 0.2)
+    // CRT.adjust('brightness', 0.9)
+
+},600)

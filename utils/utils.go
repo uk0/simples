@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -17,7 +18,7 @@ import (
 	"time"
 )
 
-var attachmentRefRe = regexp.MustCompile(`\[Attachment:\s*([\p{Han}A-Za-z0-9_.-]+)\]`)
+var attachmentRefRe = regexp.MustCompile(`\[Attachment:\s*([^\[\]]+?)\s*\]`)
 
 // HashPassword creates SHA256 hash of password
 func HashPassword(password string) string {
@@ -149,11 +150,6 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 			}
 			return fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy" />`, rel, htmlEscapeAttr(alt))
 
-		case ".pdf":
-			return fmt.Sprintf(`<object data="%s" type="application/pdf" width="100%%" height="800">
-				<a href="%s" target="_blank" rel="noopener">Open PDF</a>
-			</object>`, rel, rel)
-
 		case ".mp4", ".webm", ".ogg", ".mov":
 			return fmt.Sprintf(`<video controls style="max-width:100%%;">
 				<source src="%s" type="video/%s">
@@ -173,6 +169,14 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 				name = filepath.Base(att.Path)
 			}
 			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
+
+		case ".pdf":
+			log.Println("Generating PDF parser originalFilename: ", originalFilename)
+			log.Println("Generating PDF parser SourceFile: ", att.SourceFile)
+			log.Println("Generating PDF parser SourceFile: ", att.OriginalFilename)
+			log.Println("Generating PDF parser SavedAs: ", att.SavedAs)
+			uniqueID := fmt.Sprintf("pdf_%x", md5.Sum([]byte(originalFilename)))[:12]
+			return parser.GeneratePDFWarpHTML(uniqueID, htmlEscape(rel))
 		case ".jar":
 			uniqueID := fmt.Sprintf("java_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
@@ -192,14 +196,14 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 				return parser.GenerateArcadePlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 			}
 			return fmt.Sprintf(`<a href="%s" download>%s</a>`, rel, htmlEscape(name))
-		case ".7z":
+		case ".7z", ".chd":
 			uniqueID := fmt.Sprintf("ps_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
 			return parser.GeneratePlayStationPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
-		case ".gba":
+		case ".gba", ".agb":
 			uniqueID := fmt.Sprintf("gba_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
 			if name == "" {

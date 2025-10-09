@@ -384,12 +384,6 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
         <input type="range" id="%[4]s-volume" min="0" max="100" value="50" />
       </label>
     </div>
-    <div class="option-group">
-      <label>
-        <input type="checkbox" id="%[4]s-crt" />
-        <span>📺 CRT Filter</span>
-      </label>
-    </div>
   </div>
 
   <!-- Controls Information -->
@@ -564,6 +558,10 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
           // Callbacks
           window.EJS_onGameStart = function() {
             console.log('NES game started:', ROM_NAME);
+			// try check if game loaded successfully after 0.5 seconds
+			setTimeout(() => {
+				crt_shader_init()
+			}, 1000);
             updateStatus('Running', 'running');
             hideLoading();
             emulatorReady = true;
@@ -694,18 +692,7 @@ func GenerateNESPlayerHTML(playerID, romPath, fileName, fileExt string) string {
             }
           });
         }
-        
-        // CRT filter toggle
-        const crtCheckbox = document.getElementById(UNIQUE_ID + '-crt');
-        if (crtCheckbox) {
-          crtCheckbox.addEventListener('change', function() {
-            crtFilter = this.checked;
-            if (window.EJS_emulator && window.EJS_emulator.setShader) {
-              window.EJS_emulator.setShader(crtFilter ? 'crt' : 'none');
-            }
-          });
-        }
-      }
+     
       
       // Check ROM format
       function checkRomFormat() {

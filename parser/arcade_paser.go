@@ -833,6 +833,10 @@ func GenerateArcadePlayerHTML(playerID, romPath, fileName, fileExt string) strin
           // Callbacks
           window.EJS_onGameStart = function() {
             console.log('Arcade game started:', ROM_NAME);
+			// try check if game loaded successfully after 0.5 seconds
+			setTimeout(() => {
+				crt_shader_init()
+			}, 1000);
             updateStatus('Playing', 'running');
             hideLoading();
             emulatorReady = true;

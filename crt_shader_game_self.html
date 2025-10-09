@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game CRT Filter - FINAL FIX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #00ff41;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #00ff41;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #00ffff;
+            font-size: 1.2em;
+        }
+
+        .warning-box {
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .warning-box h4 {
+            color: #00ff41;
+            margin-bottom: 10px;
+        }
+
+        .control-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+        }
+
+        .control-section h3 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .control-group {
+            display: grid;
+            grid-template-columns: 220px 1fr 60px;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .control-group label {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+        }
+
+        .control-group .value {
+            text-align: right;
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #ff00ff;
+            color: #000;
+            box-shadow: 0 0 20px #ff00ff;
+            transform: translateY(-2px);
+        }
+
+        .btn.active {
+            background: #00ff41;
+            border-color: #00ff41;
+            color: #000;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .preset-btn {
+            background: transparent;
+            border: 2px solid #ffaa00;
+            color: #ffaa00;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .preset-btn:hover {
+            background: #ffaa00;
+            color: #000;
+        }
+
+        .demo-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: #000;
+            border-radius: 10px;
+            border: 2px solid #333;
+            position: relative;
+        }
+
+        .demo-section h3 {
+            color: #00ffff;
+            margin-bottom: 20px;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .ejs_canvas {
+            border: 2px solid #444;
+            background: #000;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            display: block;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff0000;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.active {
+            background: #00ff41;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .terminal {
+            background: #000;
+            border: 2px solid #00ff41;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #00ff41;
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎮 Game CRT Filter (FINAL FIX)</h1>
+        <p class="subtitle">WebGL Overlay - No Freeze Issues</p>
+    </div>
+
+    <div class="warning-box">
+        <h4>✅ All Issues Fixed</h4>
+        <ul style="list-style: none; padding-left: 20px; margin: 0;">
+            <li>✅ Fixed page freeze on enable</li>
+            <li>✅ Fixed MutationObserver loop</li>
+            <li>✅ Fixed infinite loading</li>
+            <li>✅ Stable and performant</li>
+        </ul>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-dot" id="statusDot"></div>
+            <span>Status: <strong id="statusText">READY</strong></span>
+        </div>
+        <div class="status-item">
+            <span>Detected Canvas: <strong id="canvasCount">0</strong></span>
+        </div>
+        <div class="status-item">
+            <span>FPS: <strong id="fpsCounter">--</strong></span>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <div class="control-section">
+            <h3>🎛️ Display Settings</h3>
+
+            <div class="control-group">
+                <label>🔆 Overall Intensity</label>
+                <input type="range" id="intensity" min="0" max="2" step="0.1" value="1.0">
+                <span class="value" id="intensity-val">1.0</span>
+            </div>
+
+            <div class="control-group">
+                <label>📺 Scanline Strength</label>
+                <input type="range" id="scanlineStrength" min="0" max="2" step="0.05" value="0.8">
+                <span class="value" id="scanlineStrength-val">0.8</span>
+            </div>
+
+            <div class="control-group">
+                <label>📊 Scanline Density</label>
+                <input type="range" id="scanlineCount" min="240" max="2160" step="60" value="1080">
+                <span class="value" id="scanlineCount-val">1080</span>
+            </div>
+
+            <div class="control-group">
+                <label>✨ Phosphor Glow</label>
+                <input type="range" id="phosphorGlow" min="0" max="1" step="0.05" value="0.3">
+                <span class="value" id="phosphorGlow-val">0.3</span>
+            </div>
+
+            <div class="control-group">
+                <label>🌈 RGB Shift</label>
+                <input type="range" id="rgbShift" min="0" max="2" step="0.1" value="0.5">
+                <span class="value" id="rgbShift-val">0.5</span>
+            </div>
+
+            <div class="control-group">
+                <label>📐 Screen Curvature</label>
+                <input type="range" id="curvature" min="0" max="0.5" step="0.01" value="0.12">
+                <span class="value" id="curvature-val">0.12</span>
+            </div>
+
+            <div class="control-group">
+                <label>🌑 Vignette</label>
+                <input type="range" id="vignette" min="0" max="1" step="0.05" value="0.25">
+                <span class="value" id="vignette-val">0.25</span>
+            </div>
+
+            <div class="control-group">
+                <label>💡 Brightness</label>
+                <input type="range" id="brightness" min="0.5" max="2" step="0.05" value="1.1">
+                <span class="value" id="brightness-val">1.1</span>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Contrast</label>
+                <input type="range" id="contrast" min="0.5" max="2" step="0.05" value="1.2">
+                <span class="value" id="contrast-val">1.2</span>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h4 style="color: #ffaa00; margin-bottom: 10px;">⚡ Quick Presets</h4>
+            <div class="preset-buttons">
+                <button class="preset-btn" onclick="SafeCRT.loadPreset('arcade')">🕹️ Arcade</button>
+                <button class="preset-btn" onclick="SafeCRT.loadPreset('console')">🎮 Console</button>
+                <button class="preset-btn" onclick="SafeCRT.loadPreset('monitor')">🖥️ Monitor</button>
+                <button class="preset-btn" onclick="SafeCRT.loadPreset('pvm')">💎 PVM</button>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn" id="toggleBtn" onclick="SafeCRT.toggle()">Enable CRT Filter</button>
+            <button class="btn" onclick="SafeCRT.resetDefaults()">Reset Defaults</button>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h3>🎨 Demo Canvas (Auto CRT Enhanced)</h3>
+        <div class="canvas-wrapper">
+            <canvas class="ejs_canvas" id="demo-canvas" width="640" height="480"></canvas>
+        </div>
+    </div>
+
+    <div class="terminal" id="console"></div>
+</div>
+
+<script>
+    /**
+     * Safe CRT Filter System - FINAL FIX
+     * 完全修复所有死循环和卡死问题
+     * @author uk0
+     * @version 3.1.0
+     * @date 2025-01-10
+     */
+
+    class SafeCRTFilter {
+        constructor() {
+            this.version = '3.1.0';
+            this.enabled = false;
+            this.canvasOverlays = new Map();
+            this.observer = null;
+            this.fpsCounter = 0;
+            this.lastFpsTime = 0;
+            this.demoAnimationId = null;
+            this.isProcessing = false; // 🔧 防止并发处理
+
+            this.params = {
+                intensity: 1.0,
+                scanlineStrength: 0.8,
+                scanlineCount: 1080,
+                phosphorGlow: 0.3,
+                rgbShift: 0.5,
+                curvature: 0.12,
+                vignette: 0.25,
+                brightness: 1.1,
+                contrast: 1.2,
+                saturation: 1.1,
+                gamma: 2.2,
+                noiseAmount: 0.02,
+                flickerAmount: 0.0,
+                maskStrength: 0.4
+            };
+
+            this.presets = {
+                arcade: {
+                    scanlineStrength: 1.0,
+                    phosphorGlow: 0.4,
+                    contrast: 1.3,
+                    saturation: 1.2
+                },
+                console: {
+                    scanlineStrength: 0.7,
+                    curvature: 0.15,
+                    vignette: 0.3
+                },
+                monitor: {
+                    scanlineStrength: 0.5,
+                    curvature: 0.08,
+                    vignette: 0.15
+                },
+                pvm: {
+                    scanlineStrength: 0.6,
+                    contrast: 1.25,
+                    saturation: 1.15
+                }
+            };
+        }
+
+        init() {
+            this.log('init', `Safe CRT Filter v${this.version}`);
+            this.setupControls();
+            this.startFPSCounter();
+            this.log('success', 'System initialized');
+        }
+
+        setupControls() {
+            Object.keys(this.params).forEach(param => {
+                const slider = document.getElementById(param);
+                const valueDisplay = document.getElementById(`${param}-val`);
+
+                if (slider && valueDisplay) {
+                    slider.addEventListener('input', (e) => {
+                        const value = parseFloat(e.target.value);
+                        this.params[param] = value;
+                        valueDisplay.textContent = value.toFixed(2);
+                    });
+                }
+            });
+        }
+
+        // 🔧 关键修复：完全重写检测逻辑
+        startAutoDetection() {
+            // 初始检测
+            this.detectCanvases();
+
+            // 🔧 使用更安全的 MutationObserver 配置
+            this.observer = new MutationObserver((mutations) => {
+                // 防止在处理过程中再次触发
+                if (this.isProcessing) return;
+
+                // 只检查是否有新的 .ejs_canvas 添加
+                let hasNewCanvas = false;
+                for (const mutation of mutations) {
+                    for (const node of mutation.addedNodes) {
+                        if (node.nodeType === 1) { // Element node
+                            // 检查是否是 .ejs_canvas 或包含 .ejs_canvas
+                            if (node.classList && node.classList.contains('ejs_canvas')) {
+                                hasNewCanvas = true;
+                                break;
+                            } else if (node.querySelectorAll) {
+                                const canvases = node.querySelectorAll('canvas.ejs_canvas');
+                                if (canvases.length > 0) {
+                                    hasNewCanvas = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (hasNewCanvas) break;
+                }
+
+                if (hasNewCanvas) {
+                    // 🔧 延迟执行，避免同步问题
+                    setTimeout(() => this.detectCanvases(), 50);
+                }
+            });
+
+            // 🔧 限制观察范围，排除我们自己创建的元素
+            this.observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            this.log('success', 'Auto-detection started');
+        }
+
+        // 🔧 改进的检测方法
+        detectCanvases() {
+            if (this.isProcessing) return;
+
+            this.isProcessing = true;
+
+            try {
+                const canvases = document.querySelectorAll('canvas.ejs_canvas');
+
+                canvases.forEach(canvas => {
+                    // 🔧 跳过已处理的和我们创建的 overlay
+                    if (!this.canvasOverlays.has(canvas) &&
+                        !canvas.hasAttribute('data-crt-overlay') &&
+                        this.enabled) {
+                        this.processCanvas(canvas);
+                    }
+                });
+
+                document.getElementById('canvasCount').textContent = canvases.length;
+            } finally {
+                this.isProcessing = false;
+            }
+        }
+
+        processCanvas(sourceCanvas) {
+            if (this.canvasOverlays.has(sourceCanvas)) return;
+
+            this.log('process', `Processing: ${sourceCanvas.id || 'unnamed'}`);
+
+            try {
+                // 🔧 标记 overlay，防止被检测为新 canvas
+                const overlay = document.createElement('canvas');
+                overlay.setAttribute('data-crt-overlay', 'true'); // 关键标记
+                overlay.width = sourceCanvas.width;
+                overlay.height = sourceCanvas.height;
+                overlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 10;
+                `;
+
+                const wrapper = sourceCanvas.parentElement;
+                if (wrapper) {
+                    const currentPosition = window.getComputedStyle(wrapper).position;
+                    if (currentPosition === 'static') {
+                        wrapper.style.position = 'relative';
+                    }
+                    wrapper.appendChild(overlay);
+                }
+
+                const gl = overlay.getContext('webgl', {
+                    alpha: true,
+                    antialias: false,
+                    preserveDrawingBuffer: false,
+                    powerPreference: 'high-performance'
+                });
+
+                if (!gl) {
+                    this.log('error', 'WebGL not supported');
+                    return;
+                }
+
+                const program = this.compileShaders(gl);
+                if (!program) return;
+
+                const processor = {
+                    sourceCanvas,
+                    overlay,
+                    gl,
+                    program,
+                    texture: this.createTexture(gl),
+                    vertexBuffer: this.createVertexBuffer(gl, program),
+                    animationId: null
+                };
+
+                this.startRenderLoop(processor);
+                this.canvasOverlays.set(sourceCanvas, processor);
+
+                this.log('success', 'Processing started');
+
+            } catch (error) {
+                this.log('error', `Failed: ${error.message}`);
+            }
+        }
+
+        startRenderLoop(processor) {
+            const render = () => {
+                if (!this.enabled) {
+                    processor.animationId = null;
+                    return;
+                }
+
+                try {
+                    this.renderFrame(processor);
+                    this.fpsCounter++;
+                } catch (error) {
+                    this.log('error', `Render error: ${error.message}`);
+                    return;
+                }
+
+                processor.animationId = requestAnimationFrame(render);
+            };
+
+            render();
+        }
+
+        renderFrame(processor) {
+            const { gl, program, sourceCanvas, overlay, texture } = processor;
+
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sourceCanvas);
+
+            gl.viewport(0, 0, overlay.width, overlay.height);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.useProgram(program);
+
+            gl.uniform1i(gl.getUniformLocation(program, 'u_texture'), 0);
+            gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), overlay.width, overlay.height);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_time'), performance.now());
+
+            Object.keys(this.params).forEach(param => {
+                gl.uniform1f(gl.getUniformLocation(program, `u_${param}`), this.params[param]);
+            });
+
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+
+        compileShaders(gl) {
+            const vertexShaderSource = `
+                attribute vec2 a_position;
+                attribute vec2 a_texCoord;
+                varying vec2 v_texCoord;
+
+                void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                    v_texCoord = a_texCoord;
+                }
+            `;
+
+            const fragmentShaderSource = `
+                precision highp float;
+
+                uniform sampler2D u_texture;
+                uniform vec2 u_resolution;
+                uniform float u_time;
+                uniform float u_intensity;
+                uniform float u_scanlineStrength;
+                uniform float u_scanlineCount;
+                uniform float u_phosphorGlow;
+                uniform float u_rgbShift;
+                uniform float u_curvature;
+                uniform float u_vignette;
+                uniform float u_brightness;
+                uniform float u_contrast;
+                uniform float u_saturation;
+                uniform float u_gamma;
+                uniform float u_noiseAmount;
+                uniform float u_flickerAmount;
+                uniform float u_maskStrength;
+
+                varying vec2 v_texCoord;
+                const float PI = 3.14159265359;
+
+                float random(vec2 co) {
+                    return fract(sin(dot(co.xy + u_time * 0.0001, vec2(12.9898, 78.233))) * 43758.5453);
+                }
+
+                vec2 curveScreen(vec2 uv) {
+                    vec2 offset = uv - 0.5;
+                    offset *= vec2(1.0 + u_curvature * offset.y * offset.y,
+                                  1.0 + u_curvature * offset.x * offset.x);
+                    return offset + 0.5;
+                }
+
+                float scanlines(vec2 coord) {
+                    float line = sin(coord.y * PI * u_scanlineCount);
+                    return 1.0 - u_scanlineStrength * (1.0 - line * line);
+                }
+
+                vec3 rgbShift(sampler2D tex, vec2 coord) {
+                    float shift = u_rgbShift * 0.003;
+                    return vec3(
+                        texture2D(tex, coord + vec2(shift, 0.0)).r,
+                        texture2D(tex, coord).g,
+                        texture2D(tex, coord - vec2(shift, 0.0)).b
+                    );
+                }
+
+                vec3 phosphorGlow(vec3 color, vec2 coord) {
+                    float dist = length(coord - 0.5);
+                    float glow = (1.0 - smoothstep(0.0, 0.7, dist)) * u_phosphorGlow;
+                    return color + color * glow;
+                }
+
+                float vignette(vec2 coord) {
+                    float dist = length(coord - 0.5);
+                    return 1.0 - u_vignette * smoothstep(0.3, 0.9, dist);
+                }
+
+                float noise(vec2 coord) {
+                    return (random(coord * 100.0) - 0.5) * u_noiseAmount;
+                }
+
+                vec3 colorGrade(vec3 color) {
+                    color = (color - 0.5) * u_contrast + 0.5;
+                    color *= u_brightness;
+                    vec3 gray = vec3(dot(color, vec3(0.299, 0.587, 0.114)));
+                    color = mix(gray, color, u_saturation);
+                    return pow(max(color, vec3(0.0)), vec3(1.0 / u_gamma));
+                }
+
+                void main() {
+                    vec2 coord = curveScreen(v_texCoord);
+
+                    if (coord.x < 0.0 || coord.x > 1.0 || coord.y < 0.0 || coord.y > 1.0) {
+                        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                        return;
+                    }
+
+                    vec3 color = rgbShift(u_texture, coord);
+                    color = phosphorGlow(color, coord);
+                    color *= scanlines(coord);
+                    color *= vignette(coord);
+                    color = colorGrade(color);
+                    color += vec3(noise(coord));
+
+                    gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+                }
+            `;
+
+            const vertexShader = this.createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+            const fragmentShader = this.createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+            if (!vertexShader || !fragmentShader) return null;
+
+            const program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragmentShader);
+            gl.linkProgram(program);
+
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                this.log('error', 'Shader linking failed');
+                return null;
+            }
+
+            return program;
+        }
+
+        createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                this.log('error', 'Shader compilation failed');
+                gl.deleteShader(shader);
+                return null;
+            }
+
+            return shader;
+        }
+
+        createVertexBuffer(gl, program) {
+            const vertices = new Float32Array([
+                -1, -1,  0, 1,
+                1, -1,  1, 1,
+                -1,  1,  0, 0,
+                1,  1,  1, 0
+            ]);
+
+            const buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            const posLoc = gl.getAttribLocation(program, 'a_position');
+            const texLoc = gl.getAttribLocation(program, 'a_texCoord');
+
+            gl.enableVertexAttribArray(posLoc);
+            gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 16, 0);
+
+            gl.enableVertexAttribArray(texLoc);
+            gl.vertexAttribPointer(texLoc, 2, gl.FLOAT, false, 16, 8);
+
+            return buffer;
+        }
+
+        createTexture(gl) {
+            const texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            return texture;
+        }
+
+        enable() {
+            if (this.enabled) return;
+
+            this.log('info', 'Enabling CRT Filter...');
+            this.enabled = true;
+
+            // 🔧 启动自动检测
+            this.startAutoDetection();
+
+            // 🔧 延迟启动 demo 动画
+            setTimeout(() => {
+                this.drawDemoCanvas();
+            }, 100);
+
+            const canvases = document.querySelectorAll('canvas.ejs_canvas');
+            canvases.forEach(canvas => this.processCanvas(canvas));
+
+            document.getElementById('toggleBtn').textContent = 'Disable CRT Filter';
+            document.getElementById('toggleBtn').classList.add('active');
+            document.getElementById('statusDot').classList.add('active');
+            document.getElementById('statusText').textContent = 'ACTIVE';
+
+            this.log('success', 'CRT Filter enabled');
+        }
+
+        disable() {
+            if (!this.enabled) return;
+
+            this.enabled = false;
+            this.log('info', 'CRT Filter disabled');
+
+            // 停止 demo 动画
+            if (this.demoAnimationId) {
+                cancelAnimationFrame(this.demoAnimationId);
+                this.demoAnimationId = null;
+            }
+
+            // 断开 observer
+            if (this.observer) {
+                this.observer.disconnect();
+                this.observer = null;
+            }
+
+            // 清理所有渲染循环和 DOM
+            this.canvasOverlays.forEach(processor => {
+                if (processor.animationId) {
+                    cancelAnimationFrame(processor.animationId);
+                }
+                if (processor.overlay && processor.overlay.parentElement) {
+                    processor.overlay.parentElement.removeChild(processor.overlay);
+                }
+            });
+
+            this.canvasOverlays.clear();
+
+            document.getElementById('toggleBtn').textContent = 'Enable CRT Filter';
+            document.getElementById('toggleBtn').classList.remove('active');
+            document.getElementById('statusDot').classList.remove('active');
+            document.getElementById('statusText').textContent = 'READY';
+        }
+
+        toggle() {
+            this.enabled ? this.disable() : this.enable();
+        }
+
+        loadPreset(name) {
+            const preset = this.presets[name];
+            if (!preset) return;
+
+            this.log('info', `Loading preset: ${name}`);
+
+            Object.keys(preset).forEach(key => {
+                if (this.params[key] !== undefined) {
+                    this.params[key] = preset[key];
+
+                    const slider = document.getElementById(key);
+                    const valueDisplay = document.getElementById(`${key}-val`);
+                    if (slider && valueDisplay) {
+                        slider.value = preset[key];
+                        valueDisplay.textContent = preset[key].toFixed(2);
+                    }
+                }
+            });
+        }
+
+        resetDefaults() {
+            this.log('info', 'Resetting defaults');
+
+            const defaults = {
+                intensity: 1.0,
+                scanlineStrength: 0.8,
+                scanlineCount: 1080,
+                phosphorGlow: 0.3,
+                rgbShift: 0.5,
+                curvature: 0.12,
+                vignette: 0.25,
+                brightness: 1.1,
+                contrast: 1.2,
+                saturation: 1.1,
+                gamma: 2.2,
+                noiseAmount: 0.02,
+                flickerAmount: 0.0,
+                maskStrength: 0.4
+            };
+
+            Object.keys(defaults).forEach(key => {
+                this.params[key] = defaults[key];
+                const slider = document.getElementById(key);
+                const valueDisplay = document.getElementById(`${key}-val`);
+                if (slider && valueDisplay) {
+                    slider.value = defaults[key];
+                    valueDisplay.textContent = defaults[key].toFixed(2);
+                }
+            });
+        }
+
+        startFPSCounter() {
+            setInterval(() => {
+                const now = performance.now();
+                const elapsed = (now - this.lastFpsTime) / 1000;
+
+                if (elapsed > 0) {
+                    const fps = Math.round(this.fpsCounter / elapsed);
+                    document.getElementById('fpsCounter').textContent = fps;
+                }
+
+                this.fpsCounter = 0;
+                this.lastFpsTime = now;
+            }, 1000);
+        }
+
+        drawDemoCanvas() {
+            const canvas = document.getElementById('demo-canvas');
+            if (!canvas || this.demoAnimationId) return;
+
+            const ctx = canvas.getContext('2d');
+            let lastTime = 0;
+            const targetFPS = 30;
+            const frameInterval = 1000 / targetFPS;
+
+            const draw = (currentTime) => {
+                if (!this.enabled) {
+                    this.demoAnimationId = null;
+                    return;
+                }
+
+                if (currentTime - lastTime < frameInterval) {
+                    this.demoAnimationId = requestAnimationFrame(draw);
+                    return;
+                }
+                lastTime = currentTime;
+
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, '#001122');
+                gradient.addColorStop(1, '#003344');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = '#00ff4440';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < canvas.width; x += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < canvas.height; y += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+
+                const time = currentTime * 0.001;
+                const x = (Math.sin(time) * 0.5 + 0.5) * (canvas.width - 100) + 50;
+                const y = (Math.cos(time * 0.7) * 0.5 + 0.5) * (canvas.height - 100) + 50;
+
+                const grd = ctx.createRadialGradient(x, y, 10, x, y, 50);
+                grd.addColorStop(0, '#ff00ff');
+                grd.addColorStop(0.5, '#00ffff');
+                grd.addColorStop(1, 'transparent');
+                ctx.fillStyle = grd;
+                ctx.fillRect(x - 50, y - 50, 100, 100);
+
+                ctx.font = 'bold 48px "Courier New"';
+                ctx.fillStyle = '#00ff41';
+                ctx.textAlign = 'center';
+                ctx.fillText('RETRO GAME', canvas.width / 2, canvas.height / 2);
+
+                ctx.font = '24px "Courier New"';
+                ctx.fillStyle = '#ffff00';
+                ctx.fillText('CRT Enhanced', canvas.width / 2, canvas.height / 2 + 40);
+
+                this.demoAnimationId = requestAnimationFrame(draw);
+            };
+
+            this.demoAnimationId = requestAnimationFrame(draw);
+        }
+
+        log(type, message) {
+            const terminalEl = document.getElementById('console');
+            const time = new Date().toLocaleTimeString();
+            const prefix = {
+                'init': '🚀',
+                'detect': '🔍',
+                'process': '⚙️',
+                'success': '✅',
+                'info': 'ℹ️',
+                'error': '❌'
+            }[type] || '•';
+
+            const div = document.createElement('div');
+            div.textContent = `[${time}] ${prefix} ${message}`;
+            div.style.color = type === 'error' ? '#ff4444' :
+                type === 'success' ? '#00ff41' :
+                    type === 'info' ? '#00ffff' : '#00ff41';
+
+            terminalEl.appendChild(div);
+            terminalEl.scrollTop = terminalEl.scrollHeight;
+
+            if (terminalEl.children.length > 50) {
+                terminalEl.removeChild(terminalEl.firstChild);
+            }
+        }
+
+        destroy() {
+            this.log('info', 'Destroying CRT system');
+
+            if (this.demoAnimationId) {
+                cancelAnimationFrame(this.demoAnimationId);
+                this.demoAnimationId = null;
+            }
+
+            if (this.observer) {
+                this.observer.disconnect();
+                this.observer = null;
+            }
+
+            this.disable();
+        }
+    }
+
+    // 等待 DOMContentLoaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            window.SafeCRT = new SafeCRTFilter();
+            window.SafeCRT.init();
+        });
+    } else {
+        window.SafeCRT = new SafeCRTFilter();
+        window.SafeCRT.init();
+    }
+
+    // 页面卸载时清理
+    window.addEventListener('beforeunload', () => {
+        if (window.SafeCRT) {
+            window.SafeCRT.destroy();
+        }
+    });
+</script>
+
+</body>
+</html>

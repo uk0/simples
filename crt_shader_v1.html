@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML2Canvas CRT Filter System - Final Fix</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .demo-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #00ff41;
+            text-shadow: 0 0 20px #00ff41;
+            margin: 0;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #00ff41; }
+            to { text-shadow: 0 0 30px #00ff41, 0 0 40px #00ff41; }
+        }
+
+        .control-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .control-panel h3 {
+            color: #00ffff;
+            margin-top: 0;
+        }
+
+        .terminal {
+            background: #000;
+            border: 2px solid #00ff41;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #00ff41;
+            font-size: 14px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+
+        .neon-button {
+            background: transparent;
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+            padding: 10px 20px;
+            font-family: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin: 5px;
+            text-transform: uppercase;
+        }
+
+        .neon-button:hover {
+            background: #ff00ff;
+            color: #000;
+            box-shadow: 0 0 20px #ff00ff;
+            transform: scale(1.05);
+        }
+
+        .ascii-art {
+            font-size: 12px;
+            line-height: 1;
+            color: #ffaa00;
+            white-space: pre;
+            text-align: center;
+            margin: 30px 0;
+            text-shadow: 0 0 10px #ffaa00;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff0000;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.active {
+            background: #00ff41;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            color: #aaa;
+        }
+
+        /* 🔧 标记CRT canvas以便排除 */
+        .crt-overlay {
+            pointer-events: none !important;
+        }
+    </style>
+</head>
+<body>
+<div class="demo-content">
+    <div class="header">
+        <h1>HTML2CANVAS CRT SYSTEM</h1>
+        <p style="color: #00ffff; font-size: 1.2em;">Advanced Page-to-CRT Conversion Engine - FINAL FIX</p>
+    </div>
+
+    <div class="control-panel">
+        <h3>🎛️ CRT Control Panel</h3>
+        <div style="margin-bottom: 15px;">
+            <span class="status-indicator" id="statusIndicator"></span>
+            <span>Status: <span id="statusText">OFFLINE</span></span>
+        </div>
+
+        <div>
+            <button class="neon-button" onclick="CRT.start()">START SYSTEM</button>
+            <button class="neon-button" onclick="CRT.stop()">STOP SYSTEM</button>
+            <button class="neon-button" onclick="CRT.capture()">CAPTURE PAGE</button>
+            <button class="neon-button" onclick="CRT.preset('gaming')">GAMING MODE</button>
+            <button class="neon-button" onclick="CRT.preset('stable')">STABLE MODE</button>
+        </div>
+    </div>
+
+    <div class="terminal">
+        <div>$ system_status</div>
+        <div id="terminalOutput">
+            HTML2Canvas CRT Filter System v23.2.0 - FINAL FIX<br>
+            ✅ Fixed screen flicker issue<br>
+            ✅ Fixed scroll jitter problem<br>
+            ✅ Fixed infinite recursion (picture-in-picture)<br>
+            ✅ Improved capture stability<br>
+            <br>
+            Available Commands:<br>
+            • CRT.start() - Initialize CRT system<br>
+            • CRT.capture() - Capture current page<br>
+            • CRT.preset(name) - Apply CRT preset<br>
+            • CRT.adjust(param, value) - Fine-tune parameters<br>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h3>🖥️ Display Technology</h3>
+            <p>Simulates authentic CRT monitor characteristics including phosphor glow, scanlines, and geometric distortion for that genuine retro computing experience.</p>
+        </div>
+
+        <div class="card">
+            <h3>📺 Video Processing</h3>
+            <p>Advanced HTML-to-Canvas conversion with real-time CRT filtering. Supports full page capture with preservation of dynamic content and animations.</p>
+        </div>
+
+        <div class="card">
+            <h3>🎮 Gaming Enhancement</h3>
+            <p>Perfect for retro gaming, emulators, and vintage software. Multiple presets available for different gaming systems and display types.</p>
+        </div>
+
+        <div class="card">
+            <h3>🔧 Customization</h3>
+            <p>Extensive parameter control for scanline intensity, phosphor characteristics, color temperature, and geometric properties. Save custom configurations.</p>
+        </div>
+    </div>
+
+    <div class="ascii-art">
+        ╔═══════════════════════════════════════════════════════╗
+        ║  ██╗  ██╗████████╗███╗   ███╗██╗     ██████╗ ██████╗  ║
+        ║  ██║  ██║╚══██╔══╝████╗ ████║██║     ╚════██╗██╔════╝  ║
+        ║  ███████║   ██║   ██╔████╔██║██║      █████╔╝██║       ║
+        ║  ██╔══██║   ██║   ██║╚██╔╝██║██║     ██╔═══╝ ██║       ║
+        ║  ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗███████╗╚██████╗  ║
+        ║  ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝ ╚═════╝  ║
+        ║                  FINAL FIX - NO RECURSION             ║
+        ╚═══════════════════════════════════════════════════════╝
+    </div>
+
+    <div class="terminal">
+        <div>$ diagnostic_info</div>
+        <div>
+            Browser: <span id="browserInfo">Loading...</span><br>
+            Screen: <span id="screenInfo">Loading...</span><br>
+            HTML2Canvas: <span id="html2canvasInfo">Loading...</span><br>
+            WebGL: <span id="webglInfo">Loading...</span><br>
+            Performance: <span id="performanceInfo">Monitoring...</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>HTML2Canvas CRT Filter System • Advanced Page Processing Engine</p>
+        <p>Developed by uk0 • 2025-01-10 • Version 23.2.0 (Final Fix)</p>
+    </div>
+</div>
+
+<!-- HTML2Canvas Library -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<!-- CRT Filter System - FINAL FIX VERSION -->
+<script>
+    /**
+     * HTML2Canvas CRT Filter System - FINAL FIX
+     * 修复了屏幕闪烁、滚动问题和无限递归问题
+     * @author uk0
+     * @version 23.2.0
+     * @date 2025-01-10
+     */
+
+    class HTML2CanvasCRTSystem {
+        constructor() {
+            this.version = '23.2.0';
+            this.active = false;
+            this.canvas = null;
+            this.crtCanvas = null;
+            this.gl = null;
+            this.program = null;
+            this.animationId = null;
+            this.captureInterval = null;
+            this.lastCaptureTime = 0;
+            this.scrollX = 0;
+            this.scrollY = 0;
+
+            // CRT配置参数
+            this.config = {
+                captureRate: 15,
+                captureScale: 0.75,
+                captureQuality: 1.0,
+
+                intensity: 1.0,
+                scanlineStrength: 0.5,
+                scanlineCount: 1080,
+                phosphorGlow: 0.2,
+                rgbShift: 0.3,
+                curvature: 0.08,
+                vignette: 0.15,
+                brightness: 1.0,
+                contrast: 1.05,
+                saturation: 1.0,
+                gamma: 2.2,
+
+                bloomThreshold: 0.85,
+                bloomIntensity: 0.2,
+                noiseAmount: 0.01,
+                flickerAmount: 0.0,
+                maskStrength: 0.2,
+                beamWidth: 0.5,
+
+                updateMode: 'auto',
+                skipFrames: 0,
+                asyncCapture: true,
+                smoothScrolling: true
+            };
+
+            this.presets = {
+                'stable': {
+                    name: '稳定模式',
+                    scanlineStrength: 0.4,
+                    phosphorGlow: 0.15,
+                    rgbShift: 0.2,
+                    flickerAmount: 0.0,
+                    noiseAmount: 0.005,
+                    captureRate: 15
+                },
+                'gaming': {
+                    name: '游戏模式',
+                    scanlineStrength: 0.6,
+                    phosphorGlow: 0.25,
+                    rgbShift: 0.25,
+                    contrast: 1.1,
+                    flickerAmount: 0.0,
+                    captureRate: 30
+                },
+                'movie': {
+                    name: '影院模式',
+                    scanlineStrength: 0.5,
+                    phosphorGlow: 0.2,
+                    curvature: 0.12,
+                    vignette: 0.25,
+                    flickerAmount: 0.0,
+                    captureRate: 24
+                },
+                'retro': {
+                    name: '复古模式',
+                    scanlineStrength: 0.8,
+                    rgbShift: 0.5,
+                    noiseAmount: 0.02,
+                    flickerAmount: 0.005,
+                    gamma: 2.4,
+                    captureRate: 20
+                }
+            };
+
+            this.init();
+        }
+
+        init() {
+            console.log(`%c
+╔═══════════════════════════════════════════════════════════════╗
+║        HTML2Canvas CRT Filter System v${this.version}         ║
+║                                                               ║
+║  ✅ Fixed screen flicker issue                               ║
+║  ✅ Fixed scroll jitter problem                              ║
+║  ✅ Fixed infinite recursion (picture-in-picture)            ║
+║  ✅ Improved capture stability                               ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝`,
+                'color: #00ff41; background: #000; font-family: monospace; font-weight: bold');
+
+            this.checkDependencies();
+            this.updateDiagnosticInfo();
+            this.setupEventListeners();
+        }
+
+        checkDependencies() {
+            if (typeof html2canvas === 'undefined') {
+                console.error('❌ html2canvas library not loaded');
+                return false;
+            }
+
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) {
+                console.error('❌ WebGL not supported');
+                return false;
+            }
+
+            console.log('✅ All dependencies loaded successfully');
+            return true;
+        }
+
+        updateDiagnosticInfo() {
+            const browserInfo = `${navigator.userAgent.split(' ')[0]} ${navigator.appVersion.split(' ')[0]}`;
+            document.getElementById('browserInfo').textContent = browserInfo;
+
+            const screenInfo = `${window.screen.width}x${window.screen.height} @ ${window.devicePixelRatio}x DPR`;
+            document.getElementById('screenInfo').textContent = screenInfo;
+
+            const html2canvasInfo = typeof html2canvas !== 'undefined' ? 'Available ✅' : 'Not Found ❌';
+            document.getElementById('html2canvasInfo').textContent = html2canvasInfo;
+
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            const webglInfo = gl ? `WebGL ${gl.getParameter(gl.VERSION)} ✅` : 'Not Supported ❌';
+            document.getElementById('webglInfo').textContent = webglInfo;
+        }
+
+        setupEventListeners() {
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    if (this.active) {
+                        this.updateCanvasSize();
+                    }
+                }, 250);
+            });
+
+            let scrollTimeout;
+            window.addEventListener('scroll', () => {
+                if (!this.active) return;
+
+                this.scrollX = window.scrollX || window.pageXOffset;
+                this.scrollY = window.scrollY || window.pageYOffset;
+
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    if (this.config.smoothScrolling) {
+                        this.capturePageToCanvas();
+                    }
+                }, 150);
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && this.active) {
+                    this.pauseCapture();
+                } else if (!document.hidden && this.active) {
+                    this.resumeCapture();
+                }
+            });
+        }
+
+        async createCanvases() {
+            this.canvas = document.createElement('canvas');
+            this.canvas.id = 'html2canvas-source';
+
+            this.crtCanvas = document.createElement('canvas');
+            this.crtCanvas.id = 'crt-effect-canvas';
+
+            // 🔧 关键修复：添加类名和数据属性用于排除
+            this.crtCanvas.className = 'crt-overlay';
+            this.crtCanvas.setAttribute('data-html2canvas-ignore', 'true');
+
+            this.crtCanvas.style.cssText = `
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                pointer-events: none !important;
+                z-index: 999999 !important;
+                image-rendering: auto;
+            `;
+
+            this.updateCanvasSize();
+            document.body.appendChild(this.crtCanvas);
+
+            await this.initWebGL();
+        }
+
+        updateCanvasSize() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const scale = this.config.captureScale;
+
+            this.canvas.width = width * scale;
+            this.canvas.height = height * scale;
+
+            this.crtCanvas.width = width;
+            this.crtCanvas.height = height;
+
+            if (this.gl) {
+                this.gl.viewport(0, 0, width, height);
+            }
+        }
+
+        async initWebGL() {
+            this.gl = this.crtCanvas.getContext('webgl', {
+                alpha: false,
+                antialias: false,
+                preserveDrawingBuffer: false,
+                powerPreference: 'high-performance'
+            });
+
+            if (!this.gl) {
+                throw new Error('WebGL not supported');
+            }
+
+            await this.compileShaders();
+            this.setupVertexData();
+            this.setupTextures();
+
+            console.log('✅ WebGL initialized successfully');
+        }
+
+        async compileShaders() {
+            const vertexShaderSource = `
+                attribute vec2 a_position;
+                attribute vec2 a_texCoord;
+                varying vec2 v_texCoord;
+
+                void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                    v_texCoord = a_texCoord;
+                }
+            `;
+
+            const fragmentShaderSource = `
+                precision mediump float;
+
+                uniform sampler2D u_texture;
+                uniform vec2 u_resolution;
+                uniform float u_time;
+
+                uniform float u_intensity;
+                uniform float u_scanlineStrength;
+                uniform float u_scanlineCount;
+                uniform float u_phosphorGlow;
+                uniform float u_rgbShift;
+                uniform float u_curvature;
+                uniform float u_vignette;
+                uniform float u_brightness;
+                uniform float u_contrast;
+                uniform float u_saturation;
+                uniform float u_gamma;
+                uniform float u_noiseAmount;
+                uniform float u_flickerAmount;
+                uniform float u_maskStrength;
+
+                varying vec2 v_texCoord;
+
+                const float PI = 3.14159265359;
+
+                float random(vec2 co) {
+                    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+                }
+
+                vec2 curveScreen(vec2 uv) {
+                    vec2 offset = uv - 0.5;
+                    offset *= vec2(1.0 + u_curvature * offset.y * offset.y,
+                                  1.0 + u_curvature * offset.x * offset.x);
+                    return offset + 0.5;
+                }
+
+                float scanlines(vec2 coord) {
+                    float line = sin(coord.y * PI * u_scanlineCount);
+                    line = line * line;
+                    return 1.0 - u_scanlineStrength * u_intensity + u_scanlineStrength * u_intensity * line;
+                }
+
+                vec3 rgbShift(sampler2D tex, vec2 coord) {
+                    float shift = u_rgbShift * u_intensity * 0.005;
+                    vec3 color;
+                    color.r = texture2D(tex, coord + vec2(shift, 0.0)).r;
+                    color.g = texture2D(tex, coord).g;
+                    color.b = texture2D(tex, coord - vec2(shift, 0.0)).b;
+                    return color;
+                }
+
+                vec3 phosphorGlow(vec3 color, vec2 coord) {
+                    float glow = u_phosphorGlow * u_intensity;
+                    vec3 glowColor = color * glow;
+
+                    float dist = length(coord - 0.5);
+                    float radialGlow = 1.0 - smoothstep(0.0, 0.7, dist);
+                    glowColor *= radialGlow;
+
+                    return color + glowColor;
+                }
+
+                float vignette(vec2 coord) {
+                    vec2 center = coord - 0.5;
+                    float dist = length(center);
+                    return 1.0 - u_vignette * u_intensity * smoothstep(0.3, 0.8, dist);
+                }
+
+                float noise(vec2 coord) {
+                    float n = random(floor(coord * 100.0)) - 0.5;
+                    return n * u_noiseAmount * u_intensity;
+                }
+
+                float flicker() {
+                    if (u_flickerAmount <= 0.0) return 1.0;
+
+                    float t = u_time * 0.5;
+                    float f = sin(t * 2.0) * sin(t * 3.14) * 0.5 + 0.5;
+                    return 1.0 - u_flickerAmount * u_intensity * f * 0.3;
+                }
+
+                vec3 rgbMask(vec2 coord, vec3 color) {
+                    if (u_maskStrength <= 0.0) return color;
+
+                    float x = coord.x * u_resolution.x;
+                    float mask = mod(x, 3.0);
+                    vec3 maskColor = vec3(1.0);
+
+                    if (mask < 1.0) {
+                        maskColor = vec3(1.0, 1.0 - u_maskStrength, 1.0 - u_maskStrength);
+                    } else if (mask < 2.0) {
+                        maskColor = vec3(1.0 - u_maskStrength, 1.0, 1.0 - u_maskStrength);
+                    } else {
+                        maskColor = vec3(1.0 - u_maskStrength, 1.0 - u_maskStrength, 1.0);
+                    }
+
+                    return color * mix(vec3(1.0), maskColor, u_intensity * 0.5);
+                }
+
+                vec3 colorGrading(vec3 color) {
+                    color = (color - 0.5) * u_contrast + 0.5;
+                    color *= u_brightness;
+
+                    vec3 gray = vec3(dot(color, vec3(0.299, 0.587, 0.114)));
+                    color = mix(gray, color, u_saturation);
+
+                    color = pow(max(color, vec3(0.0)), vec3(1.0 / u_gamma));
+
+                    return color;
+                }
+
+                void main() {
+                    vec2 coord = curveScreen(v_texCoord);
+
+                    if (coord.x < 0.0 || coord.x > 1.0 || coord.y < 0.0 || coord.y > 1.0) {
+                        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                        return;
+                    }
+
+                    vec3 color = rgbShift(u_texture, coord);
+                    color = phosphorGlow(color, coord);
+                    color *= scanlines(coord);
+                    color *= vignette(coord);
+                    color = rgbMask(coord, color);
+                    color = colorGrading(color);
+                    color += vec3(noise(coord));
+                    color *= flicker();
+
+                    gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+                }
+            `;
+
+            const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vertexShaderSource);
+            const fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+            this.program = this.gl.createProgram();
+            this.gl.attachShader(this.program, vertexShader);
+            this.gl.attachShader(this.program, fragmentShader);
+            this.gl.linkProgram(this.program);
+
+            if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
+                throw new Error('Shader program linking failed: ' + this.gl.getProgramInfoLog(this.program));
+            }
+
+            this.gl.useProgram(this.program);
+        }
+
+        compileShader(type, source) {
+            const shader = this.gl.createShader(type);
+            this.gl.shaderSource(shader, source);
+            this.gl.compileShader(shader);
+
+            if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                throw new Error('Shader compilation failed: ' + this.gl.getShaderInfoLog(shader));
+            }
+
+            return shader;
+        }
+
+        setupVertexData() {
+            const vertices = new Float32Array([
+                -1, -1,  0, 1,
+                1, -1,  1, 1,
+                -1,  1,  0, 0,
+                1,  1,  1, 0
+            ]);
+
+            this.vertexBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
+
+            const positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
+            const texCoordLocation = this.gl.getAttribLocation(this.program, 'a_texCoord');
+
+            this.gl.enableVertexAttribArray(positionLocation);
+            this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 16, 0);
+
+            this.gl.enableVertexAttribArray(texCoordLocation);
+            this.gl.vertexAttribPointer(texCoordLocation, 2, this.gl.FLOAT, false, 16, 8);
+        }
+
+        setupTextures() {
+            this.texture = this.gl.createTexture();
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+        }
+
+        async capturePageToCanvas() {
+            if (!this.active) return;
+
+            const startTime = performance.now();
+
+            try {
+                const options = {
+                    canvas: this.canvas,
+                    scale: this.config.captureScale,
+                    useCORS: true,
+                    allowTaint: false,
+                    backgroundColor: null,
+                    removeContainer: true,
+                    logging: false,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    windowWidth: window.innerWidth,
+                    windowHeight: window.innerHeight,
+                    scrollX: this.scrollX,
+                    scrollY: this.scrollY,
+                    x: 0,
+                    y: 0,
+                    // 🔧 关键修复：忽略包含指定属性的元素
+                    ignoreElements: (element) => {
+                        return element.hasAttribute('data-html2canvas-ignore') ||
+                            element.classList.contains('crt-overlay') ||
+                            element.id === 'crt-effect-canvas';
+                    }
+                };
+
+                if (this.config.asyncCapture) {
+                    html2canvas(document.body, options).then((canvas) => {
+                        this.updateCRTTexture(canvas);
+                        this.updatePerformanceInfo(performance.now() - startTime);
+                    }).catch((error) => {
+                        console.warn('HTML2Canvas capture failed:', error);
+                    });
+                } else {
+                    const canvas = await html2canvas(document.body, options);
+                    this.updateCRTTexture(canvas);
+                    this.updatePerformanceInfo(performance.now() - startTime);
+                }
+
+            } catch (error) {
+                console.error('Page capture failed:', error);
+            }
+        }
+
+        updateCRTTexture(sourceCanvas) {
+            if (!this.gl || !this.texture) return;
+
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, sourceCanvas);
+
+            this.renderCRT();
+        }
+
+        renderCRT() {
+            if (!this.gl || !this.program) return;
+
+            const gl = this.gl;
+
+            gl.viewport(0, 0, this.crtCanvas.width, this.crtCanvas.height);
+            gl.clearColor(0, 0, 0, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            this.updateUniforms();
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+
+        updateUniforms() {
+            const gl = this.gl;
+            const program = this.program;
+
+            gl.uniform1i(gl.getUniformLocation(program, 'u_texture'), 0);
+            gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), this.crtCanvas.width, this.crtCanvas.height);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_time'), (Date.now() - this.startTime) * 0.001);
+
+            gl.uniform1f(gl.getUniformLocation(program, 'u_intensity'), this.config.intensity);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_scanlineStrength'), this.config.scanlineStrength);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_scanlineCount'), this.config.scanlineCount);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_phosphorGlow'), this.config.phosphorGlow);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_rgbShift'), this.config.rgbShift);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_curvature'), this.config.curvature);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_vignette'), this.config.vignette);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_brightness'), this.config.brightness);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_contrast'), this.config.contrast);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_saturation'), this.config.saturation);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_gamma'), this.config.gamma);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_noiseAmount'), this.config.noiseAmount);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_flickerAmount'), this.config.flickerAmount);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_maskStrength'), this.config.maskStrength);
+        }
+
+        updatePerformanceInfo(captureTime) {
+            const fps = 1000 / captureTime;
+            const performanceText = `Capture: ${captureTime.toFixed(1)}ms | FPS: ${fps.toFixed(1)}`;
+            document.getElementById('performanceInfo').textContent = performanceText;
+        }
+
+        startCaptureLoop() {
+            if (this.captureInterval) return;
+
+            const interval = 1000 / this.config.captureRate;
+
+            this.captureInterval = setInterval(() => {
+                this.capturePageToCanvas();
+            }, interval);
+
+            console.log(`✅ Capture loop started at ${this.config.captureRate} FPS`);
+        }
+
+        stopCaptureLoop() {
+            if (this.captureInterval) {
+                clearInterval(this.captureInterval);
+                this.captureInterval = null;
+                console.log('🛑 Capture loop stopped');
+            }
+        }
+
+        pauseCapture() {
+            this.stopCaptureLoop();
+            console.log('⏸️ Capture paused');
+        }
+
+        resumeCapture() {
+            this.startCaptureLoop();
+            console.log('▶️ Capture resumed');
+        }
+
+        updateStatusIndicator() {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const terminalOutput = document.getElementById('terminalOutput');
+
+            if (this.active) {
+                indicator.classList.add('active');
+                statusText.textContent = 'ONLINE';
+                terminalOutput.innerHTML += '<br>$ CRT system activated - No recursion!';
+            } else {
+                indicator.classList.remove('active');
+                statusText.textContent = 'OFFLINE';
+                terminalOutput.innerHTML += '<br>$ CRT system deactivated';
+            }
+
+            const lines = terminalOutput.innerHTML.split('<br>');
+            if (lines.length > 20) {
+                terminalOutput.innerHTML = lines.slice(-15).join('<br>');
+            }
+        }
+
+        // ============ 公共API ============
+
+        async start() {
+            if (this.active) {
+                console.warn('⚠️ CRT system is already active');
+                return this;
+            }
+
+            console.log('%c🚀 Starting HTML2Canvas CRT System (Final Fix)...',
+                'color: #00ff41; font-weight: bold; text-shadow: 0 0 5px #00ff41');
+
+            try {
+                await this.createCanvases();
+                this.active = true;
+                this.startTime = Date.now();
+                this.scrollX = window.scrollX || window.pageXOffset;
+                this.scrollY = window.scrollY || window.pageYOffset;
+                this.startCaptureLoop();
+                this.updateStatusIndicator();
+
+                console.log('%c✅ CRT System Started - No More Recursion!',
+                    'color: #00ff41; font-size: 16px; font-weight: bold');
+
+            } catch (error) {
+                console.error('❌ Failed to start CRT system:', error);
+                this.stop();
+            }
+
+            return this;
+        }
+
+        stop() {
+            if (!this.active) {
+                console.warn('⚠️ CRT system is not active');
+                return this;
+            }
+
+            console.log('%c🛑 Stopping CRT System...', 'color: #ff8800; font-weight: bold');
+
+            this.active = false;
+            this.stopCaptureLoop();
+
+            if (this.crtCanvas && this.crtCanvas.parentNode) {
+                this.crtCanvas.parentNode.removeChild(this.crtCanvas);
+            }
+
+            if (this.gl) {
+                const loseContext = this.gl.getExtension('WEBGL_lose_context');
+                if (loseContext) loseContext.loseContext();
+            }
+
+            this.canvas = null;
+            this.crtCanvas = null;
+            this.gl = null;
+            this.updateStatusIndicator();
+
+            console.log('%c✅ CRT System Stopped', 'color: #ff0000; font-weight: bold');
+            return this;
+        }
+
+        toggle() {
+            return this.active ? this.stop() : this.start();
+        }
+
+        async capture() {
+            if (!this.active) {
+                console.warn('⚠️ CRT system must be started first');
+                return this;
+            }
+
+            console.log('%c📸 Manual page capture...', 'color: #00ffff; font-weight: bold');
+            await this.capturePageToCanvas();
+            console.log('✅ Page captured and processed');
+
+            return this;
+        }
+
+        preset(name) {
+            if (!name) {
+                console.log('%c🎨 Available presets:', 'color: #00ff41; font-weight: bold');
+                for (const [key, value] of Object.entries(this.presets)) {
+                    console.log(`  %c${key}%c - ${value.name}`,
+                        'color: #ffff41; font-weight: bold', 'color: #ffffff');
+                }
+                return this;
+            }
+
+            const presetConfig = this.presets[name];
+            if (!presetConfig) {
+                console.error(`❌ Unknown preset: ${name}`);
+                this.preset();
+                return this;
+            }
+
+            Object.assign(this.config, presetConfig);
+            console.log(`✅ Applied preset: %c${presetConfig.name}`, 'color: #00ff41; font-weight: bold');
+
+            if (this.active) {
+                this.stopCaptureLoop();
+                this.startCaptureLoop();
+            }
+
+            return this;
+        }
+
+        adjust(param, value) {
+            if (param === undefined) {
+                console.log('%c🔧 Adjustable parameters:', 'color: #00ff41; font-weight: bold');
+                console.table({
+                    captureRate: { current: this.config.captureRate, range: '10-60', desc: 'Capture FPS' },
+                    intensity: { current: this.config.intensity, range: '0-2', desc: 'Overall intensity' },
+                    scanlineStrength: { current: this.config.scanlineStrength, range: '0-2', desc: 'Scanline strength' },
+                    flickerAmount: { current: this.config.flickerAmount, range: '0-0.05', desc: 'Flicker (0=off)' }
+                });
+                return this;
+            }
+
+            if (this.config.hasOwnProperty(param)) {
+                this.config[param] = value;
+                console.log(`✅ ${param} = ${value}`);
+
+                if (param === 'captureRate' && this.active) {
+                    this.stopCaptureLoop();
+                    this.startCaptureLoop();
+                }
+            } else {
+                console.error(`❌ Unknown parameter: ${param}`);
+            }
+
+            return this;
+        }
+
+        status() {
+            console.log(`%c
+╔════════════════════════════════════════════════════════════════╗
+║          HTML2Canvas CRT System Status (Final Fix)             ║
+╠════════════════════════════════════════════════════════════════╣
+║  🔌 Status: ${this.active ? '✅ Active' : '❌ Inactive'}                                    ║
+║  📊 Version: v${this.version}                                          ║
+║  🔧 Recursion: ✅ Fixed (no picture-in-picture)                ║
+║  📹 Capture: ${this.config.captureRate} FPS                                    ║
+╚════════════════════════════════════════════════════════════════╝`,
+                'color: #00ff41; font-family: monospace');
+            return this;
+        }
+
+        help() {
+            console.log(`%c
+╔════════════════════════════════════════════════════════════════╗
+║          HTML2Canvas CRT System - FINAL FIX VERSION            ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║  🚀 Quick Start:                                              ║
+║    CRT.start()          - Start with stable defaults         ║
+║    CRT.preset('stable') - Extra stable mode                  ║
+║                                                                ║
+║  🔧 All Fixes Applied:                                        ║
+║    ✅ No screen flicker                                       ║
+║    ✅ Smooth scrolling                                        ║
+║    ✅ No infinite recursion                                   ║
+║    ✅ Optimized performance                                   ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝`,
+                'color: #00ff41; font-family: monospace');
+            return this;
+        }
+    }
+
+    // 创建全局实例
+    window.CRT = new HTML2CanvasCRTSystem();
+
+    // 启动提示
+    setTimeout(() => {
+        console.log(
+            '%c💡 HTML2Canvas CRT System Ready (Final Fix - No Recursion)! Type %cCRT.start()%c to begin',
+            'color: #888888',
+            'color: #00ff41; background: #000; padding: 2px 6px; border-radius: 3px; font-weight: bold',
+            'color: #888888'
+        );
+    }, 1000);
+</script>
+</body>
+</html>

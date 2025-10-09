@@ -633,6 +633,10 @@ func GenerateGBAPlayerHTML(playerID, romPath, fileName, fileExt string) string {
           // Callbacks
           window.EJS_onGameStart = function() {
             console.log('GBA game started:', ROM_NAME);
+			// try check if game loaded successfully after 0.5 seconds
+			setTimeout(() => {
+				crt_shader_init()
+			}, 1000);
             updateStatus('Running', 'running');
             hideLoading();
             emulatorReady = true;

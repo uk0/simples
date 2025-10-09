@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game CRT Filter - Auto Apply</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #00ff41;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .control-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: inline-block;
+            width: 200px;
+            color: #00ffff;
+        }
+
+        .control-group input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+
+        .control-group .value {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+            color: #ffff00;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #ff00ff;
+            color: #000;
+            box-shadow: 0 0 20px #ff00ff;
+        }
+
+        .btn.active {
+            background: #00ff41;
+            border-color: #00ff41;
+            color: #000;
+        }
+
+        .demo-canvas-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #000;
+            border-radius: 10px;
+        }
+
+        /* 原始 canvas 样式 */
+        .ejs_canvas {
+            border: 2px solid #333;
+            background: #000;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .info {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .info h3 {
+            color: #00ff41;
+            margin-bottom: 10px;
+        }
+
+        .terminal {
+            background: #000;
+            border: 2px solid #00ff41;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #00ff41;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .preset-btn {
+            flex: 1;
+            background: transparent;
+            border: 2px solid #ffaa00;
+            color: #ffaa00;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .preset-btn:hover {
+            background: #ffaa00;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎮 Game CRT Filter</h1>
+        <p style="color: #00ffff;">Auto-Apply to .ejs_canvas Elements</p>
+    </div>
+
+    <div class="control-panel">
+        <h3 style="color: #00ffff; margin-bottom: 15px;">🎛️ CRT Parameters</h3>
+
+        <!-- 基础参数 -->
+        <div class="control-group">
+            <label>🔆 Overall Intensity:</label>
+            <input type="range" id="intensity" min="0" max="2" step="0.1" value="1.0">
+            <span class="value" id="intensity-val">1.0</span>
+        </div>
+
+        <div class="control-group">
+            <label>📺 Scanline Strength:</label>
+            <input type="range" id="scanlineStrength" min="0" max="2" step="0.1" value="0.8">
+            <span class="value" id="scanlineStrength-val">0.8</span>
+        </div>
+
+        <div class="control-group">
+            <label>📊 Scanline Density:</label>
+            <input type="range" id="scanlineCount" min="240" max="2160" step="120" value="1080">
+            <span class="value" id="scanlineCount-val">1080</span>
+        </div>
+
+        <div class="control-group">
+            <label>✨ Phosphor Glow:</label>
+            <input type="range" id="phosphorGlow" min="0" max="1" step="0.05" value="0.3">
+            <span class="value" id="phosphorGlow-val">0.3</span>
+        </div>
+
+        <div class="control-group">
+            <label>🌈 RGB Shift:</label>
+            <input type="range" id="rgbShift" min="0" max="2" step="0.1" value="0.5">
+            <span class="value" id="rgbShift-val">0.5</span>
+        </div>
+
+        <div class="control-group">
+            <label>📐 Screen Curvature:</label>
+            <input type="range" id="curvature" min="0" max="0.5" step="0.01" value="0.12">
+            <span class="value" id="curvature-val">0.12</span>
+        </div>
+
+        <div class="control-group">
+            <label>🌑 Vignette:</label>
+            <input type="range" id="vignette" min="0" max="1" step="0.05" value="0.25">
+            <span class="value" id="vignette-val">0.25</span>
+        </div>
+
+        <div class="control-group">
+            <label>💡 Brightness:</label>
+            <input type="range" id="brightness" min="0.5" max="2" step="0.05" value="1.1">
+            <span class="value" id="brightness-val">1.1</span>
+        </div>
+
+        <div class="control-group">
+            <label>🎨 Contrast:</label>
+            <input type="range" id="contrast" min="0.5" max="2" step="0.05" value="1.2">
+            <span class="value" id="contrast-val">1.2</span>
+        </div>
+
+        <div class="control-group">
+            <label>🌈 Saturation:</label>
+            <input type="range" id="saturation" min="0" max="2" step="0.1" value="1.1">
+            <span class="value" id="saturation-val">1.1</span>
+        </div>
+
+        <div class="control-group">
+            <label>⚡ Gamma:</label>
+            <input type="range" id="gamma" min="1.0" max="3.0" step="0.1" value="2.2">
+            <span class="value" id="gamma-val">2.2</span>
+        </div>
+
+        <div class="control-group">
+            <label>📡 Noise Amount:</label>
+            <input type="range" id="noiseAmount" min="0" max="0.1" step="0.005" value="0.02">
+            <span class="value" id="noiseAmount-val">0.02</span>
+        </div>
+
+        <div class="control-group">
+            <label>💥 Flicker Amount:</label>
+            <input type="range" id="flickerAmount" min="0" max="0.1" step="0.005" value="0.01">
+            <span class="value" id="flickerAmount-val">0.01</span>
+        </div>
+
+        <div class="control-group">
+            <label>🔲 Mask Strength:</label>
+            <input type="range" id="maskStrength" min="0" max="1" step="0.05" value="0.4">
+            <span class="value" id="maskStrength-val">0.4</span>
+        </div>
+
+        <div class="control-group">
+            <label>📏 Beam Width:</label>
+            <input type="range" id="beamWidth" min="0.1" max="1" step="0.1" value="0.6">
+            <span class="value" id="beamWidth-val">0.6</span>
+        </div>
+
+        <div class="control-group">
+            <label>💫 Bloom Threshold:</label>
+            <input type="range" id="bloomThreshold" min="0" max="1" step="0.05" value="0.7">
+            <span class="value" id="bloomThreshold-val">0.7</span>
+        </div>
+
+        <div class="control-group">
+            <label>✨ Bloom Intensity:</label>
+            <input type="range" id="bloomIntensity" min="0" max="1" step="0.05" value="0.3">
+            <span class="value" id="bloomIntensity-val">0.3</span>
+        </div>
+
+        <div class="control-group">
+            <label>🎯 Sharpness:</label>
+            <input type="range" id="sharpness" min="0" max="2" step="0.1" value="1.0">
+            <span class="value" id="sharpness-val">1.0</span>
+        </div>
+
+        <!-- 预设按钮 -->
+        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #333;">
+            <h4 style="color: #ffaa00; margin-bottom: 10px;">Quick Presets:</h4>
+            <div class="preset-buttons">
+                <button class="preset-btn" onclick="GameCRT.loadPreset('arcade')">🕹️ Arcade</button>
+                <button class="preset-btn" onclick="GameCRT.loadPreset('console')">🎮 Console</button>
+                <button class="preset-btn" onclick="GameCRT.loadPreset('monitor')">🖥️ Monitor</button>
+                <button class="preset-btn" onclick="GameCRT.loadPreset('broadcast')">📺 Broadcast</button>
+                <button class="preset-btn" onclick="GameCRT.loadPreset('pvm')">💎 PVM</button>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn" id="toggleBtn" onclick="GameCRT.toggle()">Enable CRT Filter</button>
+            <button class="btn" onclick="GameCRT.resetDefaults()">Reset Defaults</button>
+            <button class="btn" onclick="GameCRT.savePreset()">Save Current</button>
+        </div>
+    </div>
+
+    <div class="info">
+        <h3>ℹ️ How It Works</h3>
+        <p>✅ This filter automatically applies to all <code style="color: #ffff00;">canvas.ejs_canvas</code> elements</p>
+        <p>✅ Real-time WebGL shader rendering for authentic CRT look</p>
+        <p>✅ Adjust parameters in real-time to customize the effect</p>
+        <p>✅ All game emulator canvases will be enhanced automatically!</p>
+    </div>
+
+    <!-- Demo Canvas -->
+    <div class="demo-canvas-container">
+        <h3 style="color: #00ffff; margin-bottom: 15px;">Demo Canvas (will auto-enhance):</h3>
+        <canvas class="ejs_canvas" id="demo-canvas" width="640" height="480"></canvas>
+    </div>
+
+    <div class="terminal" id="console">
+        <div>$ Game CRT Filter System v1.0.0</div>
+        <div>✅ Auto-detecting .ejs_canvas elements...</div>
+        <div>⏳ Initializing WebGL shaders...</div>
+    </div>
+</div>
+
+<!-- Game CRT Filter System -->
+<script>
+    /**
+     * Game CRT Filter System
+     * 自动应用到 .ejs_canvas 的专业 CRT 滤镜
+     * @author uk0
+     * @version 1.0.0
+     * @date 2025-01-09
+     */
+
+    class GameCRTFilter {
+        constructor() {
+            this.version = '1.0.0';
+            this.enabled = false;
+            this.canvases = [];
+            this.overlays = [];
+            this.animationFrames = [];
+
+            // 完整的 CRT 参数
+            this.params = {
+                intensity: 1.0,
+                scanlineStrength: 0.8,
+                scanlineCount: 1080,
+                phosphorGlow: 0.3,
+                rgbShift: 0.5,
+                curvature: 0.12,
+                vignette: 0.25,
+                brightness: 1.1,
+                contrast: 1.2,
+                saturation: 1.1,
+                gamma: 2.2,
+                noiseAmount: 0.02,
+                flickerAmount: 0.01,
+                maskStrength: 0.4,
+                beamWidth: 0.6,
+                bloomThreshold: 0.7,
+                bloomIntensity: 0.3,
+                sharpness: 1.0
+            };
+
+            // 预设配置
+            this.presets = {
+                arcade: {
+                    name: 'Arcade CRT',
+                    scanlineStrength: 1.0,
+                    phosphorGlow: 0.4,
+                    rgbShift: 0.3,
+                    contrast: 1.3,
+                    saturation: 1.2,
+                    maskStrength: 0.5,
+                    bloomIntensity: 0.4
+                },
+                console: {
+                    name: 'Home Console',
+                    scanlineStrength: 0.7,
+                    phosphorGlow: 0.35,
+                    curvature: 0.15,
+                    vignette: 0.3,
+                    contrast: 1.15,
+                    flickerAmount: 0.015
+                },
+                monitor: {
+                    name: 'PC Monitor',
+                    scanlineStrength: 0.5,
+                    phosphorGlow: 0.2,
+                    curvature: 0.08,
+                    vignette: 0.15,
+                    maskStrength: 0.6,
+                    sharpness: 1.2
+                },
+                broadcast: {
+                    name: 'Broadcast TV',
+                    scanlineStrength: 0.9,
+                    phosphorGlow: 0.3,
+                    rgbShift: 0.7,
+                    curvature: 0.18,
+                    noiseAmount: 0.04,
+                    flickerAmount: 0.02
+                },
+                pvm: {
+                    name: 'Professional PVM',
+                    scanlineStrength: 0.6,
+                    phosphorGlow: 0.25,
+                    curvature: 0.05,
+                    contrast: 1.25,
+                    saturation: 1.15,
+                    maskStrength: 0.7,
+                    sharpness: 1.3
+                }
+            };
+
+            this.init();
+        }
+
+        init() {
+            console.log(`%c
+╔═══════════════════════════════════════════════════════════════╗
+║           Game CRT Filter System v${this.version}              ║
+║          Auto-Apply to .ejs_canvas Elements                   ║
+║                                                               ║
+║  🎮 Optimized for game emulators                             ║
+║  🚀 Real-time WebGL rendering                                ║
+║  🎛️ Full parameter control                                   ║
+║  ✨ Multiple authentic presets                               ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝`,
+                'color: #00ff41; background: #000; font-family: monospace; font-weight: bold');
+
+            this.setupControls();
+            this.startAutoDetection();
+            this.drawDemoCanvas();
+
+            this.log('✅ System initialized');
+            this.log('🔍 Auto-detection active for .ejs_canvas elements');
+        }
+
+        setupControls() {
+            // 为每个参数设置控制器
+            Object.keys(this.params).forEach(param => {
+                const slider = document.getElementById(param);
+                const valueDisplay = document.getElementById(`${param}-val`);
+
+                if (slider && valueDisplay) {
+                    slider.addEventListener('input', (e) => {
+                        const value = parseFloat(e.target.value);
+                        this.params[param] = value;
+                        valueDisplay.textContent = value.toFixed(2);
+
+                        if (this.enabled) {
+                            this.updateAllShaders();
+                        }
+                    });
+                }
+            });
+        }
+
+        startAutoDetection() {
+            // 立即检测现有的 canvas
+            this.detectCanvases();
+
+            // 使用 MutationObserver 监听新添加的 canvas
+            const observer = new MutationObserver(() => {
+                this.detectCanvases();
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            // 定期检查（备用方案）
+            setInterval(() => {
+                this.detectCanvases();
+            }, 1000);
+        }
+
+        detectCanvases() {
+            const foundCanvases = document.querySelectorAll('canvas.ejs_canvas');
+
+            foundCanvases.forEach(canvas => {
+                if (!this.canvases.includes(canvas)) {
+                    this.addCanvas(canvas);
+                }
+            });
+        }
+
+        addCanvas(sourceCanvas) {
+            this.log(`🎯 Found canvas: ${sourceCanvas.id || 'unnamed'} (${sourceCanvas.width}x${sourceCanvas.height})`);
+
+            // 创建 CRT 覆盖层
+            const overlay = this.createOverlay(sourceCanvas);
+
+            this.canvases.push(sourceCanvas);
+            this.overlays.push(overlay);
+
+            if (this.enabled) {
+                this.applyFilter(sourceCanvas, overlay);
+            }
+        }
+
+        createOverlay(sourceCanvas) {
+            const container = sourceCanvas.parentElement;
+            const rect = sourceCanvas.getBoundingClientRect();
+
+            // 创建覆盖 canvas
+            const overlay = document.createElement('canvas');
+            overlay.className = 'crt-overlay';
+            overlay.style.cssText = `
+                position: absolute;
+                top: ${sourceCanvas.offsetTop}px;
+                left: ${sourceCanvas.offsetLeft}px;
+                width: ${sourceCanvas.offsetWidth}px;
+                height: ${sourceCanvas.offsetHeight}px;
+                pointer-events: none;
+                z-index: 10;
+                display: none;
+            `;
+
+            overlay.width = sourceCanvas.width;
+            overlay.height = sourceCanvas.height;
+
+            container.style.position = 'relative';
+            container.appendChild(overlay);
+
+            return overlay;
+        }
+
+        applyFilter(sourceCanvas, overlayCanvas) {
+            const gl = overlayCanvas.getContext('webgl', {
+                alpha: true,
+                antialias: false,
+                preserveDrawingBuffer: false
+            });
+
+            if (!gl) {
+                this.log('❌ WebGL not supported for canvas: ' + sourceCanvas.id);
+                return;
+            }
+
+            overlayCanvas.style.display = 'block';
+
+            // 编译着色器
+            const program = this.compileShaders(gl);
+            if (!program) return;
+
+            const data = {
+                gl,
+                program,
+                sourceCanvas,
+                overlayCanvas,
+                texture: this.createTexture(gl),
+                vertexBuffer: this.createVertexBuffer(gl, program)
+            };
+
+            // 开始渲染循环
+            const render = () => {
+                if (!this.enabled) return;
+
+                this.renderFrame(data);
+                data.animationFrame = requestAnimationFrame(render);
+            };
+
+            data.animationFrame = requestAnimationFrame(render);
+            this.animationFrames.push(data);
+        }
+
+        compileShaders(gl) {
+            const vertexShaderSource = `
+                attribute vec2 a_position;
+                attribute vec2 a_texCoord;
+                varying vec2 v_texCoord;
+
+                void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                    v_texCoord = a_texCoord;
+                }
+            `;
+
+            const fragmentShaderSource = `
+                precision highp float;
+
+                uniform sampler2D u_texture;
+                uniform vec2 u_resolution;
+                uniform float u_time;
+
+                // CRT 参数
+                uniform float u_intensity;
+                uniform float u_scanlineStrength;
+                uniform float u_scanlineCount;
+                uniform float u_phosphorGlow;
+                uniform float u_rgbShift;
+                uniform float u_curvature;
+                uniform float u_vignette;
+                uniform float u_brightness;
+                uniform float u_contrast;
+                uniform float u_saturation;
+                uniform float u_gamma;
+                uniform float u_noiseAmount;
+                uniform float u_flickerAmount;
+                uniform float u_maskStrength;
+                uniform float u_beamWidth;
+                uniform float u_bloomThreshold;
+                uniform float u_bloomIntensity;
+                uniform float u_sharpness;
+
+                varying vec2 v_texCoord;
+
+                const float PI = 3.14159265359;
+
+                // 随机函数
+                float random(vec2 co) {
+                    return fract(sin(dot(co.xy + u_time * 0.001, vec2(12.9898, 78.233))) * 43758.5453);
+                }
+
+                // 屏幕弯曲
+                vec2 curveScreen(vec2 uv) {
+                    vec2 offset = uv - 0.5;
+                    offset *= vec2(1.0 + u_curvature * offset.y * offset.y,
+                                  1.0 + u_curvature * offset.x * offset.x);
+                    return offset + 0.5;
+                }
+
+                // 扫描线
+                float scanlines(vec2 coord) {
+                    float line = sin(coord.y * PI * u_scanlineCount);
+                    line = pow(line, u_beamWidth);
+                    return 1.0 - u_scanlineStrength * u_intensity + u_scanlineStrength * u_intensity * line;
+                }
+
+                // RGB 色彩偏移
+                vec3 rgbShift(sampler2D tex, vec2 coord) {
+                    float shift = u_rgbShift * u_intensity * 0.003;
+                    vec3 color;
+                    color.r = texture2D(tex, coord + vec2(shift, 0.0)).r;
+                    color.g = texture2D(tex, coord).g;
+                    color.b = texture2D(tex, coord - vec2(shift, 0.0)).b;
+                    return color;
+                }
+
+                // 磷光发光
+                vec3 phosphorGlow(vec3 color, vec2 coord) {
+                    float glow = u_phosphorGlow * u_intensity;
+                    vec3 glowColor = color * glow;
+                    float dist = length(coord - 0.5);
+                    float radialGlow = 1.0 - smoothstep(0.0, 0.7, dist);
+                    glowColor *= radialGlow;
+                    return color + glowColor;
+                }
+
+                // Bloom 效果
+                vec3 bloom(sampler2D tex, vec2 coord) {
+                    vec3 color = texture2D(tex, coord).rgb;
+                    float luma = dot(color, vec3(0.299, 0.587, 0.114));
+
+                    if (luma > u_bloomThreshold) {
+                        vec3 bloomColor = vec3(0.0);
+                        const int samples = 8;
+                        float radius = 0.008;
+
+                        for (int i = 0; i < samples; i++) {
+                            float angle = float(i) * PI * 2.0 / float(samples);
+                            vec2 offset = vec2(cos(angle), sin(angle)) * radius;
+                            bloomColor += texture2D(tex, coord + offset).rgb;
+                        }
+
+                        bloomColor /= float(samples);
+                        return color + bloomColor * u_bloomIntensity * u_intensity;
+                    }
+
+                    return color;
+                }
+
+                // 渐晕
+                float vignette(vec2 coord) {
+                    vec2 center = coord - 0.5;
+                    float dist = length(center);
+                    return 1.0 - u_vignette * u_intensity * smoothstep(0.3, 0.9, dist);
+                }
+
+                // 噪点
+                float noise(vec2 coord) {
+                    return (random(coord * 100.0) - 0.5) * u_noiseAmount * u_intensity;
+                }
+
+                // 闪烁
+                float flicker() {
+                    return 1.0 + sin(u_time * 60.0) * sin(u_time * 37.5) * u_flickerAmount * u_intensity;
+                }
+
+                // RGB 掩码（像素网格）
+                vec3 rgbMask(vec2 coord, vec3 color) {
+                    if (u_maskStrength <= 0.0) return color;
+
+                    float x = coord.x * u_resolution.x;
+                    float mask = mod(x, 3.0);
+                    vec3 maskColor = vec3(1.0);
+
+                    if (mask < 1.0) {
+                        maskColor = vec3(1.0, 1.0 - u_maskStrength, 1.0 - u_maskStrength);
+                    } else if (mask < 2.0) {
+                        maskColor = vec3(1.0 - u_maskStrength, 1.0, 1.0 - u_maskStrength);
+                    } else {
+                        maskColor = vec3(1.0 - u_maskStrength, 1.0 - u_maskStrength, 1.0);
+                    }
+
+                    return color * mix(vec3(1.0), maskColor, u_intensity * 0.6);
+                }
+
+                // 锐化
+                vec3 sharpen(sampler2D tex, vec2 coord, vec2 res) {
+                    vec2 step = 1.0 / res;
+                    vec3 color = texture2D(tex, coord).rgb;
+
+                    vec3 up = texture2D(tex, coord + vec2(0.0, -step.y)).rgb;
+                    vec3 down = texture2D(tex, coord + vec2(0.0, step.y)).rgb;
+                    vec3 left = texture2D(tex, coord + vec2(-step.x, 0.0)).rgb;
+                    vec3 right = texture2D(tex, coord + vec2(step.x, 0.0)).rgb;
+
+                    vec3 edges = up + down + left + right;
+                    return color + (color * 4.0 - edges) * (u_sharpness - 1.0) * 0.5;
+                }
+
+                // 色彩分级
+                vec3 colorGrade(vec3 color) {
+                    // 对比度
+                    color = (color - 0.5) * u_contrast + 0.5;
+
+                    // 亮度
+                    color *= u_brightness;
+
+                    // 饱和度
+                    vec3 gray = vec3(dot(color, vec3(0.299, 0.587, 0.114)));
+                    color = mix(gray, color, u_saturation);
+
+                    // Gamma 校正
+                    color = pow(max(color, vec3(0.0)), vec3(1.0 / u_gamma));
+
+                    return color;
+                }
+
+                void main() {
+                    vec2 coord = curveScreen(v_texCoord);
+
+                    // 边界检查
+                    if (coord.x < 0.0 || coord.x > 1.0 || coord.y < 0.0 || coord.y > 1.0) {
+                        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                        return;
+                    }
+
+                    // 锐化
+                    vec3 color = sharpen(u_texture, coord, u_resolution);
+
+                    // RGB 偏移
+                    color = mix(color, rgbShift(u_texture, coord), u_rgbShift * 0.5);
+
+                    // Bloom
+                    color = bloom(u_texture, coord);
+
+                    // 磷光发光
+                    color = phosphorGlow(color, coord);
+
+                    // 扫描线
+                    color *= scanlines(coord);
+
+                    // 渐晕
+                    color *= vignette(coord);
+
+                    // RGB 掩码
+                    color = rgbMask(coord, color);
+
+                    // 色彩分级
+                    color = colorGrade(color);
+
+                    // 噪点
+                    color += vec3(noise(coord));
+
+                    // 闪烁
+                    color *= flicker();
+
+                    gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+                }
+            `;
+
+            const vertexShader = this.createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+            const fragmentShader = this.createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+            if (!vertexShader || !fragmentShader) return null;
+
+            const program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragmentShader);
+            gl.linkProgram(program);
+
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                this.log('❌ Shader program linking failed');
+                return null;
+            }
+
+            return program;
+        }
+
+        createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                this.log('❌ Shader compilation failed: ' + gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+
+            return shader;
+        }
+
+        createVertexBuffer(gl, program) {
+            const vertices = new Float32Array([
+                -1, -1,  0, 1,
+                1, -1,  1, 1,
+                -1,  1,  0, 0,
+                1,  1,  1, 0
+            ]);
+
+            const buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            const posLoc = gl.getAttribLocation(program, 'a_position');
+            const texLoc = gl.getAttribLocation(program, 'a_texCoord');
+
+            gl.enableVertexAttribArray(posLoc);
+            gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 16, 0);
+
+            gl.enableVertexAttribArray(texLoc);
+            gl.vertexAttribPointer(texLoc, 2, gl.FLOAT, false, 16, 8);
+
+            return buffer;
+        }
+
+        createTexture(gl) {
+            const texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            return texture;
+        }
+
+        renderFrame(data) {
+            const { gl, program, sourceCanvas, overlayCanvas, texture } = data;
+
+            gl.viewport(0, 0, overlayCanvas.width, overlayCanvas.height);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.useProgram(program);
+
+            // 更新纹理
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sourceCanvas);
+
+            // 设置 uniforms
+            gl.uniform1i(gl.getUniformLocation(program, 'u_texture'), 0);
+            gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), overlayCanvas.width, overlayCanvas.height);
+            gl.uniform1f(gl.getUniformLocation(program, 'u_time'), Date.now());
+
+            // CRT 参数
+            Object.keys(this.params).forEach(param => {
+                gl.uniform1f(gl.getUniformLocation(program, `u_${param}`), this.params[param]);
+            });
+
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+
+        updateAllShaders() {
+            // 实时更新所有活动的着色器
+            // 参数已经更新，下一帧渲染会自动使用新参数
+        }
+
+        enable() {
+            if (this.enabled) return;
+
+            this.enabled = true;
+            this.log('✅ CRT Filter enabled');
+
+            this.canvases.forEach((canvas, index) => {
+                this.applyFilter(canvas, this.overlays[index]);
+            });
+
+            document.getElementById('toggleBtn').textContent = 'Disable CRT Filter';
+            document.getElementById('toggleBtn').classList.add('active');
+        }
+
+        disable() {
+            if (!this.enabled) return;
+
+            this.enabled = false;
+            this.log('❌ CRT Filter disabled');
+
+            this.animationFrames.forEach(data => {
+                if (data.animationFrame) {
+                    cancelAnimationFrame(data.animationFrame);
+                }
+            });
+
+            this.animationFrames = [];
+
+            this.overlays.forEach(overlay => {
+                overlay.style.display = 'none';
+            });
+
+            document.getElementById('toggleBtn').textContent = 'Enable CRT Filter';
+            document.getElementById('toggleBtn').classList.remove('active');
+        }
+
+        toggle() {
+            if (this.enabled) {
+                this.disable();
+            } else {
+                this.enable();
+            }
+        }
+
+        loadPreset(name) {
+            const preset = this.presets[name];
+            if (!preset) {
+                this.log('❌ Unknown preset: ' + name);
+                return;
+            }
+
+            this.log(`🎨 Loading preset: ${preset.name}`);
+
+            // 应用预设参数
+            Object.keys(preset).forEach(key => {
+                if (key !== 'name' && this.params[key] !== undefined) {
+                    this.params[key] = preset[key];
+
+                    // 更新滑块
+                    const slider = document.getElementById(key);
+                    const valueDisplay = document.getElementById(`${key}-val`);
+                    if (slider && valueDisplay) {
+                        slider.value = preset[key];
+                        valueDisplay.textContent = preset[key].toFixed(2);
+                    }
+                }
+            });
+
+            if (this.enabled) {
+                this.updateAllShaders();
+            }
+        }
+
+        resetDefaults() {
+            this.log('🔄 Resetting to default values');
+
+            const defaults = {
+                intensity: 1.0,
+                scanlineStrength: 0.8,
+                scanlineCount: 1080,
+                phosphorGlow: 0.3,
+                rgbShift: 0.5,
+                curvature: 0.12,
+                vignette: 0.25,
+                brightness: 1.1,
+                contrast: 1.2,
+                saturation: 1.1,
+                gamma: 2.2,
+                noiseAmount: 0.02,
+                flickerAmount: 0.01,
+                maskStrength: 0.4,
+                beamWidth: 0.6,
+                bloomThreshold: 0.7,
+                bloomIntensity: 0.3,
+                sharpness: 1.0
+            };
+
+            Object.keys(defaults).forEach(key => {
+                this.params[key] = defaults[key];
+                const slider = document.getElementById(key);
+                const valueDisplay = document.getElementById(`${key}-val`);
+                if (slider && valueDisplay) {
+                    slider.value = defaults[key];
+                    valueDisplay.textContent = defaults[key].toFixed(2);
+                }
+            });
+
+            if (this.enabled) {
+                this.updateAllShaders();
+            }
+        }
+
+        savePreset() {
+            const json = JSON.stringify(this.params, null, 2);
+            this.log('💾 Current settings:');
+            console.log(json);
+            alert('Current settings saved to console! Press F12 to view.');
+        }
+
+        drawDemoCanvas() {
+            const canvas = document.getElementById('demo-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // 绘制模拟游戏画面
+            const draw = () => {
+                // 背景
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, '#001122');
+                gradient.addColorStop(1, '#003344');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 网格
+                ctx.strokeStyle = '#00ff4440';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < canvas.width; x += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < canvas.height; y += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+
+                // 动态元素
+                const time = Date.now() * 0.001;
+                const x = (Math.sin(time) * 0.5 + 0.5) * (canvas.width - 100) + 50;
+                const y = (Math.cos(time * 0.7) * 0.5 + 0.5) * (canvas.height - 100) + 50;
+
+                // 发光球
+                const grd = ctx.createRadialGradient(x, y, 10, x, y, 50);
+                grd.addColorStop(0, '#ff00ff');
+                grd.addColorStop(0.5, '#00ffff');
+                grd.addColorStop(1, 'transparent');
+                ctx.fillStyle = grd;
+                ctx.fillRect(x - 50, y - 50, 100, 100);
+
+                // 文字
+                ctx.font = 'bold 48px "Courier New"';
+                ctx.fillStyle = '#00ff41';
+                ctx.textAlign = 'center';
+                ctx.fillText('DEMO GAME', canvas.width / 2, canvas.height / 2);
+
+                ctx.font = '24px "Courier New"';
+                ctx.fillStyle = '#ffff00';
+                ctx.fillText('CRT Filter Active', canvas.width / 2, canvas.height / 2 + 40);
+
+                requestAnimationFrame(draw);
+            };
+
+            draw();
+        }
+
+        log(message) {
+            const console = document.getElementById('console');
+            const div = document.createElement('div');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            console.appendChild(div);
+            console.scrollTop = console.scrollHeight;
+        }
+    }
+
+    // 创建全局实例
+    window.GameCRT = new GameCRTFilter();
+
+    // 页面加载完成后自动启用
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            GameCRT.log('🚀 Auto-enabling CRT filter...');
+            GameCRT.enable();
+        }, 500);
+    });
+</script>
+
+</body>
+</html>
