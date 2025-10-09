@@ -6,6 +6,7 @@
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/a.css">
     <link rel="stylesheet" href="/pygments.css">
+    <script src="/crt-simulator.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/style.css" />
     <meta name="keywords" content="{{ .Title }}-建新的Blog,github.com/uk0,NeoJ" />
     <meta name="description" content="这是一个关于建新的个人网站的博客页面。" />
@@ -162,7 +163,22 @@
     // Check if already authenticated on load
     window.addEventListener('load', function() {
         checkAuthentication();
+        crt_style();
     });
+
+    function crt_style(){
+        // 开启CRT效果
+            CRT.on()
+
+        // 使用游戏预设
+                CRT.preset('fw900-gaming')
+
+        // 调整参数
+                CRT.adjust('scanlineIntensity', 0.2)
+
+        // 查看状态
+                CRT.status()
+    }
 
     function checkAuthentication() {
         const authCookie = getCookie('auth_' + hashString(postPath));

@@ -5,6 +5,7 @@
     <title>NeoJ's Web Page[建新的Blog]</title>
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="a.css">
+    <script src="crt-simulator.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/style.css" />
     <meta name="keywords" content="建新的Blog,github.com/uk0,SEO" />
     <meta name="description" content="这是一个关于建新的个人网站的博客页面。" />
@@ -80,5 +81,25 @@
             Unless otherwise noted, content on this site is licensed under CC BY 4.0.</font></p>
     </div>
 </footer>
+<script>
+    // Check if already authenticated on load
+    window.addEventListener('load', function() {
+        crt_style();
+    });
+
+    function crt_style(){
+        // 开启CRT效果
+        CRT.on()
+
+        // 使用游戏预设
+        CRT.preset('fw900-gaming')
+
+        // 调整参数
+        CRT.adjust('scanlineIntensity', 0.2)
+
+        // 查看状态
+        CRT.status()
+    }
+</script>
 </body>
 </html>
