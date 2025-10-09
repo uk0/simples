@@ -148,19 +148,16 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 			if alt == "" {
 				alt = att.SavedAs
 			}
-			return fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy" />`, rel, htmlEscapeAttr(alt))
+			uniqueID := fmt.Sprintf("pic_%x", md5.Sum([]byte(originalFilename)))[:12]
+			return parser.GeneratePICWarpHTML(uniqueID, rel)
 
 		case ".mp4", ".webm", ".ogg", ".mov":
-			return fmt.Sprintf(`<video controls style="max-width:100%%;">
-				<source src="%s" type="video/%s">
-				<a href="%s">Download video</a>
-			</video>`, rel, strings.TrimPrefix(ext, "."), rel)
+			uniqueID := fmt.Sprintf("vid_%x", md5.Sum([]byte(originalFilename)))[:12]
+			return parser.GenerateVideoWarpHTML(uniqueID, rel)
 
 		case ".mp3", ".wav", ".flac", ".m4a", ".aac", ".oga":
-			return fmt.Sprintf(`<audio controls>
-				<source src="%s" type="audio/%s">
-				<a href="%s">Download audio</a>
-			</audio>`, rel, strings.TrimPrefix(ext, "."), rel)
+			uniqueID := fmt.Sprintf("aid_%x", md5.Sum([]byte(originalFilename)))[:12]
+			return parser.GenerateAudioWarpHTML(uniqueID, rel)
 
 		case ".nes":
 			uniqueID := fmt.Sprintf("nes_%x", md5.Sum([]byte(originalFilename)))[:12]
@@ -225,7 +222,8 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 			if name == "" {
 				name = filepath.Base(att.Path)
 			}
-			return fmt.Sprintf(`<a href="%s" download>%s</a>`, rel, htmlEscape(name))
+			uniqueID := fmt.Sprintf("any_%x", md5.Sum([]byte(name)))[:12]
+			return parser.GenerateDownloadLinkHTML(uniqueID, rel, htmlEscape(name))
 		}
 	})
 }

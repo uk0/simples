@@ -1,31 +1,19 @@
 /**
- * Game CRT Shader Filter
+ * Game CRT Shader Filter (Fixed Double Vision)
  * 自动应用 CRT 效果到 .ejs_canvas 元素
  *
  * @author uk0
- * @version 1.0.0
+ * @version 1.3.0
  * @date 2025-01-10
  *
  * @example
- * // 基本使用
- * <script src="crt-shader.js"></script>
- * <script>
- *   const crt = new CRTShader();
- *   crt.enable();
- * </script>
- *
- * // 高级配置
- * const crt = new CRTShader({
- *   autoEnable: true,
- *   targetSelector: '.ejs_canvas',
- *   scanlineStrength: 0.8,
- *   curvature: 0.12
- * });
+ * const crt = new CRTShader({ hideOriginal: true });
+ * crt.enable();
  */
 
 class CRTShader {
     constructor(config = {}) {
-        this.version = '1.0.0';
+        this.version = '1.3.0';
         this.enabled = false;
         this.canvasOverlays = new Map();
         this.observer = null;
@@ -35,80 +23,82 @@ class CRTShader {
 
         // 默认配置
         this.config = {
-            autoEnable: false,                    // 是否自动启用
-            targetSelector: 'canvas.ejs_canvas',  // 目标 canvas 选择器
-            logEnabled: true,                     // 是否启用日志
+            autoEnable: false,
+            targetSelector: 'canvas.ejs_canvas',
+            logEnabled: true,
+            hideOriginal: true,            // 🔧 隐藏原始canvas
+            replaceMode: 'opacity',        // 🔧 替换模式: 'opacity', 'visibility', 'replace'
             ...config
         };
 
         // CRT 参数
         this.params = {
             intensity: 1.0,
-            scanlineStrength: 0.8,
-            scanlineCount: 1080,
-            phosphorGlow: 0.3,
-            rgbShift: 0.5,
-            curvature: 0.12,
-            vignette: 0.25,
-            brightness: 1.1,
-            contrast: 1.2,
-            saturation: 1.1,
+            scanlineStrength: 0.6,
+            scanlineCount: 800,
+            phosphorGlow: 0.1,
+            rgbShift: 0.15,
+            curvature: 0.08,
+            vignette: 0.15,
+            brightness: 1.05,
+            contrast: 1.15,
+            saturation: 1.05,
             gamma: 2.2,
-            noiseAmount: 0.02,
+            noiseAmount: 0.0,
             flickerAmount: 0.0,
-            maskStrength: 0.4,
-            // 从配置中覆盖参数
+            maskStrength: 0.15,
             ...this._extractParams(config)
         };
 
         // 预设配置
         this.presets = {
             arcade: {
-                scanlineStrength: 1.0,
-                phosphorGlow: 0.4,
-                rgbShift: 0.3,
-                contrast: 1.3,
-                saturation: 1.2,
-                maskStrength: 0.5,
-                curvature: 0.08
-            },
-            console: {
-                scanlineStrength: 0.7,
-                phosphorGlow: 0.35,
-                curvature: 0.15,
-                vignette: 0.3,
-                contrast: 1.15,
-                maskStrength: 0.3
-            },
-            monitor: {
-                scanlineStrength: 0.5,
-                phosphorGlow: 0.2,
-                curvature: 0.08,
-                vignette: 0.15,
-                maskStrength: 0.6
-            },
-            pvm: {
-                scanlineStrength: 0.6,
+                scanlineStrength: 0.9,
                 phosphorGlow: 0.25,
-                curvature: 0.05,
+                rgbShift: 0.2,
                 contrast: 1.25,
                 saturation: 1.15,
-                maskStrength: 0.7
+                maskStrength: 0.35,
+                curvature: 0.1
             },
-            gameboy: {
-                scanlineStrength: 0.4,
-                phosphorGlow: 0.15,
-                curvature: 0.02,
-                saturation: 0.3,
-                gamma: 2.8,
+            console: {
+                scanlineStrength: 0.6,
+                phosphorGlow: 0.2,
+                curvature: 0.12,
+                vignette: 0.2,
+                contrast: 1.1,
                 maskStrength: 0.2
+            },
+            monitor: {
+                scanlineStrength: 0.4,
+                phosphorGlow: 0.1,
+                curvature: 0.05,
+                vignette: 0.1,
+                maskStrength: 0.4
+            },
+            sharp: {
+                scanlineStrength: 0.5,
+                phosphorGlow: 0.05,
+                rgbShift: 0.1,
+                curvature: 0.03,
+                vignette: 0.05,
+                contrast: 1.2,
+                maskStrength: 0.1,
+                noiseAmount: 0.0
+            },
+            pvm: {
+                scanlineStrength: 0.5,
+                phosphorGlow: 0.15,
+                curvature: 0.04,
+                contrast: 1.2,
+                saturation: 1.1,
+                maskStrength: 0.5
             }
         };
 
         this._init();
     }
 
-    // 提取 CRT 参数
     _extractParams(config) {
         const paramKeys = [
             'intensity', 'scanlineStrength', 'scanlineCount', 'phosphorGlow',
@@ -127,10 +117,9 @@ class CRTShader {
     }
 
     _init() {
-        this._log('init', `CRT Shader v${this.version} initialized`);
+        this._log('init', `CRT Shader v${this.version} (Replace Mode: ${this.config.replaceMode})`);
 
         if (this.config.autoEnable) {
-            // 等待 DOM 加载完成后自动启用
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => this.enable());
             } else {
@@ -138,11 +127,9 @@ class CRTShader {
             }
         }
 
-        // 页面卸载时清理
         window.addEventListener('beforeunload', () => this.destroy());
     }
 
-    // 启用 CRT 滤镜
     enable() {
         if (this.enabled) {
             this._log('warn', 'CRT Shader already enabled');
@@ -162,7 +149,6 @@ class CRTShader {
         return this;
     }
 
-    // 禁用 CRT 滤镜
     disable() {
         if (!this.enabled) {
             this._log('warn', 'CRT Shader already disabled');
@@ -172,19 +158,30 @@ class CRTShader {
         this.enabled = false;
         this._log('info', 'Disabling CRT Shader...');
 
-        // 断开观察器
         if (this.observer) {
             this.observer.disconnect();
             this.observer = null;
         }
 
-        // 清理所有渲染循环和 DOM
+        // 🔧 恢复原始canvas的显示
         this.canvasOverlays.forEach(processor => {
             if (processor.animationId) {
                 cancelAnimationFrame(processor.animationId);
             }
+
+            // 恢复原始canvas
+            if (processor.sourceCanvas) {
+                this._restoreOriginalCanvas(processor.sourceCanvas);
+            }
+
+            // 移除覆盖层
             if (processor.overlay && processor.overlay.parentElement) {
                 processor.overlay.parentElement.removeChild(processor.overlay);
+            }
+
+            // 如果是替换模式，恢复原始canvas到DOM
+            if (this.config.replaceMode === 'replace' && processor.originalParent && processor.sourceCanvas) {
+                processor.originalParent.appendChild(processor.sourceCanvas);
             }
         });
 
@@ -195,12 +192,10 @@ class CRTShader {
         return this;
     }
 
-    // 切换启用/禁用
     toggle() {
         return this.enabled ? this.disable() : this.enable();
     }
 
-    // 应用预设
     applyPreset(name) {
         const preset = this.presets[name];
         if (!preset) {
@@ -219,7 +214,6 @@ class CRTShader {
         return this;
     }
 
-    // 设置参数
     setParam(key, value) {
         if (this.params[key] === undefined) {
             this._log('error', `Unknown parameter: ${key}`);
@@ -227,12 +221,9 @@ class CRTShader {
         }
 
         this.params[key] = value;
-        this._log('info', `Set ${key} = ${value}`);
-
         return this;
     }
 
-    // 批量设置参数
     setParams(params) {
         Object.keys(params).forEach(key => {
             if (this.params[key] !== undefined) {
@@ -243,46 +234,40 @@ class CRTShader {
         return this;
     }
 
-    // 获取参数
     getParam(key) {
         return this.params[key];
     }
 
-    // 获取所有参数
     getParams() {
         return { ...this.params };
     }
 
-    // 重置为默认值
     reset() {
         this.params = {
             intensity: 1.0,
-            scanlineStrength: 0.8,
-            scanlineCount: 1080,
-            phosphorGlow: 0.3,
-            rgbShift: 0.5,
-            curvature: 0.12,
-            vignette: 0.25,
-            brightness: 1.1,
-            contrast: 1.2,
-            saturation: 1.1,
+            scanlineStrength: 0.6,
+            scanlineCount: 800,
+            phosphorGlow: 0.1,
+            rgbShift: 0.15,
+            curvature: 0.08,
+            vignette: 0.15,
+            brightness: 1.05,
+            contrast: 1.15,
+            saturation: 1.05,
             gamma: 2.2,
-            noiseAmount: 0.02,
+            noiseAmount: 0.0,
             flickerAmount: 0.0,
-            maskStrength: 0.4
+            maskStrength: 0.15
         };
 
         this._log('success', 'Parameters reset to defaults');
-
         return this;
     }
 
-    // 获取 FPS
     getFPS() {
         return this.fpsCounter;
     }
 
-    // 销毁实例
     destroy() {
         this._log('info', 'Destroying CRT Shader...');
         this.disable();
@@ -347,6 +332,53 @@ class CRTShader {
         }
     }
 
+    // 🔧 隐藏原始canvas
+    _hideOriginalCanvas(canvas) {
+        if (!this.config.hideOriginal) return;
+
+        // 保存原始样式
+        canvas.setAttribute('data-original-opacity', canvas.style.opacity || '');
+        canvas.setAttribute('data-original-visibility', canvas.style.visibility || '');
+        canvas.setAttribute('data-original-filter', canvas.style.filter || '');
+
+        switch (this.config.replaceMode) {
+            case 'opacity':
+                // 🔧 使用opacity=0隐藏，保持布局
+                canvas.style.opacity = '0';
+                break;
+
+            case 'visibility':
+                // 🔧 使用visibility隐藏，保持布局
+                canvas.style.visibility = 'hidden';
+                break;
+
+            case 'replace':
+                // 🔧 完全移除原始canvas（最彻底）
+                // 稍后在处理中执行
+                break;
+
+            default:
+                canvas.style.opacity = '0';
+        }
+    }
+
+    // 🔧 恢复原始canvas
+    _restoreOriginalCanvas(canvas) {
+        if (!canvas) return;
+
+        const originalOpacity = canvas.getAttribute('data-original-opacity') || '';
+        const originalVisibility = canvas.getAttribute('data-original-visibility') || '';
+        const originalFilter = canvas.getAttribute('data-original-filter') || '';
+
+        canvas.style.opacity = originalOpacity;
+        canvas.style.visibility = originalVisibility;
+        canvas.style.filter = originalFilter;
+
+        canvas.removeAttribute('data-original-opacity');
+        canvas.removeAttribute('data-original-visibility');
+        canvas.removeAttribute('data-original-filter');
+    }
+
     _processCanvas(sourceCanvas) {
         if (this.canvasOverlays.has(sourceCanvas)) return;
 
@@ -357,30 +389,74 @@ class CRTShader {
             overlay.setAttribute('data-crt-overlay', 'true');
             overlay.width = sourceCanvas.width;
             overlay.height = sourceCanvas.height;
+
+            // 🔧 复制原始canvas的样式
+            const sourceStyle = window.getComputedStyle(sourceCanvas);
             overlay.style.cssText = `
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                z-index: 10;
+                position: ${sourceStyle.position === 'static' ? 'relative' : sourceStyle.position};
+                top: ${sourceStyle.top};
+                left: ${sourceStyle.left};
+                width: ${sourceStyle.width};
+                height: ${sourceStyle.height};
+                pointer-events: ${sourceStyle.pointerEvents};
+                z-index: ${parseInt(sourceStyle.zIndex || '0') + 1};
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+                display: ${sourceStyle.display};
+                margin: ${sourceStyle.margin};
+                padding: ${sourceStyle.padding};
             `;
 
             const wrapper = sourceCanvas.parentElement;
-            if (wrapper) {
-                const currentPosition = window.getComputedStyle(wrapper).position;
-                if (currentPosition === 'static') {
-                    wrapper.style.position = 'relative';
+            let originalParent = null;
+
+            if (this.config.replaceMode === 'replace') {
+                // 🔧 替换模式：完全替换原始canvas
+                originalParent = wrapper;
+                wrapper.insertBefore(overlay, sourceCanvas);
+                wrapper.removeChild(sourceCanvas);
+
+                // 将原始canvas保存在内存中，但不在DOM中
+                overlay.sourceCanvas = sourceCanvas;
+            } else {
+                // 🔧 覆盖模式：在原始canvas上方添加覆盖层
+                if (wrapper) {
+                    const currentPosition = window.getComputedStyle(wrapper).position;
+                    if (currentPosition === 'static') {
+                        wrapper.style.position = 'relative';
+                    }
+
+                    // 确保overlay在sourceCanvas之后插入
+                    if (sourceCanvas.nextSibling) {
+                        wrapper.insertBefore(overlay, sourceCanvas.nextSibling);
+                    } else {
+                        wrapper.appendChild(overlay);
+                    }
+
+                    // 使overlay完全覆盖sourceCanvas
+                    overlay.style.position = 'absolute';
+                    overlay.style.top = '0';
+                    overlay.style.left = '0';
                 }
-                wrapper.appendChild(overlay);
+
+                // 🔧 隐藏原始canvas
+                this._hideOriginalCanvas(sourceCanvas);
             }
 
+            // 🔧 创建WebGL上下文（完全不透明）
             const gl = overlay.getContext('webgl', {
-                alpha: true,
+                alpha: false,                      // 🔧 关闭alpha通道
                 antialias: false,
+                premultipliedAlpha: false,
                 preserveDrawingBuffer: false,
-                powerPreference: 'high-performance'
+                powerPreference: 'high-performance',
+                desynchronized: true,
+                failIfMajorPerformanceCaveat: false
+            }) || overlay.getContext('experimental-webgl', {
+                alpha: false,
+                antialias: false,
+                premultipliedAlpha: false,
+                preserveDrawingBuffer: false
             });
 
             if (!gl) {
@@ -388,17 +464,23 @@ class CRTShader {
                 return;
             }
 
+            // 🔧 设置WebGL混合模式为不透明
+            gl.disable(gl.BLEND);
+            gl.disable(gl.DEPTH_TEST);
+            gl.disable(gl.STENCIL_TEST);
+
             const program = this._compileShaders(gl);
             if (!program) return;
 
             const processor = {
-                sourceCanvas,
+                sourceCanvas: this.config.replaceMode === 'replace' ? overlay.sourceCanvas : sourceCanvas,
                 overlay,
                 gl,
                 program,
                 texture: this._createTexture(gl),
                 vertexBuffer: this._createVertexBuffer(gl, program),
-                animationId: null
+                animationId: null,
+                originalParent
             };
 
             this._startRenderLoop(processor);
@@ -429,21 +511,31 @@ class CRTShader {
             processor.animationId = requestAnimationFrame(render);
         };
 
-        render();
+        processor.animationId = requestAnimationFrame(render);
     }
 
     _renderFrame(processor) {
         const { gl, program, sourceCanvas, overlay, texture } = processor;
 
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sourceCanvas);
-
+        // 🔧 设置视口
         gl.viewport(0, 0, overlay.width, overlay.height);
-        gl.clearColor(0, 0, 0, 0);
+
+        // 🔧 使用不透明的黑色清除
+        gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        // 🔧 优化纹理上传
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, sourceCanvas);
 
         gl.useProgram(program);
 
+        // 设置uniforms
         gl.uniform1i(gl.getUniformLocation(program, 'u_texture'), 0);
         gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), overlay.width, overlay.height);
         gl.uniform1f(gl.getUniformLocation(program, 'u_time'), performance.now());
@@ -453,6 +545,9 @@ class CRTShader {
         });
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+        // 🔧 强制刷新
+        gl.flush();
     }
 
     _compileShaders(gl) {
@@ -467,6 +562,7 @@ class CRTShader {
             }
         `;
 
+        // 🔧 优化的片段着色器（完全不透明输出）
         const fragmentShaderSource = `
             precision highp float;
 
@@ -492,92 +588,109 @@ class CRTShader {
             const float PI = 3.14159265359;
 
             float random(vec2 co) {
-                return fract(sin(dot(co.xy + u_time * 0.0001, vec2(12.9898, 78.233))) * 43758.5453);
+                highp float a = 12.9898;
+                highp float b = 78.233;
+                highp float c = 43758.5453;
+                highp float dt = dot(co.xy, vec2(a,b));
+                highp float sn = mod(dt, 3.14);
+                return fract(sin(sn) * c);
             }
 
             vec2 curveScreen(vec2 uv) {
+                if (u_curvature <= 0.001) return uv;
                 vec2 offset = uv - 0.5;
-                offset *= vec2(1.0 + u_curvature * offset.y * offset.y,
-                              1.0 + u_curvature * offset.x * offset.x);
+                float r2 = offset.x * offset.x + offset.y * offset.y;
+                offset *= 1.0 + u_curvature * r2;
                 return offset + 0.5;
             }
 
             float scanlines(vec2 coord) {
+                if (u_scanlineStrength <= 0.001) return 1.0;
                 float line = sin(coord.y * PI * u_scanlineCount);
-                return 1.0 - u_scanlineStrength * (1.0 - line * line);
+                return mix(1.0, line * line, u_scanlineStrength);
             }
 
             vec3 rgbShift(sampler2D tex, vec2 coord) {
-                float shift = u_rgbShift * 0.003;
-                return vec3(
-                    texture2D(tex, coord + vec2(shift, 0.0)).r,
-                    texture2D(tex, coord).g,
-                    texture2D(tex, coord - vec2(shift, 0.0)).b
-                );
+                if (u_rgbShift <= 0.001) return texture2D(tex, coord).rgb;
+                
+                float shift = u_rgbShift * 0.0015;
+                vec3 color;
+                color.r = texture2D(tex, coord + vec2(shift, 0.0)).r;
+                color.g = texture2D(tex, coord).g;
+                color.b = texture2D(tex, coord - vec2(shift, 0.0)).b;
+                return color;
             }
 
-            vec3 phosphorGlow(vec3 color, vec2 coord) {
-                float dist = length(coord - 0.5);
-                float glow = (1.0 - smoothstep(0.0, 0.7, dist)) * u_phosphorGlow;
-                return color + color * glow;
+            vec3 phosphorGlow(vec3 color) {
+                if (u_phosphorGlow <= 0.001) return color;
+                return color * (1.0 + u_phosphorGlow * 0.3);
             }
 
             float vignette(vec2 coord) {
-                float dist = length(coord - 0.5);
-                return 1.0 - u_vignette * smoothstep(0.3, 0.9, dist);
-            }
-
-            float noise(vec2 coord) {
-                return (random(coord * 100.0) - 0.5) * u_noiseAmount;
+                if (u_vignette <= 0.001) return 1.0;
+                float dist = length(coord - 0.5) * 1.414;
+                return 1.0 - u_vignette * smoothstep(0.5, 1.0, dist);
             }
 
             vec3 rgbMask(vec2 coord, vec3 color) {
-                if (u_maskStrength <= 0.0) return color;
-
+                if (u_maskStrength <= 0.001) return color;
+                
                 float x = coord.x * u_resolution.x;
                 float mask = mod(x, 3.0);
                 vec3 maskColor = vec3(1.0);
-
+                
                 if (mask < 1.0) {
-                    maskColor = vec3(1.0, 1.0 - u_maskStrength, 1.0 - u_maskStrength);
+                    maskColor.r = 1.0;
+                    maskColor.g = 1.0 - u_maskStrength * 0.5;
+                    maskColor.b = 1.0 - u_maskStrength * 0.5;
                 } else if (mask < 2.0) {
-                    maskColor = vec3(1.0 - u_maskStrength, 1.0, 1.0 - u_maskStrength);
+                    maskColor.r = 1.0 - u_maskStrength * 0.5;
+                    maskColor.g = 1.0;
+                    maskColor.b = 1.0 - u_maskStrength * 0.5;
                 } else {
-                    maskColor = vec3(1.0 - u_maskStrength, 1.0 - u_maskStrength, 1.0);
+                    maskColor.r = 1.0 - u_maskStrength * 0.5;
+                    maskColor.g = 1.0 - u_maskStrength * 0.5;
+                    maskColor.b = 1.0;
                 }
-
-                return color * mix(vec3(1.0), maskColor, u_intensity * 0.6);
+                
+                return color * maskColor;
             }
 
             vec3 colorGrade(vec3 color) {
-                color = (color - 0.5) * u_contrast + 0.5;
+                color = mix(vec3(0.5), color, u_contrast);
                 color *= u_brightness;
-                vec3 gray = vec3(dot(color, vec3(0.299, 0.587, 0.114)));
-                color = mix(gray, color, u_saturation);
+                
+                float gray = dot(color, vec3(0.299, 0.587, 0.114));
+                color = mix(vec3(gray), color, u_saturation);
+                
                 return pow(max(color, vec3(0.0)), vec3(1.0 / u_gamma));
             }
 
             void main() {
                 vec2 coord = curveScreen(v_texCoord);
 
+                // 🔧 边界处理：使用黑色而不是透明
                 if (coord.x < 0.0 || coord.x > 1.0 || coord.y < 0.0 || coord.y > 1.0) {
-                    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
                     return;
                 }
 
                 vec3 color = rgbShift(u_texture, coord);
-                color = phosphorGlow(color, coord);
+                color = phosphorGlow(color);
                 color *= scanlines(coord);
                 color *= vignette(coord);
                 color = rgbMask(coord, color);
                 color = colorGrade(color);
-                color += vec3(noise(coord));
-
-                if (u_flickerAmount > 0.0) {
-                    color *= 1.0 + sin(u_time * 0.06) * u_flickerAmount;
+                
+                if (u_noiseAmount > 0.001) {
+                    float noise = (random(coord + u_time * 0.001) - 0.5) * u_noiseAmount;
+                    color += vec3(noise);
                 }
-
-                gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+                
+                color = clamp(color, 0.0, 1.0);
+                
+                // 🔧 完全不透明输出
+                gl_FragColor = vec4(color, 1.0);
             }
         `;
 
@@ -605,7 +718,7 @@ class CRTShader {
         gl.compileShader(shader);
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            this._log('error', 'Shader compilation failed');
+            this._log('error', `Shader compilation failed: ${gl.getShaderInfoLog(shader)}`);
             gl.deleteShader(shader);
             return null;
         }
@@ -640,10 +753,12 @@ class CRTShader {
     _createTexture(gl) {
         const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
+
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
         return texture;
     }
 
@@ -675,48 +790,53 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     window.CRTShader = CRTShader;
 }
 
+// ==================== Auto Loading ====================
 
-
-// auto loading
-
-
-//  Crt Shader Initialization
 function crt_shader_init() {
-    console.log('%c🔌 Initializing CRT Shader......',
+    console.log('%c🔌 Initializing CRT Shader (Fixed Double Vision v1.3.0)......',
         'color: #00ff00; font-weight: bold; text-shadow: 0 0 5px #00ff00');
-    var canvas_count = document.getElementsByClassName("ejs_canvas").length
+
+    var canvas_count = document.getElementsByClassName("ejs_canvas").length;
     console.log(`%c🔌 Game Canvas count: ${canvas_count}`,
         'color: #00ff00; font-weight: bold; text-shadow: 0 0 5px #00ff00');
-    if (canvas_count === 1) {
+
+    if (canvas_count >= 1) {
         game_crt();
     }
 
     function game_crt() {
-        // 创建实例并启用
-        const crt = new CRTShader();
+        // 🔧 使用隐藏原始canvas模式
+        const crt = new CRTShader({
+            hideOriginal: true,
+            replaceMode: 'opacity'  // 可选: 'opacity', 'visibility', 'replace'
+        });
+
         crt.enable();
-        // 批量设置
+
+        // 优化的参数设置
         crt.setParams({
             intensity: 1.0,
-            scanlineStrength: 0.8,
-            scanlineCount: 750,// 根据分辨率调整600线一般够用了
-            phosphorGlow: 0.3,
-            rgbShift: 0.5,
-            curvature: 0.12,
-            vignette: 0.23,
-            brightness: 1.1,
-            contrast: 1.2,
-            saturation: 1.1,
+            scanlineStrength: 0.6,
+            scanlineCount: 600,
+            phosphorGlow: 0.1,
+            rgbShift: 0.15,
+            curvature: 0.08,
+            vignette: 0.15,
+            brightness: 1.05,
+            contrast: 1.15,
+            saturation: 1.05,
             gamma: 2.2,
-            noiseAmount: 0.02,
+            noiseAmount: 0.0,
             flickerAmount: 0.0,
-            maskStrength: 0.4
+            maskStrength: 0.15
         });
+
+        console.log('%c✅ CRT Shader initialized (Original Canvas Hidden)',
+            'color: #00ff00; font-weight: bold');
     }
 }
 
-
-// 启动提示
+// 启动
 setTimeout(() => {
-    crt_shader_init()
+    crt_shader_init();
 }, 1000);
