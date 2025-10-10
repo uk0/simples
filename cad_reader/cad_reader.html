@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLDASM WebGL Viewer - WASM Engine</title>
+    <title>HOOPS Communicator - 增强版 CAD 查看器</title>
     <style>
         * {
             margin: 0;
@@ -12,999 +12,815 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
-            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
             overflow: hidden;
         }
 
-        .container {
+        #viewer-container {
+            position: relative;
             width: 100vw;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        .header {
-            background: rgba(20, 20, 22, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .controls {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-
-        .btn.primary {
-            background: #0066ff;
-            border-color: #0066ff;
-        }
-
-        .btn.primary:hover {
-            background: #0052cc;
-        }
-
-        #canvas-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-        }
-
-        #renderCanvas {
+        #viewer {
             width: 100%;
             height: 100%;
-            display: block;
+            background: #16213e;
         }
 
-        .loading-overlay {
+        #toolbar {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             z-index: 1000;
-        }
-
-        .loading-content {
-            text-align: center;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #0066ff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 2rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .loading-progress {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .info-panel {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            background: rgba(20, 20, 22, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
-            min-width: 250px;
-            font-size: 0.875rem;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .info-value {
-            color: #0066ff;
-            font-weight: 600;
-            font-family: 'SF Mono', Monaco, monospace;
-        }
-
-        .console-panel {
-            position: absolute;
-            bottom: 1rem;
-            left: 1rem;
-            right: 1rem;
-            max-height: 200px;
-            background: rgba(20, 20, 22, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
-            font-family: 'SF Mono', Monaco, monospace;
-            font-size: 0.75rem;
+            max-width: 350px;
+            max-height: calc(100vh - 40px);
             overflow-y: auto;
+        }
+
+        /* 自定义滚动条 */
+        #toolbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #toolbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        #toolbar::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-section {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"], input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #5568d3;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        }
+
+        .sample-models {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .sample-models h3 {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .sample-btn {
+            padding: 8px;
+            font-size: 12px;
+            background: #28a745;
+            margin-bottom: 5px;
+        }
+
+        .sample-btn:hover {
+            background: #218838;
+        }
+
+        #info-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 1000;
+            max-width: 300px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        #status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            z-index: 1000;
+            display: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #status.loading {
+            background: rgba(255, 193, 7, 0.9);
+        }
+
+        #status.error {
+            background: rgba(220, 53, 69, 0.9);
+        }
+
+        .feature-list {
+            margin-top: 10px;
+            padding-left: 15px;
+        }
+
+        .feature-list li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #856404;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .loading-animation {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
             display: none;
         }
 
-        .console-panel.active {
+        .tab-content.active {
             display: block;
         }
 
-        .console-line {
-            margin-bottom: 0.25rem;
+        .model-info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .model-info div {
+            margin-bottom: 5px;
+        }
+
+        .model-info strong {
+            color: #0066cc;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .color-picker-group {
             display: flex;
-            gap: 0.5rem;
+            gap: 8px;
+            align-items: center;
         }
 
-        .console-time {
-            color: rgba(255, 255, 255, 0.4);
+        input[type="color"] {
+            width: 60px;
+            height: 40px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            cursor: pointer;
         }
 
-        .console-type {
-            font-weight: 600;
+        .slider-group {
+            margin-bottom: 15px;
         }
 
-        .console-type.info { color: #0066ff; }
-        .console-type.warn { color: #ffaa00; }
-        .console-type.error { color: #ff3333; }
-        .console-type.success { color: #00cc88; }
-
-        .drop-zone {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 3rem;
-            background: rgba(20, 20, 22, 0.95);
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            text-align: center;
-            transition: all 0.3s;
+        input[type="range"] {
+            width: 100%;
+            margin-top: 5px;
         }
 
-        .drop-zone.active {
-            border-color: #0066ff;
-            background: rgba(0, 102, 255, 0.1);
-        }
-
-        .drop-zone h2 {
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .drop-zone p {
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 1.5rem;
-        }
-
-        #file-input {
-            display: none;
+        .slider-value {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 8px;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <div class="logo">
-            <span>🏭</span>
-            <span>SLDASM WebGL Viewer</span>
-            <span style="font-size: 0.75rem; opacity: 0.6;">powered by WASM</span>
+<div id="viewer-container">
+    <div id="viewer"></div>
+
+    <div id="toolbar">
+        <h1>🔧 HOOPS 增强查看器</h1>
+
+        <div class="tab-container">
+            <button class="tab active" onclick="switchTab('load')">加载</button>
+            <button class="tab" onclick="switchTab('view')">视图</button>
+            <button class="tab" onclick="switchTab('tools')">工具</button>
         </div>
-        <div class="controls">
-            <button class="btn" onclick="toggleConsole()">
-                <span>📊</span>
-                <span>Console</span>
+
+        <!-- 加载选项卡 -->
+        <div id="load-tab" class="tab-content active">
+            <div class="control-section">
+                <label>📁 模型 URL (.scs 格式)：</label>
+                <input type="text" id="modelUrl"
+                       placeholder="https://example.com/model.scs">
+            </div>
+            <button onclick="loadModelFromUrl()">🚀 从 URL 加载</button>
+
+            <div class="control-section">
+                <label>💾 本地文件：</label>
+                <input type="file" id="fileInput"
+                       accept=".scs,.scz,.hsf">
+            </div>
+            <button onclick="loadModelFromFile()">📂 从文件加载</button>
+
+            <div class="sample-models">
+                <h3>📦 示例模型：</h3>
+                <button class="sample-btn" onclick="loadSampleModel('bnc')">
+                    BNC 连接器
+                </button>
+                <button class="sample-btn" onclick="loadSampleModel('microengine')">
+                    微型引擎
+                </button>
+            </div>
+
+            <div id="modelInfo" class="model-info" style="display: none;">
+                <strong>📊 模型信息：</strong>
+                <div id="nodeCount">节点数: -</div>
+                <div id="polyCount">面数: -</div>
+                <div id="fileSize">文件大小: -</div>
+            </div>
+        </div>
+
+        <!-- 视图选项卡 -->
+        <div id="view-tab" class="tab-content">
+            <div class="button-group">
+                <button class="btn-secondary" onclick="resetView()">🔄 重置</button>
+                <button class="btn-secondary" onclick="fitToView()">📐 适配</button>
+            </div>
+
+            <div class="control-section">
+                <label>🎨 渲染模式：</label>
+                <select id="drawMode" onchange="changeDrawMode()">
+                    <option value="shaded">着色模式</option>
+                    <option value="wireframe">线框模式</option>
+                    <option value="hiddenline">隐藏线</option>
+                    <option value="shadedwireframe">着色+线框</option>
+                </select>
+            </div>
+
+            <div class="control-section">
+                <label>🌈 背景颜色：</label>
+                <div class="color-picker-group">
+                    <input type="color" id="bgColor1" value="#16213e"
+                           onchange="updateBackground()">
+                    <input type="color" id="bgColor2" value="#1a1a2e"
+                           onchange="updateBackground()">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label>💡 光照强度：
+                    <span class="slider-value" id="lightValue">1.0</span>
+                </label>
+                <input type="range" id="lightIntensity" min="0" max="2"
+                       step="0.1" value="1.0" onchange="updateLighting()">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-info" onclick="toggleProjection()">
+                    📷 投影切换
+                </button>
+                <button class="btn-info" onclick="toggleAxis()">
+                    🎯 坐标轴
+                </button>
+            </div>
+        </div>
+
+        <!-- 工具选项卡 -->
+        <div id="tools-tab" class="tab-content">
+            <div class="control-section">
+                <label>🔧 测量工具：</label>
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="enableMeasure('distance')">
+                        📏 距离
+                    </button>
+                    <button class="btn-secondary" onclick="enableMeasure('angle')">
+                        📐 角度
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label>✂️ 剖切工具：</label>
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="enableCuttingPlane('x')">
+                        X 剖切
+                    </button>
+                    <button class="btn-secondary" onclick="enableCuttingPlane('y')">
+                        Y 剖切
+                    </button>
+                    <button class="btn-secondary" onclick="enableCuttingPlane('z')">
+                        Z 剖切
+                    </button>
+                    <button class="btn-danger" onclick="clearCuttingPlanes()">
+                        清除剖切
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label>📸 截图导出：</label>
+                <button class="btn-info" onclick="takeScreenshot()">
+                    📷 截图保存
+                </button>
+            </div>
+
+            <button class="btn-danger" onclick="clearModel()">
+                🗑️ 清除模型
             </button>
-            <button class="btn" onclick="resetView()">
-                <span>🔄</span>
-                <span>Reset</span>
-            </button>
-            <button class="btn primary" onclick="document.getElementById('file-input').click()">
-                <span>📁</span>
-                <span>Load SLDASM</span>
-            </button>
+        </div>
+
+        <div class="warning-box">
+            ⚠️ <strong>提示：</strong> 支持 .scs、.scz、.hsf 格式文件
         </div>
     </div>
 
-    <div id="canvas-container">
-        <canvas id="renderCanvas"></canvas>
-
-        <div class="drop-zone" id="dropZone">
-            <h2>📦 Load SLDASM Model</h2>
-            <p>拖拽 SLDASM 文件到此处或点击选择</p>
-            <button class="btn primary" onclick="document.getElementById('file-input').click()">
-                选择文件
-            </button>
-        </div>
-
-        <div class="info-panel" id="infoPanel" style="display: none;">
-            <div class="info-item">
-                <span class="info-label">文件:</span>
-                <span class="info-value" id="fileName">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">大小:</span>
-                <span class="info-value" id="fileSize">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">零件数:</span>
-                <span class="info-value" id="partCount">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">面数:</span>
-                <span class="info-value" id="faceCount">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">顶点数:</span>
-                <span class="info-value" id="vertexCount">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">WASM状态:</span>
-                <span class="info-value" id="wasmStatus">Loading...</span>
-            </div>
-        </div>
-
-        <div class="console-panel" id="consolePanel">
-            <div id="consoleContent"></div>
-        </div>
-
-        <div class="loading-overlay" id="loadingOverlay">
-            <div class="loading-content">
-                <div class="spinner"></div>
-                <div class="loading-text" id="loadingText">初始化 WASM 引擎...</div>
-                <div class="loading-progress" id="loadingProgress"></div>
-            </div>
-        </div>
+    <div id="info-panel">
+        <strong>🎮 操作指南：</strong>
+        <ul class="feature-list">
+            <li>左键拖动：旋转模型</li>
+            <li>右键拖动：平移视图</li>
+            <li>滚轮：缩放视图</li>
+            <li>双击：聚焦部件</li>
+            <li>Ctrl+左键：多选</li>
+        </ul>
+        <strong style="margin-top: 10px; display: block;">✨ 快捷键：</strong>
+        <ul class="feature-list">
+            <li>F: 适配视图</li>
+            <li>H: 返回主视图</li>
+            <li>W: 线框模式</li>
+            <li>S: 着色模式</li>
+        </ul>
     </div>
+
+    <div id="status">准备就绪</div>
 </div>
 
-<input type="file" id="file-input" accept=".sldasm,.sldprt,.step,.stp,.iges,.igs">
+<!-- HOOPS Communicator 库 -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/techsoft3d/hoops-web-viewer@latest/hoops_web_viewer.js"></script>
 
 <script>
-    // CAD WASM Engine Manager
-    class CADWasmEngine {
-        constructor() {
-            this.wasmModule = null;
-            this.gl = null;
-            this.canvas = null;
-            this.isInitialized = false;
-            this.modelData = null;
-
-            // WebGL context
-            this.program = null;
-            this.buffers = {};
-            this.uniforms = {};
-            this.camera = {
-                position: [100, 100, 100],
-                target: [0, 0, 0],
-                up: [0, 1, 0],
-                fov: 45,
-                near: 0.1,
-                far: 10000
-            };
-
-            this.init();
-        }
-
-        async init() {
-            this.log('info', 'Initializing CAD WASM Engine...');
-
-            try {
-                // Initialize WebGL
-                this.canvas = document.getElementById('renderCanvas');
-                this.gl = this.canvas.getContext('webgl2', {
-                    antialias: true,
-                    depth: true,
-                    stencil: true,
-                    preserveDrawingBuffer: true
-                });
-
-                if (!this.gl) {
-                    throw new Error('WebGL2 not supported');
-                }
-
-                this.setupWebGL();
-
-                // Load WASM module
-                await this.loadWASM();
-
-                // Start render loop
-                this.render();
-
-                this.log('success', 'CAD Engine initialized successfully');
-                this.hideLoading();
-
-            } catch (error) {
-                this.log('error', `Initialization failed: ${error.message}`);
-                this.showError(error.message);
-            }
-        }
-
-        async loadWASM() {
-            this.log('info', 'Loading engine.wasm...');
-
-            try {
-                // 这里需要加载你的 engine.wasm 文件
-                // 假设 engine.wasm 在同目录下
-                const wasmResponse = await fetch('engine.wasm');
-                const wasmBuffer = await wasmResponse.arrayBuffer();
-
-                // WASM 导入对象
-                const importObject = {
-                    env: {
-                        // WebGL 函数绑定
-                        glCreateShader: (type) => this.gl.createShader(type),
-                        glShaderSource: (shader, source) => this.gl.shaderSource(shader, source),
-                        glCompileShader: (shader) => this.gl.compileShader(shader),
-                        glCreateProgram: () => this.gl.createProgram(),
-                        glAttachShader: (program, shader) => this.gl.attachShader(program, shader),
-                        glLinkProgram: (program) => this.gl.linkProgram(program),
-                        glUseProgram: (program) => this.gl.useProgram(program),
-                        glCreateBuffer: () => this.gl.createBuffer(),
-                        glBindBuffer: (target, buffer) => this.gl.bindBuffer(target, buffer),
-                        glBufferData: (target, data, usage) => this.gl.bufferData(target, data, usage),
-                        glEnableVertexAttribArray: (index) => this.gl.enableVertexAttribArray(index),
-                        glVertexAttribPointer: (index, size, type, normalized, stride, offset) => {
-                            this.gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
-                        },
-                        glDrawArrays: (mode, first, count) => this.gl.drawArrays(mode, first, count),
-                        glClear: (mask) => this.gl.clear(mask),
-                        glClearColor: (r, g, b, a) => this.gl.clearColor(r, g, b, a),
-                        glEnable: (cap) => this.gl.enable(cap),
-                        glDepthFunc: (func) => this.gl.depthFunc(func),
-                        glViewport: (x, y, width, height) => this.gl.viewport(x, y, width, height),
-
-                        // 数学函数
-                        sin: Math.sin,
-                        cos: Math.cos,
-                        tan: Math.tan,
-                        sqrt: Math.sqrt,
-                        pow: Math.pow,
-
-                        // 内存管理
-                        memory: new WebAssembly.Memory({ initial: 256, maximum: 4096 }),
-
-                        // 日志函数
-                        console_log: (ptr) => {
-                            const msg = this.readStringFromWasm(ptr);
-                            this.log('info', `[WASM] ${msg}`);
-                        },
-                        console_error: (ptr) => {
-                            const msg = this.readStringFromWasm(ptr);
-                            this.log('error', `[WASM] ${msg}`);
-                        }
-                    },
-
-                    // CAD 特定功能
-                    cad: {
-                        // SLDASM 解析函数
-                        parseSLDASM: (dataPtr, dataLen) => {
-                            return this.parseSLDASM(dataPtr, dataLen);
-                        },
-
-                        // 几何处理
-                        tessellate: (shapePtr) => {
-                            return this.tessellateShape(shapePtr);
-                        },
-
-                        // 矩阵运算
-                        createMatrix4: () => new Float32Array(16),
-                        multiplyMatrix4: (a, b, result) => {
-                            // 矩阵乘法实现
-                        },
-
-                        // 坐标变换
-                        transformVertex: (vertex, matrix) => {
-                            // 顶点变换实现
-                        }
-                    }
-                };
-
-                // 实例化 WASM 模块
-                const wasmModule = await WebAssembly.instantiate(wasmBuffer, importObject);
-                this.wasmModule = wasmModule.instance;
-
-                // 初始化 WASM 环境
-                if (this.wasmModule.exports.init) {
-                    this.wasmModule.exports.init();
-                }
-
-                this.isInitialized = true;
-                document.getElementById('wasmStatus').textContent = 'Ready';
-                this.log('success', 'WASM module loaded successfully');
-
-            } catch (error) {
-                this.log('error', `WASM loading failed: ${error.message}`);
-
-                // 降级方案：使用纯 JavaScript 实现
-                this.useFallbackEngine();
-            }
-        }
-
-        // 纯 JavaScript 降级方案
-        useFallbackEngine() {
-            this.log('warn', 'Using JavaScript fallback engine');
-            document.getElementById('wasmStatus').textContent = 'Fallback';
-
-            // 基础的 STL/OBJ 加载器
-            this.loadBasicModel = (arrayBuffer) => {
-                // 简单的二进制解析
-                const dataView = new DataView(arrayBuffer);
-                const vertices = [];
-                const normals = [];
-                const indices = [];
-
-                // 这里实现基础的文件解析逻辑
-                // ...
-
-                return { vertices, normals, indices };
-            };
-        }
-
-        setupWebGL() {
-            const gl = this.gl;
-
-            // Vertex shader
-            const vsSource = `
-                    attribute vec3 aPosition;
-                    attribute vec3 aNormal;
-
-                    uniform mat4 uModelMatrix;
-                    uniform mat4 uViewMatrix;
-                    uniform mat4 uProjectionMatrix;
-                    uniform mat3 uNormalMatrix;
-
-                    varying vec3 vNormal;
-                    varying vec3 vPosition;
-
-                    void main() {
-                        vec4 worldPosition = uModelMatrix * vec4(aPosition, 1.0);
-                        vPosition = worldPosition.xyz;
-                        vNormal = normalize(uNormalMatrix * aNormal);
-                        gl_Position = uProjectionMatrix * uViewMatrix * worldPosition;
-                    }
-                `;
-
-            // Fragment shader
-            const fsSource = `
-                    precision highp float;
-
-                    varying vec3 vNormal;
-                    varying vec3 vPosition;
-
-                    uniform vec3 uLightPosition;
-                    uniform vec3 uLightColor;
-                    uniform vec3 uAmbientColor;
-                    uniform vec3 uDiffuseColor;
-                    uniform vec3 uSpecularColor;
-                    uniform float uShininess;
-                    uniform vec3 uCameraPosition;
-
-                    void main() {
-                        vec3 normal = normalize(vNormal);
-                        vec3 lightDir = normalize(uLightPosition - vPosition);
-                        vec3 viewDir = normalize(uCameraPosition - vPosition);
-                        vec3 reflectDir = reflect(-lightDir, normal);
-
-                        // Ambient
-                        vec3 ambient = uAmbientColor * uDiffuseColor;
-
-                        // Diffuse
-                        float diff = max(dot(normal, lightDir), 0.0);
-                        vec3 diffuse = diff * uLightColor * uDiffuseColor;
-
-                        // Specular
-                        float spec = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
-                        vec3 specular = spec * uLightColor * uSpecularColor;
-
-                        vec3 result = ambient + diffuse + specular;
-                        gl_FragColor = vec4(result, 1.0);
-                    }
-                `;
-
-            // Create and compile shaders
-            const vertexShader = this.createShader(gl.VERTEX_SHADER, vsSource);
-            const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, fsSource);
-
-            // Create program
-            this.program = gl.createProgram();
-            gl.attachShader(this.program, vertexShader);
-            gl.attachShader(this.program, fragmentShader);
-            gl.linkProgram(this.program);
-
-            if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
-                throw new Error('Shader program linking failed');
-            }
-
-            // Get attribute and uniform locations
-            this.uniforms = {
-                modelMatrix: gl.getUniformLocation(this.program, 'uModelMatrix'),
-                viewMatrix: gl.getUniformLocation(this.program, 'uViewMatrix'),
-                projectionMatrix: gl.getUniformLocation(this.program, 'uProjectionMatrix'),
-                normalMatrix: gl.getUniformLocation(this.program, 'uNormalMatrix'),
-                lightPosition: gl.getUniformLocation(this.program, 'uLightPosition'),
-                lightColor: gl.getUniformLocation(this.program, 'uLightColor'),
-                ambientColor: gl.getUniformLocation(this.program, 'uAmbientColor'),
-                diffuseColor: gl.getUniformLocation(this.program, 'uDiffuseColor'),
-                specularColor: gl.getUniformLocation(this.program, 'uSpecularColor'),
-                shininess: gl.getUniformLocation(this.program, 'uShininess'),
-                cameraPosition: gl.getUniformLocation(this.program, 'uCameraPosition')
-            };
-
-            // Setup WebGL state
-            gl.enable(gl.DEPTH_TEST);
-            gl.enable(gl.CULL_FACE);
-            gl.cullFace(gl.BACK);
-            gl.clearColor(0.05, 0.05, 0.05, 1.0);
-        }
-
-        createShader(type, source) {
-            const gl = this.gl;
-            const shader = gl.createShader(type);
-            gl.shaderSource(shader, source);
-            gl.compileShader(shader);
-
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                const info = gl.getShaderInfoLog(shader);
-                gl.deleteShader(shader);
-                throw new Error(`Shader compilation failed: ${info}`);
-            }
-
-            return shader;
-        }
-
-        async loadSLDASM(file) {
-            this.showLoading(`Loading ${file.name}...`);
-            this.log('info', `Loading file: ${file.name} (${this.formatBytes(file.size)})`);
-
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-
-                if (this.wasmModule && this.wasmModule.exports.parseSLDASM) {
-                    // 使用 WASM 解析
-                    this.log('info', 'Parsing with WASM engine...');
-
-                    // 分配内存并复制数据
-                    const dataPtr = this.wasmModule.exports.malloc(arrayBuffer.byteLength);
-                    const dataArray = new Uint8Array(this.wasmModule.exports.memory.buffer, dataPtr, arrayBuffer.byteLength);
-                    dataArray.set(new Uint8Array(arrayBuffer));
-
-                    // 调用 WASM 解析函数
-                    const resultPtr = this.wasmModule.exports.parseSLDASM(dataPtr, arrayBuffer.byteLength);
-
-                    // 读取结果
-                    this.modelData = this.readModelFromWasm(resultPtr);
-
-                    // 释放内存
-                    this.wasmModule.exports.free(dataPtr);
-                    this.wasmModule.exports.free(resultPtr);
-
-                } else {
-                    // 使用 JavaScript 降级方案
-                    this.log('warn', 'Using JavaScript parser...');
-                    this.modelData = await this.parseWithJavaScript(arrayBuffer);
-                }
-
-                // 创建 WebGL 缓冲区
-                this.createBuffers(this.modelData);
-
-                // 更新 UI
-                this.updateInfo(file.name, file.size, this.modelData);
-
-                // 隐藏加载界面
-                this.hideLoading();
-                document.getElementById('dropZone').style.display = 'none';
-                document.getElementById('infoPanel').style.display = 'block';
-
-                this.log('success', 'Model loaded successfully');
-
-            } catch (error) {
-                this.log('error', `Loading failed: ${error.message}`);
-                this.showError(error.message);
-            }
-        }
-
-        async parseWithJavaScript(arrayBuffer) {
-            // 简单的二进制格式检测
-            const dataView = new DataView(arrayBuffer);
-            const magic = dataView.getUint32(0, true);
-
-            // 检测文件格式
-            if (magic === 0x4D4D) {
-                // Big endian
-                return this.parseBinarySTL(arrayBuffer, false);
-            } else if (magic === 0x49492A00) {
-                // Little endian
-                return this.parseBinarySTL(arrayBuffer, true);
-            } else {
-                // 尝试作为文本格式
-                const text = new TextDecoder().decode(arrayBuffer);
-                if (text.includes('solid')) {
-                    return this.parseASCIISTL(text);
-                }
-            }
-
-            throw new Error('Unsupported file format');
-        }
-
-        parseBinarySTL(arrayBuffer, littleEndian) {
-            const dataView = new DataView(arrayBuffer);
-            let offset = 80; // Skip header
-
-            const triangleCount = dataView.getUint32(offset, littleEndian);
-            offset += 4;
-
-            const vertices = new Float32Array(triangleCount * 9);
-            const normals = new Float32Array(triangleCount * 9);
-
-            for (let i = 0; i < triangleCount; i++) {
-                // Read normal
-                const nx = dataView.getFloat32(offset, littleEndian);
-                const ny = dataView.getFloat32(offset + 4, littleEndian);
-                const nz = dataView.getFloat32(offset + 8, littleEndian);
-                offset += 12;
-
-                // Read vertices
-                for (let j = 0; j < 3; j++) {
-                    const vx = dataView.getFloat32(offset, littleEndian);
-                    const vy = dataView.getFloat32(offset + 4, littleEndian);
-                    const vz = dataView.getFloat32(offset + 8, littleEndian);
-                    offset += 12;
-
-                    const idx = i * 9 + j * 3;
-                    vertices[idx] = vx;
-                    vertices[idx + 1] = vy;
-                    vertices[idx + 2] = vz;
-
-                    normals[idx] = nx;
-                    normals[idx + 1] = ny;
-                    normals[idx + 2] = nz;
-                }
-
-                offset += 2; // Skip attribute byte count
-            }
-
-            return {
-                vertices: vertices,
-                normals: normals,
-                indices: null,
-                partCount: 1,
-                faceCount: triangleCount
-            };
-        }
-
-        createBuffers(modelData) {
-            const gl = this.gl;
-
-            // Vertex buffer
-            this.buffers.vertices = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.vertices);
-            gl.bufferData(gl.ARRAY_BUFFER, modelData.vertices, gl.STATIC_DRAW);
-
-            // Normal buffer
-            this.buffers.normals = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.normals);
-            gl.bufferData(gl.ARRAY_BUFFER, modelData.normals, gl.STATIC_DRAW);
-
-            // Index buffer if available
-            if (modelData.indices) {
-                this.buffers.indices = gl.createBuffer();
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
-                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, modelData.indices, gl.STATIC_DRAW);
-            }
-
-            this.modelData = modelData;
-        }
-
-        render() {
-            if (!this.gl || !this.program) return;
-
-            const gl = this.gl;
-
-            // Resize canvas if needed
-            this.resizeCanvas();
-
-            // Clear
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-            if (this.modelData) {
-                gl.useProgram(this.program);
-
-                // Set matrices
-                const modelMatrix = this.createIdentityMatrix();
-                const viewMatrix = this.createViewMatrix();
-                const projectionMatrix = this.createProjectionMatrix();
-                const normalMatrix = this.createNormalMatrix(modelMatrix, viewMatrix);
-
-                gl.uniformMatrix4fv(this.uniforms.modelMatrix, false, modelMatrix);
-                gl.uniformMatrix4fv(this.uniforms.viewMatrix, false, viewMatrix);
-                gl.uniformMatrix4fv(this.uniforms.projectionMatrix, false, projectionMatrix);
-                gl.uniformMatrix3fv(this.uniforms.normalMatrix, false, normalMatrix);
-
-                // Set lighting
-                gl.uniform3f(this.uniforms.lightPosition, 500, 500, 500);
-                gl.uniform3f(this.uniforms.lightColor, 1, 1, 1);
-                gl.uniform3f(this.uniforms.ambientColor, 0.2, 0.2, 0.2);
-                gl.uniform3f(this.uniforms.diffuseColor, 0.0, 0.4, 1.0);
-                gl.uniform3f(this.uniforms.specularColor, 1, 1, 1);
-                gl.uniform1f(this.uniforms.shininess, 32);
-                gl.uniform3fv(this.uniforms.cameraPosition, this.camera.position);
-
-                // Bind buffers
-                const positionAttrib = gl.getAttribLocation(this.program, 'aPosition');
-                gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.vertices);
-                gl.enableVertexAttribArray(positionAttrib);
-                gl.vertexAttribPointer(positionAttrib, 3, gl.FLOAT, false, 0, 0);
-
-                const normalAttrib = gl.getAttribLocation(this.program, 'aNormal');
-                gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.normals);
-                gl.enableVertexAttribArray(normalAttrib);
-                gl.vertexAttribPointer(normalAttrib, 3, gl.FLOAT, false, 0, 0);
-
-                // Draw
-                if (this.modelData.indices) {
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
-                    gl.drawElements(gl.TRIANGLES, this.modelData.indices.length, gl.UNSIGNED_SHORT, 0);
-                } else {
-                    gl.drawArrays(gl.TRIANGLES, 0, this.modelData.vertices.length / 3);
-                }
-            }
-
-            requestAnimationFrame(() => this.render());
-        }
-
-        resizeCanvas() {
-            const canvas = this.canvas;
-            const displayWidth = canvas.clientWidth;
-            const displayHeight = canvas.clientHeight;
-
-            if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-                canvas.width = displayWidth;
-                canvas.height = displayHeight;
-                this.gl.viewport(0, 0, displayWidth, displayHeight);
-            }
-        }
-
-        // Matrix utilities
-        createIdentityMatrix() {
-            return new Float32Array([
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1
-            ]);
-        }
-
-        createViewMatrix() {
-            // Simple look-at matrix
-            const eye = this.camera.position;
-            const target = this.camera.target;
-            const up = this.camera.up;
-
-            // Calculate basis vectors
-            const zAxis = this.normalize([
-                eye[0] - target[0],
-                eye[1] - target[1],
-                eye[2] - target[2]
-            ]);
-            const xAxis = this.normalize(this.cross(up, zAxis));
-            const yAxis = this.cross(zAxis, xAxis);
-
-            return new Float32Array([
-                xAxis[0], yAxis[0], zAxis[0], 0,
-                xAxis[1], yAxis[1], zAxis[1], 0,
-                xAxis[2], yAxis[2], zAxis[2], 0,
-                -this.dot(xAxis, eye), -this.dot(yAxis, eye), -this.dot(zAxis, eye), 1
-            ]);
-        }
-
-        createProjectionMatrix() {
-            const fov = this.camera.fov * Math.PI / 180;
-            const aspect = this.canvas.width / this.canvas.height;
-            const near = this.camera.near;
-            const far = this.camera.far;
-
-            const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
-            const rangeInv = 1.0 / (near - far);
-
-            return new Float32Array([
-                f / aspect, 0, 0, 0,
-                0, f, 0, 0,
-                0, 0, (near + far) * rangeInv, -1,
-                0, 0, near * far * rangeInv * 2, 0
-            ]);
-        }
-
-        createNormalMatrix(modelMatrix, viewMatrix) {
-            // Normal matrix is the inverse transpose of the model-view matrix
-            // For simplicity, we'll just use the upper 3x3 part
-            return new Float32Array([
-                modelMatrix[0], modelMatrix[1], modelMatrix[2],
-                modelMatrix[4], modelMatrix[5], modelMatrix[6],
-                modelMatrix[8], modelMatrix[9], modelMatrix[10]
-            ]);
-        }
-
-        // Vector math utilities
-        normalize(v) {
-            const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-            return [v[0] / length, v[1] / length, v[2] / length];
-        }
-
-        cross(a, b) {
-            return [
-                a[1] * b[2] - a[2] * b[1],
-                a[2] * b[0] - a[0] * b[2],
-                a[0] * b[1] - a[1] * b[0]
-            ];
-        }
-
-        dot(a, b) {
-            return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-        }
-
-        // UI utilities
-        log(type, message) {
-            const console = document.getElementById('consoleContent');
-            const time = new Date().toLocaleTimeString();
-            const line = document.createElement('div');
-            line.className = 'console-line';
-            line.innerHTML = `
-                    <span class="console-time">${time}</span>
-                    <span class="console-type ${type}">[${type.toUpperCase()}]</span>
-                    <span>${message}</span>
-                `;
-            console.appendChild(line);
-            console.scrollTop = console.scrollHeight;
-
-            // Also log to browser console
-            console[type] || console.log(message);
-        }
-
-        showLoading(text) {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('loadingText').textContent = text;
-        }
-
-        hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-
-        showError(message) {
-            this.hideLoading();
-            alert(`❌ Error: ${message}`);
-        }
-
-        updateInfo(fileName, fileSize, modelData) {
-            document.getElementById('fileName').textContent = fileName;
-            document.getElementById('fileSize').textContent = this.formatBytes(fileSize);
-            document.getElementById('partCount').textContent = modelData.partCount || 1;
-            document.getElementById('faceCount').textContent = (modelData.faceCount || 0).toLocaleString();
-            document.getElementById('vertexCount').textContent = ((modelData.vertices.length / 3) || 0).toLocaleString();
-        }
-
-        formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-    }
-
-    // Global functions
-    let engine = null;
-
-    function toggleConsole() {
-        const panel = document.getElementById('consolePanel');
-        panel.classList.toggle('active');
-    }
-
-    function resetView() {
-        if (engine) {
-            engine.camera.position = [100, 100, 100];
-            engine.camera.target = [0, 0, 0];
-        }
-    }
-
-    // Initialize on load
-    window.addEventListener('DOMContentLoaded', () => {
-        engine = new CADWasmEngine();
-
-        // File input handler
-        const fileInput = document.getElementById('file-input');
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && engine) {
-                engine.loadSLDASM(file);
-            }
-        });
-
-        // Drag and drop
-        const dropZone = document.getElementById('dropZone');
-        const container = document.getElementById('canvas-container');
-
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            container.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+    let hwv;
+    let wireframeMode = false;
+    let axisVisible = false;
+    let projectionMode = 'perspective';
+    let cuttingPlanes = [];
+
+    // 初始化
+    window.onload = function() {
+        try {
+            hwv = new Communicator.WebViewer({
+                containerId: "viewer",
+                model: "",
+                rendererType: Communicator.RendererType.Client
             });
-        });
 
-        container.addEventListener('dragenter', () => {
-            dropZone.classList.add('active');
-        });
+            hwv.setCallbacks({
+                sceneReady: function() {
+                    showStatus("查看器已就绪", "success");
+                    console.log("HOOPS Communicator 已初始化");
+                    setupEnvironment();
+                    setupKeyboardShortcuts();
+                },
 
-        container.addEventListener('dragleave', (e) => {
-            if (e.target === container) {
-                dropZone.classList.remove('active');
+                modelLoadBegin: function() {
+                    showStatus("正在加载模型...", "loading");
+                },
+
+                modelLoadEnd: function() {
+                    showStatus("模型加载完成！", "success");
+                    resetView();
+                    updateModelInfo();
+                },
+
+                modelLoadFailure: function(error) {
+                    showStatus("加载失败: " + error, "error");
+                    console.error("模型加载错误:", error);
+                },
+
+                modelStructureReady: function() {
+                    console.log("模型结构已就绪");
+                }
+            });
+
+            hwv.start();
+
+        } catch (error) {
+            console.error("初始化错误:", error);
+            showStatus("初始化失败: " + error.message, "error");
+        }
+    };
+
+    // 切换选项卡
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(tabName + '-tab').classList.add('active');
+    }
+
+    // 设置环境
+    function setupEnvironment() {
+        const view = hwv.view;
+        view.setBackgroundColor(
+            new Communicator.Color(22, 33, 62),
+            new Communicator.Color(26, 26, 46)
+        );
+        view.setAntiAliasingMode(Communicator.AntiAliasingMode.SMAA);
+    }
+
+    // 设置键盘快捷键
+    function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'f' || e.key === 'F') {
+                fitToView();
+            } else if (e.key === 'h' || e.key === 'H') {
+                resetView();
+            } else if (e.key === 'w' || e.key === 'W') {
+                document.getElementById('drawMode').value = 'wireframe';
+                changeDrawMode();
+            } else if (e.key === 's' || e.key === 'S') {
+                document.getElementById('drawMode').value = 'shaded';
+                changeDrawMode();
             }
         });
+    }
 
-        container.addEventListener('drop', (e) => {
-            dropZone.classList.remove('active');
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && engine) {
-                engine.loadSLDASM(files[0]);
-            }
+    // 从 URL 加载模型
+    async function loadModelFromUrl() {
+        const modelUrl = document.getElementById('modelUrl').value.trim();
+        if (!modelUrl) {
+            showStatus("请输入模型 URL", "error");
+            return;
+        }
+
+        try {
+            showStatus("正在加载模型...", "loading");
+            await hwv.model.clear();
+            await hwv.model.loadSubtreeFromScsFile(hwv.model.getRootNode(), modelUrl);
+            showStatus("模型加载成功！", "success");
+            resetView();
+        } catch (error) {
+            showStatus("加载失败: " + error.message, "error");
+            console.error("模型加载错误:", error);
+        }
+    }
+
+    // 从文件加载模型
+    async function loadModelFromFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            showStatus("请选择文件", "error");
+            return;
+        }
+
+        try {
+            showStatus("正在读取文件...", "loading");
+            const arrayBuffer = await file.arrayBuffer();
+
+            document.getElementById('fileSize').textContent =
+                `文件大小: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+
+            showStatus("正在加载模型...", "loading");
+            await hwv.model.clear();
+            await hwv.model.loadSubtreeFromScsBuffer(
+                hwv.model.getRootNode(),
+                arrayBuffer
+            );
+
+            showStatus("模型加载成功！", "success");
+            resetView();
+        } catch (error) {
+            showStatus("加载失败: " + error.message, "error");
+            console.error("文件加载错误:", error);
+        }
+    }
+
+    // 加载示例模型
+    function loadSampleModel(modelName) {
+        const sampleModels = {
+            'bnc': 'https://cdn.jsdelivr.net/gh/techsoft3d/hoops-web-viewer@latest/models/bnc.scs',
+            'microengine': 'https://filesamples.com/samples/3d/scs/sample1.scs'
+        };
+
+        const modelUrl = sampleModels[modelName];
+        if (modelUrl) {
+            document.getElementById('modelUrl').value = modelUrl;
+            loadModelFromUrl();
+        }
+    }
+
+    // 更新模型信息
+    function updateModelInfo() {
+        const modelInfo = document.getElementById('modelInfo');
+        modelInfo.style.display = 'block';
+
+        // 获取模型统计信息
+        const nodeCount = hwv.model.getNodeChildren(hwv.model.getRootNode()).length;
+        document.getElementById('nodeCount').textContent = `节点数: ${nodeCount}`;
+    }
+
+    // 重置视图
+    function resetView() {
+        if (hwv && hwv.view) {
+            hwv.view.resetCamera();
+            showStatus("视图已重置", "success");
+        }
+    }
+
+    // 适配视图
+    function fitToView() {
+        if (hwv && hwv.view) {
+            hwv.view.fitWorld();
+            showStatus("已适配视图", "success");
+        }
+    }
+
+    // 改变绘制模式
+    function changeDrawMode() {
+        const mode = document.getElementById('drawMode').value;
+        const view = hwv.view;
+
+        switch(mode) {
+            case 'shaded':
+                view.setDrawMode(Communicator.DrawMode.Shaded);
+                break;
+            case 'wireframe':
+                view.setDrawMode(Communicator.DrawMode.Wireframe);
+                break;
+            case 'hiddenline':
+                view.setDrawMode(Communicator.DrawMode.HiddenLine);
+                break;
+            case 'shadedwireframe':
+                view.setDrawMode(Communicator.DrawMode.ShadedWithWireframe);
+                break;
+        }
+        showStatus(`已切换到${mode}模式`, "success");
+    }
+
+    // 更新背景
+    function updateBackground() {
+        const color1 = document.getElementById('bgColor1').value;
+        const color2 = document.getElementById('bgColor2').value;
+
+        const c1 = hexToRgb(color1);
+        const c2 = hexToRgb(color2);
+
+        hwv.view.setBackgroundColor(
+            new Communicator.Color(c1.r, c1.g, c1.b),
+            new Communicator.Color(c2.r, c2.g, c2.b)
+        );
+    }
+
+    // 更新光照
+    function updateLighting() {
+        const intensity = document.getElementById('lightIntensity').value;
+        document.getElementById('lightValue').textContent = intensity;
+        // HOOPS 的光照调整需要更复杂的API，这里简化处理
+        showStatus(`光照强度: ${intensity}`, "success");
+    }
+
+    // 切换投影模式
+    function toggleProjection() {
+        const camera = hwv.view.getCamera();
+        if (projectionMode === 'perspective') {
+            camera.setProjection(Communicator.Projection.Orthographic);
+            projectionMode = 'orthographic';
+            showStatus("已切换到正交投影", "success");
+        } else {
+            camera.setProjection(Communicator.Projection.Perspective);
+            projectionMode = 'perspective';
+            showStatus("已切换到透视投影", "success");
+        }
+    }
+
+    // 切换坐标轴
+    function toggleAxis() {
+        axisVisible = !axisVisible;
+        hwv.view.setAxisTriadVisibility(axisVisible);
+        showStatus(axisVisible ? "坐标轴已显示" : "坐标轴已隐藏", "success");
+    }
+
+    // 启用测量工具
+    function enableMeasure(type) {
+        if (type === 'distance') {
+            hwv.operatorManager.set(Communicator.OperatorId.MeasurePointPointDistance, 0);
+            showStatus("距离测量工具已启用", "success");
+        } else if (type === 'angle') {
+            hwv.operatorManager.set(Communicator.OperatorId.MeasureAngle, 0);
+            showStatus("角度测量工具已启用", "success");
+        }
+    }
+
+    // 启用剖切平面
+    function enableCuttingPlane(axis) {
+        const plane = new Communicator.Plane();
+        const center = hwv.view.getCamera().getTarget();
+
+        switch(axis) {
+            case 'x':
+                plane.normal = new Communicator.Point3(1, 0, 0);
+                break;
+            case 'y':
+                plane.normal = new Communicator.Point3(0, 1, 0);
+                break;
+            case 'z':
+                plane.normal = new Communicator.Point3(0, 0, 1);
+                break;
+        }
+
+        plane.d = -center.dot(plane.normal);
+        const planeId = hwv.cuttingManager.addCuttingPlane(plane);
+        cuttingPlanes.push(planeId);
+
+        showStatus(`${axis.toUpperCase()} 轴剖切已启用`, "success");
+    }
+
+    // 清除剖切平面
+    function clearCuttingPlanes() {
+        cuttingPlanes.forEach(id => {
+            hwv.cuttingManager.removeCuttingPlane(id);
         });
-    });
+        cuttingPlanes = [];
+        showStatus("剖切平面已清除", "success");
+    }
+
+    // 截图
+    function takeScreenshot() {
+        hwv.view.requestSnapshot().then((image) => {
+            const link = document.createElement('a');
+            link.download = `screenshot_${Date.now()}.png`;
+            link.href = image;
+            link.click();
+            showStatus("截图已保存", "success");
+        });
+    }
+
+    // 清除模型
+    async function clearModel() {
+        if (hwv && hwv.model) {
+            try {
+                await hwv.model.clear();
+                document.getElementById('modelInfo').style.display = 'none';
+                showStatus("模型已清除", "success");
+            } catch (error) {
+                showStatus("清除失败: " + error.message, "error");
+            }
+        }
+    }
+
+    // 显示状态
+    function showStatus(message, type) {
+        const statusDiv = document.getElementById('status');
+        statusDiv.textContent = message;
+        statusDiv.className = type;
+        statusDiv.style.display = 'block';
+
+        if (type === 'loading') {
+            statusDiv.classList.add('loading-animation');
+        } else {
+            statusDiv.classList.remove('loading-animation');
+        }
+
+        if (type === 'success' || type === 'error') {
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+    // 辅助函数：十六进制转 RGB
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
 </script>
 </body>
 </html>

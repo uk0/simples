@@ -142,6 +142,14 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 		ext := strings.ToLower(filepath.Ext(att.OriginalFilename))
 
 		switch ext {
+		case ".scs": //.step", ".stl", ".obj", ".gltf", ".glb", ".sldasm
+			uniqueID := fmt.Sprintf("scs_%x", md5.Sum([]byte(originalFilename)))[:12]
+			name := att.OriginalFilename
+			if name == "" {
+				name = filepath.Base(att.Path)
+			}
+			return parser.GenerateSCSViewerHTML(uniqueID, rel)
+
 		case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg":
 			alt := att.OriginalFilename
 			if alt == "" {
