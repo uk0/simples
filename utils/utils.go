@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -168,10 +167,6 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 			return parser.GenerateNESPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 
 		case ".pdf":
-			log.Println("Generating PDF parser originalFilename: ", originalFilename)
-			log.Println("Generating PDF parser SourceFile: ", att.SourceFile)
-			log.Println("Generating PDF parser SourceFile: ", att.OriginalFilename)
-			log.Println("Generating PDF parser SavedAs: ", att.SavedAs)
 			uniqueID := fmt.Sprintf("pdf_%x", md5.Sum([]byte(originalFilename)))[:12]
 			return parser.GeneratePDFWarpHTML(uniqueID, htmlEscape(rel))
 
@@ -194,7 +189,7 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 				"tankwars.jar", "tankwars2.jar",
 				"snake.jar", "snake2.jar",
 				"minesweeper.jar",
-				"tetris.jar", "tetris2.jar", "ForgottenWarrior.jar"}
+				"tetris.jar", "tetris2.jar", "bounceTales-240.jar", "ForgottenWarrior.jar"}
 			if slices.Contains(EnableJavaGames, name) {
 				return parser.GenerateJARPlayerHTML(uniqueID, rel, htmlEscape(name), strings.ToLower(filepath.Ext(att.Path)))
 			}

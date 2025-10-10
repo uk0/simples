@@ -8,9 +8,16 @@ import (
 	"retroblog/handlers"
 	"retroblog/services"
 	"strings"
+	"syscall"
+
+	"github.com/fvbock/endless"
 
 	"github.com/gin-gonic/gin"
 )
+
+func preSigUsr1() {
+	log.Println("pre SIGUSR1")
+}
 
 func main() {
 	// Parse flags
@@ -41,7 +48,20 @@ func main() {
 
 	log.Printf("Serving %s at http://%s", config.OutDir, config.Addr)
 	log.Printf("Site base URL: %s", config.BaseURL)
-	log.Fatal(router.Run(config.Addr))
+	//log.Fatal(router.Run(config.Addr))
+	server := endless.NewServer(config.Addr, router)
+	server.SignalHooks[endless.PRE_SIGNAL][syscall.SIGUSR1] = append(
+		server.SignalHooks[endless.PRE_SIGNAL][syscall.SIGUSR1],
+		preSigUsr1)
+	server.BeforeBegin = func(add string) {
+		log.Printf("Actual pid is %d", syscall.Getpid())
+		// save it somehow
+		//
+	}
+	err := server.ListenAndServe()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func setupRoutes(router *gin.Engine) {
@@ -61,4 +81,5 @@ func setupRoutes(router *gin.Engine) {
 	// Static file serving with authentication middleware
 	router.Use(handlers.AttachmentAuthMiddleware())
 	router.Static("/", config.OutDir)
+
 }
