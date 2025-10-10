@@ -240,7 +240,7 @@ body.win95-bg .avatar {
 }
 
 .post-body {
-    max-width: 650px;
+    max-width: 800px;
     background: #fff;
     padding: 10px 12px;
     border: 2px inset var(--panel);
@@ -307,12 +307,12 @@ a:hover {
 
 /* ========== 媒体内容样式 ========== */
 img, video {
-    max-width: 650px;
+    max-width: 800px;
     max-height: 650px;
 }
 
 audio {
-    max-width: 650px;
+    max-width: 800px;
     max-height: 66px;
 }
 
@@ -459,9 +459,9 @@ body.win95-bg .footer {
 }
 
 /* ========== 响应式设计 ========== */
-@media (max-width: 760px) {
+@media (max-width: 800px) {
     .frame {
-        width: 96% !important;
+        width: 98% !important;
     }
 
     .infobar {
@@ -487,7 +487,8 @@ article td {
 
 div.page {
     display: block;
-    width: 612px;
+    /*post 页面 宽度*/
+    width: 800px;
 }
 
 .center {

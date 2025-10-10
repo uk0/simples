@@ -175,9 +175,13 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 			uniqueID := fmt.Sprintf("pdf_%x", md5.Sum([]byte(originalFilename)))[:12]
 			return parser.GeneratePDFWarpHTML(uniqueID, htmlEscape(rel))
 
-		case ".csv", ".xlsx", ".xls":
+		case ".csv", ".xlsx", ".xls", ".docx":
 			uniqueID := fmt.Sprintf("amis_%x", md5.Sum([]byte(originalFilename)))[:12]
 			return parser.GenerateExcelWarpHTML(uniqueID, rel)
+
+		case ".pptx":
+			uniqueID := fmt.Sprintf("ppt_%x", md5.Sum([]byte(originalFilename)))[:12]
+			return parser.GeneratePPTWarpHTML(uniqueID, rel)
 		case ".jar":
 			uniqueID := fmt.Sprintf("java_%x", md5.Sum([]byte(originalFilename)))[:12]
 			name := att.OriginalFilename
