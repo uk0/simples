@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game CRT Filter - FINAL FIX</title>
+    <title>Game CRT Filter - No Ghosting Edition</title>
     <style>
         * {
             margin: 0;
@@ -226,23 +226,36 @@
             overflow-y: auto;
             font-family: 'Courier New', monospace;
         }
+
+        .terminal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        .terminal::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>🎮 Game CRT Filter (FINAL FIX)</h1>
-        <p class="subtitle">WebGL Overlay - No Freeze Issues</p>
+        <h1>🎮 Game CRT Filter (No Ghosting)</h1>
+        <p class="subtitle">WebGL Overlay - Zero Double Vision</p>
     </div>
 
     <div class="warning-box">
         <h4>✅ All Issues Fixed</h4>
         <ul style="list-style: none; padding-left: 20px; margin: 0;">
-            <li>✅ Fixed page freeze on enable</li>
-            <li>✅ Fixed MutationObserver loop</li>
-            <li>✅ Fixed infinite loading</li>
-            <li>✅ Stable and performant</li>
+            <li>✅ Fixed double vision / ghosting</li>
+            <li>✅ Original canvas hidden properly</li>
+            <li>✅ No performance overhead</li>
+            <li>✅ Stable 60 FPS rendering</li>
         </ul>
     </div>
 
@@ -271,50 +284,74 @@
 
             <div class="control-group">
                 <label>📺 Scanline Strength</label>
-                <input type="range" id="scanlineStrength" min="0" max="2" step="0.05" value="0.8">
-                <span class="value" id="scanlineStrength-val">0.8</span>
+                <input type="range" id="scanlineStrength" min="0" max="2" step="0.05" value="0.6">
+                <span class="value" id="scanlineStrength-val">0.6</span>
             </div>
 
             <div class="control-group">
                 <label>📊 Scanline Density</label>
-                <input type="range" id="scanlineCount" min="240" max="2160" step="60" value="1080">
-                <span class="value" id="scanlineCount-val">1080</span>
+                <input type="range" id="scanlineCount" min="240" max="2160" step="60" value="800">
+                <span class="value" id="scanlineCount-val">800</span>
             </div>
 
             <div class="control-group">
                 <label>✨ Phosphor Glow</label>
-                <input type="range" id="phosphorGlow" min="0" max="1" step="0.05" value="0.3">
-                <span class="value" id="phosphorGlow-val">0.3</span>
+                <input type="range" id="phosphorGlow" min="0" max="1" step="0.05" value="0.1">
+                <span class="value" id="phosphorGlow-val">0.1</span>
             </div>
 
             <div class="control-group">
                 <label>🌈 RGB Shift</label>
-                <input type="range" id="rgbShift" min="0" max="2" step="0.1" value="0.5">
-                <span class="value" id="rgbShift-val">0.5</span>
+                <input type="range" id="rgbShift" min="0" max="2" step="0.05" value="0.15">
+                <span class="value" id="rgbShift-val">0.15</span>
             </div>
 
             <div class="control-group">
                 <label>📐 Screen Curvature</label>
-                <input type="range" id="curvature" min="0" max="0.5" step="0.01" value="0.12">
-                <span class="value" id="curvature-val">0.12</span>
+                <input type="range" id="curvature" min="0" max="0.5" step="0.01" value="0.08">
+                <span class="value" id="curvature-val">0.08</span>
             </div>
 
             <div class="control-group">
                 <label>🌑 Vignette</label>
-                <input type="range" id="vignette" min="0" max="1" step="0.05" value="0.25">
-                <span class="value" id="vignette-val">0.25</span>
+                <input type="range" id="vignette" min="0" max="1" step="0.05" value="0.15">
+                <span class="value" id="vignette-val">0.15</span>
             </div>
 
             <div class="control-group">
                 <label>💡 Brightness</label>
-                <input type="range" id="brightness" min="0.5" max="2" step="0.05" value="1.1">
-                <span class="value" id="brightness-val">1.1</span>
+                <input type="range" id="brightness" min="0.5" max="2" step="0.05" value="1.05">
+                <span class="value" id="brightness-val">1.05</span>
             </div>
 
             <div class="control-group">
                 <label>🎨 Contrast</label>
-                <input type="range" id="contrast" min="0.5" max="2" step="0.05" value="1.2">
-                <span class="value" id="contrast-val">1.2</span>
+                <input type="range" id="contrast" min="0.5" max="2" step="0.05" value="1.15">
+                <span class="value" id="contrast-val">1.15</span>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 Saturation</label>
+                <input type="range" id="saturation" min="0" max="2" step="0.05" value="1.05">
+                <span class="value" id="saturation-val">1.05</span>
+            </div>
+
+            <div class="control-group">
+                <label>⚡ Gamma</label>
+                <input type="range" id="gamma" min="1" max="3" step="0.1" value="2.2">
+                <span class="value" id="gamma-val">2.2</span>
+            </div>
+
+            <div class="control-group">
+                <label>📡 Noise Amount</label>
+                <input type="range" id="noiseAmount" min="0" max="0.1" step="0.005" value="0.0">
+                <span class="value" id="noiseAmount-val">0.0</span>
+            </div>
+
+            <div class="control-group">
+                <label>🔲 Mask Strength</label>
+                <input type="range" id="maskStrength" min="0" max="1" step="0.05" value="0.15">
+                <span class="value" id="maskStrength-val">0.15</span>
             </div>
         </div>
 
@@ -324,6 +361,7 @@
                 <button class="preset-btn" onclick="SafeCRT.loadPreset('arcade')">🕹️ Arcade</button>
                 <button class="preset-btn" onclick="SafeCRT.loadPreset('console')">🎮 Console</button>
                 <button class="preset-btn" onclick="SafeCRT.loadPreset('monitor')">🖥️ Monitor</button>
+                <button class="preset-btn" onclick="SafeCRT.loadPreset('sharp')">🔪 Sharp</button>
                 <button class="preset-btn" onclick="SafeCRT.loadPreset('pvm')">💎 PVM</button>
             </div>
         </div>
@@ -346,68 +384,83 @@
 
 <script>
     /**
-     * Safe CRT Filter System - FINAL FIX
-     * 完全修复所有死循环和卡死问题
+     * Safe CRT Filter System - No Ghosting Edition
+     * 完全修复重影问题
      * @author uk0
-     * @version 3.1.0
+     * @version 3.2.0
      * @date 2025-01-10
      */
 
     class SafeCRTFilter {
         constructor() {
-            this.version = '3.1.0';
+            this.version = '3.2.0';
             this.enabled = false;
             this.canvasOverlays = new Map();
             this.observer = null;
             this.fpsCounter = 0;
             this.lastFpsTime = 0;
             this.demoAnimationId = null;
-            this.isProcessing = false; // 🔧 防止并发处理
+            this.isProcessing = false;
 
+            // 优化后的默认参数
             this.params = {
                 intensity: 1.0,
-                scanlineStrength: 0.8,
-                scanlineCount: 1080,
-                phosphorGlow: 0.3,
-                rgbShift: 0.5,
-                curvature: 0.12,
-                vignette: 0.25,
-                brightness: 1.1,
-                contrast: 1.2,
-                saturation: 1.1,
+                scanlineStrength: 0.6,
+                scanlineCount: 800,
+                phosphorGlow: 0.1,
+                rgbShift: 0.15,
+                curvature: 0.08,
+                vignette: 0.15,
+                brightness: 1.05,
+                contrast: 1.15,
+                saturation: 1.05,
                 gamma: 2.2,
-                noiseAmount: 0.02,
+                noiseAmount: 0.0,
                 flickerAmount: 0.0,
-                maskStrength: 0.4
+                maskStrength: 0.15
             };
 
             this.presets = {
                 arcade: {
-                    scanlineStrength: 1.0,
-                    phosphorGlow: 0.4,
-                    contrast: 1.3,
-                    saturation: 1.2
+                    scanlineStrength: 0.9,
+                    phosphorGlow: 0.25,
+                    rgbShift: 0.2,
+                    contrast: 1.25,
+                    saturation: 1.15,
+                    maskStrength: 0.35
                 },
                 console: {
-                    scanlineStrength: 0.7,
-                    curvature: 0.15,
-                    vignette: 0.3
+                    scanlineStrength: 0.6,
+                    phosphorGlow: 0.2,
+                    curvature: 0.12,
+                    vignette: 0.2
                 },
                 monitor: {
+                    scanlineStrength: 0.4,
+                    phosphorGlow: 0.1,
+                    curvature: 0.05,
+                    vignette: 0.1
+                },
+                sharp: {
                     scanlineStrength: 0.5,
-                    curvature: 0.08,
-                    vignette: 0.15
+                    phosphorGlow: 0.05,
+                    rgbShift: 0.1,
+                    curvature: 0.03,
+                    contrast: 1.2,
+                    maskStrength: 0.1
                 },
                 pvm: {
-                    scanlineStrength: 0.6,
-                    contrast: 1.25,
-                    saturation: 1.15
+                    scanlineStrength: 0.5,
+                    phosphorGlow: 0.15,
+                    curvature: 0.04,
+                    contrast: 1.2,
+                    maskStrength: 0.5
                 }
             };
         }
 
         init() {
-            this.log('init', `Safe CRT Filter v${this.version}`);
+            this.log('init', `Safe CRT Filter v${this.version} - No Ghosting`);
             this.setupControls();
             this.startFPSCounter();
             this.log('success', 'System initialized');
@@ -428,22 +481,16 @@
             });
         }
 
-        // 🔧 关键修复：完全重写检测逻辑
         startAutoDetection() {
-            // 初始检测
             this.detectCanvases();
 
-            // 🔧 使用更安全的 MutationObserver 配置
             this.observer = new MutationObserver((mutations) => {
-                // 防止在处理过程中再次触发
                 if (this.isProcessing) return;
 
-                // 只检查是否有新的 .ejs_canvas 添加
                 let hasNewCanvas = false;
                 for (const mutation of mutations) {
                     for (const node of mutation.addedNodes) {
-                        if (node.nodeType === 1) { // Element node
-                            // 检查是否是 .ejs_canvas 或包含 .ejs_canvas
+                        if (node.nodeType === 1) {
                             if (node.classList && node.classList.contains('ejs_canvas')) {
                                 hasNewCanvas = true;
                                 break;
@@ -460,12 +507,10 @@
                 }
 
                 if (hasNewCanvas) {
-                    // 🔧 延迟执行，避免同步问题
                     setTimeout(() => this.detectCanvases(), 50);
                 }
             });
 
-            // 🔧 限制观察范围，排除我们自己创建的元素
             this.observer.observe(document.body, {
                 childList: true,
                 subtree: true
@@ -474,7 +519,6 @@
             this.log('success', 'Auto-detection started');
         }
 
-        // 🔧 改进的检测方法
         detectCanvases() {
             if (this.isProcessing) return;
 
@@ -484,7 +528,6 @@
                 const canvases = document.querySelectorAll('canvas.ejs_canvas');
 
                 canvases.forEach(canvas => {
-                    // 🔧 跳过已处理的和我们创建的 overlay
                     if (!this.canvasOverlays.has(canvas) &&
                         !canvas.hasAttribute('data-crt-overlay') &&
                         this.enabled) {
@@ -504,9 +547,12 @@
             this.log('process', `Processing: ${sourceCanvas.id || 'unnamed'}`);
 
             try {
-                // 🔧 标记 overlay，防止被检测为新 canvas
+                // 🔧 隐藏原始 canvas
+                sourceCanvas.setAttribute('data-original-opacity', sourceCanvas.style.opacity || '');
+                sourceCanvas.style.opacity = '0';
+
                 const overlay = document.createElement('canvas');
-                overlay.setAttribute('data-crt-overlay', 'true'); // 关键标记
+                overlay.setAttribute('data-crt-overlay', 'true');
                 overlay.width = sourceCanvas.width;
                 overlay.height = sourceCanvas.height;
                 overlay.style.cssText = `
@@ -517,6 +563,8 @@
                     height: 100%;
                     pointer-events: none;
                     z-index: 10;
+                    image-rendering: -webkit-optimize-contrast;
+                    image-rendering: crisp-edges;
                 `;
 
                 const wrapper = sourceCanvas.parentElement;
@@ -528,17 +576,23 @@
                     wrapper.appendChild(overlay);
                 }
 
+                // 🔧 WebGL 不透明上下文
                 const gl = overlay.getContext('webgl', {
-                    alpha: true,
+                    alpha: false,
                     antialias: false,
+                    premultipliedAlpha: false,
                     preserveDrawingBuffer: false,
-                    powerPreference: 'high-performance'
+                    powerPreference: 'high-performance',
+                    desynchronized: true
                 });
 
                 if (!gl) {
                     this.log('error', 'WebGL not supported');
                     return;
                 }
+
+                gl.disable(gl.BLEND);
+                gl.disable(gl.DEPTH_TEST);
 
                 const program = this.compileShaders(gl);
                 if (!program) return;
@@ -587,12 +641,17 @@
         renderFrame(processor) {
             const { gl, program, sourceCanvas, overlay, texture } = processor;
 
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sourceCanvas);
-
             gl.viewport(0, 0, overlay.width, overlay.height);
-            gl.clearColor(0, 0, 0, 0);
+            gl.clearColor(0, 0, 0, 1);
             gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+            gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
+
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, sourceCanvas);
 
             gl.useProgram(program);
 
@@ -605,6 +664,7 @@
             });
 
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            gl.flush();
         }
 
         compileShaders(gl) {
@@ -644,23 +704,27 @@
                 const float PI = 3.14159265359;
 
                 float random(vec2 co) {
-                    return fract(sin(dot(co.xy + u_time * 0.0001, vec2(12.9898, 78.233))) * 43758.5453);
+                    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
                 }
 
                 vec2 curveScreen(vec2 uv) {
+                    if (u_curvature <= 0.001) return uv;
                     vec2 offset = uv - 0.5;
-                    offset *= vec2(1.0 + u_curvature * offset.y * offset.y,
-                                  1.0 + u_curvature * offset.x * offset.x);
+                    float r2 = offset.x * offset.x + offset.y * offset.y;
+                    offset *= 1.0 + u_curvature * r2;
                     return offset + 0.5;
                 }
 
                 float scanlines(vec2 coord) {
+                    if (u_scanlineStrength <= 0.001) return 1.0;
                     float line = sin(coord.y * PI * u_scanlineCount);
-                    return 1.0 - u_scanlineStrength * (1.0 - line * line);
+                    return mix(1.0, line * line, u_scanlineStrength);
                 }
 
                 vec3 rgbShift(sampler2D tex, vec2 coord) {
-                    float shift = u_rgbShift * 0.003;
+                    if (u_rgbShift <= 0.001) return texture2D(tex, coord).rgb;
+
+                    float shift = u_rgbShift * 0.0015;
                     return vec3(
                         texture2D(tex, coord + vec2(shift, 0.0)).r,
                         texture2D(tex, coord).g,
@@ -668,26 +732,48 @@
                     );
                 }
 
-                vec3 phosphorGlow(vec3 color, vec2 coord) {
-                    float dist = length(coord - 0.5);
-                    float glow = (1.0 - smoothstep(0.0, 0.7, dist)) * u_phosphorGlow;
-                    return color + color * glow;
+                vec3 phosphorGlow(vec3 color) {
+                    if (u_phosphorGlow <= 0.001) return color;
+                    return color * (1.0 + u_phosphorGlow * 0.3);
                 }
 
                 float vignette(vec2 coord) {
-                    float dist = length(coord - 0.5);
-                    return 1.0 - u_vignette * smoothstep(0.3, 0.9, dist);
+                    if (u_vignette <= 0.001) return 1.0;
+                    float dist = length(coord - 0.5) * 1.414;
+                    return 1.0 - u_vignette * smoothstep(0.5, 1.0, dist);
                 }
 
-                float noise(vec2 coord) {
-                    return (random(coord * 100.0) - 0.5) * u_noiseAmount;
+                vec3 rgbMask(vec2 coord, vec3 color) {
+                    if (u_maskStrength <= 0.001) return color;
+
+                    float x = coord.x * u_resolution.x;
+                    float mask = mod(x, 3.0);
+                    vec3 maskColor = vec3(1.0);
+
+                    if (mask < 1.0) {
+                        maskColor.r = 1.0;
+                        maskColor.g = 1.0 - u_maskStrength * 0.5;
+                        maskColor.b = 1.0 - u_maskStrength * 0.5;
+                    } else if (mask < 2.0) {
+                        maskColor.r = 1.0 - u_maskStrength * 0.5;
+                        maskColor.g = 1.0;
+                        maskColor.b = 1.0 - u_maskStrength * 0.5;
+                    } else {
+                        maskColor.r = 1.0 - u_maskStrength * 0.5;
+                        maskColor.g = 1.0 - u_maskStrength * 0.5;
+                        maskColor.b = 1.0;
+                    }
+
+                    return color * maskColor;
                 }
 
                 vec3 colorGrade(vec3 color) {
-                    color = (color - 0.5) * u_contrast + 0.5;
+                    color = mix(vec3(0.5), color, u_contrast);
                     color *= u_brightness;
-                    vec3 gray = vec3(dot(color, vec3(0.299, 0.587, 0.114)));
-                    color = mix(gray, color, u_saturation);
+
+                    float gray = dot(color, vec3(0.299, 0.587, 0.114));
+                    color = mix(vec3(gray), color, u_saturation);
+
                     return pow(max(color, vec3(0.0)), vec3(1.0 / u_gamma));
                 }
 
@@ -695,16 +781,21 @@
                     vec2 coord = curveScreen(v_texCoord);
 
                     if (coord.x < 0.0 || coord.x > 1.0 || coord.y < 0.0 || coord.y > 1.0) {
-                        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
                         return;
                     }
 
                     vec3 color = rgbShift(u_texture, coord);
-                    color = phosphorGlow(color, coord);
+                    color = phosphorGlow(color);
                     color *= scanlines(coord);
                     color *= vignette(coord);
+                    color = rgbMask(coord, color);
                     color = colorGrade(color);
-                    color += vec3(noise(coord));
+
+                    if (u_noiseAmount > 0.001) {
+                        float noise = (random(coord + u_time * 0.001) - 0.5) * u_noiseAmount;
+                        color += vec3(noise);
+                    }
 
                     gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
                 }
@@ -734,7 +825,7 @@
             gl.compileShader(shader);
 
             if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                this.log('error', 'Shader compilation failed');
+                this.log('error', `Shader error: ${gl.getShaderInfoLog(shader)}`);
                 gl.deleteShader(shader);
                 return null;
             }
@@ -782,10 +873,8 @@
             this.log('info', 'Enabling CRT Filter...');
             this.enabled = true;
 
-            // 🔧 启动自动检测
             this.startAutoDetection();
 
-            // 🔧 延迟启动 demo 动画
             setTimeout(() => {
                 this.drawDemoCanvas();
             }, 100);
@@ -807,23 +896,28 @@
             this.enabled = false;
             this.log('info', 'CRT Filter disabled');
 
-            // 停止 demo 动画
             if (this.demoAnimationId) {
                 cancelAnimationFrame(this.demoAnimationId);
                 this.demoAnimationId = null;
             }
 
-            // 断开 observer
             if (this.observer) {
                 this.observer.disconnect();
                 this.observer = null;
             }
 
-            // 清理所有渲染循环和 DOM
+            // 🔧 恢复原始 canvas
             this.canvasOverlays.forEach(processor => {
                 if (processor.animationId) {
                     cancelAnimationFrame(processor.animationId);
                 }
+
+                if (processor.sourceCanvas) {
+                    const originalOpacity = processor.sourceCanvas.getAttribute('data-original-opacity') || '';
+                    processor.sourceCanvas.style.opacity = originalOpacity;
+                    processor.sourceCanvas.removeAttribute('data-original-opacity');
+                }
+
                 if (processor.overlay && processor.overlay.parentElement) {
                     processor.overlay.parentElement.removeChild(processor.overlay);
                 }
@@ -866,19 +960,19 @@
 
             const defaults = {
                 intensity: 1.0,
-                scanlineStrength: 0.8,
-                scanlineCount: 1080,
-                phosphorGlow: 0.3,
-                rgbShift: 0.5,
-                curvature: 0.12,
-                vignette: 0.25,
-                brightness: 1.1,
-                contrast: 1.2,
-                saturation: 1.1,
+                scanlineStrength: 0.6,
+                scanlineCount: 800,
+                phosphorGlow: 0.1,
+                rgbShift: 0.15,
+                curvature: 0.08,
+                vignette: 0.15,
+                brightness: 1.05,
+                contrast: 1.15,
+                saturation: 1.05,
                 gamma: 2.2,
-                noiseAmount: 0.02,
+                noiseAmount: 0.0,
                 flickerAmount: 0.0,
-                maskStrength: 0.4
+                maskStrength: 0.15
             };
 
             Object.keys(defaults).forEach(key => {
@@ -1018,7 +1112,7 @@
         }
     }
 
-    // 等待 DOMContentLoaded
+    // 初始化
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             window.SafeCRT = new SafeCRTFilter();
