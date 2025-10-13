@@ -44,7 +44,11 @@ func GenerateVideoWarpHTML(videoId, videoPath string) string {
 #%[1]s-wrapper .video-loading{position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);text-align:center;color:#fff;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;z-index:3}
 #%[1]s-wrapper .video-spinner{border:3px solid rgba(255,255,255,0.2);border-top:3px solid #3498db;border-radius:50%%;width:40px;height:40px;animation:video-spin-%[1]s 1s linear infinite;margin:0 auto 15px}
 @keyframes video-spin-%[1]s{0%%{transform:rotate(0deg)}100%%{transform:rotate(360deg)}}
-#%[1]s-wrapper .video-error{position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);text-align:center;padding:20px;color:#e74c3c;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:rgba(255,255,255,0.9);border-radius:8px;z-index:10}
+#%[1]s-wrapper .video-error{position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);text-align:center;padding:20px;color:#e74c3c;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:rgba(255,255,255,0.95);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:10;max-width:80%%}
+#%[1]s-wrapper .video-error-title{font-weight:600;margin-bottom:10px}
+#%[1]s-wrapper .video-error-message{font-size:12px;color:#666;margin-bottom:15px}
+#%[1]s-wrapper .video-retry-btn{background:#3498db;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-size:13px;transition:background 0.2s}
+#%[1]s-wrapper .video-retry-btn:hover{background:#2980b9}
 #%[1]s-wrapper .video-toolbar{position:absolute;top:10px;right:10px;display:flex;gap:8px;opacity:0;transition:opacity 0.3s ease;z-index:10}
 #%[1]s-wrapper:hover .video-toolbar{opacity:1}
 #%[1]s-wrapper .video-btn{background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border:none;color:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
@@ -60,7 +64,7 @@ func GenerateVideoWarpHTML(videoId, videoPath string) string {
 <div class="video-inner">
 <div class="video-loading" id="%[1]s-loading"><div class="video-spinner"></div><div>Loading video...</div></div>
 <canvas id="%[1]s-poster" class="video-poster" style="display:none;"></canvas>
-<div id="%[1]s-play-btn" class="play-button-overlay"></div>
+<div id="%[1]s-play-btn" class="play-button-overlay" style="display:none;"></div>
 <div class="video-toolbar">
 <button class="video-btn" id="%[1]s-pip-btn" title="Picture in Picture">📺 PiP</button>
 <a href="%[2]s" target="_blank" rel="noopener noreferrer" class="video-btn" title="Open in new tab">🔗 Open</a>
@@ -69,148 +73,410 @@ func GenerateVideoWarpHTML(videoId, videoPath string) string {
 <source src="%[2]s" type="%[3]s">
 <p class="vjs-no-js">To view this video please enable JavaScript</p>
 </video>
-<div class="video-error" id="%[1]s-error" style="display:none;">❌ Failed to load video</div>
+<div class="video-error" id="%[1]s-error" style="display:none;">
+<div class="video-error-title">❌ Failed to load video</div>
+<div class="video-error-message" id="%[1]s-error-msg">Unable to load video content</div>
+<button class="video-retry-btn" id="%[1]s-retry">Retry</button>
 </div>
 </div>
 </div>
-<link href="https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video-js.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video.min.js"></script>
+</div>
 <script>
 (function(){
+'use strict';
 const UNIQUE_ID='%[1]s';
 const VIDEO_URL='%[2]s';
-const elements={wrapper:document.getElementById(UNIQUE_ID+'-wrapper'),loading:document.getElementById(UNIQUE_ID+'-loading'),error:document.getElementById(UNIQUE_ID+'-error'),videoEl:document.getElementById(UNIQUE_ID+'-player'),posterCanvas:document.getElementById(UNIQUE_ID+'-poster'),playBtn:document.getElementById(UNIQUE_ID+'-play-btn'),pipBtn:document.getElementById(UNIQUE_ID+'-pip-btn')};
-let player=null;
-let posterGenerated=false;
-function generatePoster(){
-if(posterGenerated||!elements.videoEl)return;
-const videoEl=elements.videoEl;
-const canvas=elements.posterCanvas;
-const handleLoadedData=function(){
-if(posterGenerated)return;
-setTimeout(function(){
-videoEl.currentTime=Math.min(videoEl.duration*0.1,5);
-},100);
+const VIDEO_TYPE='%[3]s';
+if(!window.__VideoPlayerManager){
+window.__VideoPlayerManager={
+instances:{},
+videojsLoaded:false,
+videojsLoading:false,
+loadCallbacks:[],
+keyboardHandlerAttached:false,
+loadVideoJS:function(callback){
+if(this.videojsLoaded){
+callback(true);
+return;
+}
+this.loadCallbacks.push(callback);
+if(this.videojsLoading)return;
+this.videojsLoading=true;
+if(!document.querySelector('link[href*="video-js.min.css"]')){
+const link=document.createElement('link');
+link.rel='stylesheet';
+link.href='https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video-js.min.css';
+document.head.appendChild(link);
+}
+if(!document.querySelector('script[src*="video.min.js"]')){
+const script=document.createElement('script');
+script.src='https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video.min.js';
+script.onload=()=>{
+this.videojsLoaded=true;
+this.videojsLoading=false;
+this.loadCallbacks.forEach(cb=>cb(true));
+this.loadCallbacks=[];
 };
-const handleSeeked=function(){
-if(posterGenerated)return;
-try{
-canvas.width=videoEl.videoWidth;
-canvas.height=videoEl.videoHeight;
-const ctx=canvas.getContext('2d');
-ctx.drawImage(videoEl,0,0,canvas.width,canvas.height);
-canvas.style.display='block';
-posterGenerated=true;
-videoEl.currentTime=0;
-console.log('Video poster generated');
-}catch(e){
-console.error('Poster generation error:',e);
-}
-videoEl.removeEventListener('seeked',handleSeeked);
+script.onerror=()=>{
+this.videojsLoading=false;
+this.loadCallbacks.forEach(cb=>cb(false));
+this.loadCallbacks=[];
 };
-videoEl.addEventListener('loadeddata',handleLoadedData,{once:true});
-videoEl.addEventListener('seeked',handleSeeked);
+document.head.appendChild(script);
+}else if(typeof videojs!=='undefined'){
+this.videojsLoaded=true;
+this.videojsLoading=false;
+this.loadCallbacks.forEach(cb=>cb(true));
+this.loadCallbacks=[];
 }
-function initPlayer(){
-try{
-player=videojs(UNIQUE_ID+'-player',{controls:true,autoplay:false,preload:'metadata',fluid:true,aspectRatio:'16:9',playbackRates:[0.5,0.75,1,1.25,1.5,2],controlBar:{volumePanel:{inline:false},children:['playToggle','volumePanel','currentTimeDisplay','timeDivider','durationDisplay','progressControl','remainingTimeDisplay','playbackRateMenuButton','pictureInPictureToggle','fullscreenToggle']}});
-player.ready(function(){
-console.log('Video.js player ready');
-elements.loading.style.display='none';
-generatePoster();
-bindEvents();
-});
-player.on('play',function(){
-if(elements.posterCanvas)elements.posterCanvas.classList.add('hidden');
-if(elements.playBtn)elements.playBtn.classList.add('hidden');
-});
-player.on('pause',function(){
-if(!player.seeking()&&player.currentTime()>0&&!player.ended()&&!player.isFullscreen()){
-if(elements.playBtn)elements.playBtn.classList.remove('hidden');
-}
-});
-player.on('ended',function(){
-if(elements.posterCanvas)elements.posterCanvas.classList.remove('hidden');
-if(elements.playBtn)elements.playBtn.classList.remove('hidden');
-});
-player.on('error',function(){
-const error=player.error();
-console.error('Video player error:',error);
-elements.loading.style.display='none';
-elements.error.style.display='block';
-if(error)elements.error.innerHTML='❌ Failed to load video<br><small>'+error.message+'</small>';
-});
-player.on('fullscreenchange',function(){
-const isFS=player.isFullscreen();
-console.log(isFS?'Entered fullscreen':'Exited fullscreen');
-});
-}catch(error){
-console.error('Failed to initialize player:',error);
-elements.loading.style.display='none';
-elements.error.style.display='block';
-elements.error.innerHTML='❌ Failed to initialize player<br><small>'+error.message+'</small>';
-}
-}
-function bindEvents(){
-if(elements.posterCanvas){
-elements.posterCanvas.addEventListener('click',function(){if(player)player.play();});
-}
-if(elements.playBtn){
-elements.playBtn.addEventListener('click',function(){if(player){if(player.paused())player.play();else player.pause();}});
-}
-if(elements.pipBtn){
-elements.pipBtn.addEventListener('click',function(e){
-e.stopPropagation();
-if(!player)return;
-const videoElement=player.el().querySelector('video');
-if(document.pictureInPictureEnabled&&videoElement){
-if(document.pictureInPictureElement===videoElement)document.exitPictureInPicture();
-else videoElement.requestPictureInPicture().catch(err=>console.error('PiP error:',err));
-}else alert('Picture-in-Picture is not supported');
-});
-}
+},
+attachKeyboardHandler:function(){
+if(this.keyboardHandlerAttached)return;
+this.keyboardHandlerAttached=true;
 document.addEventListener('keydown',function(e){
-if(!player||!elements.wrapper)return;
 const activeElement=document.activeElement;
 if(activeElement&&(activeElement.tagName==='INPUT'||activeElement.tagName==='TEXTAREA'||activeElement.isContentEditable))return;
-const rect=elements.wrapper.getBoundingClientRect();
+let targetPlayer=null;
+let targetWrapper=null;
+for(const id in window.__VideoPlayerManager.instances){
+const instance=window.__VideoPlayerManager.instances[id];
+if(!instance.player||!instance.elements.wrapper)continue;
+if(instance.player.isFullscreen()){
+targetPlayer=instance.player;
+targetWrapper=instance.elements.wrapper;
+break;
+}
+}
+if(!targetPlayer){
+for(const id in window.__VideoPlayerManager.instances){
+const instance=window.__VideoPlayerManager.instances[id];
+if(!instance.player||!instance.elements.wrapper)continue;
+const rect=instance.elements.wrapper.getBoundingClientRect();
 const inViewport=rect.top<window.innerHeight&&rect.bottom>0;
-if(!inViewport&&!player.isFullscreen())return;
+if(inViewport){
+targetPlayer=instance.player;
+targetWrapper=instance.elements.wrapper;
+break;
+}
+}
+}
+if(!targetPlayer)return;
 switch(e.key){
 case ' ':
 case 'k':
-if(player.paused())player.play();else player.pause();
+if(targetPlayer.paused())targetPlayer.play();
+else targetPlayer.pause();
 e.preventDefault();
 break;
 case 'f':
-if(player.isFullscreen())player.exitFullscreen();else player.requestFullscreen();
+if(targetPlayer.isFullscreen())targetPlayer.exitFullscreen();
+else targetPlayer.requestFullscreen();
 e.preventDefault();
 break;
 case 'Escape':
-if(player.isFullscreen())player.exitFullscreen();
+if(targetPlayer.isFullscreen())targetPlayer.exitFullscreen();
 break;
 case 'm':
-player.muted(!player.muted());
+targetPlayer.muted(!targetPlayer.muted());
 e.preventDefault();
 break;
 case 'ArrowLeft':
-player.currentTime(Math.max(0,player.currentTime()-5));
+targetPlayer.currentTime(Math.max(0,targetPlayer.currentTime()-5));
 e.preventDefault();
 break;
 case 'ArrowRight':
-player.currentTime(Math.min(player.duration()||0,player.currentTime()+5));
+targetPlayer.currentTime(Math.min(targetPlayer.duration()||0,targetPlayer.currentTime()+5));
 e.preventDefault();
 break;
 }
 });
+},
+registerInstance:function(id,instance){
+this.instances[id]=instance;
+this.attachKeyboardHandler();
+},
+unregisterInstance:function(id){
+if(this.instances[id]){
+if(this.instances[id].player){
+try{this.instances[id].player.dispose();}catch(e){}
 }
-function waitForVideoJS(){
-if(typeof videojs==='function')initPlayer();
-else{console.log('Waiting for Video.js...');setTimeout(waitForVideoJS,100);}
+delete this.instances[id];
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',waitForVideoJS);
-else waitForVideoJS();
-window.addEventListener('beforeunload',function(){if(player){try{player.dispose();}catch(e){console.error('Error disposing player:',e);}}});
+}
+};
+}
+class VideoPlayer{
+constructor(uniqueId,videoUrl,videoType){
+this.uniqueId=uniqueId;
+this.videoUrl=videoUrl;
+this.videoType=videoType;
+this.player=null;
+this.posterGenerated=false;
+this.retryCount=0;
+this.maxRetries=3;
+this.isDestroyed=false;
+this.eventListeners=[];
+this.elements={
+wrapper:document.getElementById(uniqueId+'-wrapper'),
+loading:document.getElementById(uniqueId+'-loading'),
+error:document.getElementById(uniqueId+'-error'),
+errorMsg:document.getElementById(uniqueId+'-error-msg'),
+retryBtn:document.getElementById(uniqueId+'-retry'),
+videoEl:document.getElementById(uniqueId+'-player'),
+posterCanvas:document.getElementById(uniqueId+'-poster'),
+playBtn:document.getElementById(uniqueId+'-play-btn'),
+pipBtn:document.getElementById(uniqueId+'-pip-btn')
+};
+this.init();
+}
+init(){
+window.__VideoPlayerManager.registerInstance(this.uniqueId,this);
+if(this.elements.retryBtn){
+this.addEventListener(this.elements.retryBtn,'click',()=>this.retry());
+}
+this.loadPlayer();
+}
+addEventListener(element,event,handler){
+if(!element)return;
+element.addEventListener(event,handler);
+this.eventListeners.push({element,event,handler});
+}
+removeAllEventListeners(){
+this.eventListeners.forEach(({element,event,handler})=>{
+element.removeEventListener(event,handler);
+});
+this.eventListeners=[];
+}
+hideLoading(){
+if(this.elements.loading)this.elements.loading.style.display='none';
+}
+showError(message,canRetry=true){
+this.hideLoading();
+if(this.elements.error){
+this.elements.error.style.display='block';
+if(this.elements.errorMsg){
+this.elements.errorMsg.textContent=message||'Unable to load video content';
+}
+if(this.elements.retryBtn){
+this.elements.retryBtn.style.display=canRetry?'inline-block':'none';
+}
+}
+}
+hideError(){
+if(this.elements.error)this.elements.error.style.display='none';
+}
+retry(){
+if(this.retryCount>=this.maxRetries){
+this.showError('Maximum retry attempts reached. Please check your connection.',false);
+return;
+}
+this.retryCount++;
+this.hideError();
+if(this.elements.loading){
+this.elements.loading.style.display='block';
+const loadingText=this.elements.loading.querySelector('div:last-child');
+if(loadingText)loadingText.textContent='Retrying... (Attempt '+this.retryCount+'/'+this.maxRetries+')';
+}
+if(this.player){
+try{this.player.dispose();}catch(e){}
+this.player=null;
+}
+setTimeout(()=>this.loadPlayer(),1000);
+}
+loadPlayer(){
+window.__VideoPlayerManager.loadVideoJS((success)=>{
+if(this.isDestroyed)return;
+if(success){
+this.initVideoJS();
+}else{
+this.fallbackToNative();
+}
+});
+}
+generatePoster(){
+if(this.posterGenerated||!this.elements.videoEl)return;
+const videoEl=this.elements.videoEl;
+const canvas=this.elements.posterCanvas;
+const handleLoadedData=()=>{
+if(this.posterGenerated)return;
+setTimeout(()=>{
+if(videoEl.duration&&videoEl.duration>0){
+videoEl.currentTime=Math.min(videoEl.duration*0.1,5);
+}
+},100);
+};
+const handleSeeked=()=>{
+if(this.posterGenerated)return;
+try{
+canvas.width=videoEl.videoWidth||640;
+canvas.height=videoEl.videoHeight||360;
+const ctx=canvas.getContext('2d');
+ctx.drawImage(videoEl,0,0,canvas.width,canvas.height);
+canvas.style.display='block';
+this.posterGenerated=true;
+videoEl.currentTime=0;
+if(this.elements.playBtn)this.elements.playBtn.style.display='flex';
+}catch(e){
+console.warn('Poster generation failed:',e);
+if(this.elements.playBtn)this.elements.playBtn.style.display='flex';
+}
+videoEl.removeEventListener('seeked',handleSeeked);
+};
+this.addEventListener(videoEl,'loadeddata',handleLoadedData);
+this.addEventListener(videoEl,'seeked',handleSeeked);
+}
+initVideoJS(){
+if(this.isDestroyed)return;
+try{
+this.player=videojs(this.uniqueId+'-player',{
+controls:true,
+autoplay:false,
+preload:'metadata',
+fluid:true,
+aspectRatio:'16:9',
+playbackRates:[0.5,0.75,1,1.25,1.5,2],
+controlBar:{
+volumePanel:{inline:false},
+children:['playToggle','volumePanel','currentTimeDisplay','timeDivider','durationDisplay','progressControl','remainingTimeDisplay','playbackRateMenuButton','pictureInPictureToggle','fullscreenToggle']
+}
+});
+this.player.ready(()=>{
+if(this.isDestroyed)return;
+this.hideLoading();
+this.hideError();
+this.generatePoster();
+this.bindVideoJSEvents();
+});
+this.player.on('loadedmetadata',()=>this.hideLoading());
+this.player.on('canplay',()=>this.hideLoading());
+this.player.on('play',()=>{
+this.hideLoading();
+if(this.elements.posterCanvas)this.elements.posterCanvas.classList.add('hidden');
+if(this.elements.playBtn)this.elements.playBtn.classList.add('hidden');
+});
+this.player.on('pause',()=>{
+if(!this.player.seeking()&&this.player.currentTime()>0&&!this.player.ended()&&!this.player.isFullscreen()){
+if(this.elements.playBtn)this.elements.playBtn.classList.remove('hidden');
+}
+});
+this.player.on('ended',()=>{
+if(this.elements.posterCanvas)this.elements.posterCanvas.classList.remove('hidden');
+if(this.elements.playBtn)this.elements.playBtn.classList.remove('hidden');
+});
+this.player.on('error',()=>{
+const error=this.player.error();
+console.error('Video error:',error);
+if(this.retryCount<this.maxRetries){
+this.showError((error?error.message:'Failed to load video')+'. Click retry to try again.',true);
+}else{
+this.showError(error?error.message:'Failed to load video',false);
+}
+});
+}catch(error){
+console.error('VideoJS init failed:',error);
+this.fallbackToNative();
+}
+}
+fallbackToNative(){
+if(this.isDestroyed)return;
+console.log('Using native HTML5 player');
+this.hideLoading();
+if(!this.elements.videoEl)return;
+this.elements.videoEl.style.display='block';
+this.elements.videoEl.controls=true;
+this.addEventListener(this.elements.videoEl,'loadedmetadata',()=>{
+this.hideLoading();
+this.hideError();
+this.generatePoster();
+});
+this.addEventListener(this.elements.videoEl,'error',(e)=>{
+console.error('Native video error:',e);
+if(this.retryCount<this.maxRetries){
+this.showError('Failed to load video. Click retry to try again.',true);
+}else{
+this.showError('Video format not supported or file not found',false);
+}
+});
+this.addEventListener(this.elements.videoEl,'canplay',()=>{
+this.hideLoading();
+this.hideError();
+if(this.elements.playBtn)this.elements.playBtn.style.display='flex';
+});
+this.addEventListener(this.elements.videoEl,'play',()=>{
+if(this.elements.posterCanvas)this.elements.posterCanvas.classList.add('hidden');
+if(this.elements.playBtn)this.elements.playBtn.classList.add('hidden');
+});
+this.addEventListener(this.elements.videoEl,'pause',()=>{
+if(this.elements.videoEl.currentTime>0&&!this.elements.videoEl.ended){
+if(this.elements.playBtn)this.elements.playBtn.classList.remove('hidden');
+}
+});
+this.bindNativeEvents();
+}
+bindVideoJSEvents(){
+if(this.elements.posterCanvas){
+this.addEventListener(this.elements.posterCanvas,'click',()=>{
+if(this.player)this.player.play();
+});
+}
+if(this.elements.playBtn){
+this.addEventListener(this.elements.playBtn,'click',()=>{
+if(this.player){
+if(this.player.paused())this.player.play();
+else this.player.pause();
+}
+});
+}
+if(this.elements.pipBtn){
+this.addEventListener(this.elements.pipBtn,'click',(e)=>{
+e.stopPropagation();
+if(!this.player)return;
+const videoElement=this.player.el().querySelector('video');
+if(document.pictureInPictureEnabled&&videoElement){
+if(document.pictureInPictureElement===videoElement){
+document.exitPictureInPicture();
+}else{
+videoElement.requestPictureInPicture().catch(err=>console.error('PiP error:',err));
+}
+}
+});
+}
+}
+bindNativeEvents(){
+if(this.elements.posterCanvas){
+this.addEventListener(this.elements.posterCanvas,'click',()=>{
+if(this.elements.videoEl)this.elements.videoEl.play();
+});
+}
+if(this.elements.playBtn){
+this.addEventListener(this.elements.playBtn,'click',()=>{
+if(this.elements.videoEl){
+if(this.elements.videoEl.paused)this.elements.videoEl.play();
+else this.elements.videoEl.pause();
+}
+});
+}
+if(this.elements.pipBtn){
+this.addEventListener(this.elements.pipBtn,'click',(e)=>{
+e.stopPropagation();
+if(document.pictureInPictureEnabled&&this.elements.videoEl){
+if(document.pictureInPictureElement===this.elements.videoEl){
+document.exitPictureInPicture();
+}else{
+this.elements.videoEl.requestPictureInPicture().catch(err=>console.error('PiP error:',err));
+}
+}
+});
+}
+}
+destroy(){
+this.isDestroyed=true;
+this.removeAllEventListeners();
+window.__VideoPlayerManager.unregisterInstance(this.uniqueId);
+}
+}
+const player=new VideoPlayer(UNIQUE_ID,VIDEO_URL,VIDEO_TYPE);
+window.addEventListener('beforeunload',()=>player.destroy());
 })();
 </script>`, uniqueId, safeVideoPath, videoType)
 }

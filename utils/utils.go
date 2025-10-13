@@ -149,6 +149,13 @@ func TransformAttachmentTags(body, slug string, meta models.NoteMeta) string {
 				name = filepath.Base(att.Path)
 			}
 			return parser.GenerateSCSViewerHTML(uniqueID, rel)
+		case ".epub":
+			uniqueID := fmt.Sprintf("epub_%x", md5.Sum([]byte(originalFilename)))[:12]
+			name := att.OriginalFilename
+			if name == "" {
+				name = filepath.Base(att.Path)
+			}
+			return parser.GenerateEPUBViewerHTML(uniqueID, rel)
 
 		case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg":
 			alt := att.OriginalFilename

@@ -11,7 +11,7 @@ import (
 
 // GeneratePPTWarpHTML 生成用于在Web上展示PPT内容的模块
 // 使用 pptx-preview (esm.sh CDN)，macOS Sequoia 风格
-// 修复无法找到幻灯片的问题
+// 修复中文文件名问题，支持多实例和重试机制
 func GeneratePPTWarpHTML(pptId, pptPath string) string {
 	safePptId := template.HTMLEscapeString(pptId)
 	safePptPath := template.HTMLEscapeString(pptPath)
@@ -20,6 +20,9 @@ func GeneratePPTWarpHTML(pptId, pptPath string) string {
 	uniqueId := fmt.Sprintf("ppt_%x", h)[:12]
 	fileName := filepath.Base(pptPath)
 	ext := strings.ToLower(filepath.Ext(fileName))
+
+	// 对文件名进行额外的 JavaScript 安全转义
+	safeFileName := template.JSEscapeString(fileName)
 
 	return fmt.Sprintf(`<div id="%[1]s-wrapper" class="ppt-viewer-wrapper" style="position:relative;max-width:100%%;margin:20px auto;display:block;">
 <style>
@@ -38,6 +41,8 @@ func GeneratePPTWarpHTML(pptId, pptPath string) string {
 #%[1]s-wrapper .ppt-btn:disabled{opacity:0.3;cursor:not-allowed;transform:none}
 #%[1]s-wrapper .ppt-btn-primary{background:linear-gradient(135deg,#007AFF 0%%,#0051D5 100%%);border-color:transparent;box-shadow:0 3px 10px rgba(0,122,255,0.4)}
 #%[1]s-wrapper .ppt-btn-primary:hover{background:linear-gradient(135deg,#0A84FF 0%%,#0060EA 100%%);box-shadow:0 4px 14px rgba(0,122,255,0.5)}
+#%[1]s-wrapper .ppt-btn-retry{background:linear-gradient(135deg,#34C759 0%%,#30B350 100%%);border-color:transparent;color:#fff}
+#%[1]s-wrapper .ppt-btn-retry:hover{background:linear-gradient(135deg,#40D762 0%%,#35C755 100%%)}
 #%[1]s-wrapper .ppt-controls{display:flex;align-items:center;gap:8px}
 #%[1]s-wrapper .ppt-page-info{display:flex;align-items:center;gap:8px;padding:4px 12px;background:rgba(0,0,0,0.2);border-radius:8px;font-size:12px;color:rgba(255,255,255,0.9);font-weight:500;font-family:'SF Mono','Monaco','Consolas',monospace}
 #%[1]s-wrapper .ppt-nav-btn{width:32px;height:32px;flex-shrink:0;border-radius:50%%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.9);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:14px}
@@ -50,7 +55,9 @@ func GeneratePPTWarpHTML(pptId, pptPath string) string {
 #%[1]s-wrapper .ppt-loading{display:flex;align-items:center;justify-content:center;padding:100px 20px;color:rgba(255,255,255,0.95);font-size:13px;font-weight:500;flex-direction:column;position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);z-index:10}
 #%[1]s-wrapper .ppt-spinner{border:3px solid rgba(255,255,255,0.2);border-top:3px solid rgba(10,132,255,0.95);border-radius:50%%;width:40px;height:40px;animation:ppt-spin-%[1]s 0.7s linear infinite;margin-bottom:16px;box-shadow:0 0 12px rgba(10,132,255,0.3)}
 @keyframes ppt-spin-%[1]s{0%%{transform:rotate(0deg)}100%%{transform:rotate(360deg)}}
-#%[1]s-wrapper .ppt-error{display:none;align-items:center;justify-content:center;padding:60px 20px;color:rgba(255,69,58,1);font-size:13px;font-weight:600;text-align:center;flex-direction:column;gap:12px;position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);width:100%%;z-index:10}
+#%[1]s-wrapper .ppt-error{display:none;align-items:center;justify-content:center;padding:40px 20px;color:rgba(255,69,58,1);font-size:13px;font-weight:600;text-align:center;flex-direction:column;gap:12px;position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);width:90%%;max-width:400px;z-index:10;background:rgba(255,255,255,0.95);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+#%[1]s-wrapper .ppt-error-msg{font-size:12px;color:rgba(0,0,0,0.6);margin-top:8px}
+#%[1]s-wrapper .ppt-error-actions{display:flex;gap:10px;margin-top:12px}
 #%[1]s-wrapper .ppt-stats{display:flex;align-items:center;gap:20px;padding:12px 20px;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.06);font-size:11px;color:rgba(255,255,255,0.7);flex-wrap:wrap}
 #%[1]s-wrapper .ppt-stat{display:flex;align-items:center;gap:6px}
 #%[1]s-wrapper .ppt-stat-label{font-weight:500;color:rgba(255,255,255,0.5)}
@@ -113,7 +120,11 @@ func GeneratePPTWarpHTML(pptId, pptPath string) string {
 </div>
 <div class="ppt-error" id="%[1]s-error">
 <div>❌ Failed to load PowerPoint</div>
-<div style="font-size:11px;margin-top:8px;">Please check if the file format is correct</div>
+<div class="ppt-error-msg" id="%[1]s-error-msg">Please check if the file format is correct</div>
+<div class="ppt-error-actions">
+<button class="ppt-btn ppt-btn-retry" id="%[1]s-retry-btn">🔄 Retry</button>
+<a href="%[2]s" download class="ppt-btn">⬇ Download</a>
+</div>
 </div>
 <div id="%[1]s-slide-viewer" style="display:none;"></div>
 </div>
@@ -130,147 +141,233 @@ func GeneratePPTWarpHTML(pptId, pptPath string) string {
 <span class="ppt-stat-label">Format:</span>
 <span class="ppt-stat-value">%[4]s</span>
 </div>
+<div class="ppt-stat" id="%[1]s-retry-stat" style="display:none;">
+<span class="ppt-stat-label">Retry:</span>
+<span class="ppt-stat-value" id="%[1]s-retry-count">0</span>
+</div>
 </div>
 </div>
 </div>
 <script type="module">
 import {init} from 'https://esm.sh/pptx-preview@1.0.5';
 (function(){
+'use strict';
 const UNIQUE_ID='%[1]s';
 const PPT_URL='%[2]s';
-const elements={wrapper:document.getElementById(UNIQUE_ID+'-wrapper'),content:document.getElementById(UNIQUE_ID+'-content'),loading:document.getElementById(UNIQUE_ID+'-loading'),error:document.getElementById(UNIQUE_ID+'-error'),slideViewer:document.getElementById(UNIQUE_ID+'-slide-viewer'),stats:document.getElementById(UNIQUE_ID+'-stats'),currentPage:document.getElementById(UNIQUE_ID+'-current-page'),totalPages:document.getElementById(UNIQUE_ID+'-total-pages'),currentStat:document.getElementById(UNIQUE_ID+'-current-stat'),totalStat:document.getElementById(UNIQUE_ID+'-total-stat'),prevBtn:document.getElementById(UNIQUE_ID+'-prev-btn'),nextBtn:document.getElementById(UNIQUE_ID+'-next-btn'),fullscreenBtn:document.getElementById(UNIQUE_ID+'-fullscreen-btn'),singleViewBtn:document.getElementById(UNIQUE_ID+'-single-view'),allViewBtn:document.getElementById(UNIQUE_ID+'-all-view')};
-if(!elements.wrapper||!elements.slideViewer){
-console.error('PPT viewer elements not found');
+const FILE_NAME='%[5]s';
+if(!window.__PPTViewerManager){
+window.__PPTViewerManager={
+instances:{},
+keyHandlerAttached:false,
+attachKeyboardHandler:function(){
+if(this.keyHandlerAttached)return;
+this.keyHandlerAttached=true;
+document.addEventListener('keydown',(e)=>{
+const activeElement=document.activeElement;
+if(activeElement&&(activeElement.tagName==='INPUT'||activeElement.tagName==='TEXTAREA'||activeElement.isContentEditable))return;
+for(const id in this.instances){
+const inst=this.instances[id];
+if(!inst||!inst.elements.wrapper||inst.viewMode!=='single')continue;
+const rect=inst.elements.wrapper.getBoundingClientRect();
+if(rect.top<window.innerHeight&&rect.bottom>0){
+let handled=false;
+switch(e.key){
+case 'ArrowLeft':
+case 'PageUp':
+if(inst.currentSlide>1)inst.showSlide(inst.currentSlide-1);
+handled=true;
+break;
+case 'ArrowRight':
+case 'PageDown':
+case ' ':
+if(inst.currentSlide<inst.totalSlides)inst.showSlide(inst.currentSlide+1);
+handled=true;
+break;
+case 'Home':
+inst.showSlide(1);
+handled=true;
+break;
+case 'End':
+inst.showSlide(inst.totalSlides);
+handled=true;
+break;
+case 'f':
+if(inst.elements.fullscreenBtn)inst.elements.fullscreenBtn.click();
+handled=true;
+break;
+}
+if(handled){
+e.preventDefault();
+break;
+}
+}
+}
+});
+},
+register:function(id,inst){
+this.instances[id]=inst;
+this.attachKeyboardHandler();
+},
+unregister:function(id){
+delete this.instances[id];
+}
+};
+}
+const viewer={
+uniqueId:UNIQUE_ID,
+pptUrl:PPT_URL,
+fileName:FILE_NAME,
+pptxPreviewer:null,
+currentSlide:1,
+totalSlides:0,
+viewMode:'single',
+slideWrappers:[],
+retryCount:0,
+maxRetries:3,
+elements:{
+wrapper:document.getElementById(UNIQUE_ID+'-wrapper'),
+content:document.getElementById(UNIQUE_ID+'-content'),
+loading:document.getElementById(UNIQUE_ID+'-loading'),
+error:document.getElementById(UNIQUE_ID+'-error'),
+errorMsg:document.getElementById(UNIQUE_ID+'-error-msg'),
+retryBtn:document.getElementById(UNIQUE_ID+'-retry-btn'),
+slideViewer:document.getElementById(UNIQUE_ID+'-slide-viewer'),
+stats:document.getElementById(UNIQUE_ID+'-stats'),
+currentPage:document.getElementById(UNIQUE_ID+'-current-page'),
+totalPages:document.getElementById(UNIQUE_ID+'-total-pages'),
+currentStat:document.getElementById(UNIQUE_ID+'-current-stat'),
+totalStat:document.getElementById(UNIQUE_ID+'-total-stat'),
+retryStat:document.getElementById(UNIQUE_ID+'-retry-stat'),
+retryCountEl:document.getElementById(UNIQUE_ID+'-retry-count'),
+prevBtn:document.getElementById(UNIQUE_ID+'-prev-btn'),
+nextBtn:document.getElementById(UNIQUE_ID+'-next-btn'),
+fullscreenBtn:document.getElementById(UNIQUE_ID+'-fullscreen-btn'),
+singleViewBtn:document.getElementById(UNIQUE_ID+'-single-view'),
+allViewBtn:document.getElementById(UNIQUE_ID+'-all-view')
+},
+hideLoading:function(){
+if(this.elements.loading)this.elements.loading.style.display='none';
+if(this.elements.slideViewer)this.elements.slideViewer.style.display='block';
+if(this.elements.stats)this.elements.stats.style.display='flex';
+},
+showError:function(msg,canRetry){
+if(this.elements.loading)this.elements.loading.style.display='none';
+if(this.elements.error){
+this.elements.error.style.display='flex';
+if(this.elements.errorMsg)this.elements.errorMsg.textContent=msg||'Please check if the file format is correct';
+if(this.elements.retryBtn)this.elements.retryBtn.style.display=canRetry?'inline-flex':'none';
+}
+},
+hideError:function(){
+if(this.elements.error)this.elements.error.style.display='none';
+},
+updateRetryInfo:function(){
+if(this.retryCount>0){
+if(this.elements.retryStat)this.elements.retryStat.style.display='flex';
+if(this.elements.retryCountEl)this.elements.retryCountEl.textContent=this.retryCount+'/'+this.maxRetries;
+}
+},
+updatePageInfo:function(){
+if(this.elements.currentPage)this.elements.currentPage.textContent=this.currentSlide;
+if(this.elements.totalPages)this.elements.totalPages.textContent=this.totalSlides||'-';
+if(this.elements.currentStat)this.elements.currentStat.textContent=this.currentSlide;
+if(this.elements.totalStat)this.elements.totalStat.textContent=this.totalSlides||0;
+if(this.viewMode==='single'){
+if(this.elements.prevBtn)this.elements.prevBtn.disabled=this.currentSlide<=1;
+if(this.elements.nextBtn)this.elements.nextBtn.disabled=this.currentSlide>=this.totalSlides;
+}else{
+if(this.elements.prevBtn)this.elements.prevBtn.disabled=true;
+if(this.elements.nextBtn)this.elements.nextBtn.disabled=true;
+}
+},
+showSlide:function(slideNum){
+if(slideNum<1||slideNum>this.totalSlides)return;
+this.currentSlide=slideNum;
+if(this.viewMode==='single'){
+this.slideWrappers.forEach((wrapper,index)=>{
+wrapper.style.display=(index===slideNum-1)?'block':'none';
+});
+}
+this.updatePageInfo();
+},
+switchViewMode:function(mode){
+this.viewMode=mode;
+if(mode==='single'){
+this.elements.singleViewBtn.classList.add('active');
+this.elements.allViewBtn.classList.remove('active');
+this.slideWrappers.forEach((wrapper,index)=>{
+wrapper.style.display=(index===this.currentSlide-1)?'block':'none';
+});
+}else{
+this.elements.allViewBtn.classList.add('active');
+this.elements.singleViewBtn.classList.remove('active');
+this.slideWrappers.forEach(wrapper=>{
+wrapper.style.display='block';
+});
+}
+this.updatePageInfo();
+},
+retry:function(){
+if(this.retryCount>=this.maxRetries){
+this.showError('Maximum retry attempts reached. Please download the file instead.',false);
 return;
 }
-let pptxPreviewer=null;
-let currentSlide=1;
-let totalSlides=0;
-let viewMode='single';
-let slideWrappers=[];
-function hideLoading(){
-if(elements.loading)elements.loading.style.display='none';
-if(elements.slideViewer)elements.slideViewer.style.display='block';
-if(elements.stats)elements.stats.style.display='flex';
+this.retryCount++;
+this.updateRetryInfo();
+this.hideError();
+this.slideWrappers=[];
+if(this.elements.slideViewer){
+this.elements.slideViewer.innerHTML='';
+this.elements.slideViewer.style.display='none';
 }
-function showError(msg){
-if(elements.loading)elements.loading.style.display='none';
-if(elements.error){
-elements.error.style.display='flex';
-if(msg){
-const errorDiv=elements.error.querySelector('div');
-if(errorDiv)errorDiv.textContent='❌ '+msg;
+if(this.elements.loading){
+this.elements.loading.style.display='flex';
+const loadingText=this.elements.loading.querySelector('div:last-child');
+if(loadingText)loadingText.textContent='Retrying... ('+this.retryCount+'/'+this.maxRetries+')';
 }
-}
-}
-function updatePageInfo(){
-if(elements.currentPage)elements.currentPage.textContent=currentSlide;
-if(elements.totalPages)elements.totalPages.textContent=totalSlides||'-';
-if(elements.currentStat)elements.currentStat.textContent=currentSlide;
-if(elements.totalStat)elements.totalStat.textContent=totalSlides||0;
-if(viewMode==='single'){
-if(elements.prevBtn)elements.prevBtn.disabled=currentSlide<=1;
-if(elements.nextBtn)elements.nextBtn.disabled=currentSlide>=totalSlides;
-}else{
-if(elements.prevBtn)elements.prevBtn.disabled=true;
-if(elements.nextBtn)elements.nextBtn.disabled=true;
-}
-}
-function showSlide(slideNum){
-if(slideNum<1||slideNum>totalSlides)return;
-currentSlide=slideNum;
-if(viewMode==='single'){
-slideWrappers.forEach((wrapper,index)=>{
-if(index===slideNum-1){
-wrapper.style.display='block';
-}else{
-wrapper.style.display='none';
-}
-});
-}
-updatePageInfo();
-console.log('Showing slide:',currentSlide+'/'+totalSlides);
-}
-function switchViewMode(mode){
-viewMode=mode;
-if(mode==='single'){
-elements.singleViewBtn.classList.add('active');
-elements.allViewBtn.classList.remove('active');
-slideWrappers.forEach((wrapper,index)=>{
-if(index===currentSlide-1){
-wrapper.style.display='block';
-}else{
-wrapper.style.display='none';
-}
-});
-}else{
-elements.allViewBtn.classList.add('active');
-elements.singleViewBtn.classList.remove('active');
-slideWrappers.forEach(wrapper=>{
-wrapper.style.display='block';
-});
-}
-updatePageInfo();
-}
-async function renderPPT(){
+setTimeout(()=>this.renderPPT(),1000);
+},
+renderPPT:async function(){
 try{
-const containerWidth=elements.content.offsetWidth-40;
+const containerWidth=this.elements.content.offsetWidth-40;
 const maxWidth=Math.min(containerWidth,1200);
-console.log('Container width:',maxWidth);
-pptxPreviewer=init(elements.slideViewer,{
+this.pptxPreviewer=init(this.elements.slideViewer,{
 width:maxWidth,
 height:Math.round(maxWidth*9/16)
 });
-console.log('PPT previewer initialized');
-const response=await fetch(PPT_URL);
+const response=await fetch(this.pptUrl);
 if(!response.ok){
 throw new Error('HTTP '+response.status);
 }
 const arrayBuffer=await response.arrayBuffer();
-console.log('File loaded, size:',arrayBuffer.byteLength);
-await pptxPreviewer.preview(arrayBuffer);
-console.log('Preview rendered, waiting for DOM...');
+await this.pptxPreviewer.preview(arrayBuffer);
 let attempts=0;
 const maxAttempts=20;
 const checkSlides=setInterval(()=>{
 attempts++;
-console.log('Checking for slides, attempt:',attempts);
-const allElements=elements.slideViewer.querySelectorAll('canvas, svg, img, .slide, [class*="slide"], [id*="slide"]');
-console.log('Found elements:',allElements.length);
-if(allElements.length>0){
-console.log('Found all elements:',allElements);
-}
-const slides=elements.slideViewer.querySelectorAll('canvas');
-const svgSlides=elements.slideViewer.querySelectorAll('svg');
-const imgSlides=elements.slideViewer.querySelectorAll('img');
+const slides=this.elements.slideViewer.querySelectorAll('canvas');
+const svgSlides=this.elements.slideViewer.querySelectorAll('svg');
+const imgSlides=this.elements.slideViewer.querySelectorAll('img');
 let foundSlides=[];
 if(slides.length>0){
 foundSlides=Array.from(slides);
-console.log('Found canvas slides:',slides.length);
 }else if(svgSlides.length>0){
 foundSlides=Array.from(svgSlides);
-console.log('Found SVG slides:',svgSlides.length);
 }else if(imgSlides.length>0){
 foundSlides=Array.from(imgSlides);
-console.log('Found image slides:',imgSlides.length);
 }
 if(foundSlides.length>0||attempts>=maxAttempts){
 clearInterval(checkSlides);
 if(foundSlides.length===0){
-console.log('Checking all child elements...');
-const allChildren=elements.slideViewer.children;
-console.log('Direct children:',allChildren.length);
+const allChildren=this.elements.slideViewer.children;
 if(allChildren.length>0){
 foundSlides=Array.from(allChildren);
-totalSlides=allChildren.length;
-console.log('Using direct children as slides:',totalSlides);
 }else{
-showError('No slides found in presentation. The file may be corrupted or in an unsupported format.');
+this.showError('No slides found. File may be corrupted.',this.retryCount<this.maxRetries);
 return;
 }
-}else{
-totalSlides=foundSlides.length;
 }
+this.totalSlides=foundSlides.length;
 foundSlides.forEach((slide,index)=>{
 const wrapper=document.createElement('div');
 wrapper.className='ppt-slide-wrapper';
@@ -281,8 +378,8 @@ slide.style.maxWidth='100%%';
 slide.style.width='100%%';
 slide.style.height='auto';
 slide.style.display='block';
-if(slide.parentNode===elements.slideViewer){
-elements.slideViewer.insertBefore(wrapper,slide);
+if(slide.parentNode===this.elements.slideViewer){
+this.elements.slideViewer.insertBefore(wrapper,slide);
 wrapper.appendChild(slide);
 }else{
 const clonedSlide=slide.cloneNode(true);
@@ -291,52 +388,57 @@ clonedSlide.style.width='100%%';
 clonedSlide.style.height='auto';
 clonedSlide.style.display='block';
 wrapper.appendChild(clonedSlide);
-elements.slideViewer.appendChild(wrapper);
+this.elements.slideViewer.appendChild(wrapper);
 }
 const slideNumber=document.createElement('div');
 slideNumber.className='ppt-slide-number';
 slideNumber.textContent='Slide '+(index+1);
 wrapper.appendChild(slideNumber);
-slideWrappers.push(wrapper);
+this.slideWrappers.push(wrapper);
 });
-currentSlide=1;
-updatePageInfo();
-hideLoading();
-console.log('PPTX rendered successfully. Total slides:',totalSlides);
+this.currentSlide=1;
+this.updatePageInfo();
+this.hideLoading();
 }
 },200);
 }catch(err){
-console.error('Error:',err);
-showError('Failed to load: '+err.message);
+console.error('PPT loading error:',err);
+this.showError('Failed to load: '+err.message,this.retryCount<this.maxRetries);
 }
+},
+init:function(){
+if(!this.elements.wrapper||!this.elements.slideViewer){
+console.error('PPT viewer elements not found');
+return;
 }
-if(elements.prevBtn){
-elements.prevBtn.addEventListener('click',()=>{
-if(viewMode==='single'&&currentSlide>1){
-showSlide(currentSlide-1);
+window.__PPTViewerManager.register(this.uniqueId,this);
+if(this.elements.prevBtn){
+this.elements.prevBtn.addEventListener('click',()=>{
+if(this.viewMode==='single'&&this.currentSlide>1){
+this.showSlide(this.currentSlide-1);
 }
 });
 }
-if(elements.nextBtn){
-elements.nextBtn.addEventListener('click',()=>{
-if(viewMode==='single'&&currentSlide<totalSlides){
-showSlide(currentSlide+1);
+if(this.elements.nextBtn){
+this.elements.nextBtn.addEventListener('click',()=>{
+if(this.viewMode==='single'&&this.currentSlide<this.totalSlides){
+this.showSlide(this.currentSlide+1);
 }
 });
 }
-if(elements.singleViewBtn){
-elements.singleViewBtn.addEventListener('click',()=>{
-switchViewMode('single');
+if(this.elements.singleViewBtn){
+this.elements.singleViewBtn.addEventListener('click',()=>{
+this.switchViewMode('single');
 });
 }
-if(elements.allViewBtn){
-elements.allViewBtn.addEventListener('click',()=>{
-switchViewMode('all');
+if(this.elements.allViewBtn){
+this.elements.allViewBtn.addEventListener('click',()=>{
+this.switchViewMode('all');
 });
 }
-if(elements.fullscreenBtn){
-elements.fullscreenBtn.addEventListener('click',()=>{
-const target=elements.slideViewer;
+if(this.elements.fullscreenBtn){
+this.elements.fullscreenBtn.addEventListener('click',()=>{
+const target=this.elements.slideViewer;
 if(target){
 if(target.requestFullscreen){
 target.requestFullscreen();
@@ -348,40 +450,17 @@ target.msRequestFullscreen();
 }
 });
 }
-document.addEventListener('keydown',(e)=>{
-if(!elements.wrapper||viewMode!=='single')return;
-const activeElement=document.activeElement;
-if(activeElement&&(activeElement.tagName==='INPUT'||activeElement.tagName==='TEXTAREA'||activeElement.isContentEditable))return;
-const rect=elements.wrapper.getBoundingClientRect();
-const inViewport=rect.top<window.innerHeight&&rect.bottom>0;
-if(!inViewport)return;
-switch(e.key){
-case 'ArrowLeft':
-case 'PageUp':
-if(currentSlide>1)showSlide(currentSlide-1);
-e.preventDefault();
-break;
-case 'ArrowRight':
-case 'PageDown':
-case ' ':
-if(currentSlide<totalSlides)showSlide(currentSlide+1);
-e.preventDefault();
-break;
-case 'Home':
-showSlide(1);
-e.preventDefault();
-break;
-case 'End':
-showSlide(totalSlides);
-e.preventDefault();
-break;
-case 'f':
-if(elements.fullscreenBtn)elements.fullscreenBtn.click();
-e.preventDefault();
-break;
+if(this.elements.retryBtn){
+this.elements.retryBtn.addEventListener('click',()=>this.retry());
 }
-});
-renderPPT();
+this.renderPPT();
+},
+destroy:function(){
+window.__PPTViewerManager.unregister(this.uniqueId);
+}
+};
+viewer.init();
+window.addEventListener('beforeunload',()=>viewer.destroy());
 })();
-</script>`, uniqueId, safePptPath, fileName, strings.ToUpper(strings.TrimPrefix(ext, ".")))
+</script>`, uniqueId, safePptPath, fileName, strings.ToUpper(strings.TrimPrefix(ext, ".")), safeFileName)
 }

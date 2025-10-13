@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 	"retroblog/config"
 	"retroblog/handlers"
 	"retroblog/services"
@@ -48,19 +49,22 @@ func main() {
 
 	log.Printf("Serving %s at http://%s", config.OutDir, config.Addr)
 	log.Printf("Site base URL: %s", config.BaseURL)
-	//log.Fatal(router.Run(config.Addr))
-	server := endless.NewServer(config.Addr, router)
-	server.SignalHooks[endless.PRE_SIGNAL][syscall.SIGUSR1] = append(
-		server.SignalHooks[endless.PRE_SIGNAL][syscall.SIGUSR1],
-		preSigUsr1)
-	server.BeforeBegin = func(add string) {
-		log.Printf("Actual pid is %d", syscall.Getpid())
-		// save it somehow
-		//
-	}
-	err := server.ListenAndServe()
-	if err != nil {
-		panic(err)
+	if os.Getenv("BLOG_WEB_BRANCH") == "release" {
+		server := endless.NewServer(config.Addr, router)
+		server.SignalHooks[endless.PRE_SIGNAL][syscall.SIGUSR1] = append(
+			server.SignalHooks[endless.PRE_SIGNAL][syscall.SIGUSR1],
+			preSigUsr1)
+		server.BeforeBegin = func(add string) {
+			log.Printf("Actual pid is %d", syscall.Getpid())
+			// save it somehow
+			//
+		}
+		err := server.ListenAndServe()
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		log.Fatal(router.Run(config.Addr))
 	}
 }
 
