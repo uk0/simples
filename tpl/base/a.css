@@ -4,7 +4,6 @@
 
 /* CSS 变量定义 */
 :root {
-    --win95-bg: #c0c0c0;
     --panel: #dcdcdc;
     --panel2: #d0d0d0;
     --dark: #707070;
@@ -37,14 +36,6 @@ body {
     padding: 20px;
 }
 
-body.win95-bg {
-    background-color: transparent;
-    background-image: url('syslogo.png');
-    background-repeat: repeat;
-    background-attachment: fixed;
-    font-family: "Segoe UI", Tahoma, Verdana, Arial, sans-serif;
-    font-size: 15px;
-}
 
 /* ========== 布局助手类 ========== */
 .center {
@@ -79,9 +70,6 @@ table[border="1"] td {
     border-top-color: #808080;
 }
 
-/* Windows 95 风格表格 */
-table.outer {
-}
 
 .frame {
     background: var(--panel);
@@ -146,15 +134,7 @@ nav td.active {
     border: 1px solid #c0c0c0;
 }
 
-/* Windows 95 风格头像 */
-body.win95-bg .avatar {
-    height: 110px;
-    width: 110px;
-    image-rendering: pixelated;
-    border: 1px outset var(--panel);
-    background: var(--light);
-    border-radius: 55px;
-}
+
 
 /* ========== 信息栏样式 ========== */
 .infobar {
@@ -443,20 +423,7 @@ hr {
     margin: 10px auto;
 }
 
-/* Windows 95 风格页脚 */
-body.win95-bg .footer {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 60px;
-    line-height: 18px;
-    text-align: center;
-    background: transparent;
-    font-size: 12px;
-    color: #222;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
-}
+
 
 /* ========== 响应式设计 ========== */
 @media (max-width: 800px) {
@@ -500,3 +467,91 @@ div.page {
     text-align: center;
 }
 
+
+
+/* ========== 主容器布局 ========== */
+.main-container {
+    display: flex;
+    justify-content: center; /* 以主内容为视觉中心 */
+    align-items: flex-start;
+    gap: 20px;
+    position: relative;
+    width: fit-content;
+    margin: 20px auto;
+}
+
+/* 主内容区域 */
+.content-area {
+    width: 620px;
+}
+
+/* ✅ 固定悬浮右侧广告栏 */
+.sidebar {
+    position: fixed;
+    top: 80px; /* 与导航栏错开 */
+    right: 40px; /* 距离右边 40px */
+    width: 200px;
+    background: var(--panel2);
+    border: 2px solid var(--dark);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
+    padding: 10px;
+    font-family: "LXGW WenKai Screen";
+    z-index: 99;
+    border-radius: 3px;
+}
+
+/* 黄金比例分布（38% / 62%） */
+.ad-box {
+    background: var(--panel);
+    border: 2px inset var(--mid);
+    margin-bottom: 15px;
+    padding: 8px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.ad-box:nth-child(1) {
+    height: 35%;
+    min-height: 150px;
+    border-radius: 5px;
+}
+
+.ad-box:nth-child(2) {
+    height: 35%;
+    min-height: 150px;
+    border-radius: 5px;
+}
+
+.ad-box:nth-child(3) {
+    height: 15%;
+    min-height: 100px;
+    border-radius: 5px;
+}
+
+.ad-title {
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.ad-img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #aaa;
+    background: #fff;
+    border-radius: 5px;
+}
+
+/* ✅ 响应式兼容（移动端时改为底部堆叠） */
+@media (max-width: 900px) {
+    .sidebar {
+        position: static;
+        width: 90%;
+        margin: 20px auto;
+    }
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+}

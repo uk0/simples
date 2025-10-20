@@ -6,9 +6,9 @@
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="a.css">
     <script src="crt-simulator.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/style.css" />
-    <meta name="keywords" content="建新的Blog,github.com/uk0,SEO" />
-    <meta name="description" content="这是一个关于建新的个人网站的博客页面。Github.com/uk0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/style.css"/>
+    <meta name="keywords" content="建新的Blog,github.com/uk0,SEO"/>
+    <meta name="description" content="这是一个关于建新的个人网站的博客页面。Github.com/uk0"/>
 </head>
 
 <body>
@@ -28,49 +28,65 @@
                 </td>
             </tr>
             <tr>
-                <td align="center" width="82">
-                    <a href="./">Index</a>
-                </td>
-                <td class="active" align="center" width="82">
-                    <a href="./">Blog</a>
-                </td>
-                <td align="center" width="82">
-                    <a href="https://github.com/uk0">Projects</a>
-                </td>
-                <td align="center" width="82">
-                    <a href="https://github.com/uk0">GitHub</a>
-                </td>
-                <td align="center" width="82">
-                    <a href="about.html">About</a>
-                </td>
+                <td align="center" width="82"><a href="./">Index</a></td>
+                <td class="active" align="center" width="82"><a href="./">Blog</a></td>
+                <td align="center" width="82"><a href="https://github.com/uk0">Projects</a></td>
+                <td align="center" width="82"><a href="https://github.com/uk0">GitHub</a></td>
+                <td align="center" width="82"><a href="about.html">About</a></td>
             </tr>
             </tbody>
         </table>
     </nav>
 </header>
 
-{{ range .Categories }}
-{{ $year := "" }}
-{{ range .Posts }}
-{{ $postYear := .Date.Format "2006" }}
-{{ if ne $year $postYear }}
-{{ if ne $year "" }}
-</tbody>
-</table>
-{{ end }}
-{{ $year = $postYear }}
-<h4 class="text_center">{{.Category}}/{{ $year }} </h4>
-<table width="620" border="1" class="content center">
-    <tbody>
-    {{ end }}
-    <tr>
-        <td width="58">{{ .Date.Format "1/2/06" }}</td>
-        <td><a href="{{ .File }}">{{ .Title }} </a></td>
-    </tr>
-    {{ end }}
-    </tbody>
-</table>
-{{ end }}
+<!-- ✅ 新增主容器结构 -->
+<div class="main-container">
+    <div class="content-area">
+        {{ range .Categories }}
+        {{ $year := "" }}
+        {{ range .Posts }}
+        {{ $postYear := .Date.Format "2006" }}
+        {{ if ne $year $postYear }}
+        {{ if ne $year "" }}
+        </tbody></table>
+        {{ end }}
+        {{ $year = $postYear }}
+        <h4 class="text_center">{{.Category}}/{{ $year }}</h4>
+        <table width="620" border="1" class="content center">
+            <tbody>
+            {{ end }}
+            <tr>
+                <td width="58">{{ .Date.Format "1/2/06" }}</td>
+                <td><a href="{{ .File }}">{{ .Title }}</a></td>
+            </tr>
+            {{ end }}
+            </tbody>
+        </table>
+        {{ end }}
+    </div>
+
+    <!-- ✅ 新增右侧广告栏 -->
+    <aside class="sidebar">
+        <div class="ad-box">
+            <a href="https://bandwagonhost.com/aff.php?aff=79809">
+                <p class="ad-title">立即购买：搬瓦工CN2GIA服务器</p>
+                <img src="/ad/bwg.png" alt="搬瓦工" class="ad-img">
+            </a>
+        </div>
+        <div class="ad-box">
+            <a href="https://www.dmit.io/aff.php?aff=13260">
+                <p class="ad-title">立即购买：DMIT-CN2GIA服务器</p>
+                <img src="/ad/dmit.png" alt="DMIT" class="ad-img">
+            </a>
+        </div>
+        <div class="ad-box">
+            <a href="https://app.vmiss.com/aff.php?aff=3276">
+                <p class="ad-title">立即购买：VMISS-服务器</p>
+                <img src="/ad/vmiss.png" alt="vmiss" class="ad-img">
+            </a>
+        </div>
+    </aside>
+</div>
 
 <footer>
     <div class="footer center text_center">
