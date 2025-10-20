@@ -83,7 +83,7 @@ func setupRoutes(router *gin.Engine) {
 	})
 
 	// Static file serving with authentication middleware
-	router.Use(handlers.AttachmentAuthMiddleware())
+	router.Use(handlers.AttachmentAuthMiddleware(), handlers.AutoVideoMiddleware(config.OutDir), handlers.SharedArrayBufferMiddleware())
 	router.Static("/", config.OutDir)
 
 }
