@@ -48,8 +48,8 @@ func GeneratePICWarpHTML(picId, picPath string) string {
 #%[1]s-wrapper .pic-btn:active{transform:translateY(0)}
 #%[1]s-wrapper .pic-btn-retry{background:linear-gradient(135deg,#27ae60 0%%,#229954 100%%);border:none}
 #%[1]s-wrapper .pic-btn-retry:hover{background:linear-gradient(135deg,#2ecc71 0%%,#27ae60 100%%)}
-#%[1]s-wrapper .pic-btn-primary{background:linear-gradient(135deg,#3498db 0%%,#2980b9 100%%);border:none}
-#%[1]s-wrapper .pic-btn-primary:hover{background:linear-gradient(135deg,#5dade2 0%%,#3498db 100%%)}
+#%[1]s-wrapper .pic-btn-primary{background:linear-gradient(178deg, #858e94 0%%, #191e22 100%%);border:none}
+#%[1]s-wrapper .pic-btn-primary:hover{background:linear-gradient(178deg, #858e94 0%%, #191e22 100%%)}
 #%[1]s-wrapper .pic-info{position:absolute;bottom:12px;left:12px;background:rgba(0,0,0,0.65);backdrop-filter:blur(12px);color:#fff;padding:8px 14px;border-radius:8px;font-size:11px;opacity:0;transition:opacity 0.3s ease;font-family:'SF Mono','Monaco','Consolas',monospace;border:1px solid rgba(255,255,255,0.1)}
 #%[1]s-wrapper:hover .pic-info{opacity:1}
 #%[1]s-wrapper .pic-retry-badge{position:absolute;top:12px;left:12px;background:rgba(241,196,15,0.9);color:#fff;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;box-shadow:0 2px 8px rgba(241,196,15,0.3)}

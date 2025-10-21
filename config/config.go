@@ -6,10 +6,14 @@ import (
 	"strings"
 	"sync"
 
+	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/yuin/goldmark"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	ghtml "github.com/yuin/goldmark/renderer/html"
+
+	mermaid "go.abhg.dev/goldmark/mermaid"
 )
 
 var (
@@ -42,7 +46,26 @@ func Initialize() {
 	BaseURL = strings.TrimRight(BaseURL, "/")
 	LoadTemplates()
 	MdConv = goldmark.New(
-		goldmark.WithExtensions(extension.GFM, extension.Table, extension.TaskList, extension.Strikethrough, extension.CJK),
+		goldmark.WithExtensions(
+			extension.GFM,
+			extension.Table,
+			extension.TaskList,
+			extension.Strikethrough,
+			extension.CJK,
+			highlighting.NewHighlighting(
+				highlighting.WithStyle("monokai"),
+				highlighting.WithFormatOptions(
+					chromahtml.WithLineNumbers(true),
+				),
+			),
+			&mermaid.Extender{},
+			extension.NewTypographer(
+				extension.WithTypographicSubstitutions(extension.TypographicSubstitutions{
+					extension.LeftSingleQuote:  []byte("&sbquo;"),
+					extension.RightSingleQuote: nil, // nil disables a substitution
+				}),
+			),
+		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
 		),

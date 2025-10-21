@@ -1,549 +1,215 @@
 /* =========================================================
-   复古博客样式 - Windows 95/98 + 经典网页风格
+   macOS 26 风格毛玻璃博客样式（纯色背景 + 自动亮暗模式）
+   保留原布局结构，现代化视觉设计
    ========================================================= */
 
-/* CSS 变量定义 */
+/* 🌈 基础变量 */
 :root {
-    --panel: #dcdcdc;
-    --panel2: #d0d0d0;
-    --dark: #707070;
-    --mid: #9a9a9a;
-    --light: #ffffff;
-    --titlebar1: #1a4599;
-    --titlebar2: #0b2f7a;
-    --titletext: #008000;
-    --ink: #222;
-    --muted: #666;
-    --link-blue: #0000ee;
-    --link-purple: #551a8b;
-    --link-red: #ff0000;
+    --bg-light: #eef0f4;
+    --bg-dark: #1f1f22;
+    --glass-light: rgba(255, 255, 255, 0.6);
+    --glass-dark: rgba(25, 25, 25, 0.45);
+    --border-light: rgba(255, 255, 255, 0.7);
+    --border-dark: rgba(0, 0, 0, 0.35);
+    --text-main-light: #1e1e1e;
+    --text-main-dark: #f2f2f2;
+    --text-muted-light: #5a5a5a;
+    --text-muted-dark: #b0b0b0;
+    --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.55);
+    --link-light: #007aff;
+    --link-dark: #6ca8ff;
+    --code-bg-light: rgba(240, 240, 240, 0.9);
+    --code-bg-dark: rgba(30, 30, 30, 0.8);
+    --blockquote-light: rgba(255,255,255,0.4);
+    --blockquote-dark: rgba(255,255,255,0.08);
 }
 
-/* ========== 基础样式 ========== */
+/* 🌙 夜间模式变量 */
+:root[data-theme="dark"] {
+    --bg: var(--bg-dark);
+    --glass: var(--glass-dark);
+    --border: var(--border-dark);
+    --text-main: var(--text-main-dark);
+    --text-muted: var(--text-muted-dark);
+    --shadow: var(--shadow-dark);
+    --link: var(--link-dark);
+    --code-bg: var(--code-bg-dark);
+    --blockquote-bg: var(--blockquote-dark);
+}
+:root:not([data-theme="dark"]) {
+    --bg: var(--bg-light);
+    --glass: var(--glass-light);
+    --border: var(--border-light);
+    --text-main: var(--text-main-light);
+    --text-muted: var(--text-muted-light);
+    --shadow: var(--shadow-light);
+    --link: var(--link-light);
+    --code-bg: var(--code-bg-light);
+    --blockquote-bg: var(--blockquote-light);
+}
+
+/* ========== 全局基础 ========== */
 html, body {
+    margin: 0;
+    padding: 0;
     height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    background-image: url('/syslogo.png');
-    background-color: transparent;
-    font-family: "LXGW WenKai Screen";
+    font-family: "LXGW WenKai Screen", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
     font-size: 14px;
-    line-height: 1.6;
-    color: var(--ink);
-    padding: 20px;
+    line-height: 1.7;
+    background: var(--bg);
+    color: var(--text-main);
+    transition: background 0.6s, color 0.4s;
+    display: flex;
+    flex-direction: column;
 }
 
-
-/* ========== 布局助手类 ========== */
+/* ========== 布局辅助类 ========== */
 .center {
     margin-left: auto;
     margin-right: auto;
 }
-
 .text_center {
     text-align: center;
 }
 
-/* ========== 表格样式 ========== */
-table {
-    background-color: transparent;
+/* ========== 通用毛玻璃卡片 ========== */
+.glass {
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    transition: background 0.4s, box-shadow 0.4s;
 }
 
-td {
-    padding: 4px 8px;
-    background-color: transparent;
-}
-
-/* 复古表格边框样式 */
-table[border="1"] {
-    border: 1px solid #c0c0c0;
-    border-right-color: #808080;
-    border-bottom-color: #808080;
-}
-
-table[border="1"] td {
-    border: 1px solid #c0c0c0;
-    border-left-color: #808080;
-    border-top-color: #808080;
-}
-
-
-.frame {
-    background: var(--panel);
-    border-width: 2px;
-    border-style: solid;
-    border-color: var(--light) var(--dark) var(--dark) var(--light);
-    box-shadow: 0 0 0 1px var(--mid) inset;
-}
-
-/* ========== 导航栏样式 ========== */
+/* ========== 导航栏 ========== */
 nav table {
+    width: 620px;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 27px;
+    overflow: hidden;
     margin-bottom: 20px;
+    margin-top: 3px;
+    border: 1.6px solid var(--text-main);
+    background: var(--glass);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(14px) saturate(160%);
 }
-
 nav td {
-    background-color: transparent;
-}
-
-nav td.active {
-    background-color: #e0e0e0;
-    font-weight: bold;
-}
-
-/* Windows 95 导航栏 */
-.nav {
-    background: var(--panel2);
-    padding: 8px 10px;
-    border-top: 1px solid var(--mid);
-    border-bottom: 1px solid var(--light);
-}
-
-.nav .sep {
-    color: #666;
-    padding: 0 6px;
-}
-
-/* ========== 标题栏样式 ========== */
-.titlebar {
-    padding: 6px 10px;
-    background: linear-gradient(62deg, #0b0c10, #adadad);
-    border-width: 2px;
-    border-style: solid;
-    border-color: var(--dark) var(--light) var(--light) var(--dark);
-}
-
-.title {
-    margin: 4px 0;
-    color: var(--titletext);
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
-}
-
-/* ========== 头像样式 ========== */
-.avatar-cell {
-    background: var(--panel2);
-}
-
-.avatar {
-    height: 64px;
-    width: 64px;
-    border: 1px solid #c0c0c0;
-}
-
-
-
-/* ========== 信息栏样式 ========== */
-.infobar {
-    background: var(--panel2);
-    border-width: 2px;
-    border-style: inset;
-    border-color: var(--dark);
-    padding: 6px 10px;
-    font-size: 13px;
-    color: var(--muted);
-}
-
-.infotitle {
-    font-weight: 700;
-    margin-bottom: 4px;
-    color: #333;
-}
-
-.infovalue {
-    font-family: ui-monospace, "Courier New", Consolas, monospace;
-}
-
-/* ========== 内容区域样式 ========== */
-.content {
-    margin-bottom: 10px;
-    background: transparent;
-    padding: 8px 4px 18px;
-}
-
-.content td {
-    background-color: transparent;
-}
-
-.content td:first-child {
-    text-align: right;
-    font-family: "LXGW WenKai Screen";
-    color: #666666;
-}
-
-/* ========== 文章列表样式 ========== */
-.postlist {
-    width: 100%;
-    background: var(--light);
-    font-size: 14px;
-}
-
-.postlist td {
-    background: #fbfbfb;
-}
-
-.postlist tr:nth-child(even) td {
-    background: #f3f3f3;
-}
-
-.postlist tr:hover td {
-    background: #e9f0ff;
-}
-
-.date {
-    font-family: "LXGW WenKai Screen";
-    color: #333;
-}
-
-/* ========== 分类标题样式 ========== */
-.cat-header {
-    margin: 16px 0 6px;
-    background: linear-gradient(180deg, #efefef, #dbdbdb);
-    border: 1px solid var(--mid);
-    box-shadow: 0 0 0 1px var(--light) inset;
-}
-
-.cat-title {
-    margin: 0;
-    padding: 6px 8px;
-    font-size: 16px;
-    font-weight: 700;
-    color: #1f1f1f;
-}
-
-/* ========== 文章内容样式 ========== */
-.post-content {
-    padding: 20px;
-}
-
-.post-body {
-    max-width: 800px;
-    background: #fff;
-    padding: 10px 12px;
-    border: 2px inset var(--panel);
-}
-
-.post-meta {
-    color: #666666;
-    font-size: 13px;
-    margin: 10px 0;
-}
-
-.post-category {
-    color: #666;
-    font-size: 0.9em;
-}
-
-/* ========== 标题样式 ========== */
-h1 {
-    font-size: 25px;
-}
-
-h2 {
-    font-size: 22px;
-    margin: 20px 0 10px 0;
-    color: #333333;
-}
-
-h3 {
-    font-size: 19px;
-}
-
-h4 {
-    font-size: 17px;
-    margin: 20px 0 10px 0;
-    color: #333333;
-}
-
-h5 {
-    font-size: 15px;
-}
-
-h6 {
-    font-size: 13px;
-}
-
-/* ========== 链接样式 ========== */
-a {
-    color: var(--link-blue);
-    text-decoration: underline;
-}
-
-a:visited {
-    color: var(--link-purple);
-}
-
-a:hover {
-    color: var(--link-red);
-}
-
-/* 导航链接特殊样式 */
-.nav a, .postlist a {
-    text-decoration: none;
-}
-
-/* ========== 媒体内容样式 ========== */
-img, video {
-    max-width: 800px;
-    max-height: 650px;
-}
-
-audio {
-    max-width: 800px;
-    max-height: 66px;
-}
-
-.post-body img {
-    max-width: 100%;
-    height: auto;
-    border: 2px inset var(--panel);
-    background: #fff;
-}
-
-article img {
-    max-width: 100%;
-    height: auto;
-    border: 1px solid #ddd;
-}
-
-/* ========== 代码样式 ========== */
-pre {
-    background-color: #f4f4f4;
-    border: 1px solid #ddd;
     padding: 10px;
-    overflow-x: auto;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 13px;
-    max-width: 100%;
-    white-space: pre;
-}
-
-code {
-    background-color: #f4f4f4;
-    padding: 2px 4px;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 13px;
-    word-break: break-all;
-}
-
-.post-body pre {
-    background: #f4f4f4;
-    border: 1px solid #ccc;
-    padding: 8px;
-}
-
-.post-body code {
-    background: #f4f4f4;
-    padding: 0 3px;
-    border: 1px solid #ddd;
-}
-
-/* ========== 代码高亮样式 ========== */
-pre code.hljs {
-    border: 2px inset #c0c0c0;
-    background: #ffffff;
-    font-family: "Courier New", monospace;
-    font-size: 13px;
-    padding: 8px;
-    padding-left: 10px !important;
-    position: relative;
-}
-
-/* 行号样式 */
-.hljs-ln-numbers {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    text-align: right;
-    color: #999;
-    border-right: 1px solid #ddd;
-    vertical-align: top;
-    padding-right: 5px !important;
-    padding-left: 2px !important;
-    width: 20px;
-    white-space: nowrap;
-}
-
-.hljs-ln-code {
-    padding-left: 5px !important;
-    white-space: pre;
-}
-
-table.hljs-ln {
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-
-table.hljs-ln td {
-    border: none;
-    padding: 0;
-}
-
-/* ========== 其他元素样式 ========== */
-blockquote {
-    border-left: 4px solid #ddd;
-    margin: 10px 0;
-    padding-left: 15px;
-    color: #666;
-}
-
-.post-body blockquote {
-    margin: 8px 0;
-    padding: 6px 10px;
-    background: #f9f9f9;
-    border-left: 4px solid #bbb;
-}
-
-hr {
-    border: none;
-    border-top: 1px solid #cccccc;
-    margin: 20px 0;
-}
-
-.hr-etched {
-    border: 0;
-    border-top: 1px solid #ccc;
-    height: 0;
-}
-
-/* ========== 页脚样式 ========== */
-.footer {
-    margin-top: 40px;
-    padding: 20px;
-}
-
-.footer hr {
-    width: 300px;
-    margin: 10px auto;
-}
-
-
-
-/* ========== 响应式设计 ========== */
-@media (max-width: 800px) {
-    .frame {
-        width: 98% !important;
-    }
-
-    .infobar {
-        display: none;
-    }
-
-    .date {
-        display: none;
-    }
-
-    .title {
-        font-size: 18px;
-    }
-}
-
-/* ========== 文章表格样式 ========== */
-article table,
-article th,
-article td {
-    border: 1px solid black;
-}
-
-
-div.page {
-    display: block;
-    /*post 页面 宽度*/
-    width: 800px;
-}
-
-.center {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.text_center {
     text-align: center;
+    font-weight: 500;
+    color: var(--text-main);
+    transition: background 0.3s;
+}
+nav td.active {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+:root[data-theme="dark"] nav td.active {
+    background: rgba(255, 255, 255, 0.08);
+}
+nav a {
+    text-decoration: none;
+    color: inherit;
 }
 
-
-
-/* ========== 主容器布局 ========== */
+/* ========== 主内容区 ========== */
 .main-container {
     display: flex;
-    justify-content: center; /* 以主内容为视觉中心 */
+    justify-content: center;
     align-items: flex-start;
     gap: 20px;
     position: relative;
-    width: fit-content;
     margin: 20px auto;
+    width: fit-content;
 }
-
-/* 主内容区域 */
 .content-area {
     width: 620px;
 }
 
-/* ✅ 固定悬浮右侧广告栏 */
+/* 内容表格 */
+.content,
+.postlist {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 16px;
+    background: var(--glass);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: background 0.4s;
+}
+.content td,
+.postlist td {
+    padding: 8px;
+    color: var(--text-main);
+}
+.postlist tr:hover td {
+    background: rgba(255, 255, 255, 0.3);
+}
+:root[data-theme="dark"] .postlist tr:hover td {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* 分类标题 */
+h4 {
+    font-size: 18px;
+    text-align: center;
+    color: var(--text-main);
+    margin: 20px 0 10px 0;
+}
+
+/* ========== 广告栏 ========== */
 .sidebar {
     position: fixed;
-    top: 80px; /* 与导航栏错开 */
-    right: 40px; /* 距离右边 40px */
+    top: 80px;
+    right: 40px;
     width: 200px;
-    background: var(--panel2);
-    border: 2px solid var(--dark);
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
-    padding: 10px;
-    font-family: "LXGW WenKai Screen";
-    z-index: 99;
-    border-radius: 3px;
+    padding: 12px;
+    border-radius: 16px;
+    background: var(--glass);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: background 0.4s;
 }
-
-/* 黄金比例分布（38% / 62%） */
 .ad-box {
-    background: var(--panel);
-    border: 2px inset var(--mid);
-    margin-bottom: 15px;
-    padding: 8px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    padding: 10px;
     text-align: center;
-    overflow: hidden;
+    transition: transform 0.25s ease, background 0.4s;
+    box-shadow: var(--shadow);
 }
-
-.ad-box:nth-child(1) {
-    height: 35%;
-    min-height: 150px;
-    border-radius: 5px;
+.ad-box:hover {
+    transform: scale(1.03);
 }
-
-.ad-box:nth-child(2) {
-    height: 35%;
-    min-height: 150px;
-    border-radius: 5px;
+:root[data-theme="dark"] .ad-box {
+    background: rgba(40, 40, 40, 0.4);
 }
-
-.ad-box:nth-child(3) {
-    height: 15%;
-    min-height: 100px;
-    border-radius: 5px;
-}
-
 .ad-title {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 13px;
     margin-bottom: 6px;
-    color: #333;
+    color: var(--text-main);
 }
-
 .ad-img {
     width: 100%;
-    height: auto;
-    border: 1px solid #aaa;
-    background: #fff;
-    border-radius: 5px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+pre code {
+    white-space: normal;
+    border-radius: 6px;
 }
 
-/* ✅ 响应式兼容（移动端时改为底部堆叠） */
+/* 响应式 */
 @media (max-width: 900px) {
     .sidebar {
         position: static;
@@ -554,4 +220,292 @@ div.page {
         flex-direction: column;
         align-items: center;
     }
+}
+
+/* ========== 页脚 ========== */
+.footer {
+    margin-top: 40px;
+    padding: 20px;
+    text-align: center;
+    border-radius: 16px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+}
+.footer hr {
+    width: 300px;
+    margin: 12px auto;
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ========== Post 内容区域样式 ========== */
+.page {
+    display: block;
+    width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--glass);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+}
+
+/* 标题 */
+.page h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-main);
+    text-align: center;
+    margin-top: 10px;
+}
+.page .meta {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+/* ========== article 内容自动亮暗模式 ========== */
+article {
+    max-width: 780px;
+    margin: 0 auto;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-main);
+}
+article p {
+    margin: 12px 0;
+    color: var(--text-main);
+}
+article h1, article h2, article h3, article h4, article h5, article h6 {
+    color: var(--text-main);
+}
+article a {
+    color: var(--link);
+    text-decoration: none;
+}
+article a:hover {
+    opacity: 0.8;
+}
+article blockquote {
+    border-left: 4px solid rgba(128, 128, 128, 0.4);
+    background: var(--blockquote-bg);
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: var(--text-muted);
+    margin: 15px 0;
+}
+article code {
+    /*background: var(--code-bg);*/
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+}
+article pre {
+    background: var(--code-bg);
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", monospace;
+    line-height: 1.5;
+}
+article img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 10px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+article img:hover {
+    transform: scale(1.02);
+}
+article table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    border: 1px solid var(--border);
+}
+article th, article td {
+    padding: 8px;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+}
+article tr:nth-child(even) {
+    background: rgba(255,255,255,0.4);
+}
+:root[data-theme="dark"] article tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
+}
+article hr {
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+:root[data-theme="dark"] article hr {
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 提示区块 */
+/* 提示区块 */
+.password-notice {
+    background-color: rgba(255, 255, 204, 0.6);
+    border: 2px solid #ffcc00;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 10px;
+    color: var(--text-main);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: background 0.4s, border 0.4s, color 0.4s;
+}
+
+/* 🌙 暗色模式 */
+:root[data-theme="dark"] .password-notice {
+    background-color: rgba(80, 80, 20, 0.25);
+    border: 2px solid rgba(255, 230, 100, 0.5);
+    color: var(--text-main);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+
+/* ========== 通用效果 ========== */
+a {
+    color: var(--link);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+a:hover {
+    color: #0051d4;
+}
+* {
+    transition: background 0.4s, color 0.4s, box-shadow 0.4s, opacity 0.3s;
+}
+
+/* 主体内容区域（自动填充中间） */
+body > *:not(footer) {
+    flex: 1 0 auto;
+}
+
+/* 页脚固定在底部 */
+footer {
+    flex-shrink: 0;
+}
+
+
+/* ==========================
+   🔐 Password Modal 样式
+   自动亮/暗模式 + macOS 毛玻璃圆角
+   ========================== */
+
+/* 模态遮罩 */
+.password-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+/* 弹窗主体 */
+.password-content {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    width: 320px;
+    max-width: 90%;
+    padding: 24px 28px;
+    text-align: center;
+    animation: fadeInModal 0.3s ease;
+    color: var(--text-main);
+}
+
+/* 标题 */
+.password-content h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 18px;
+    color: var(--text-main);
+}
+
+/* 输入框 */
+.password-input {
+    width: 80%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text-main);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+.password-input:focus {
+    border-color: var(--link);
+    box-shadow: 0 0 6px rgba(0, 255, 13, 0.4);
+}
+
+/* 提交按钮 */
+.password-submit {
+    padding: 8px 16px;
+    margin: 6px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: var(--link);
+    color: #fff;
+    transition: background 0.3s ease, transform 0.2s;
+}
+.password-submit:hover {
+    background-color: #008000;
+    transform: translateY(-1px);
+}
+
+/* 暗色模式下按钮颜色柔和 */
+:root[data-theme="dark"] .password-submit {
+    background-color: #008000;
+}
+:root[data-theme="dark"] .password-submit:hover {
+    background-color: #008000;
+}
+
+/* 错误信息 */
+.error-message {
+    color: #ff3b30;
+    font-size: 13px;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+/* 弹出动画 */
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* 🌙 暗色模式适配 */
+:root[data-theme="dark"] .password-content {
+    background: rgba(25, 25, 25, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-main);
+}
+:root[data-theme="dark"] .password-input {
+    background: rgba(35, 35, 35, 0.7);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #f1f1f1;
+}
+:root[data-theme="dark"] .password-input:focus {
+    border-color: #008000;
+    box-shadow: 0 0 6px rgba(114, 211, 65, 0.4);
 }
