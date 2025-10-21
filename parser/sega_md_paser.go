@@ -52,12 +52,6 @@ func GenerateSegaMDPlayerHTML(playerID, romPath, fileName, fileExt string) strin
       width: 100%%;
       height: 100%%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      animation: shimmer 3s infinite;
-    }
-
-    @keyframes shimmer {
-      0%% { left: -100%%; }
-      100%% { left: 100%%; }
     }
 
     #%[1]s-wrapper .sega-logo-container {

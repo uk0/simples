@@ -63,12 +63,6 @@ func GeneratePlayStationPlayerHTML(playerID, romPath, fileName, fileExt string) 
         rgba(255,255,255,0.05) 50%%, 
         transparent 100%%);
       transform: translateX(-100%%);
-      animation: shimmer 3s infinite;
-    }
-
-    @keyframes shimmer {
-      0%% { transform: translateX(-100%%); }
-      100%% { transform: translateX(100%%); }
     }
 
     #%[1]s-wrapper .player-header-top {

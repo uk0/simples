@@ -129,6 +129,9 @@ nav a {
 }
 .content-area {
     width: 620px;
+    border: 1.6px solid var(--text-main);
+    border-radius: 27px;
+    padding:1px;
 }
 
 /* 内容表格 */
