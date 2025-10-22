@@ -5,16 +5,17 @@ go 1.24
 toolchain go1.24.3
 
 require (
+	github.com/alecthomas/chroma/v2 v2.2.0
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6
 	github.com/gin-gonic/gin v1.11.0
+	github.com/otiai10/opengraph/v2 v2.2.0
 	github.com/yuin/goldmark v1.7.13
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
 	go.abhg.dev/goldmark/mermaid v0.6.0
 )
 
 require (
-	github.com/alecthomas/chroma/v2 v2.2.0 // indirect
 	github.com/bytedance/sonic v1.14.0 // indirect
 	github.com/bytedance/sonic/loader v0.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
