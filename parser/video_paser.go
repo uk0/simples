@@ -32,6 +32,8 @@ func GenerateVideoWarpHTML(videoId, videoPath string) string {
 #%[1]s-wrapper video{position:absolute!important;top:0!important;left:0!important;width:100%%!important;height:100%%!important;object-fit:contain;background:#000}
 #%[1]s-wrapper .vjs-control-bar{position:absolute!important;bottom:0!important;width:100%%!important;background:linear-gradient(0deg,rgba(0,0,0,0.8) 0%%,rgba(0,0,0,0.4) 100%%);backdrop-filter:blur(10px);border-radius:0 0 8px 8px;z-index:20}
 .video-js.vjs-fullscreen .vjs-control-bar{border-radius:0!important}
+#%[1]s-wrapper .vjs-load-progress{background:rgba(255,255,255,0.3)!important}
+#%[1]s-wrapper .vjs-play-progress{background:#3498db!important}
 #%[1]s-wrapper .video-poster{position:absolute;top:0;left:0;width:100%%;height:100%%;object-fit:cover;z-index:1;cursor:pointer;transition:opacity 0.3s ease;border-radius:8px}
 #%[1]s-wrapper .video-poster.hidden{opacity:0;pointer-events:none;z-index:-1}
 #%[1]s-wrapper .play-button-overlay{position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);width:80px;height:80px;background:rgba(0,0,0,0.7);border:3px solid #fff;border-radius:50%%;cursor:pointer;z-index:2;display:none;align-items:center;justify-content:center;transition:all 0.3s ease}
@@ -232,6 +234,9 @@ this.supportsWebCodecs=false;
 this.codecInfo=null;
 this.bufferProgress=0;
 this.isPlaying=false;
+this.bufferingTimeout=null;
+this.maxBufferingTime=30000;
+this.seekTimeout=null;
 this.elements={
 wrapper:document.getElementById(uniqueId+'-wrapper'),
 loading:document.getElementById(uniqueId+'-loading'),
@@ -281,6 +286,14 @@ if(this.elements.loadingText){
 this.elements.loadingText.textContent=text||'Loading video...';
 }
 }
+if(this.bufferingTimeout){
+clearTimeout(this.bufferingTimeout);
+}
+this.bufferingTimeout=setTimeout(()=>{
+if(this.loadingState==='loading'){
+this.showError('Buffering timeout. Please check your connection.',true);
+}
+},this.maxBufferingTime);
 }
 updateLoadingProgress(percent){
 if(this.elements.loadingProgress&&percent>=0){
@@ -295,6 +308,10 @@ this.elements.loadingText.textContent='Buffering... '+Math.round(percent)+'%%';
 }
 hideLoading(){
 this.loadingState='loaded';
+if(this.bufferingTimeout){
+clearTimeout(this.bufferingTimeout);
+this.bufferingTimeout=null;
+}
 if(this.elements.loading){
 this.elements.loading.style.display='none';
 }
@@ -379,6 +396,24 @@ videoEl.removeEventListener('loadedmetadata',handleLoadedMetadata);
 resolve(null);
 },5000);
 });
+}
+isTimeBuffered(time,buffered){
+if(!buffered||buffered.length===0)return false;
+for(let i=0;i<buffered.length;i++){
+if(time>=buffered.start(i)&&time<=buffered.end(i)){
+return true;
+}
+}
+return false;
+}
+getBufferAhead(time,buffered){
+if(!buffered||buffered.length===0)return 0;
+for(let i=0;i<buffered.length;i++){
+if(time>=buffered.start(i)&&time<=buffered.end(i)){
+return buffered.end(i)-time;
+}
+}
+return 0;
 }
 loadPlayer(){
 this.showLoading('Initializing player...');
@@ -505,11 +540,50 @@ if(this.elements.posterCanvas)this.elements.posterCanvas.classList.remove('hidde
 this.showPlayButton();
 });
 this.player.on('seeking',()=>{
+const currentTime=this.player.currentTime();
+const buffered=this.player.buffered();
+const isBuffered=this.isTimeBuffered(currentTime,buffered);
+if(!isBuffered){
+this.showLoading('Seeking to unbuffered position...');
+}
 this.hidePlayButton();
+if(this.seekTimeout){
+clearTimeout(this.seekTimeout);
+}
 });
 this.player.on('seeked',()=>{
+const currentTime=this.player.currentTime();
+const buffered=this.player.buffered();
+const isBuffered=this.isTimeBuffered(currentTime,buffered);
+const bufferAhead=this.getBufferAhead(currentTime,buffered);
+if(!isBuffered||bufferAhead<2){
+this.showLoading('Waiting for buffer...');
+const waitForBuffer=()=>{
+if(this.isDestroyed||!this.player)return;
+const buf=this.player.buffered();
+const ct=this.player.currentTime();
+const ready=this.isTimeBuffered(ct,buf);
+const ahead=this.getBufferAhead(ct,buf);
+if(ready&&ahead>=2){
+this.hideLoading();
+if(this.isPlaying&&this.player.paused()){
+this.player.play().catch(e=>{
+console.warn('Play after seek failed:',e);
+this.showPlayButton();
+});
+}else if(!this.isPlaying&&this.player.paused()){
+this.showPlayButton();
+}
+}else{
+this.seekTimeout=setTimeout(waitForBuffer,300);
+}
+};
+waitForBuffer();
+}else{
+this.hideLoading();
 if(!this.isPlaying&&this.player.paused()){
 this.showPlayButton();
+}
 }
 });
 this.player.on('error',()=>{
@@ -624,6 +698,7 @@ if(this.elements.posterCanvas)this.elements.posterCanvas.classList.add('hidden')
 this.addEventListener(this.elements.videoEl,'playing',()=>{
 this.isPlaying=true;
 this.hidePlayButton();
+this.hideLoading();
 });
 this.addEventListener(this.elements.videoEl,'pause',()=>{
 this.isPlaying=false;
@@ -637,11 +712,50 @@ if(this.elements.posterCanvas)this.elements.posterCanvas.classList.remove('hidde
 this.showPlayButton();
 });
 this.addEventListener(this.elements.videoEl,'seeking',()=>{
+const currentTime=this.elements.videoEl.currentTime;
+const buffered=this.elements.videoEl.buffered;
+const isBuffered=this.isTimeBuffered(currentTime,buffered);
+if(!isBuffered){
+this.showLoading('Seeking...');
+}
 this.hidePlayButton();
+if(this.seekTimeout){
+clearTimeout(this.seekTimeout);
+}
 });
 this.addEventListener(this.elements.videoEl,'seeked',()=>{
+const currentTime=this.elements.videoEl.currentTime;
+const buffered=this.elements.videoEl.buffered;
+const isBuffered=this.isTimeBuffered(currentTime,buffered);
+const bufferAhead=this.getBufferAhead(currentTime,buffered);
+if(!isBuffered||bufferAhead<1){
+this.showLoading('Buffering...');
+const waitForBuffer=()=>{
+if(this.isDestroyed||!this.elements.videoEl)return;
+const buf=this.elements.videoEl.buffered;
+const ct=this.elements.videoEl.currentTime;
+const ready=this.isTimeBuffered(ct,buf);
+const ahead=this.getBufferAhead(ct,buf);
+if(ready&&ahead>=1){
+this.hideLoading();
+if(this.isPlaying&&this.elements.videoEl.paused){
+this.elements.videoEl.play().catch(e=>{
+console.warn('Play after seek failed:',e);
+this.showPlayButton();
+});
+}else if(!this.isPlaying&&this.elements.videoEl.paused){
+this.showPlayButton();
+}
+}else{
+this.seekTimeout=setTimeout(waitForBuffer,300);
+}
+};
+waitForBuffer();
+}else{
+this.hideLoading();
 if(!this.isPlaying&&this.elements.videoEl.paused){
 this.showPlayButton();
+}
 }
 });
 this.bindNativeEvents();
@@ -714,6 +828,14 @@ this.elements.videoEl.requestPictureInPicture().catch(err=>console.error('PiP er
 }
 destroy(){
 this.isDestroyed=true;
+if(this.bufferingTimeout){
+clearTimeout(this.bufferingTimeout);
+this.bufferingTimeout=null;
+}
+if(this.seekTimeout){
+clearTimeout(this.seekTimeout);
+this.seekTimeout=null;
+}
 this.removeAllEventListeners();
 window.__VideoPlayerManager.unregisterInstance(this.uniqueId);
 }
