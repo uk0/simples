@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-	"log"
+
 	"path/filepath"
 	"strings"
 )
@@ -15,7 +15,6 @@ import (
 func GenerateSCSViewerHTML(cadId, cadPath string) string {
 	safeCadId := template.HTMLEscapeString(cadId)
 	safeCadPath := template.HTMLEscapeString(cadPath)
-	log.Println("Generating SCS HOOPS viewer for file:", safeCadPath)
 
 	h := md5.Sum([]byte(safeCadId))
 	uniqueId := fmt.Sprintf("scs_%x", h)[:12]

@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-	"log"
+
 	"path/filepath"
 )
 
@@ -13,7 +13,6 @@ import (
 func GeneratePDFWarpHTML(pdfId, pdfPath string) string {
 	safePdfId := template.HTMLEscapeString(pdfId)
 	safePdfPath := template.HTMLEscapeString(pdfPath)
-	log.Println("Generating PDF viewer for FileName:", safePdfPath)
 	h := md5.Sum([]byte(safePdfId))
 	uniqueId := fmt.Sprintf("pdf_%x", h)[:12]
 	fileName := filepath.Base(pdfPath)

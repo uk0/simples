@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-	"log"
+
 	"path/filepath"
 	"strings"
 )
@@ -15,7 +15,6 @@ import (
 func GeneratePPTWarpHTML(pptId, pptPath string) string {
 	safePptId := template.HTMLEscapeString(pptId)
 	safePptPath := template.HTMLEscapeString(pptPath)
-	log.Println("Generating PPT viewer for FileName:", safePptPath)
 	h := md5.Sum([]byte(safePptId))
 	uniqueId := fmt.Sprintf("ppt_%x", h)[:12]
 	fileName := filepath.Base(pptPath)

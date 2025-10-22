@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-	"log"
+	
 	"path/filepath"
 	"strings"
 )
@@ -15,7 +15,6 @@ import (
 func GenerateAudioWarpHTML(audioId, audioPath string) string {
 	safeAudioId := template.HTMLEscapeString(audioId)
 	safeAudioPath := template.HTMLEscapeString(audioPath)
-	log.Println("Generating Audio player for FileName:", safeAudioPath)
 	h := md5.Sum([]byte(safeAudioId))
 	uniqueId := fmt.Sprintf("audio_%x", h)[:12]
 	ext := strings.ToLower(filepath.Ext(audioPath))

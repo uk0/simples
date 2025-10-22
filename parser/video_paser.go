@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-	"log"
+
 	"path/filepath"
 	"strings"
 )
@@ -16,7 +16,6 @@ import (
 func GenerateVideoWarpHTML(videoId, videoPath string) string {
 	safeVideoId := template.HTMLEscapeString(videoId)
 	safeVideoPath := template.HTMLEscapeString(videoPath)
-	log.Println("Generating Video player for FileName:", safeVideoPath)
 	h := md5.Sum([]byte(safeVideoId))
 	uniqueId := fmt.Sprintf("video_%x", h)[:12]
 	ext := strings.ToLower(filepath.Ext(videoPath))

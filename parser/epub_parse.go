@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+
 	"path/filepath"
 	"strings"
 )
@@ -14,7 +15,6 @@ import (
 func GenerateEPUBViewerHTML(bookId, bookPath string) string {
 	safeBookId := template.HTMLEscapeString(bookId)
 	safeBookPath := template.HTMLEscapeString(bookPath)
-	log.Println("Generating EPUB viewer for file:", safeBookPath)
 	h := md5.Sum([]byte(safeBookId))
 	uniqueId := fmt.Sprintf("epub_%x", h)[:12]
 	fileName := filepath.Base(bookPath)

@@ -284,6 +284,21 @@ func generateHTMLFile(category, slug, body, publicHTML string, isProtected bool,
 
 	st, _ := os.Stat(filepath.Join(config.SrcDir, category, slug, "note.md"))
 	modTime := st.ModTime()
+	//TODO ai generator og meta
+	//generator := utils.NewOGGenerator("sk-")
+	//
+	//// 示例 2: 从 HTML 内容生成
+	//log.Println("HTML 内容生成 OG Meta 信息")
+	//log.Println("=========================================")
+	//
+	//metaTags2, ogInfo2, err := generator.GenerateFromHTML(publicHTML, fmt.Sprintf("%s/%s", config.BaseURL, postPath))
+	//if err != nil {
+	//	log.Printf("错误: %v\n", err)
+	//} else {
+	//	utils.PrintOGInfo(ogInfo2)
+	//	log.Println("生成的 HTML Meta 标签:")
+	//	log.Println(metaTags2)
+	//}
 
 	templateData := map[string]interface{}{
 		"Title":       title,

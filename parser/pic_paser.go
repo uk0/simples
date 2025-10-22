@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-	"log"
+
 	"path/filepath"
 	"strings"
 )
@@ -15,8 +15,6 @@ import (
 func GeneratePICWarpHTML(picId, picPath string) string {
 	safePicId := template.HTMLEscapeString(picId)
 	safePicPath := template.HTMLEscapeString(picPath)
-	log.Println("Generating PIC viewer for FileName:", safePicPath)
-
 	h := md5.Sum([]byte(safePicId))
 	uniqueId := fmt.Sprintf("pic_%x", h)[:12]
 

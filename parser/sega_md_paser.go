@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-	"log"
 )
 
 // GenerateSegaMDPlayerHTML 生成用于在Web上运行Sega Mega Drive游戏的HTML播放器
@@ -14,8 +13,6 @@ func GenerateSegaMDPlayerHTML(playerID, romPath, fileName, fileExt string) strin
 	safeRomPath := template.HTMLEscapeString(romPath)
 	safeFileName := template.HTMLEscapeString(fileName)
 	safeFileExt := template.HTMLEscapeString(fileExt)
-	log.Println("Generating Sega Mega Drive player for ROM:", safeRomPath)
-	log.Println("Generating Sega Mega Drive player for FileName:", safeFileName)
 	// 生成唯一ID
 	h := md5.Sum([]byte(playerID))
 	uniqueID := fmt.Sprintf("smd_%x", h)[:12]

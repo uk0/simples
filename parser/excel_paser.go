@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-	"log"
+
 	"path/filepath"
 	"strings"
 )
@@ -15,7 +15,6 @@ import (
 func GenerateExcelWarpHTML(excelId, excelPath string) string {
 	safeExcelId := template.HTMLEscapeString(excelId)
 	safeExcelPath := template.HTMLEscapeString(excelPath)
-	log.Println("Generating Excel viewer for FileName:", safeExcelPath)
 
 	h := md5.Sum([]byte(safeExcelId))
 	uniqueId := fmt.Sprintf("excel_%x", h)[:12]
