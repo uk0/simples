@@ -4,6 +4,7 @@ window.setTheme = function (isDark) {
     root.dataset.theme = isDark ? 'dark' : 'light';
 }
 
+window.val_theme =
 // 根据时间判断
 window.checkTimeAndSetTheme = function() {
     const now = new Date();

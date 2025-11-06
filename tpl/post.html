@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ .Title }} — NeoJ's Web Page[建新的Blog]</title>
+    <title>{{ .Title }} — NeoJ's Web Page[下水鱼的Blog]</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/a.css">
-
-    <meta property="og:title" content="{{ .Title }} — NeoJ's Web Page[建新的Blog]" />
+    <link rel="stylesheet" href="/comment-widget.css">
+    
+    <meta property="og:title" content="{{ .Title }} — NeoJ's Web Page[下水鱼的Blog]" />
     <meta property="og:type" content="article" />
 
     <script src="/crt-simulator.js"></script>
@@ -14,9 +15,10 @@
     <script src="/wb.js"></script>
 
 
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/style.css"/>
-    <meta name="keywords" content="{{ .Title }}-建新的Blog,github.com/uk0,NeoJ"/>
-    <meta name="description" content="这是一个关于建新的个人网站的博客页面。Github.com/uk0。"/>
+    <meta name="keywords" content="{{ .Title }}-下水鱼的Blog,github.com/uk0,NeoJ"/>
+    <meta name="description" content="这是一个关于下水鱼的个人网站的博客页面。Github.com/uk0。"/>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3969253077255521"
             crossorigin="anonymous"></script>
     <style>
@@ -157,6 +159,23 @@
     </article>
 </div>
 
+
+<!-- 只需将这个 div 放到文章位置（例如 article 之后） -->
+<div id="comment-widget" class="comment-wrapper glass" data-slug="{{.Slug}}" aria-label="评论区">
+    <div class="comment-header">
+        <div class="comment-title">💬 评论区</div>
+        <div class="comment-actions">
+            <button id="commentThemeToggle" class="btn small" aria-pressed="false" title="切换并保存主题">切换 主题</button>
+        </div>
+    </div>
+
+    <!-- JS 懒加载占位容器：iframe 会由 comment-iframe-loader.js 插入 -->
+    <div id="comment-iframe-placeholder" class="comment-iframe-placeholder" role="region" aria-label="评论内容占位">
+        <div class="comment-placeholder-anim" aria-hidden="true"></div>
+    </div>
+</div>
+
+
 {{ if .IsProtected }}
 <div id="passwordModal" class="password-modal">
     <div class="password-content">
@@ -170,6 +189,7 @@
     </div>
 </div>
 
+<script src="/comment-iframe-loader.js" defer></script>
 <script>
     const postPath = "{{ .PostPath }}";
     let isSubmitting = false;

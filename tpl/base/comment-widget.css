@@ -1,0 +1,130 @@
+/* comment-widget.css
+   评论区独立样式（基于你提供的 macOS 毛玻璃主题变量）
+   只包含评论区相关的规则，复用全局 :root 变量和 .glass 等通用类。
+*/
+
+.comment-wrapper {
+    /* 复用全局毛玻璃外观 */
+    width: 100%;
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 12px;
+    border-radius: 14px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: background 0.4s, border-color 0.4s, box-shadow 0.4s, transform 0.18s;
+    will-change: transform;
+    overflow: hidden;
+}
+
+/* 小屏适配 */
+@media (max-width: 920px) {
+    .comment-wrapper { max-width: 100%; padding: 10px; border-radius: 12px; }
+}
+
+/* 头部 */
+.comment-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+:root[data-theme="dark"] .comment-header {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* 标题 */
+.comment-title {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-main);
+}
+
+/* 按钮 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.06);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+    color: var(--text-main);
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+    user-select: none;
+}
+.btn.small { padding:4px 8px; font-size:12px; border-radius:8px; }
+.btn:active { transform: translateY(1px); }
+.btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.08); }
+
+/* 按钮主题差异（视觉微调）*/
+:root:not([data-theme="dark"]) .btn { border-color: rgba(0,0,0,0.06); background: rgba(255,255,255,0.4); }
+:root[data-theme="dark"] .btn { border-color: rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); color: var(--text-main); }
+
+/* iframe 容器：保留宽高比例与响应式 */
+.comment-iframe-placeholder {
+    width: 100%;
+    height: 900px; /* 默认高度，JS 可以调整 */
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* iframe 自身样式（插入后生效） */
+.comment-iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 8px;
+    display: block;
+    background: transparent;
+}
+
+/* 懒加载占位图示（小动画）*/
+.comment-placeholder-anim {
+    display:inline-block;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:4px solid rgba(255,255,255,0.06);
+    border-top-color: var(--link);
+    animation: comment-spin 1s linear infinite;
+    opacity:0.9;
+}
+@keyframes comment-spin { to { transform: rotate(360deg); } }
+
+/* 加载失败信息 */
+.comment-error {
+    color: var(--text-main);
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* 小屏时 iframe 高度调整 */
+@media (max-width: 768px) {
+    .comment-iframe-placeholder { height: 640px; }
+}
+
+/* 轻微悬停提升（桌面交互）*/
+.comment-wrapper:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+}
+
+/* 辅助：隐藏滚动条的容器内 iframe */
+.comment-iframe::-webkit-scrollbar { width: 8px; height: 8px; }
+.comment-iframe::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 6px; }

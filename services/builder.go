@@ -308,6 +308,7 @@ func generateHTMLFile(category, slug, body, publicHTML string, isProtected bool,
 		"IsProtected": isProtected,
 		"PostPath":    postPath,
 		"Description": description,
+		"Slug":        slug, // 编号
 		"BaseURL":     config.BaseURL,
 	}
 

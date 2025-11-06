@@ -469,7 +469,7 @@ class ExportServiceWindow(QMainWindow):
     def _on_fs_changed(self, path: str):
         if self.chk_auto.isChecked():
             self.log(f"📁 Change detected in {path}, scheduling export…")
-            self._debounce_timer.start(1000)
+            self._debounce_timer.start(3000)
 
     def on_list_folders(self):
         db = self.db_input.text().strip()

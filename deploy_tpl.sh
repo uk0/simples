@@ -16,13 +16,13 @@ GOEXPERIMENT=greenteagc CGO_ENABLED=0 GOOS=linux  GOARCH=amd64 go build  -ldflag
  rsync -av \
 --exclude='.git'  \
 --exclude='.DS_Store'  \
- /Users/firshme/Desktop/work/simples/tpl root@vm2:/root/blog/
+ /Users/firshme/Desktop/work/simples/tpl root@vmiss1:/root/blog/
 
 
   rsync -av \
 --exclude='.git'  \
 --exclude='.DS_Store'  \
- /Users/firshme/Desktop/work/simples/blog root@vm2:/root/blog/
+ /Users/firshme/Desktop/work/simples/blog root@vmiss1:/root/blog/
 
 
 
