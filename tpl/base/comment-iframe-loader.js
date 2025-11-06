@@ -23,7 +23,7 @@
     if (!placeholder) return console.warn('[comment] placeholder not found');
 
     const slug = container.getAttribute('data-slug') || '';
-    const BASE_EMBED = 'https://cfmmmmmmmmmmmmm.wwwneo.com/embed/area/' + encodeURIComponent(slug);
+    const BASE_EMBED = 'https://cfmmmmmmmmmmmmm.firsh.me/embed/area/' + encodeURIComponent(slug);
 
     // 计算主题：user pref > html[data-theme] > time-based
     function getPreferredTheme() {

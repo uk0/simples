@@ -6,7 +6,7 @@
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/a.css">
     <link rel="stylesheet" href="/comment-widget.css">
-    
+
     <meta property="og:title" content="{{ .Title }} — NeoJ's Web Page[下水鱼的Blog]" />
     <meta property="og:type" content="article" />
 
@@ -160,7 +160,7 @@
 </div>
 
 
-<!-- 只需将这个 div 放到文章位置（例如 article 之后） -->
+<!-- 评论区 -->
 <div id="comment-widget" class="comment-wrapper glass" data-slug="{{.Slug}}" aria-label="评论区">
     <div class="comment-header">
         <div class="comment-title">💬 评论区</div>
@@ -174,7 +174,8 @@
         <div class="comment-placeholder-anim" aria-hidden="true"></div>
     </div>
 </div>
-
+<!-- 评论区 -->
+<script src="/comment-iframe-loader.js"></script>
 
 {{ if .IsProtected }}
 <div id="passwordModal" class="password-modal">
@@ -188,8 +189,6 @@
         <div id="errorMessage" class="error-message"></div>
     </div>
 </div>
-
-<script src="/comment-iframe-loader.js" defer></script>
 <script>
     const postPath = "{{ .PostPath }}";
     let isSubmitting = false;
