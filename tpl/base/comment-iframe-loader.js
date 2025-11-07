@@ -5,6 +5,7 @@
    - 监听 <html data-theme> 变化并同步 iframe（会更新 src）
    - 提供全局 API: window.reloadCommentIframe(theme?)
    - ✅ 支持 iframe 高度自适应
+   - ✅ 自动跟踪全局 root.dataset.theme 变化
 */
 
 (function () {
@@ -14,8 +15,9 @@
     const PLACEHOLDER_ID = 'comment-iframe-placeholder';
     const IFRAME_ID = 'commentIframe';
     const THEME_KEY = 'site_theme_pref';
-    const AUTO_DARK_START = 18; // 18:00
-    const AUTO_DARK_END = 7;    // 07:00
+
+    // ✅ 获取 root 引用（全局）
+    const root = document.documentElement;
 
     const container = document.getElementById(CONTAINER_ID);
     if (!container) return console.warn('[comment] container not found');
@@ -26,20 +28,9 @@
     const slug = container.getAttribute('data-slug') || '';
     const BASE_EMBED = 'https://cfmmmmmmmmmmmmm.firsh.me/embed/area/' + encodeURIComponent(slug);
 
-    // 计算主题：user pref > html[data-theme] > time-based
+    // ✅ 计算主题：直接读取全局 root.dataset.theme
     function getPreferredTheme() {
-        try {
-            const pref = localStorage.getItem(THEME_KEY);
-            if (pref === 'light' || pref === 'dark') return pref;
-        } catch (e) { /* ignore */ }
-
-        // If root dataset has theme set by other scripts, prefer that
-        const rootTheme = document.documentElement.dataset.theme;
-        if (rootTheme === 'light' || rootTheme === 'dark') return rootTheme;
-
-        // fallback to time-based
-        const h = new Date().getHours();
-        return (h >= AUTO_DARK_START || h < AUTO_DARK_END) ? 'dark' : 'light';
+        return root.dataset.theme || 'light'; // 如果没有设置，默认 light
     }
 
     function buildUrlWithTheme(base, theme) {
@@ -167,14 +158,16 @@
         }
     }
 
-    // Watch for theme changes on root dataset (other scripts may toggle)
+    // ✅ Watch for theme changes on root dataset (other scripts may toggle)
     function observeThemeChanges() {
-        const root = document.documentElement;
         try {
             const mo = new MutationObserver(muts => {
                 muts.forEach(m => {
                     if (m.attributeName === 'data-theme') {
-                        const newTheme = root.dataset.theme === 'dark' ? 'dark' : 'light';
+                        // ✅ 直接使用 getPreferredTheme() 获取最新值
+                        const newTheme = getPreferredTheme();
+                        console.log('[comment] Theme changed to:', newTheme);
+
                         const iframe = document.getElementById(IFRAME_ID);
                         if (iframe) {
                             // update src to include theme param (reloads iframe)
@@ -184,7 +177,9 @@
                 });
             });
             mo.observe(root, { attributes: true });
-        } catch (e) { /* ignore */ }
+        } catch (e) {
+            console.warn('[comment] MutationObserver failed:', e);
+        }
     }
 
     // Hook up manual toggle button and persist pref
@@ -192,11 +187,12 @@
         const btn = document.getElementById('commentThemeToggle');
         if (!btn) return;
         btn.addEventListener('click', () => {
+            // ✅ 使用 getPreferredTheme() 获取当前主题
             const cur = getPreferredTheme();
             const next = cur === 'dark' ? 'light' : 'dark';
             try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
             // update html dataset so site-wide scripts can also react
-            document.documentElement.dataset.theme = next;
+            root.dataset.theme = next;
             // update iframe
             ensureIframe(next);
             btn.setAttribute('aria-pressed', String(next === 'dark'));
@@ -227,6 +223,11 @@
         }
     };
 
+    // ✅ 新增：手动获取当前主题的 API
+    window.getCommentTheme = function () {
+        return getPreferredTheme();
+    };
+
     // Initialize
     initLazyLoad();
     observeThemeChanges();
@@ -235,4 +236,5 @@
 
     // Also expose debug util
     console.log('[comment] lazy loader with auto-resize initialized');
+    console.log('[comment] Current theme:', getPreferredTheme());
 })();
