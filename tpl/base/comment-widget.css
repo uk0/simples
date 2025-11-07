@@ -71,7 +71,7 @@
     padding: 4px 8px;
     font-size: 12px;
     border-radius: 8px;
-    display: none;
+    /*display: none;*/
 }
 
 .btn:active {
@@ -95,34 +95,37 @@
     color: var(--text-main);
 }
 
-/* ✅ iframe 容器：修复 - 添加默认高度 */
+/* ✅ iframe 容器：支持动态高度 */
 .comment-iframe-placeholder {
     width: 100%;
-    min-height: 300px; /* ✅ 添加默认最小高度 */
-    height: auto; /* ✅ 允许自动调整 */
+    min-height: 300px;
+    height: auto; /* ✅ 让容器高度跟随内容 */
     border-radius: 10px;
-    overflow: hidden;
+    overflow: visible; /* ✅ 改为 visible，避免裁剪 */
     margin-top: 12px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.02));
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block; /* ✅ 改为 block，移除 flex */
     position: relative;
+    transition: height 0.3s ease; /* ✅ 添加高度过渡动画 */
 }
 
 /* ✅ iframe 自身样式（插入后生效） */
 .comment-iframe {
     width: 100%;
-    min-height: 300px; /* ✅ 添加最小高度 */
-    height: 100%;
+    min-height: 300px;
     border: 0;
     border-radius: 8px;
     display: block;
     background: transparent;
+    transition: height 0.3s ease; /* ✅ 添加高度过渡动画 */
 }
 
 /* 懒加载占位图示（小动画）*/
 .comment-placeholder-anim {
+    position: absolute; /* ✅ 绝对定位，避免影响容器高度 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: inline-block;
     width: 36px;
     height: 36px;
@@ -135,7 +138,7 @@
 
 @keyframes comment-spin {
     to {
-        transform: rotate(360deg);
+        transform: translate(-50%, -50%) rotate(360deg);
     }
 }
 
@@ -147,33 +150,22 @@
     font-size: 14px;
 }
 
-/* ✅ 小屏时 iframe 高度调整 */
+/* ✅ 响应式高度调整 */
 @media (max-width: 768px) {
     .comment-iframe-placeholder {
-        min-height: 300px; /* ✅ 调整为 min-height */
+        min-height: 280px;
     }
     .comment-iframe {
-        min-height: 300px;
+        min-height: 280px;
     }
 }
 
-/* ✅ 超小屏调整 */
 @media (max-width: 480px) {
     .comment-iframe-placeholder {
-        min-height: 288px;
+        min-height: 250px;
     }
     .comment-iframe {
-        min-height: 288px;
-    }
-}
-
-/* ✅ 大屏调整 */
-@media (min-width: 1200px) {
-    .comment-iframe-placeholder {
-        min-height: 300px;
-    }
-    .comment-iframe {
-        min-height: 300px;
+        min-height: 250px;
     }
 }
 
@@ -183,7 +175,7 @@
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* 辅助：隐藏滚动条的容器内 iframe */
+/* 辅助：自定义滚动条 */
 .comment-iframe::-webkit-scrollbar {
     width: 8px;
     height: 8px;

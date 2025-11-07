@@ -4,6 +4,7 @@
    - 自动在 src 后拼接 theme 参数（优先使用用户偏好 localStorage，否则按时间判断）
    - 监听 <html data-theme> 变化并同步 iframe（会更新 src）
    - 提供全局 API: window.reloadCommentIframe(theme?)
+   - ✅ 支持 iframe 高度自适应
 */
 
 (function () {
@@ -75,15 +76,16 @@
         iframe.className = 'comment-iframe';
         iframe.name = '评论区';
         iframe.loading = 'lazy';
-        iframe.allow = 'clipboard-read; clipboard-write; encrypted-media; fullscreen';
-        iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-popups';
-        iframe.title = '评论区';
+        iframe.allow = 'geolocation; microphone; autoplay;web-share';
         iframe.src = src;
         iframe.style.border = '0';
         iframe.style.width = '100%';
-        iframe.style.height = '100%';
-
+        iframe.style.minHeight = '300px'; // ✅ 初始最小高度
+        iframe.style.height = 'auto'; // ✅ 允许自动调整
+        // ⭐ 添加 credentialless 属性（关键）
+        iframe.credentialless = true;
         // replace placeholder content with iframe
+        iframe.referrerpolicy="no-referrer"
         placeholder.innerHTML = '';
         placeholder.appendChild(iframe);
 
@@ -93,6 +95,37 @@
         });
 
         return iframe;
+    }
+
+    // ✅ 新增：监听来自 iframe 的高度消息
+    function initAutoResize() {
+        window.addEventListener('message', function (event) {
+            // 安全检查：验证来源
+            if (event.origin !== 'https://cfmmmmmmmmmmmmm.firsh.me') {
+                return;
+            }
+
+            const iframe = document.getElementById(IFRAME_ID);
+            const placeholder = document.getElementById(PLACEHOLDER_ID);
+            if (!iframe || !placeholder) return;
+
+            const data = event.data;
+
+            // 处理高度更新消息
+            if (data && typeof data === 'object') {
+                if (typeof data.height === 'number' && data.height > 0) {
+                    const newHeight = Math.max(data.height + 20, 300); // 加 20px 缓冲，最小 300px
+                    iframe.style.height = newHeight + 'px';
+                    placeholder.style.height = newHeight + 'px';
+                    console.log('[comment] Height updated to:', newHeight);
+                }
+
+                // 可扩展：处理其他消息
+                if (data.type === 'scroll-to-top') {
+                    iframe.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }, false);
     }
 
     // Lazy load strategies:
@@ -109,13 +142,17 @@
                         obs.disconnect();
                     }
                 });
-            }, { root: null, threshold: 0.12 });
+            }, { root: null, threshold: 0.01, rootMargin: '50px' }); // ✅ 降低阈值，提前加载
             io.observe(placeholder);
 
-            // Also load after 10s as fallback in case user never scrolls
+            // Also load after 3s as fallback
             const fallbackTimer = setTimeout(() => {
-                if (!document.getElementById(IFRAME_ID)) ensureIframe(getPreferredTheme());
-            }, 10000);
+                if (!document.getElementById(IFRAME_ID)) {
+                    console.log('[comment] Fallback loading...');
+                    ensureIframe(getPreferredTheme());
+                }
+            }, 3000); // ✅ 从 10s 改为 3s
+
             // if iframe loaded, clear timer
             const checkLoaded = setInterval(() => {
                 if (document.getElementById(IFRAME_ID)) {
@@ -179,11 +216,23 @@
         ensureIframe(getPreferredTheme());
     };
 
+    // ✅ 新增：手动设置高度的 API
+    window.setCommentIframeHeight = function (height) {
+        const iframe = document.getElementById(IFRAME_ID);
+        const placeholder = document.getElementById(PLACEHOLDER_ID);
+        if (iframe && placeholder) {
+            const newHeight = Math.max(height, 300);
+            iframe.style.height = newHeight + 'px';
+            placeholder.style.height = newHeight + 'px';
+        }
+    };
+
     // Initialize
     initLazyLoad();
     observeThemeChanges();
     initToggleButton();
+    initAutoResize(); // ✅ 初始化高度自适应
 
     // Also expose debug util
-    console.log('[comment] lazy loader initialized');
+    console.log('[comment] lazy loader with auto-resize initialized');
 })();
