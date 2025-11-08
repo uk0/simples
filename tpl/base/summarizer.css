@@ -1,0 +1,56 @@
+/* /summarizer.css */
+.summarizer-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(640px, 92vw);
+    height: 100vh;
+    background: rgba(30,31,34,.55);
+    backdrop-filter: saturate(180%) blur(18px);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    border-left: 1px solid rgba(255,255,255,.18);
+    box-shadow: -18px 0 44px rgba(0,0,0,.32);
+    transform: translateX(100%);    /* 默认隐藏在右侧 */
+    transition: transform .28s ease, opacity .2s ease;
+    opacity: .98;
+    z-index: 2147483000;
+    border-radius: 0 0 0 14px;
+}
+.summarizer-drawer.open {
+    transform: translateX(0);       /* 打开时滑出 */
+}
+.summarizer-drawer__header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    color: #eaeef2;
+    font: 600 13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",system-ui,sans-serif;
+}
+.summarizer-drawer__content {
+    height: calc(100% - 48px);
+    padding: 8px 8px 12px 8px;
+}
+.summarizer-iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 12px;
+}
+
+/* 召唤按钮（可固定在右侧中部） */
+.summarizer-handle {
+    position: fixed;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 12px;
+    background: rgba(30,31,34,.55);
+    border: 1px solid rgba(255,255,255,.18);
+    color: #fff;
+    border-radius: 999px;
+    backdrop-filter: saturate(180%) blur(18px);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    z-index: 2147483001;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(0,0,0,.28);
+}
+.summarizer-handle:hover { opacity: .95; }
