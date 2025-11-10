@@ -264,9 +264,21 @@ func htmlEscapeAttr(s string) string {
 	return s
 }
 
+//	func htmlEscape(s string) string {
+//		s = strings.ReplaceAll(s, "&", "&amp;")
+//		s = strings.ReplaceAll(s, "<", "&lt;")
+//		s = strings.ReplaceAll(s, ">", "&gt;")
+//		return s
+//	}
 func htmlEscape(s string) string {
-	s = strings.ReplaceAll(s, "&", "&amp;")
-	s = strings.ReplaceAll(s, "<", "&lt;")
-	s = strings.ReplaceAll(s, ">", "&gt;")
+	repl := []struct{ old, new string }{
+		{"&", "&amp;"},
+		{"<", "&lt;"},
+		{">", "&gt;"},
+		{`"`, "&quot;"},
+	}
+	for _, r := range repl {
+		s = strings.ReplaceAll(s, r.old, r.new)
+	}
 	return s
 }

@@ -70,7 +70,7 @@ func GeneratePICWarpHTML(picId, picPath string) string {
 </div>
 <div class="pic-container" id="%[1]s-container" style="display:none;">
 <div class="pic-retry-badge" id="%[1]s-retry-badge" style="display:none;">Retry <span id="%[1]s-retry-count">0</span></div>
-<img id="%[1]s-image" class="pic-image" data-src="%[2]s" alt="Image Preview">
+<img id="%[1]s-image" class="pic-image" data-src="%[2]s" loading="lazy" alt="Image Preview">
 <div class="pic-toolbar">
 <button class="pic-btn pic-btn-primary" id="%[1]s-fullscreen-btn" title="Fullscreen View">🔍 View</button>
 <a href="%[2]s" download class="pic-btn" title="Download Image">⬇ Download</a>

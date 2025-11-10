@@ -1,9 +1,6 @@
 package utils
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,41 +8,15 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode"
 
 	"golang.org/x/net/html"
 )
 
-// OpenAI API 配置
-const (
-	OpenAIAPIURL = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
-	DefaultModel = "glm-4.5-flash"
-)
+/* =========================
+   数据结构
+========================= */
 
-// OpenAI 请求结构
-type OpenAIRequest struct {
-	Model       string    `json:"model"`
-	Messages    []Message `json:"messages"`
-	MaxTokens   int       `json:"max_tokens,omitempty"`
-	Temperature float64   `json:"temperature,omitempty"`
-}
-
-type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-// OpenAI 响应结构
-type OpenAIResponse struct {
-	Choices []struct {
-		Message Message `json:"message"`
-	} `json:"choices"`
-	Error *struct {
-		Message string `json:"message"`
-		Type    string `json:"type"`
-	} `json:"error,omitempty"`
-}
-
-// OG Meta 信息结构
 type OGMetaInfo struct {
 	Title       string `json:"og:title"`
 	Description string `json:"og:description"`
@@ -56,483 +27,535 @@ type OGMetaInfo struct {
 	Locale      string `json:"og:locale"`
 }
 
-// HTMLExtractResult HTML 提取结果
 type HTMLExtractResult struct {
-	TextContent string
-	Images      []string
 	BaseURL     string
+	Title       string
+	MetaDesc    string
+	TextContent string // 纯文本（截断前）
+	Lang        string // <html lang=""> 或 og:locale 推断
+	Canonical   string
+	SiteName    string // og:site_name
+	OGImage     string // og:image
+	Images      []string
 }
 
-// OGGenerator 主结构
+/* =========================
+   入口与 HTTP
+========================= */
+
 type OGGenerator struct {
-	APIKey     string
 	HTTPClient *http.Client
-	Model      string
 }
 
-// NewOGGenerator 创建新的生成器实例
-func NewOGGenerator(apiKey string) *OGGenerator {
+func NewOGGenerator() *OGGenerator {
 	return &OGGenerator{
-		APIKey: apiKey,
-		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
-		},
-		Model: DefaultModel,
+		HTTPClient: &http.Client{Timeout: 30 * time.Second},
 	}
 }
 
-// FetchHTMLFromURL 从 URL 获取 HTML 内容
 func (og *OGGenerator) FetchHTMLFromURL(urlStr string) (string, error) {
 	resp, err := og.HTTPClient.Get(urlStr)
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch URL: %w", err)
 	}
 	defer resp.Body.Close()
-
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("HTTP error: status code %d", resp.StatusCode)
+		return "", fmt.Errorf("HTTP error: status %d", resp.StatusCode)
 	}
-
-	body, err := io.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("failed to read response body: %w", err)
+		return "", fmt.Errorf("failed to read body: %w", err)
 	}
-
-	return string(body), nil
+	return string(b), nil
 }
 
-// normalizeImageURL 标准化图片 URL
+/* =========================
+   解析 HTML
+========================= */
+
 func (og *OGGenerator) normalizeImageURL(imgSrc, baseURL string) string {
 	imgSrc = strings.TrimSpace(imgSrc)
 	if imgSrc == "" {
 		return ""
 	}
-
-	// 如果已经是完整的 URL
 	if strings.HasPrefix(imgSrc, "http://") || strings.HasPrefix(imgSrc, "https://") {
 		return imgSrc
 	}
-
-	// 解析 base URL
 	base, err := url.Parse(baseURL)
 	if err != nil {
 		return imgSrc
 	}
-
-	// 解析图片 URL
-	imgURL, err := url.Parse(imgSrc)
+	u, err := url.Parse(imgSrc)
 	if err != nil {
 		return imgSrc
 	}
-
-	// 合并 URL
-	fullURL := base.ResolveReference(imgURL)
-	return fullURL.String()
+	return base.ResolveReference(u).String()
 }
 
-// isValidImageURL 判断是否是有效的图片 URL
-func (og *OGGenerator) isValidImageURL(imgSrc string) bool {
-	imgSrc = strings.ToLower(imgSrc)
-
-	// 排除一些常见的无效图片
-	if strings.Contains(imgSrc, "data:image") {
+func isLikelyImageURL(u string) bool {
+	low := strings.ToLower(u)
+	if strings.HasPrefix(low, "data:image") {
 		return false
 	}
-	if strings.Contains(imgSrc, "blank.") {
+	// 常见无效
+	if strings.Contains(low, "blank.") || strings.Contains(low, "spacer.") || strings.Contains(low, "pixel.") {
 		return false
 	}
-	if strings.Contains(imgSrc, "spacer.") {
-		return false
-	}
-	if strings.Contains(imgSrc, "pixel.") {
-		return false
-	}
-
-	// 检查是否是图片扩展名
-	validExts := []string{".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".bmp"}
-	for _, ext := range validExts {
-		if strings.HasSuffix(imgSrc, ext) {
+	exts := []string{".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".bmp"}
+	for _, e := range exts {
+		if strings.HasSuffix(low, e) {
 			return true
 		}
 	}
-
-	// 如果 URL 中包含常见的图片路径关键词
-	imageKeywords := []string{".png", ".jpg", ".webp", ".jpeg", ".gif"}
-	for _, keyword := range imageKeywords {
-		if strings.Contains(imgSrc, keyword) {
+	// 参数里包含图片关键词也放行
+	for _, kw := range []string{".jpg", ".jpeg", ".png", ".webp", ".gif"} {
+		if strings.Contains(low, kw) {
 			return true
 		}
 	}
-
 	return false
 }
 
-// ExtractTextFromHTML 从 HTML 中提取文本内容和图片
-func (og *OGGenerator) ExtractTextFromHTML(htmlContent string, baseURL string) (*HTMLExtractResult, error) {
+func (og *OGGenerator) ExtractTextFromHTML(htmlContent, baseURL string) (*HTMLExtractResult, error) {
 	doc, err := html.Parse(strings.NewReader(htmlContent))
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse HTML: %w", err)
+		return nil, fmt.Errorf("parse HTML: %w", err)
 	}
 
-	var textBuilder strings.Builder
-	var title string
-	var metaDesc string
-	var images []string
-	imageSet := make(map[string]bool) // 用于去重
+	var (
+		title, metaDesc, lang, canonical, siteName, ogImage string
+		images                                              []string
+		imageSet                                            = map[string]bool{}
+		textBuilder                                         strings.Builder
+	)
 
-	var extractContent func(*html.Node)
-	extractContent = func(n *html.Node) {
+	var walk func(*html.Node)
+	walk = func(n *html.Node) {
 		if n.Type == html.ElementNode {
 			switch n.Data {
-			case "script", "style", "noscript", "iframe":
-				return
+			case "html":
+				for _, a := range n.Attr {
+					if a.Key == "lang" && lang == "" {
+						lang = strings.TrimSpace(a.Val)
+					}
+				}
+			case "head":
+				// 继续
 			case "title":
-				if n.FirstChild != nil {
-					title = n.FirstChild.Data
+				if n.FirstChild != nil && title == "" {
+					title = strings.TrimSpace(n.FirstChild.Data)
 				}
 			case "meta":
-				var name, content, property string
-				for _, attr := range n.Attr {
-					if attr.Key == "name" {
-						name = attr.Val
-					}
-					if attr.Key == "property" {
-						property = attr.Val
-					}
-					if attr.Key == "content" {
-						content = attr.Val
+				var name, property, content charsetKV
+				for _, a := range n.Attr {
+					switch a.Key {
+					case "name":
+						name.Val = a.Val
+					case "property":
+						property.Val = a.Val
+					case "content":
+						content.Val = a.Val
 					}
 				}
-				// 提取 meta 描述
-				if (name == "description" || name == "og:description") && content != "" {
-					metaDesc = content
+				if content.Val == "" {
+					break
 				}
-				// 提取 og:image
-				if property == "og:image" && content != "" {
-					normalizedURL := og.normalizeImageURL(content, baseURL)
-					if normalizedURL != "" && !imageSet[normalizedURL] {
-						images = append(images, normalizedURL)
-						imageSet[normalizedURL] = true
+				switch strings.ToLower(name.Val) {
+				case "description":
+					if metaDesc == "" {
+						metaDesc = strings.TrimSpace(content.Val)
+					}
+				case "og:description":
+					if metaDesc == "" {
+						metaDesc = strings.TrimSpace(content.Val)
+					}
+				}
+				switch strings.ToLower(property.Val) {
+				case "og:locale":
+					if lang == "" {
+						lang = strings.TrimSpace(content.Val)
+					}
+				case "og:sitename", "og:site_name":
+					if siteName == "" {
+						siteName = strings.TrimSpace(content.Val)
+					}
+				case "og:image":
+					if ogImage == "" {
+						ogImage = og.normalizeImageURL(strings.TrimSpace(content.Val), baseURL)
+					}
+				case "og:title":
+					// 如需覆盖 title 可在此处理
+				}
+			case "link":
+				var rel, href string
+				for _, a := range n.Attr {
+					if a.Key == "rel" {
+						rel = a.Val
+					}
+					if a.Key == "href" {
+						href = a.Val
+					}
+				}
+				if strings.EqualFold(rel, "canonical") && canonical == "" {
+					canonical = og.makeAbsolute(href, baseURL)
+				}
+				if strings.EqualFold(rel, "image_src") && href != "" {
+					abs := og.normalizeImageURL(href, baseURL)
+					if abs != "" && !imageSet[abs] && isLikelyImageURL(abs) {
+						images = append(images, abs)
+						imageSet[abs] = true
 					}
 				}
 			case "img":
-				// 提取 img 标签的 src
 				var src, alt string
-				for _, attr := range n.Attr {
-					if attr.Key == "src" {
-						src = attr.Val
+				for _, a := range n.Attr {
+					if a.Key == "src" {
+						src = a.Val
 					}
-					if attr.Key == "alt" {
-						alt = attr.Val
-					}
-				}
-				if src != "" && og.isValidImageURL(src) {
-					normalizedURL := og.normalizeImageURL(src, baseURL)
-					if normalizedURL != "" && !imageSet[normalizedURL] {
-						images = append(images, normalizedURL)
-						imageSet[normalizedURL] = true
+					if a.Key == "alt" {
+						alt = a.Val
 					}
 				}
-				// 将 alt 文本也加入内容
 				if alt != "" {
-					textBuilder.WriteString(alt)
-					textBuilder.WriteString(" ")
+					textBuilder.WriteString(strings.TrimSpace(alt))
+					textBuilder.WriteByte(' ')
 				}
-			case "link":
-				// 提取 link rel="image_src"
-				var rel, href string
-				for _, attr := range n.Attr {
-					if attr.Key == "rel" {
-						rel = attr.Val
-					}
-					if attr.Key == "href" {
-						href = attr.Val
+				if src != "" {
+					abs := og.normalizeImageURL(src, baseURL)
+					if abs != "" && !imageSet[abs] && isLikelyImageURL(abs) {
+						images = append(images, abs)
+						imageSet[abs] = true
 					}
 				}
-				if rel == "image_src" && href != "" {
-					normalizedURL := og.normalizeImageURL(href, baseURL)
-					if normalizedURL != "" && !imageSet[normalizedURL] {
-						images = append(images, normalizedURL)
-						imageSet[normalizedURL] = true
-					}
-				}
+			case "script", "style", "noscript", "iframe":
+				// 跳过
+				return
 			}
 		}
 		if n.Type == html.TextNode {
-			text := strings.TrimSpace(n.Data)
-			if text != "" {
-				textBuilder.WriteString(text)
-				textBuilder.WriteString(" ")
+			t := strings.TrimSpace(n.Data)
+			if t != "" {
+				textBuilder.WriteString(t)
+				textBuilder.WriteByte(' ')
 			}
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			extractContent(c)
+			walk(c)
 		}
 	}
 
-	extractContent(doc)
-
-	// 构建最终文本
-	result := ""
-	if title != "" {
-		result += "Title: " + title + "\n\n"
-	}
-	if metaDesc != "" {
-		result += "Meta Description: " + metaDesc + "\n\n"
-	}
-
-	bodyText := textBuilder.String()
-	// 限制文本长度，避免 token 超限
-	if len(bodyText) > 3000 {
-		bodyText = bodyText[:3000] + "..."
-	}
-	result += "Content: " + bodyText
+	walk(doc)
 
 	return &HTMLExtractResult{
-		TextContent: result,
-		Images:      images,
 		BaseURL:     baseURL,
+		Title:       title,
+		MetaDesc:    metaDesc,
+		TextContent: strings.TrimSpace(textBuilder.String()),
+		Lang:        lang,
+		Canonical:   canonical,
+		SiteName:    siteName,
+		OGImage:     ogImage,
+		Images:      images,
 	}, nil
 }
 
-// CallOpenAI 调用 OpenAI API 生成 OG 信息
-func (og *OGGenerator) CallOpenAI(content string, sourceURL string, extractedImage string) (*OGMetaInfo, error) {
-	prompt := og.buildPrompt(content, sourceURL, extractedImage)
+type charsetKV struct{ Val string }
 
-	reqBody := OpenAIRequest{
-		Model: og.Model,
-		Messages: []Message{
-			{
-				Role:    "system",
-				Content: "你是一个专业的 SEO 和 Open Graph meta 标签专家。你的任务是分析网页内容并生成完整、准确、吸引人的 Open Graph meta 标签信息。",
-			},
-			{
-				Role:    "user",
-				Content: prompt,
-			},
-		},
-		MaxTokens:   800,
-		Temperature: 0.1,
-	}
-
-	jsonData, err := json.Marshal(reqBody)
+func (og *OGGenerator) makeAbsolute(href, base string) string {
+	u, err := url.Parse(href)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return href
 	}
-
-	req, err := http.NewRequest("POST", OpenAIAPIURL, bytes.NewBuffer(jsonData))
+	if u.IsAbs() {
+		return u.String()
+	}
+	b, err := url.Parse(base)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return href
 	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+og.APIKey)
-
-	resp, err := og.HTTPClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to call OpenAI API: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	fmt.Println("------------------------------------")
-	fmt.Println(string(body))
-	fmt.Println("------------------------------------")
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
-	}
-
-	var openAIResp OpenAIResponse
-	if err := json.Unmarshal(body, &openAIResp); err != nil {
-		return nil, fmt.Errorf("failed to parse response: %w", err)
-	}
-
-	if openAIResp.Error != nil {
-		return nil, fmt.Errorf("OpenAI API error: %s", openAIResp.Error.Message)
-	}
-
-	if len(openAIResp.Choices) == 0 {
-		return nil, errors.New("no response from OpenAI")
-	}
-
-	// 解析 OpenAI 返回的 JSON
-	ogInfo, err := og.parseOGInfo(openAIResp.Choices[0].Message.Content)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse OG info: %w", err)
-	}
-
-	return ogInfo, nil
+	return b.ResolveReference(u).String()
 }
 
-// buildPrompt 构建 OpenAI 提示词
-func (og *OGGenerator) buildPrompt(content string, sourceURL string, extractedImage string) string {
-	urlInfo := ""
-	if sourceURL != "" {
-		urlInfo = fmt.Sprintf("\n\n原始URL: %s", sourceURL)
+/* =========================
+   规则/启发式
+========================= */
+
+func firstNonEmpty(values ...string) string {
+	for _, v := range values {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			return v
+		}
 	}
-
-	imageInfo := ""
-	if extractedImage != "" {
-		imageInfo = fmt.Sprintf("\n\n已提取的图片URL（请直接使用此URL作为 og:image）: %s", extractedImage)
-	} else {
-		imageInfo = "\n\n注意：页面中未找到合适的图片，请使用 \"logo.png\" 作为 og:image"
-	}
-
-	prma := "请根据以下网页内容，生成完整的 Open Graph (OG) meta 标签信息。%s%s\n\t\t\t网页内容:\n\t\t\t%s\n\t\t请以 JSON 格式返回以下字段（仅返回 JSON，不要其他说明文字，直接返回内容即可,不要```json包裹内容）Response Format:\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t  \"og:title\": \"网页标题（简洁有力，50-60字符）\",\n\t\t\t\t\t\t\t\t  \"og:description\": \"网页描述（吸引人的摘要，150-160字符）\",\n\t\t\t\t\t\t\t\t  \"og:type\": \"内容类型（如: website, article, product 等）\",\n\t\t\t\t\t\t\t\t  \"og:url\": \"规范化的URL地址\",\n\t\t\t\t\t\t\t\t  \"og:image\": \"代表性图片URL\",\n\t\t\t\t\t\t\t\t  \"og:site_name\": \"网站名称\",\n\t\t\t\t\t\t\t\t  \"og:locale\": \"语言区域（如: zh_CN, en_US）\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t要求：\n\t\t\t\t\t\t\t\t1. 标题要简洁明了，突出核心内容\n\t\t\t\t\t\t\t\t2. 描述要有吸引力，能激发用户点击欲望\n\t\t\t\t\t\t\t\t3. 根据内容智能判断类型（article/website/product等）\n\t\t\t\t\t\t\t\t4. 自动检测内容语言并设置正确的 locale\n\t\t\t\t\t\t\t\t5. 如果是文章类型，描述应该是内容摘要\n\t\t\t\t\t\t\t\t6. 所有字段都必须填写，不能为空\n\t\t\t\t\t\t\t\t7. 如果提供了已提取的图片URL，必须直接使用该URL作为 og:image 的值\n\t\t\t\t\t\t\t\t8. 如果未提供图片URL，使用 \"logo.png\" 作为 og:image 的值"
-
-	return fmt.Sprintf(prma, urlInfo, imageInfo, content)
+	return ""
 }
 
-// parseOGInfo 解析 OpenAI 返回的 OG 信息
-func (og *OGGenerator) parseOGInfo(content string) (*OGMetaInfo, error) {
-	// 提取 JSON 部分（可能被包裹在 markdown 代码块中）
-	jsonPattern := regexp.MustCompile("(?s)```(?:json)?\\s*({.*?})\\s*```")
-	matches := jsonPattern.FindStringSubmatch(content)
-
-	var jsonStr string
-	if len(matches) > 1 {
-		jsonStr = matches[1]
-	} else {
-		// 尝试直接解析
-		jsonStr = strings.TrimSpace(content)
+// 描述：优先 meta description；否则从正文切 150–160 字，尽量整句
+func buildDescription(metaDesc, plain string) string {
+	if metaDesc = strings.TrimSpace(metaDesc); metaDesc != "" {
+		return clipTo(metaDesc, 160)
 	}
-
-	var ogInfo OGMetaInfo
-	if err := json.Unmarshal([]byte(jsonStr), &ogInfo); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal OG info: %w, content: %s", err, jsonStr)
+	// 从正文取前几句
+	sents := splitSentences(plain)
+	var buf strings.Builder
+	for _, s := range sents {
+		if s == "" {
+			continue
+		}
+		if buf.Len()+len([]rune(s)) > 160 {
+			break
+		}
+		if buf.Len() > 0 {
+			buf.WriteByte(' ')
+		}
+		buf.WriteString(s)
+		if buf.Len() >= 120 {
+			break
+		}
 	}
-
-	return &ogInfo, nil
+	desc := buf.String()
+	if desc == "" {
+		desc = plain
+	}
+	return clipTo(desc, 160)
 }
 
-// GenerateOGMetaHTML 生成 OG Meta HTML 标签
-func (og *OGGenerator) GenerateOGMetaHTML(ogInfo *OGMetaInfo) string {
-	var builder strings.Builder
-
-	builder.WriteString("<!-- Open Graph Meta Tags -->\n")
-
-	if ogInfo.Title != "" {
-		builder.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\" />\n",
-			html.EscapeString(ogInfo.Title)))
+func clipTo(s string, max int) string {
+	rs := []rune(strings.TrimSpace(s))
+	if len(rs) <= max {
+		return string(rs)
 	}
-
-	if ogInfo.Description != "" {
-		builder.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\" />\n",
-			html.EscapeString(ogInfo.Description)))
-	}
-
-	if ogInfo.Type != "" {
-		builder.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"%s\" />\n",
-			html.EscapeString(ogInfo.Type)))
-	}
-
-	if ogInfo.URL != "" {
-		builder.WriteString(fmt.Sprintf("<meta property=\"og:url\" content=\"%s\" />\n",
-			html.EscapeString(ogInfo.URL)))
-	}
-
-	if ogInfo.Image != "" {
-		builder.WriteString(fmt.Sprintf("<meta property=\"og:image\" content=\"%s\" />\n",
-			html.EscapeString(ogInfo.Image)))
-	}
-
-	if ogInfo.SiteName != "" {
-		builder.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\" />\n",
-			html.EscapeString(ogInfo.SiteName)))
-	}
-
-	if ogInfo.Locale != "" {
-		builder.WriteString(fmt.Sprintf("<meta property=\"og:locale\" content=\"%s\" />\n",
-			html.EscapeString(ogInfo.Locale)))
-	}
-
-	return builder.String()
+	return string(rs[:max-1]) + "…"
 }
 
-// GenerateFromURL 从 URL 生成 OG Meta 信息
+func splitSentences(s string) []string {
+	// 简易句子分割：中文句末 + 英文句末
+	re := regexp.MustCompile(`(?m)(.*?[\.\!\?。！？]|.+$)`)
+	out := re.FindAllString(strings.TrimSpace(s), -1)
+	for i := range out {
+		out[i] = strings.TrimSpace(out[i])
+	}
+	return out
+}
+
+// 类型：路径含 /blog/ 或正文含“发表于/作者/评论”等 → article，否则 website
+func guessType(pageURL, text string) string {
+	u, _ := url.Parse(pageURL)
+	path := strings.ToLower(u.Path)
+	if strings.Contains(path, "/blog/") || strings.Contains(path, "/post/") || strings.Contains(path, "/article") {
+		return "article"
+	}
+	low := strings.ToLower(text)
+	if strings.Contains(low, "发表于") || strings.Contains(low, "作者") || strings.Contains(low, "评论") || strings.Contains(low, "阅读") {
+		return "article"
+	}
+	return "website"
+}
+
+// locale：优先 <html lang> / og:locale；否则按 CJK 占比判定 zh_CN / en_US
+func guessLocale(metaLang string, text string) string {
+	lang := strings.ToLower(strings.TrimSpace(metaLang))
+	if lang != "" {
+		// 规范化常见值
+		if lang == "zh" || strings.HasPrefix(lang, "zh-") {
+			return "zh_CN"
+		}
+		if lang == "en" || strings.HasPrefix(lang, "en-") {
+			return "en_US"
+		}
+		return lang
+	}
+	var total, cjk int
+	for _, r := range text {
+		if unicode.IsSpace(r) {
+			continue
+		}
+		total++
+		if isCJK(r) {
+			cjk++
+		}
+	}
+	if total > 0 && float64(cjk)/float64(total) > 0.2 {
+		return "zh_CN"
+	}
+	return "en_US"
+}
+
+func isCJK(r rune) bool {
+	return unicode.Is(unicode.Han, r) ||
+		(r >= 0x3040 && r <= 0x309F) || // Hiragana
+		(r >= 0x30A0 && r <= 0x30FF) || // Katakana
+		(r >= 0xAC00 && r <= 0xD7AF) // Hangul
+}
+
+// 站点名：优先 og:site_name；否则使用 host 的主域（去 www），TitleCase
+func guessSiteName(siteName, pageURL string) string {
+	if v := strings.TrimSpace(siteName); v != "" {
+		return v
+	}
+	u, err := url.Parse(pageURL)
+	if err != nil || u.Host == "" {
+		return ""
+	}
+	host := strings.ToLower(u.Host)
+	host = strings.TrimPrefix(host, "www.")
+	parts := strings.Split(host, ".")
+	if len(parts) >= 2 {
+		base := parts[len(parts)-2]
+		return strings.Title(base)
+	}
+	return strings.Title(host)
+}
+
+// 图片选择：优先 og:image；否则根据关键词打分（cover/hero/share/banner/og）优先，排除 logo/icon/avatar/sprite
+func pickBestImage(ogImage string, imgs []string) string {
+	if ogImage != "" {
+		return ogImage
+	}
+	score := func(u string) int {
+		l := strings.ToLower(u)
+		if !isLikelyImageURL(l) {
+			return -1000
+		}
+		s := 0
+		// 正向关键词
+		for _, kw := range []string{"og", "cover", "hero", "share", "banner", "card"} {
+			if strings.Contains(l, kw) {
+				s += 5
+			}
+		}
+		// 负向关键词
+		for _, kw := range []string{"logo", "icon", "avatar", "sprite"} {
+			if strings.Contains(l, kw) {
+				s -= 5
+			}
+		}
+		// 大图猜测
+		for _, kw := range []string{"1200", "1024", "800", "640"} {
+			if strings.Contains(l, kw) {
+				s += 2
+			}
+		}
+		return s
+	}
+	best, bestScore := "", -10000
+	for _, u := range imgs {
+		if v := score(u); v > bestScore {
+			bestScore, best = v, u
+		}
+	}
+	return best
+}
+
+/* =========================
+   生成 OG
+========================= */
+
+func (og *OGGenerator) BuildOG(ex *HTMLExtractResult) *OGMetaInfo {
+	// Title
+	title := firstNonEmpty(ex.Title, fallbackTitleFromURL(ex.BaseURL), "Untitled")
+
+	// URL / Canonical
+	finalURL := firstNonEmpty(ex.Canonical, ex.BaseURL)
+
+	// Description
+	desc := buildDescription(ex.MetaDesc, ex.TextContent)
+
+	// Type
+	typ := guessType(finalURL, ex.TextContent)
+
+	// Image
+	image := pickBestImage(ex.OGImage, ex.Images)
+
+	// SiteName
+	site := guessSiteName(ex.SiteName, finalURL)
+
+	// Locale
+	loc := guessLocale(ex.Lang, ex.TextContent)
+
+	return &OGMetaInfo{
+		Title:       title,
+		Description: desc,
+		Type:        typ,
+		URL:         finalURL,
+		Image:       image,
+		SiteName:    site,
+		Locale:      loc,
+	}
+}
+
+func fallbackTitleFromURL(pageURL string) string {
+	u, err := url.Parse(pageURL)
+	if err != nil || u.Path == "" {
+		return pageURL
+	}
+	p := strings.Trim(u.Path, "/")
+	if p == "" {
+		return u.Host
+	}
+	seg := p
+	if i := strings.LastIndex(p, "/"); i >= 0 && i+1 < len(p) {
+		seg = p[i+1:]
+	}
+	seg = strings.TrimSuffix(seg, ".html")
+	seg = strings.ReplaceAll(seg, "-", " ")
+	seg = strings.ReplaceAll(seg, "_", " ")
+	return strings.Title(seg)
+}
+
+/* =========================
+   对外方法
+========================= */
+
 func (og *OGGenerator) GenerateFromURL(urlStr string) (string, *OGMetaInfo, error) {
-	// 1. 获取 HTML 内容
 	htmlContent, err := og.FetchHTMLFromURL(urlStr)
 	if err != nil {
 		return "", nil, err
 	}
-
-	// 2. 提取文本和图片
-	extractResult, err := og.ExtractTextFromHTML(htmlContent, urlStr)
-	if err != nil {
-		return "", nil, err
-	}
-
-	// 3. 选择图片：优先使用第一张提取到的图片，否则使用 logo.png
-	selectedImage := "logo.png"
-	if len(extractResult.Images) > 0 {
-		selectedImage = extractResult.Images[0]
-		fmt.Printf("✓ 从页面中提取到 %d 张图片，使用第一张: %s\n", len(extractResult.Images), selectedImage)
-	} else {
-		fmt.Println("✗ 页面中未找到合适的图片，使用默认: logo.png")
-	}
-
-	// 4. 调用 OpenAI 生成 OG 信息
-	ogInfo, err := og.CallOpenAI(extractResult.TextContent, urlStr, selectedImage)
-	if err != nil {
-		return "", nil, err
-	}
-
-	// 5. 确保使用选定的图片
-	ogInfo.Image = selectedImage
-
-	// 6. 如果没有设置 URL，使用源 URL
-	if ogInfo.URL == "" {
-		ogInfo.URL = urlStr
-	}
-
-	// 7. 生成 HTML 标签
-	metaTags := og.GenerateOGMetaHTML(ogInfo)
-
-	return metaTags, ogInfo, nil
+	return og.GenerateFromHTML(htmlContent, urlStr)
 }
 
-// GenerateFromHTML 从 HTML 内容生成 OG Meta 信息
-func (og *OGGenerator) GenerateFromHTML(htmlContent string, sourceURL string) (string, *OGMetaInfo, error) {
-	// 1. 提取文本和图片
-	extractResult, err := og.ExtractTextFromHTML(htmlContent, sourceURL)
+func (og *OGGenerator) GenerateFromHTML(htmlContent, sourceURL string) (string, *OGMetaInfo, error) {
+	ex, err := og.ExtractTextFromHTML(htmlContent, sourceURL)
 	if err != nil {
 		return "", nil, err
 	}
-
-	// 2. 选择图片：优先使用第一张提取到的图片，否则使用 logo.png
-	selectedImage := "logo.png"
-	if len(extractResult.Images) > 0 {
-		selectedImage = extractResult.Images[0]
-		fmt.Printf("✓ 从 HTML 中提取到 %d 张图片，使用第一张: %s\n", len(extractResult.Images), selectedImage)
-	} else {
-		fmt.Println("✗ HTML 中未找到合适的图片，使用默认: logo.png")
+	// 文本过长剪裁，避免后续处理超大
+	if len([]rune(ex.TextContent)) > 6000 {
+		ex.TextContent = string([]rune(ex.TextContent)[:6000])
 	}
-
-	// 3. 调用 OpenAI 生成 OG 信息
-	ogInfo, err := og.CallOpenAI(extractResult.TextContent, sourceURL, selectedImage)
-	if err != nil {
-		return "", nil, err
-	}
-
-	// 4. 确保使用选定的图片
-	ogInfo.Image = selectedImage
-
-	// 5. 生成 HTML 标签
-	metaTags := og.GenerateOGMetaHTML(ogInfo)
-
-	return metaTags, ogInfo, nil
+	ogInfo := og.BuildOG(ex)
+	meta := og.GenerateOGMetaHTML(ogInfo)
+	return meta, ogInfo, nil
 }
 
-// PrintOGInfo 打印 OG 信息（格式化输出）
-func PrintOGInfo(ogInfo *OGMetaInfo) {
-	fmt.Println("\n=== Open Graph Meta 信息 ===")
-	fmt.Printf("标题 (og:title): %s\n", ogInfo.Title)
-	fmt.Printf("描述 (og:description): %s\n", ogInfo.Description)
-	fmt.Printf("类型 (og:type): %s\n", ogInfo.Type)
-	fmt.Printf("URL (og:url): %s\n", ogInfo.URL)
-	fmt.Printf("图片 (og:image): %s\n", ogInfo.Image)
-	fmt.Printf("站点名称 (og:site_name): %s\n", ogInfo.SiteName)
-	fmt.Printf("语言区域 (og:locale): %s\n", ogInfo.Locale)
-	fmt.Println("============================\n")
+/* =========================
+   HTML 片段输出
+========================= */
+
+func (og *OGGenerator) GenerateOGMetaHTML(ogInfo *OGMetaInfo) string {
+	var b strings.Builder
+	b.WriteString("<!-- Open Graph Meta Tags (heuristic) -->\n")
+	if ogInfo.Title != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\" />\n", htmlEscape(ogInfo.Title)))
+	}
+	if ogInfo.Description != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\" />\n", htmlEscape(ogInfo.Description)))
+	}
+	if ogInfo.Type != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"%s\" />\n", htmlEscape(ogInfo.Type)))
+	}
+	if ogInfo.URL != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:url\" content=\"%s\" />\n", htmlEscape(ogInfo.URL)))
+	}
+	if ogInfo.Image != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:image\" content=\"%s\" />\n", htmlEscape(ogInfo.Image)))
+	}
+	if ogInfo.SiteName != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\" />\n", htmlEscape(ogInfo.SiteName)))
+	}
+	if ogInfo.Locale != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:locale\" content=\"%s\" />\n", htmlEscape(ogInfo.Locale)))
+	}
+	return b.String()
 }
