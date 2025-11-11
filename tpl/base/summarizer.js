@@ -44,7 +44,7 @@
               src="${WORKER_URL}" title="Summarizer" loading="lazy"
               allow="autoplay; encrypted-media; fullscreen; clipboard-read; clipboard-write"
               referrerpolicy="no-referrer"
-              style="border:0;width:100%;height:100%;border-radius:12px;"></iframe>
+              style="border:0;width:100%;height:98%;border-radius:12px;"></iframe>
     </div>`;
     document.body.appendChild(drawer);
 
