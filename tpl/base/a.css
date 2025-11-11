@@ -129,7 +129,7 @@ nav a {
 }
 .content-area {
     /*default 100%*/
-    /*width: 620px;*/
+    width: 100%;
     border: 1.6px solid var(--text-main);
     border-radius: 27px;
     padding:1px;
@@ -151,6 +151,7 @@ nav a {
 .postlist td {
     padding: 8px;
     color: var(--text-main);
+    width: 100%;
 }
 .postlist tr:hover td {
     background: rgba(255, 255, 255, 0.3);
