@@ -1,56 +1,156 @@
-/* /summarizer.css */
+/* ===========================
+   Summarizer Drawer (External Container)
+   Theme-aware (light/dark)
+   =========================== */
+
+/* 基础变量（默认走浅色，随后用 data-theme 覆盖） */
+:root {
+    --smz-bg: rgba(255, 255, 255, 0.78);
+    --smz-fg: #0f172a;
+    --smz-muted: #475569;
+    --smz-border: rgba(15, 23, 42, 0.12);
+    --smz-shadow: -18px 0 44px rgba(0, 0, 0, 0.18);
+    --smz-backdrop: saturate(180%) blur(18px);
+    --smz-radius: 14px;
+
+    --smz-btn-bg: rgba(15, 23, 42, 0.06);
+    --smz-btn-fg: var(--smz-fg);
+    --smz-btn-border: rgba(15, 23, 42, 0.18);
+    --smz-btn-hover: rgba(15, 23, 42, 0.1);
+
+    --smz-handle-bg: rgba(255, 255, 255, 0.82);
+    --smz-handle-fg: #0f172a;
+    --smz-handle-border: rgba(15, 23, 42, 0.16);
+
+    --smz-iframe-radius: 12px;
+
+    --smz-width: min(640px, 92vw);
+    --smz-z: 2147483000;
+    --smz-z-handle: 2147483001;
+}
+
+/* 暗色主题变量（通过 data-theme 激活） */
+.summarizer-drawer[data-theme="dark"],
+.summarizer-handle[data-theme="dark"] {
+    --smz-bg: rgba(30, 31, 34, 0.55);
+    --smz-fg: #eaeef2;
+    --smz-muted: #b6beca;
+    --smz-border: rgba(255, 255, 255, 0.18);
+    --smz-shadow: -18px 0 44px rgba(0, 0, 0, 0.32);
+
+    --smz-btn-bg: rgba(255, 255, 255, 0.08);
+    --smz-btn-fg: #ffffff;
+    --smz-btn-border: rgba(255, 255, 255, 0.18);
+    --smz-btn-hover: rgba(255, 255, 255, 0.18);
+
+    --smz-handle-bg: rgba(30, 31, 34, 0.55);
+    --smz-handle-fg: #ffffff;
+    --smz-handle-border: rgba(255, 255, 255, 0.18);
+}
+
+/* 抽屉容器 */
 .summarizer-drawer {
     position: fixed;
     top: 0;
     right: 0;
-    width: min(640px, 92vw);
+    width: var(--smz-width);
     height: 100vh;
-    background: rgba(30,31,34,.55);
-    backdrop-filter: saturate(180%) blur(18px);
-    -webkit-backdrop-filter: saturate(180%) blur(18px);
-    border-left: 1px solid rgba(255,255,255,.18);
-    box-shadow: -18px 0 44px rgba(0,0,0,.32);
-    transform: translateX(100%);    /* 默认隐藏在右侧 */
+    background: var(--smz-bg);
+    color: var(--smz-fg);
+    backdrop-filter: var(--smz-backdrop);
+    -webkit-backdrop-filter: var(--smz-backdrop);
+    border-left: 1px solid var(--smz-border);
+    box-shadow: var(--smz-shadow);
+    transform: translateX(100%); /* 默认隐藏在右侧 */
     transition: transform .28s ease, opacity .2s ease;
     opacity: .98;
-    z-index: 2147483000;
-    border-radius: 0 0 0 14px;
+    z-index: var(--smz-z);
+    border-radius: 0 0 0 var(--smz-radius);
 }
+
 .summarizer-drawer.open {
-    transform: translateX(0);       /* 打开时滑出 */
+    transform: translateX(0); /* 打开时滑出 */
 }
+
+/* 头部 */
 .summarizer-drawer__header {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 12px 14px;
-    color: #eaeef2;
     font: 600 13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",system-ui,sans-serif;
+    color: var(--smz-fg);
 }
+
+/* 内容区（内嵌 iframe） */
 .summarizer-drawer__content {
     height: calc(100% - 48px);
     padding: 8px 8px 12px 8px;
 }
+
+/* iframe */
 .summarizer-iframe {
     width: 100%;
     height: 100%;
     border: 0;
-    border-radius: 12px;
+    border-radius: var(--smz-iframe-radius);
 }
 
-/* 召唤按钮（可固定在右侧中部） */
+/* 头部按钮 */
+.summarizer-drawer__header .btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--smz-btn-bg);
+    color: var(--smz-btn-fg);
+    border: 1px solid var(--smz-btn-border);
+    border-radius: 10px;
+    padding: 7px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background .18s ease, transform .1s ease;
+}
+
+.summarizer-drawer__header .btn:hover {
+    background: var(--smz-btn-hover);
+    transform: translateY(-1px);
+}
+
+.summarizer-drawer__header .btn:active {
+    transform: translateY(0);
+}
+
+.summarizer-drawer__header .btn.small {
+    padding: 6px 10px;
+}
+
+/* 召唤按钮（把手） */
 .summarizer-handle {
     position: fixed;
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
     padding: 6px 12px;
-    background: rgba(30,31,34,.55);
-    border: 1px solid rgba(255,255,255,.18);
-    color: #fff;
+    background: var(--smz-handle-bg);
+    color: var(--smz-handle-fg);
+    border: 1px solid var(--smz-handle-border);
     border-radius: 999px;
-    backdrop-filter: saturate(180%) blur(18px);
-    -webkit-backdrop-filter: saturate(180%) blur(18px);
-    z-index: 2147483001;
+    backdrop-filter: var(--smz-backdrop);
+    -webkit-backdrop-filter: var(--smz-backdrop);
+    z-index: var(--smz-z-handle);
     cursor: pointer;
-    box-shadow: 0 10px 28px rgba(0,0,0,.28);
+    box-shadow: 0 10px 28px rgba(0,0,0,.18);
+    transition: transform .18s ease, opacity .18s ease;
 }
-.summarizer-handle:hover { opacity: .95; }
+
+.summarizer-handle:hover {
+    opacity: .95;
+    transform: translateY(-50%) translateX(-1px);
+}
+
+/* 响应式：小屏幕收窄抽屉宽度 */
+@media (max-width: 720px) {
+    .summarizer-drawer {
+        width: min(96vw, 520px);
+    }
+}

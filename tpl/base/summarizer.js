@@ -4,7 +4,9 @@
     const CSS_URL    = (tag && tag.dataset.css)    || '/summarizer.css';
     const IMAGES_MODE = ((tag && tag.dataset.images) || 'base64').toLowerCase(); // 'base64' | 'url'
 
-    /* 注入 CSS（若未加载） */
+    const root = document.documentElement;
+
+    /* ---------- 样式注入 ---------- */
     function ensureCSS(href) {
         if ([...document.styleSheets].some(s => s.href && s.href.endsWith(href))) return;
         if ([...document.querySelectorAll('link[rel="stylesheet"]')].some(l => l.href.endsWith(href))) return;
@@ -15,9 +17,9 @@
     }
     ensureCSS(CSS_URL);
 
-    /* 注入 Readability（若未加载） */
+    /* ---------- Readability 依赖 ---------- */
     function ensureReadability() {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             if (window.Readability) return resolve();
             const s = document.createElement('script');
             s.src = 'https://cdn.jsdelivr.net/npm/@mozilla/readability@0.5.0/Readability.min.js';
@@ -27,15 +29,30 @@
         });
     }
 
-    /* DOM：右侧抽屉 + 召唤/关闭 + “开始总结”按钮（父页侧） */
+    /* ---------- 主题判定：对齐 comment-iframe-loader ---------- */
+    function getPreferredTheme() {
+        try {
+            const attr = root.dataset.theme;
+            if (attr === 'dark' || attr === 'light') return attr;
+        } catch {}
+        const hour = new Date().getHours();
+        const isDark = (hour >= 18 || hour < 7);
+        return isDark ? 'dark' : 'light';
+    }
+
+    /* ---------- DOM 元素 ---------- */
     const drawer = document.createElement('div');
     drawer.id = 'summarizer-drawer';
     drawer.className = 'summarizer-drawer glass';
     drawer.setAttribute('aria-hidden', 'true');
+
+    const theme = getPreferredTheme();
+    drawer.dataset.theme = theme;
+
     drawer.innerHTML = `
     <div class="summarizer-drawer__header">
       <div class="actions">
-        <button id="summarizer-start" class="btn small" type="button">发送文章</button>
+        <button id="summarizer-start" class="btn small" type="button">总结</button>
         <button id="summarizer-close" class="btn small" type="button">关闭</button>
       </div>
     </div>
@@ -52,14 +69,15 @@
     handle.id = 'summarizer-handle';
     handle.className = 'summarizer-handle glass';
     handle.type = 'button';
-    handle.setAttribute('aria-controls', 'summarizer-drawer');
-    handle.textContent = '🤔';
+    handle.textContent = '📝';
+    handle.dataset.theme = theme;
     document.body.appendChild(handle);
 
-    const iframe  = drawer.querySelector('#summarizer-iframe');
-    const closeBtn= drawer.querySelector('#summarizer-close');
-    const startBtn= drawer.querySelector('#summarizer-start');
+    const iframe   = drawer.querySelector('#summarizer-iframe');
+    const closeBtn = drawer.querySelector('#summarizer-close');
+    const startBtn = drawer.querySelector('#summarizer-start');
 
+    /* ---------- 开关逻辑 ---------- */
     function openDrawer() {
         drawer.classList.add('open');
         drawer.setAttribute('aria-hidden', 'false');
@@ -72,12 +90,11 @@
     closeBtn.addEventListener('click', closeDrawer);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
     document.addEventListener('click', (e) => {
-        if (drawer.classList.contains('open') && !drawer.contains(e.target) && e.target !== handle) {
+        if (drawer.classList.contains('open') && !drawer.contains(e.target) && e.target !== handle)
             closeDrawer();
-        }
     });
 
-    /* 正文抽取 */
+    /* ---------- 正文抽取 ---------- */
     function extractMainContent() {
         try {
             const cloned = document.cloneNode(true);
@@ -87,14 +104,14 @@
                 if (article && article.textContent) {
                     const title = article.title || document.title || '';
                     const text  = `标题：${title}\n\n${article.textContent}`;
-                    return (text || '').trim().slice(0, 60000);
+                    return text.trim().slice(0, 60000);
                 }
             }
-        } catch (_) {}
+        } catch {}
         return (document.body.innerText || '').slice(0, 60000);
     }
 
-    /* 图片（URL 模式） */
+    /* ---------- 图片收集 ---------- */
     function collectImagesURL(limit = 8) {
         const imgs = Array.from(document.images || []);
         const out = [];
@@ -104,7 +121,7 @@
             if (w < 128 || h < 128) continue;
             const abs = new URL(img.src, location.href).href;
             const rec = { src: abs };
-            if (img.alt)   rec.alt   = img.alt;
+            if (img.alt) rec.alt = img.alt;
             if (img.title) rec.title = img.title;
             const fig = img.closest('figure');
             if (fig) {
@@ -117,13 +134,12 @@
         return out;
     }
 
-    /* 图片转 Base64（跨源失败即跳过） */
     async function imageToBase64(url) {
         try {
             const res = await fetch(url, { mode: 'cors' });
             if (!res.ok) throw new Error('fetch fail');
             const blob = await res.blob();
-            const buf  = await blob.arrayBuffer();
+            const buf = await blob.arrayBuffer();
             let bin = '';
             const bytes = new Uint8Array(buf);
             for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
@@ -132,6 +148,7 @@
             return null;
         }
     }
+
     async function collectImagesBase64(limit = 8) {
         const urls = collectImagesURL(limit).map(x => x.src);
         const out = [];
@@ -143,21 +160,19 @@
         return out;
     }
 
-    /* 与 iframe postMessage 握手 */
+    /* ---------- postMessage 通信 ---------- */
     let iframeReady = false;
 
     async function buildPayload(extra = '') {
         await ensureReadability();
         const text = extractMainContent();
-        let images = [];
-        if (IMAGES_MODE === 'base64') images = await collectImagesBase64(8);
-        else images = collectImagesURL(8);
+        const images = (IMAGES_MODE === 'base64') ? await collectImagesBase64(8) : collectImagesURL(8);
         return { text, images, extra };
     }
 
     async function sendPageToIframe(extra = '', force = false) {
         if (!iframe || !iframe.contentWindow) return;
-        if (!iframeReady && !force) return; // 正常路径需 ready；可 force 兜底
+        if (!iframeReady && !force) return;
 
         const payload = await buildPayload(extra);
         iframe.contentWindow.postMessage(
@@ -171,15 +186,11 @@
         });
     }
 
-    // 点击“开始总结”时才发送
     startBtn.addEventListener('click', () => {
-        // 优先 ping 一下，避免 ready 丢失
         try { iframe.contentWindow.postMessage({ type: 'qwq-ping' }, new URL(WORKER_URL).origin); } catch {}
-        // 稍等 300ms 再发送（无论 ready 与否，force 兜底）
-        setTimeout(() => sendPageToIframe('', /*force*/true), 300);
+        setTimeout(() => sendPageToIframe('', true), 300);
     });
 
-    // 仅记录 ready，不自动打开、不自动发送
     window.addEventListener('message', (ev) => {
         if (!ev || !ev.data) return;
         const okOrigin = new URL(WORKER_URL).origin;
@@ -190,8 +201,24 @@
         }
     });
 
-    // iframe load 之后只做一次 ping，**不**自动打开或发送
     iframe.addEventListener('load', () => {
         try { iframe.contentWindow.postMessage({ type: 'qwq-ping' }, new URL(WORKER_URL).origin); } catch {}
     });
+
+    /* ---------- 监听全局主题变化 ---------- */
+    try {
+        const mo = new MutationObserver(muts => {
+            for (const m of muts) {
+                if (m.attributeName === 'data-theme') {
+                    const newTheme = getPreferredTheme();
+                    drawer.dataset.theme = newTheme;
+                    handle.dataset.theme = newTheme;
+                    console.log('[Summarizer] theme updated ->', newTheme);
+                }
+            }
+        });
+        mo.observe(root, { attributes: true });
+    } catch (e) {
+        console.warn('[Summarizer] Theme observer failed:', e);
+    }
 })();
