@@ -54,6 +54,8 @@
         {{ $year := "" }}
         {{ range .Posts }}
         {{ $postYear := .Date.Format "2006" }}
+        {{ $create := .Created.Format "2006-01-02" }}
+        {{ $modify := .Modified.Format "2006-01-02" }}
         {{ if ne $year $postYear }}
         {{ if ne $year "" }}
         </tbody></table>
@@ -64,8 +66,32 @@
             <tbody>
             {{ end }}
             <tr>
-                <td width="58">{{ .Date.Format "1/2/06" }}</td>
-                <td><a href="{{ .File }}">{{ .Title }}</a></td>
+                <td width="120">{{ $create }}</td>
+                <td class="title-cell">
+                    <a href="{{ .File }}">{{ .Title }}</a>
+                    {{ if isUpdated .Created .Modified }}
+                    <span
+                            class="updated-dot"
+                            data-tooltip="Updated {{ $modify }}"
+                            aria-label="Updated {{ $modify }}"
+                            tabindex="0"
+                    ></span>
+                    {{ end }}
+                    {{ if .IsProtected }}
+                        <span class="protected-badge"
+                              data-tooltip="- Content is protected - {{ if gt .VideoCount 0 }}{{ .VideoCount }} videos · {{ end }}  {{ if gt .ImageCount 0 }}{{ .ImageCount }} images · {{ end }} {{ if gt .FileCount 0 }}{{ .FileCount }} files {{ end }} "
+                              aria-label="Content is protected"
+                              tabindex="0"
+                        >
+                            {{ if eq .ProtectedFileCount 0 }}🔏{{ end }}
+                            {{ if gt .ProtectedFileCount 0 }}🔒({{ .ProtectedFileCount }}){{ end }}
+                            {{ if gt .ImageCount 0 }}📷({{ .ImageCount }}){{ end }}
+                            {{ if gt .FileCount 0 }}📄({{ .FileCount }}){{ end }}
+                            {{ if gt .VideoCount 0 }}🎬({{ .VideoCount }}){{ end }}
+                        </span>
+                    {{ end }}
+
+                </td>
             </tr>
             {{ end }}
             </tbody>

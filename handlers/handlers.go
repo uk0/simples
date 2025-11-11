@@ -39,7 +39,7 @@ func HandleUnlock(c *gin.Context) {
 	config.RebuildingMu.Unlock()
 
 	if isRebuilding {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 	}
 
 	config.ProtectedMu.RLock()

@@ -7,7 +7,7 @@ import re
 import shutil
 import json
 import html
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Tuple
 from pathlib import Path
 from enum import IntEnum
@@ -222,6 +222,8 @@ class AppleNote:
         self.title = ""
         self.snippet = ""
         self.creation_date = None
+        self.modified_iso = None # iso 时间
+        self.created_iso = None  # iso 时间
         self.modification_date = None
         self.attachments = []
         self.attachment_positions = {}
@@ -708,7 +710,7 @@ class AppleNote:
             att = attr_run.attachment_info
             details = self.attachment_extractor.get_attachment_details(att.identifier)
             print("Processing attachment in HTML:", att.identifier, details)
-            result.append(f'[Attachment: {html.escape(details.get("media_filename", details.get("original_filename", "unknown")))}]')
+            result.append(f'[Attachment: {html.escape(details.get("original_filename", details.get("media_filename", "unknown")))}]')
         else:
             # 添加文本内容
             escaped_text = html.escape(text)
@@ -838,9 +840,15 @@ class AttachmentExtractor:
         # Apple Notes 附件可能的存储位置
         self.attachment_paths = [
             self.base_path / "Accounts",
-            self.base_path / "Media",
-            self.base_path / "FallbackImages",
-            self.base_path / "Previews"
+            '''
+            cd /Users/firshme/Library/Group Containers/group.com.apple.notes/Accounts/XXXXX-XXXX-4F9F-A9AB-XXXX/Media/
+            ❯ du -sh *
+              0B	FallbackImages
+            1.7G	Media
+              0B	Paper
+            276M	Previews
+             24K	Thumbnails
+            '''
         ]
 
         self._check_database_schema()
@@ -892,7 +900,7 @@ class AttachmentExtractor:
                 if details['media_id']:
                     try:
                         media_query = """
-                                      SELECT ZFILENAME, ZIDENTIFIER, ZTITLE, ZNAME
+                                      SELECT ZFILENAME, ZIDENTIFIER, ZGENERATION1
                                       FROM ZICCLOUDSYNCINGOBJECT
                                       WHERE Z_PK = ?
                                       """
@@ -900,8 +908,7 @@ class AttachmentExtractor:
                         if media_results:
                             details['media_filename'] = media_results[0][0]
                             details['media_identifier'] = media_results[0][1]
-                            details['media_title'] = media_results[0][2]
-                            details['media_name'] = media_results[0][3]
+                            details['media_layer1_dir'] = media_results[0][2]
                             if media_results[0][0]:
                                 details['original_filename'] = media_results[0][0]
                     except Exception:
@@ -914,7 +921,7 @@ class AttachmentExtractor:
 
         return {}
 
-    def find_attachment_file(self, attachment_id: str, filename: str = None) -> Optional[Path]:
+    def find_attachment_file(self, attachment_id: str,media_layer1_dir:str = None, filename: str = None,) -> Optional[Path]:
         """在文件系统中查找附件文件"""
         patterns = []
 
@@ -956,21 +963,24 @@ class AttachmentExtractor:
 
         return None
 
-    def extract_attachment(self, attachment: Attachment, output_dir: Path) -> bool:
+    def extract_attachment(self, attachment: Attachment, output_dir: Path) -> Tuple[bool,bool]:
         """提取并保存附件"""
         try:
             details = self.get_attachment_details(attachment.identifier)
 
             if not details and not attachment.identifier:
-                return False
+                return False,True
 
             attachment.original_filename = details.get('original_filename', '')
 
             print("      - Extracting attachment:", details)
 
             filename = None
-            if details.get('media_filename') == details['original_filename']:
+            if (details.get('media_filename') == details['original_filename']) and details['media_id'] is not None:
                 filename = details['media_filename']
+            else:
+                return False,True
+            print("&" * 60)
 
             if not filename:
                 ext = self._uti_to_extension(attachment.type_uti)
@@ -988,6 +998,7 @@ class AttachmentExtractor:
 
             source_file = self.find_attachment_file(
                 attachment.identifier,
+                details.get('media_layer1_dir'),
                 details.get('filename') or details.get('media_filename')
             )
 
@@ -995,15 +1006,16 @@ class AttachmentExtractor:
                 shutil.copy2(source_file, output_path)
                 print(f"      ✓ Extracted: {filename}")
                 attachment.source_filename = source_file.name
-                return True
+                return True,False
 
-            if details.get('media_identifier'):
-                source_file = self.find_attachment_file(details['media_identifier'])
+            if details.get('media_identifier') and details.get('media_layer1_dir') and details.get('media_filename'):
+                #  通过sql 获取 上层文件夹，再组合路径查找
+                source_file = self.find_attachment_file(details.get('media_identifier'),details.get('media_layer1_dir'),details.get('media_filename'))
                 if source_file:
                     shutil.copy2(source_file, output_path)
                     print(f"      ✓ Extracted: {filename}")
                     attachment.source_filename = source_file.name
-                    return True
+                    return True,False
 
             print(f"      ✗ Could not find file: {filename}")
 
@@ -1019,11 +1031,11 @@ class AttachmentExtractor:
                         if value:
                             f.write(f"{key}: {value}\n")
 
-            return False
+            return False,True
 
         except Exception as e:
             print(f"      ✗ Error: {e}")
-            return False
+            return False,True
 
     def _uti_to_extension(self, uti: str) -> str:
         """将UTI转换为文件扩展名"""
@@ -1210,47 +1222,100 @@ class AppleNotesExporter:
 
         # 构建查询（使用 ZTITLE2）
         if folder_id:
-            print(f"\nExporting notes from folder ID {folder_id} ('{folder_name}')")
+            print(f"\nUse folder_id Exporting notes from folder ID {folder_id} ('{folder_name}')")
 
             query = """
-                SELECT nd.Z_PK as note_id,
-                       nd.ZDATA as data,
-                       n.ZTITLE as title,
-                       n.ZSNIPPET as snippet,
-                       n.ZCREATIONDATE as created,
-                       n.ZMODIFICATIONDATE as modified,
-                       n.ZFOLDER as folder_id,
-                       COALESCE(f.ZTITLE2, f.ZTITLE, f.ZTITLE1, f.ZNAME, ?) as folder_name
-                FROM ZICNOTEDATA nd
-                INNER JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
-                LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
-                WHERE nd.ZDATA IS NOT NULL
-                  AND n.ZFOLDER = ?
-                ORDER BY n.ZMODIFICATIONDATE DESC
+                WITH base AS (
+                  SELECT
+                    nd.Z_PK                                            AS note_id,
+                    nd.ZDATA                                           AS data,
+                    COALESCE(n.ZTITLE, n.ZTITLE1, n.ZTITLE2)           AS title,
+                    n.ZSNIPPET                                         AS snippet,
+                
+                    /* 可能分布在不同列：先合并出原始创建/修改时间 */
+                    COALESCE(n.ZCREATIONDATE, n.ZCREATIONDATE3, n.ZCREATIONDATE1) AS raw_created,
+                    COALESCE(n.ZMODIFICATIONDATE, n.ZMODIFICATIONDATE1) AS raw_modified,
+                
+                    n.ZFOLDER                                          AS folder_id,
+                    COALESCE(f.ZTITLE2, f.ZTITLE, f.ZTITLE1, f.ZNAME, 'Unknown') AS folder_name
+                  FROM ZICNOTEDATA nd
+                  JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
+                  LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
+                  WHERE nd.ZDATA IS NOT NULL
+                )
+                SELECT
+                  note_id, data, title, snippet,
+                  raw_created, raw_modified,              -- 保留原始数值以便调试
+                  folder_id, folder_name,
+                
+                  /* 将 CFAbsoluteTime（2001-01-01 起）转 ISO。单位可能是秒/毫秒/微秒，分段判断 */
+                  CASE
+                    WHEN raw_created IS NULL THEN NULL
+                    WHEN raw_created > 10000000000000    THEN datetime((raw_created/1000000.0) + 978307200, 'unixepoch')
+                    WHEN raw_created > 10000000000       THEN datetime((raw_created/1000.0)   + 978307200, 'unixepoch')
+                    ELSE                                       datetime(raw_created           + 978307200, 'unixepoch')
+                  END AS created_iso,
+                
+                  CASE
+                    WHEN raw_modified IS NULL THEN NULL
+                    WHEN raw_modified > 10000000000000   THEN datetime((raw_modified/1000000.0) + 978307200, 'unixepoch')
+                    WHEN raw_modified > 10000000000      THEN datetime((raw_modified/1000.0)   + 978307200, 'unixepoch')
+                    ELSE                                       datetime(raw_modified          + 978307200, 'unixepoch')
+                  END AS modified_iso
+                
+                FROM base where folder_name = ? and folder_id = ?
+                ORDER BY folder_id, raw_modified DESC NULLS LAST;
             """
 
             results = cursor.execute(query, (folder_name, folder_id)).fetchall()
 
         else:
-            print("\nExporting all notes...")
+            print("\nExporting all notes... not found folder_id ")
 
             query = """
-                SELECT nd.Z_PK as note_id,
-                       nd.ZDATA as data,
-                       n.ZTITLE as title,
-                       n.ZSNIPPET as snippet,
-                       n.ZCREATIONDATE as created,
-                       n.ZMODIFICATIONDATE as modified,
-                       n.ZFOLDER as folder_id,
-                       COALESCE(f.ZTITLE2, f.ZTITLE, f.ZTITLE1, f.ZNAME, 'Unknown') as folder_name
-                FROM ZICNOTEDATA nd
-                INNER JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
-                LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
-                WHERE nd.ZDATA IS NOT NULL
-                ORDER BY n.ZFOLDER, n.ZMODIFICATIONDATE DESC
+                 WITH base AS (
+                  SELECT
+                    nd.Z_PK                                            AS note_id,
+                    nd.ZDATA                                           AS data,
+                    COALESCE(n.ZTITLE, n.ZTITLE1, n.ZTITLE2)           AS title,
+                    n.ZSNIPPET                                         AS snippet,
+                
+                    /* 可能分布在不同列：先合并出原始创建/修改时间 */
+                    COALESCE(n.ZCREATIONDATE, n.ZCREATIONDATE3, n.ZCREATIONDATE1) AS raw_created,
+                    COALESCE(n.ZMODIFICATIONDATE, n.ZMODIFICATIONDATE1) AS raw_modified,
+                
+                    n.ZFOLDER                                          AS folder_id,
+                    COALESCE(f.ZTITLE2, f.ZTITLE, f.ZTITLE1, f.ZNAME, 'Unknown') AS folder_name
+                  FROM ZICNOTEDATA nd
+                  JOIN ZICCLOUDSYNCINGOBJECT n ON nd.ZNOTE = n.Z_PK
+                  LEFT JOIN ZICCLOUDSYNCINGOBJECT f ON n.ZFOLDER = f.Z_PK
+                  WHERE nd.ZDATA IS NOT NULL
+                )
+                SELECT
+                  note_id, data, title, snippet,
+                  raw_created, raw_modified,              -- 保留原始数值以便调试
+                  folder_id, folder_name,
+                
+                  /* 将 CFAbsoluteTime（2001-01-01 起）转 ISO。单位可能是秒/毫秒/微秒，分段判断 */
+                  CASE
+                    WHEN raw_created IS NULL THEN NULL
+                    WHEN raw_created > 10000000000000    THEN datetime((raw_created/1000000.0) + 978307200, 'unixepoch')
+                    WHEN raw_created > 10000000000       THEN datetime((raw_created/1000.0)   + 978307200, 'unixepoch')
+                    ELSE                                       datetime(raw_created           + 978307200, 'unixepoch')
+                  END AS created_iso,
+                
+                  CASE
+                    WHEN raw_modified IS NULL THEN NULL
+                    WHEN raw_modified > 10000000000000   THEN datetime((raw_modified/1000000.0) + 978307200, 'unixepoch')
+                    WHEN raw_modified > 10000000000      THEN datetime((raw_modified/1000.0)   + 978307200, 'unixepoch')
+                    ELSE                                       datetime(raw_modified          + 978307200, 'unixepoch')
+                  END AS modified_iso
+                
+                FROM base where folder_name = '?'
+                ORDER BY folder_id, raw_modified DESC NULLS LAST;
             """
 
-            results = cursor.execute(query).fetchall()
+            results = cursor.execute(query,(folder_name,)).fetchall()
 
         self.stats['total'] = len(results)
 
@@ -1259,17 +1324,39 @@ class AppleNotesExporter:
 
         for row in results:
             self._export_note(row)
+            print(f"{row} row notes found")
+
 
         conn.close()
         self.attachment_extractor.close()
 
         self._print_stats()
 
+     # 2001-01-01 00:00:00  到 1970-01-01 的秒数
+
+    def cf_to_utc(self,cf_val):
+        CF_OFFSET = 978307200
+        """将 Apple CFAbsoluteTime（可能是秒/毫秒/微秒）转换为 UTC datetime；None -> None"""
+        if cf_val is None:
+            return None
+        try:
+            x = float(cf_val)
+        except Exception:
+            return None
+        # 单位判断
+        if x > 1e14:  # 微秒
+            x = x / 1_000_000.0
+        elif x > 1e10:  # 毫秒
+            x = x / 1_000.0
+        # 剩下的按秒
+        ts = x + CF_OFFSET
+        return datetime.fromtimestamp(ts, tz=timezone.utc)
+
     def _export_note(self, row):
         """导出单个笔记"""
-        note_id, data, title, snippet, created, modified, folder_id, folder_name = row
+        note_id, data, title, snippet, created, modified, folder_id, folder_name,created_iso,modified_iso = row
         self._current_notes_ids.append(f"{folder_name}_{note_id:04d}")
-        print(f"\nProcessing Note #{note_id:04d}")
+        print(f"\nProcessing Note #{note_id}")
         if title:
             print(f"  Title: {title}")
         if folder_name:
@@ -1280,6 +1367,9 @@ class AppleNotesExporter:
         note.folder_name = folder_name or ""
         note.snippet = snippet or ""
         note.creation_date = created
+        note.modification_date = modified
+        note.created_iso = created_iso
+        note.modified_iso = modified_iso
         note.modification_date = modified
         note.attachment_extractor = self.attachment_extractor
 
@@ -1313,15 +1403,6 @@ class AppleNotesExporter:
             os.makedirs(folder_path, exist_ok=True)
         else:
             folder_path = self.output_dir
-
-        #TODO 为每个笔记创建独立目录
-        # if note.title:
-        #     note_dir_name = f"{note_id:04d} - {note.title}"
-        # elif note.text:
-        #     first_line = note.text.split('\n')[0][:50]
-        #     note_dir_name = f"{note_id:04d} - {first_line}"
-        # else:
-        #     note_dir_name = f"{note_id:04d} - Note"
 
         if not note.title:
             note.title = note.text.split('\n')[0][:50]
@@ -1413,14 +1494,19 @@ class AppleNotesExporter:
             print(f"    Extracting {len(note.attachments)} attachment(s)...")
 
             for att in note.attachments:
-                print(f"attachment Info {att.type_uti}")
-                success = self.attachment_extractor.extract_attachment(
+                print(f"export attachment Info {att.type_uti}")
+                success,has_skip = self.attachment_extractor.extract_attachment(
                     att, Path(attachments_dir)
                 )
                 if success:
                     self.stats['attachments_extracted'] += 1
+                elif has_skip :
+                    print(f"\033[33m Export Attachments Skipped [del for attachments set. ]: {note.title}\033[0m")
+                    # 在attachments内删除这个元素，说明不是标准的文件，可能是hash tag
+                    note.attachments.remove(att)
                 else:
                     self.stats['attachments_failed'] += 1
+                    print(f"\033[31m Export Attachments Failed: {note.title}\033[0m")
 
         # 保存纯文本版本
         note_file_path = os.path.join(note_dir_path, "meta.txt")
@@ -1429,12 +1515,20 @@ class AppleNotesExporter:
             # 元数据头
             f.write("=" * 60 + "\n")
             f.write(f"Note ID: {note_id}\n")
+            print("*" * 30)
+            print(note.creation_date)
+            print(note.modification_date)
+            print("*" * 30)
             if note.title:
                 f.write(f"Title: {note.title}\n")
             if note.creation_date:
                 f.write(f"Created: {self._format_date(note.creation_date)}\n")
             if note.modification_date:
                 f.write(f"Modified: {self._format_date(note.modification_date)}\n")
+            if note.created_iso:
+                f.write(f"Created_ISO: {self._format_date(note.created_iso)}\n")
+            if note.modified_iso:
+                f.write(f"Modified_ISO: {self._format_date(note.modified_iso)}\n")
             if folder_name:
                 f.write(f"Folder: {folder_name}\n")
             if note.attachments:

@@ -128,7 +128,8 @@ nav a {
     width: fit-content;
 }
 .content-area {
-    width: 620px;
+    /*default 100%*/
+    /*width: 620px;*/
     border: 1.6px solid var(--text-main);
     border-radius: 27px;
     padding:1px;
@@ -143,7 +144,7 @@ nav a {
     background: var(--glass);
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
-    overflow: hidden;
+    overflow: visible; /* 允许 tooltip 溢出显示 */
     transition: background 0.4s;
 }
 .content td,
@@ -511,4 +512,174 @@ footer {
 :root[data-theme="dark"] .password-input:focus {
     border-color: #008000;
     box-shadow: 0 0 6px rgba(114, 211, 65, 0.4);
+}
+
+/* 容器对齐 */
+.title-cell {
+    position: relative;
+    white-space: nowrap;
+}
+/* MacOS26 主题变量（可根据你的全局 root[data-theme] 继承） */
+:root {
+    --m26-bg: rgba(30, 31, 34, 0.58);
+    --m26-fg: #e8ecf2;
+    --m26-border: rgba(255,255,255,.18);
+    --m26-shadow: 0 8px 32px rgba(0,0,0,.35);
+}
+:root[data-theme="light"] {
+    --m26-bg: rgba(255,255,255,.75);
+    --m26-fg: #1a1c1f;
+    --m26-border: rgba(0,0,0,.18);
+    --m26-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+
+/* 小光球本体： */
+.updated-dot{
+    position: relative; /* 为 tooltip 的绝对定位建立参照 */
+    display:inline-block;
+    width:9px; height:9px;
+    border-radius:9999px;
+    background: radial-gradient(35% 35% at 35% 35%, #fff 0%, #1c9867 45%, #13bcc5 100%);
+    box-shadow:
+            0 0 0 2px rgba(59,130,246,.25),
+            0 2px 6px rgba(0,0,0,.25),
+            inset 0 0 4px rgba(255,255,255,.7);
+    vertical-align: middle;
+    margin-left:6px;
+    cursor:help;
+}
+
+
+/* 气泡主体：使用 data-tooltip 作为内容 */
+.updated-dot::after{
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%) translateY(4px);
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-main, #eaeef2);
+    background: var(--bg, rgba(30,31,34,.65));
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 99999;
+}
+
+/* 小三角（用旋转方块更像毛玻璃） */
+.updated-dot::before{
+    content: "";
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* 触发：鼠标悬停与键盘聚焦都可见 */
+.updated-dot:hover::after,
+.updated-dot:hover::before,
+.updated-dot:focus-visible::after,
+.updated-dot:focus-visible::before{
+    opacity:1;
+}
+.updated-dot:hover::after,
+.updated-dot:focus-visible::after{
+    opacity: 1;
+    /*transform: translateX(-50%) translateY(0);*/
+}
+
+/* 避免靠右溢出：当父容器非常靠右时可切换定位方向（可选增强） */
+.updated-dot[data-tip-align="right"]::after,
+.updated-dot[data-tip-align="right"]::before{
+    left:auto; right:0; transform: translateX(0) translateY(4px);
+}
+.updated-dot[data-tip-align="right"]::after{ transform: translateY(4px); }
+.updated-dot[data-tip-align="right"]:hover::after,
+.updated-dot[data-tip-align="right"]:focus-visible::after{
+    transform: translateY(0);
+}
+.protected-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center; /* ✅ 内容水平居中 */
+    gap: 4px; /* 图标之间的小间距 */
+    padding: 5px 3px; /* ✅ 上下内边距稍微增大，左右减小 */
+    margin-left: 4px; /* ✅ 原来太大了，这样更紧凑 */
+    border-radius: 8px;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-main, #ccc);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    vertical-align: middle; /* ✅ 与文字垂直对齐 */
+    line-height: 1; /* 避免内部文字偏下 */
+    transform: translateY(-0.5px); /* ✅ 微调视觉居中 */
+}
+
+/* 内部图标样式（可选增强） */
+.protected-badge i {
+    font-size: 13px;
+    opacity: 0.9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(0.5px);
+}
+
+:root[data-theme='light'] .protected-badge {
+    background: rgba(255,255,255,0.6);
+    color: #1a1c1f;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.5),
+    0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* 图标或小锁 */
+.protected-badge::before {
+    content: "";
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* 气泡提示 */
+.protected-badge::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%) translateY(4px);
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-main, #eaeef2);
+    background: var(--bg, rgba(30,31,34,.65));
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 10;
+}
+
+/* 小三角 */
+.protected-badge::before {
+    content: "";
+    margin-right: 3px;
+}
+
+
+/* 悬停 / 聚焦 时显示气泡 */
+.protected-badge:hover::after,
+.protected-badge:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }

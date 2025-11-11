@@ -142,7 +142,10 @@
     <h1 class="text_center">{{ .Title }}</h1>
 
     <p class="meta text_center">
-        {{ .Date.Format "2006-01-02" }}
+        创建于：{{ .Created.Format "2006-01-02" }}
+        {{ if isUpdated .Created .Modified }}
+        修改于：{{ .Modified.Format "2006-01-02" }}
+        {{ end }}
     </p>
 
     <article id="article-content">

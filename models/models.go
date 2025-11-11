@@ -8,8 +8,15 @@ type Post struct {
 	Title       string
 	File        string
 	Date        time.Time
+	Created     time.Time
+	Modified    time.Time
 	IsProtected bool
 	Description string
+	// 文章包含多媒体数量
+	ImageCount         int
+	FileCount          int
+	VideoCount         int
+	ProtectedFileCount int
 }
 
 // CategoryGroup represents a group of posts by category
@@ -31,8 +38,22 @@ type NoteMeta struct {
 	NoteID              int
 	Title               string
 	Folder              string
+	Created             string
+	Modified            string
 	AttachmentsDeclared *int
 	Attachments         map[string]AttachmentMeta
+}
+
+func (m NoteMeta) ParseTime(s string) time.Time {
+	// 定义时间布局，必须与输入字符串格式完全匹配
+	const layout = "2006-01-02 15:04:05"
+
+	// 使用本地时区解析
+	t, err := time.ParseInLocation(layout, s, time.Local)
+	if err != nil {
+		return time.Time{}
+	}
+	return t
 }
 
 // AttachmentMeta contains metadata for an attachment

@@ -169,7 +169,8 @@ func buildPageWithProtection(noteMDPath, category string) (models.Post, *models.
 	var isProtected bool
 	var publicBody string
 	var protectedBody string
-
+	var protectedFileCount int = 0
+	total := FileStats{}
 	// Check for password protection
 	if matches := passRe.FindStringSubmatch(body); len(matches) == 2 {
 		isProtected = true
@@ -182,8 +183,13 @@ func buildPageWithProtection(noteMDPath, category string) (models.Post, *models.
 
 			// Find protected attachments
 			protectedAttachmentNames := utils.FindAttachmentNames(protectedBody)
+			protectedFileCount = len(protectedAttachmentNames)
 			var protectedPaths []string
 			for _, filename := range protectedAttachmentNames {
+				stats := CountByFilename(filename)
+				total.ImageCount += stats.ImageCount
+				total.VideoCount += stats.VideoCount
+				total.FileCount += stats.FileCount
 				if att, ok := meta.Attachments[filename]; ok {
 					attachPath := filepath.Join(category, slug, config.AttachmentsDir, filepath.Base(att.Path))
 					protectedPaths = append(protectedPaths, attachPath)
@@ -253,9 +259,41 @@ func buildPageWithProtection(noteMDPath, category string) (models.Post, *models.
 		Title:       title,
 		File:        filepath.ToSlash(filepath.Join(category, slug+".html")),
 		Date:        modTime,
+		Modified:    meta.ParseTime(meta.Modified),
+		Created:     meta.ParseTime(meta.Created),
 		IsProtected: isProtected,
 		Description: description,
+		// 文件与保护文件
+		ProtectedFileCount: protectedFileCount,
+		ImageCount:         total.ImageCount,
+		FileCount:          total.FileCount,
+		VideoCount:         total.VideoCount,
 	}, protInfo, nil
+}
+
+type FileStats struct {
+	ImageCount int
+	VideoCount int
+	FileCount  int
+}
+
+// CountByFilename 仅根据文件名（或扩展名）推断类型数量
+func CountByFilename(filename string) FileStats {
+	var stats FileStats
+	ext := strings.ToLower(filepath.Ext(filename))
+
+	switch ext {
+	case ".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic":
+		stats.ImageCount = 1
+	case ".mp4", ".mov", ".mkv", ".avi", ".webm":
+		stats.VideoCount = 1
+	default:
+		if ext != "" {
+			stats.FileCount = 1
+		}
+	}
+
+	return stats
 }
 
 func generateHTMLFile(category, slug, body, publicHTML string, isProtected bool, postPath, description string, meta models.NoteMeta) error {
@@ -305,6 +343,8 @@ func generateHTMLFile(category, slug, body, publicHTML string, isProtected bool,
 		"Body":        template.HTML(publicHTML),
 		"Category":    category,
 		"Date":        modTime,
+		"Created":     meta.ParseTime(meta.Created),
+		"Modified":    meta.ParseTime(meta.Modified),
 		"IsProtected": isProtected,
 		"PostPath":    postPath,
 		"Description": description,
@@ -345,11 +385,9 @@ func buildIndex(posts []models.Post) error {
 
 	var cats []models.CategoryGroup
 	for cat, ps := range groups {
-		sort.Slice(ps, func(i, j int) bool { return ps[i].Date.After(ps[j].Date) })
+		sort.Slice(ps, func(i, j int) bool { return ps[i].Created.After(ps[j].Created) })
 		cats = append(cats, models.CategoryGroup{Name: cat, Posts: ps})
 	}
-
-	sort.Slice(cats, func(i, j int) bool { return cats[i].Name < cats[j].Name })
 
 	f, err := os.Create(filepath.Join(config.OutDir, "index.html"))
 	if err != nil {

@@ -14,6 +14,8 @@ var (
 	reNoteID          = regexp.MustCompile(`(?m)^Note ID:\s*(\d+)\s*$`)
 	reTitle           = regexp.MustCompile(`(?m)^Title:\s*(.+)\s*$`)
 	reFolder          = regexp.MustCompile(`(?m)^Folder:\s*(.+)\s*$`)
+	reModified        = regexp.MustCompile(`(?m)^Modified:\s*(.+)\s*$`)
+	reCreated         = regexp.MustCompile(`(?m)^Created:\s*(.+)\s*$`)
 	reAttachCount     = regexp.MustCompile(`(?m)^Attachments:\s*(\d+)\s*file\(s\)\s*$`)
 	reAttachmentStart = regexp.MustCompile(`(?i)^\s*\d+\.\s*Saved\s*as:\s*(.+?)\s*$`)
 	reKeyVal          = regexp.MustCompile(`^\s*([A-Za-z ]+):\s*(.*?)\s*$`)
@@ -48,6 +50,18 @@ func ParseMeta(text string) (models.NoteMeta, error) {
 		m.Folder = s
 	} else {
 		return m, errors.New("meta missing Folder")
+	}
+
+	if s, err := findString(reCreated, t); err == nil {
+		m.Created = s
+	} else {
+		return m, errors.New("meta missing Created")
+	}
+
+	if s, err := findString(reModified, t); err == nil {
+		m.Modified = s
+	} else {
+		return m, errors.New("meta missing Modified")
 	}
 
 	if ms := reAttachCount.FindStringSubmatch(t); len(ms) == 2 {

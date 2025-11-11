@@ -2,9 +2,9 @@ package config
 
 import (
 	"html/template"
-	"log"
 	"strings"
 	"sync"
+	"time"
 
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/yuin/goldmark"
@@ -77,15 +77,22 @@ func Initialize() {
 	)
 }
 
-func LoadTemplates() {
-	var err error
-	PostTpl, err = template.ParseFiles("tpl/post.html")
-	if err != nil {
-		log.Fatalf("post template: %v", err)
+func isUpdated(created, modified time.Time) bool {
+	if modified.IsZero() || created.IsZero() {
+		return false
 	}
+	// 3 天时间窗口
+	sevenDays := 3 * 24 * time.Hour
+	// 如果修改时间比创建时间晚，且在 3 天之内，返回 true
+	return modified.After(created) && modified.Sub(created) <= sevenDays
+}
 
-	IndexTpl, err = template.ParseFiles("tpl/index.html")
-	if err != nil {
-		log.Fatalf("index template: %v", err)
-	}
+func LoadTemplates() {
+	PostTpl = template.Must(template.New("post.html").Funcs(template.FuncMap{
+		"isUpdated": isUpdated,
+	}).ParseFiles("tpl/post.html"))
+
+	IndexTpl = template.Must(template.New("index.html").Funcs(template.FuncMap{
+		"isUpdated": isUpdated,
+	}).ParseFiles("tpl/index.html"))
 }
