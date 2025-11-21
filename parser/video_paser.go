@@ -4,15 +4,11 @@ import (
 	"crypto/md5"
 	"fmt"
 	"html/template"
-
 	"path/filepath"
 	"strings"
 )
 
-// GenerateVideoWarpHTML 生成用于在Web上展示视频内容的模块
-// 使用原生HTML5视频播放器+Video.js增强，支持多种视频格式
-// 支持WebCodecs API处理特殊编码，Range请求按需加载
-// 自动提取视频封面,居中显示,简洁设计,完美全屏支持
+// GenerateVideoWarpHTML 企业级视频播放器
 func GenerateVideoWarpHTML(videoId, videoPath string) string {
 	safeVideoId := template.HTMLEscapeString(videoId)
 	safeVideoPath := template.HTMLEscapeString(videoPath)
@@ -42,12 +38,12 @@ func GenerateVideoWarpHTML(videoId, videoPath string) string {
 #%[1]s-wrapper .play-button-overlay::after{content:'';width:0;height:0;border-left:25px solid #fff;border-top:15px solid transparent;border-bottom:15px solid transparent;margin-left:5px}
 #%[1]s-wrapper .vjs-big-play-button{display:none!important}
 #%[1]s-wrapper .vjs-play-progress,#%[1]s-wrapper .vjs-volume-level{background-color:#3498db}
-#%[1]s-wrapper .video-loading{position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);text-align:center;color:#fff;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;z-index:15;background:rgba(0,0,0,0.8);padding:20px;border-radius:8px;min-width:150px}
+#%[1]s-wrapper .video-loading{position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);text-align:center;color:#fff;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;z-index:15;background:rgba(0,0,0,0.8);padding:20px;border-radius:8px;min-width:150px;display:none}
 #%[1]s-wrapper .video-spinner{border:3px solid rgba(255,255,255,0.2);border-top:3px solid #3498db;border-radius:50%%;width:40px;height:40px;animation:video-spin-%[1]s 1s linear infinite;margin:0 auto 15px}
 @keyframes video-spin-%[1]s{0%%{transform:rotate(0deg)}100%%{transform:rotate(360deg)}}
-#%[1]s-wrapper .video-loading-progress{margin-top:10px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden}
+#%[1]s-wrapper .video-loading-progress{margin-top:10px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;display:none}
 #%[1]s-wrapper .video-loading-progress-bar{height:100%%;background:#3498db;width:0%%;transition:width 0.3s ease}
-#%[1]s-wrapper .video-error{position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);text-align:center;padding:20px;color:#e74c3c;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:rgba(255,255,255,0.95);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:10;max-width:80%%}
+#%[1]s-wrapper .video-error{position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-50%%);text-align:center;padding:20px;color:#e74c3c;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:rgba(255,255,255,0.95);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:10;max-width:80%%;display:none}
 #%[1]s-wrapper .video-error-title{font-weight:600;margin-bottom:10px}
 #%[1]s-wrapper .video-error-message{font-size:12px;color:#666;margin-bottom:15px}
 #%[1]s-wrapper .video-retry-btn{background:#3498db;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-size:13px;transition:background 0.2s}
@@ -71,23 +67,23 @@ func GenerateVideoWarpHTML(videoId, videoPath string) string {
 <div class="video-loading" id="%[1]s-loading">
 <div class="video-spinner"></div>
 <div id="%[1]s-loading-text">Initializing...</div>
-<div class="video-loading-progress" id="%[1]s-loading-progress" style="display:none;">
+<div class="video-loading-progress" id="%[1]s-loading-progress">
 <div class="video-loading-progress-bar" id="%[1]s-loading-progress-bar"></div>
 </div>
 </div>
 <canvas id="%[1]s-poster" class="video-poster" style="display:none;"></canvas>
 <div id="%[1]s-play-btn" class="play-button-overlay"></div>
 <div class="video-toolbar">
-<button class="video-btn" id="%[1]s-pip-btn" title="Picture in Picture">📺 PiP</button>
-<a href="%[2]s" target="_blank" rel="noopener noreferrer" class="video-btn" title="Open in new tab">🔗 Open</a>
+<button class="video-btn" id="%[1]s-pip-btn" title="Picture in Picture">PiP</button>
+<a href="%[2]s" target="_blank" rel="noopener noreferrer" class="video-btn" title="Open in new tab">Open</a>
 </div>
 <div class="video-codec-info" id="%[1]s-codec-info">Loading...</div>
-<video id="%[1]s-player" class="video-js vjs-default-skin vjs-16-9" controls preload="auto" crossorigin="anonymous">
+<video id="%[1]s-player" class="video-js vjs-default-skin vjs-16-9" controls preload="metadata" crossorigin="anonymous">
 <source src="%[2]s" type="%[3]s">
 <p class="vjs-no-js">To view this video please enable JavaScript</p>
 </video>
-<div class="video-error" id="%[1]s-error" style="display:none;">
-<div class="video-error-title">❌ Failed to load video</div>
+<div class="video-error" id="%[1]s-error">
+<div class="video-error-title">Failed to load video</div>
 <div class="video-error-message" id="%[1]s-error-msg">Unable to load video content</div>
 <button class="video-retry-btn" id="%[1]s-retry">Retry</button>
 </div>
@@ -102,740 +98,237 @@ const VIDEO_URL='%[2]s';
 const VIDEO_TYPE='%[3]s';
 if(!window.__VideoPlayerManager){
 window.__VideoPlayerManager={
-instances:{},
-videojsLoaded:false,
-videojsLoading:false,
-loadCallbacks:[],
-keyboardHandlerAttached:false,
-loadVideoJS:function(callback){
-if(this.videojsLoaded){
-callback(true);
-return;
-}
-this.loadCallbacks.push(callback);
+instances:{},videojsLoaded:false,videojsLoading:false,loadCallbacks:[],keyboardHandlerAttached:false,
+loadVideoJS:function(cb){
+if(this.videojsLoaded){cb(true);return;}
+this.loadCallbacks.push(cb);
 if(this.videojsLoading)return;
 this.videojsLoading=true;
-if(!document.querySelector('link[href*="video-js.min.css"]')){
-const link=document.createElement('link');
-link.rel='stylesheet';
-link.href='https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video-js.min.css';
-document.head.appendChild(link);
-}
-if(!document.querySelector('script[src*="video.min.js"]')){
-const script=document.createElement('script');
-script.src='https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video.min.js';
-script.onload=()=>{
-this.videojsLoaded=true;
-this.videojsLoading=false;
-this.loadCallbacks.forEach(cb=>cb(true));
-this.loadCallbacks=[];
-};
-script.onerror=()=>{
-this.videojsLoading=false;
-this.loadCallbacks.forEach(cb=>cb(false));
-this.loadCallbacks=[];
-};
-document.head.appendChild(script);
-}else if(typeof videojs!=='undefined'){
-this.videojsLoaded=true;
-this.videojsLoading=false;
-this.loadCallbacks.forEach(cb=>cb(true));
-this.loadCallbacks=[];
-}
+const css=document.querySelector('link[href*="video-js.min.css"]')||(()=>{const l=document.createElement('link');l.rel='stylesheet';l.href='https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video-js.min.css';document.head.appendChild(l);return l;})();
+const script=document.querySelector('script[src*="video.min.js"]')||(()=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video.min.js';s.onload=()=>{this.videojsLoaded=true;this.videojsLoading=false;this.loadCallbacks.forEach(c=>c(true));this.loadCallbacks=[];};s.onerror=()=>{this.videojsLoading=false;this.loadCallbacks.forEach(c=>c(false));this.loadCallbacks=[];};document.head.appendChild(s);return s;})();
+if(typeof videojs!=='undefined'){this.videojsLoaded=true;this.videojsLoading=false;this.loadCallbacks.forEach(c=>c(true));this.loadCallbacks=[];}
 },
 attachKeyboardHandler:function(){
 if(this.keyboardHandlerAttached)return;
 this.keyboardHandlerAttached=true;
-document.addEventListener('keydown',function(e){
-const activeElement=document.activeElement;
-if(activeElement&&(activeElement.tagName==='INPUT'||activeElement.tagName==='TEXTAREA'||activeElement.isContentEditable))return;
-let targetPlayer=null;
-let targetWrapper=null;
-for(const id in window.__VideoPlayerManager.instances){
-const instance=window.__VideoPlayerManager.instances[id];
-if(!instance.player||!instance.elements.wrapper)continue;
-if(instance.player.isFullscreen()){
-targetPlayer=instance.player;
-targetWrapper=instance.elements.wrapper;
-break;
+document.addEventListener('keydown',e=>{
+const a=document.activeElement;
+if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable))return;
+let t=null;
+for(const i in this.instances){
+const inst=this.instances[i];
+if(!inst.player||!inst.elements.wrapper)continue;
+if(inst.player.isFullscreen()){t=inst.player;break;}
+}
+if(!t){
+for(const i in this.instances){
+const inst=this.instances[i];
+if(!inst.player||!inst.elements.wrapper)continue;
+const r=inst.elements.wrapper.getBoundingClientRect();
+if(r.top<window.innerHeight&&r.bottom>0){t=inst.player;break;}
 }
 }
-if(!targetPlayer){
-for(const id in window.__VideoPlayerManager.instances){
-const instance=window.__VideoPlayerManager.instances[id];
-if(!instance.player||!instance.elements.wrapper)continue;
-const rect=instance.elements.wrapper.getBoundingClientRect();
-const inViewport=rect.top<window.innerHeight&&rect.bottom>0;
-if(inViewport){
-targetPlayer=instance.player;
-targetWrapper=instance.elements.wrapper;
-break;
-}
-}
-}
-if(!targetPlayer)return;
+if(!t)return;
 switch(e.key){
-case ' ':
-case 'k':
-if(targetPlayer.paused())targetPlayer.play();
-else targetPlayer.pause();
-e.preventDefault();
-break;
-case 'f':
-if(targetPlayer.isFullscreen())targetPlayer.exitFullscreen();
-else targetPlayer.requestFullscreen();
-e.preventDefault();
-break;
-case 'Escape':
-if(targetPlayer.isFullscreen())targetPlayer.exitFullscreen();
-break;
-case 'm':
-targetPlayer.muted(!targetPlayer.muted());
-e.preventDefault();
-break;
-case 'ArrowLeft':
-targetPlayer.currentTime(Math.max(0,targetPlayer.currentTime()-5));
-e.preventDefault();
-break;
-case 'ArrowRight':
-targetPlayer.currentTime(Math.min(targetPlayer.duration()||0,targetPlayer.currentTime()+5));
-e.preventDefault();
-break;
+case ' ':case 'k':t.paused()?t.play():t.pause();e.preventDefault();break;
+case 'f':t.isFullscreen()?t.exitFullscreen():t.requestFullscreen();e.preventDefault();break;
+case 'Escape':t.isFullscreen()&&t.exitFullscreen();break;
+case 'm':t.muted(!t.muted());e.preventDefault();break;
+case 'ArrowLeft':t.currentTime(Math.max(0,t.currentTime()-5));e.preventDefault();break;
+case 'ArrowRight':t.currentTime(Math.min(t.duration()||0,t.currentTime()+5));e.preventDefault();break;
 }
 });
 },
-registerInstance:function(id,instance){
-this.instances[id]=instance;
-this.attachKeyboardHandler();
-},
+registerInstance:function(id,inst){this.instances[id]=inst;this.attachKeyboardHandler();},
 unregisterInstance:function(id){
 if(this.instances[id]){
-if(this.instances[id].player){
-try{this.instances[id].player.dispose();}catch(e){}
-}
+if(this.instances[id].player)try{this.instances[id].player.dispose();}catch(e){}
 delete this.instances[id];
 }
 }
 };
 }
 class VideoPlayer{
-constructor(uniqueId,videoUrl,videoType){
-this.uniqueId=uniqueId;
-this.videoUrl=videoUrl;
-this.videoType=videoType;
-this.player=null;
-this.posterGenerated=false;
-this.retryCount=0;
-this.maxRetries=3;
-this.isDestroyed=false;
-this.eventListeners=[];
-this.loadingState='init';
-this.supportsWebCodecs=false;
-this.codecInfo=null;
-this.bufferProgress=0;
-this.isPlaying=false;
-this.bufferingTimeout=null;
-this.maxBufferingTime=30000;
-this.seekTimeout=null;
+constructor(uid,url,type){
+this.uniqueId=uid;this.videoUrl=url;this.videoType=type;
+this.player=null;this.posterGenerated=false;this.retryCount=0;this.maxRetries=3;
+this.isDestroyed=false;this.eventListeners=[];this.loadingState='init';
+this.isPlaying=false;this.bufferingTimeout=null;
 this.elements={
-wrapper:document.getElementById(uniqueId+'-wrapper'),
-loading:document.getElementById(uniqueId+'-loading'),
-loadingText:document.getElementById(uniqueId+'-loading-text'),
-loadingProgress:document.getElementById(uniqueId+'-loading-progress'),
-loadingProgressBar:document.getElementById(uniqueId+'-loading-progress-bar'),
-error:document.getElementById(uniqueId+'-error'),
-errorMsg:document.getElementById(uniqueId+'-error-msg'),
-retryBtn:document.getElementById(uniqueId+'-retry'),
-videoEl:document.getElementById(uniqueId+'-player'),
-posterCanvas:document.getElementById(uniqueId+'-poster'),
-playBtn:document.getElementById(uniqueId+'-play-btn'),
-pipBtn:document.getElementById(uniqueId+'-pip-btn'),
-codecInfo:document.getElementById(uniqueId+'-codec-info')
+wrapper:document.getElementById(uid+'-wrapper'),loading:document.getElementById(uid+'-loading'),
+loadingText:document.getElementById(uid+'-loading-text'),loadingProgress:document.getElementById(uid+'-loading-progress'),
+loadingProgressBar:document.getElementById(uid+'-loading-progress-bar'),error:document.getElementById(uid+'-error'),
+errorMsg:document.getElementById(uid+'-error-msg'),retryBtn:document.getElementById(uid+'-retry'),
+videoEl:document.getElementById(uid+'-player'),posterCanvas:document.getElementById(uid+'-poster'),
+playBtn:document.getElementById(uid+'-play-btn'),pipBtn:document.getElementById(uid+'-pip-btn'),
+codecInfo:document.getElementById(uid+'-codec-info')
 };
-this.checkWebCodecsSupport();
 this.init();
-}
-checkWebCodecsSupport(){
-this.supportsWebCodecs='VideoDecoder' in window && 'VideoEncoder' in window;
-console.log('WebCodecs API support:',this.supportsWebCodecs);
 }
 init(){
 window.__VideoPlayerManager.registerInstance(this.uniqueId,this);
-if(this.elements.retryBtn){
-this.addEventListener(this.elements.retryBtn,'click',()=>this.retry());
-}
-this.showLoading('Checking video format...');
+if(this.elements.retryBtn)this.addEventListener(this.elements.retryBtn,'click',()=>this.retry());
 this.loadPlayer();
 }
-addEventListener(element,event,handler){
-if(!element)return;
-element.addEventListener(event,handler);
-this.eventListeners.push({element,event,handler});
-}
-removeAllEventListeners(){
-this.eventListeners.forEach(({element,event,handler})=>{
-element.removeEventListener(event,handler);
-});
-this.eventListeners=[];
-}
-showLoading(text){
+addEventListener(el,ev,h){if(el){el.addEventListener(ev,h);this.eventListeners.push({el,ev,h});}}
+removeAllEventListeners(){this.eventListeners.forEach(o=>o.el.removeEventListener(o.ev,o.h));this.eventListeners=[];}
+showLoading(t){
+if(this.loadingState==='loading')return;
 this.loadingState='loading';
-if(this.elements.loading){
 this.elements.loading.style.display='block';
-if(this.elements.loadingText){
-this.elements.loadingText.textContent=text||'Loading video...';
-}
-}
-if(this.bufferingTimeout){
+if(this.elements.loadingText)this.elements.loadingText.textContent=t||'Loading...';
+if(this.elements.loadingProgress)this.elements.loadingProgress.style.display='none';
 clearTimeout(this.bufferingTimeout);
+this.bufferingTimeout=setTimeout(()=>{if(this.loadingState==='loading')this.showError('Buffering timeout.',true);},30000);
 }
-this.bufferingTimeout=setTimeout(()=>{
-if(this.loadingState==='loading'){
-this.showError('Buffering timeout. Please check your connection.',true);
-}
-},this.maxBufferingTime);
-}
-updateLoadingProgress(percent){
-if(this.elements.loadingProgress&&percent>=0){
+updateLoadingProgress(p){
+if(!this.elements.loadingProgress)return;
 this.elements.loadingProgress.style.display='block';
-if(this.elements.loadingProgressBar){
-this.elements.loadingProgressBar.style.width=percent+'%%';
-}
-if(this.elements.loadingText){
-this.elements.loadingText.textContent='Buffering... '+Math.round(percent)+'%%';
-}
-}
+this.elements.loadingProgressBar.style.width=p+'%';
+if(this.elements.loadingText)this.elements.loadingText.textContent='Buffering... '+Math.round(p)+'%';
 }
 hideLoading(){
+if(this.loadingState!=='loading')return;
 this.loadingState='loaded';
-if(this.bufferingTimeout){
-clearTimeout(this.bufferingTimeout);
-this.bufferingTimeout=null;
-}
-if(this.elements.loading){
+clearTimeout(this.bufferingTimeout);this.bufferingTimeout=null;
 this.elements.loading.style.display='none';
-}
-if(this.elements.loadingProgress){
-this.elements.loadingProgress.style.display='none';
-}
+if(this.elements.loadingProgress)this.elements.loadingProgress.style.display='none';
 }
 showPlayButton(){
-if(this.elements.playBtn){
-this.elements.playBtn.classList.add('show');
+    if(this.isPlaying) return; // 播放中禁止显示
+    if(this.elements.playBtn) this.elements.playBtn.classList.add('show');
 }
-}
-hidePlayButton(){
-if(this.elements.playBtn){
-this.elements.playBtn.classList.remove('show');
-}
-}
-showError(message,canRetry=true){
-this.hideLoading();
-if(this.elements.error){
-this.elements.error.style.display='block';
-if(this.elements.errorMsg){
-this.elements.errorMsg.textContent=message||'Unable to load video content';
-}
-if(this.elements.retryBtn){
-this.elements.retryBtn.style.display=canRetry?'inline-block':'none';
-}
-}
-}
-hideError(){
-if(this.elements.error)this.elements.error.style.display='none';
-}
-updateCodecInfo(info){
-if(this.elements.codecInfo){
-this.elements.codecInfo.textContent=info;
-this.codecInfo=info;
-}
-}
+hidePlayButton(){if(this.elements.playBtn)this.elements.playBtn.classList.remove('show');this.elements.playBtn.classList.add('hide');}
+showError(m,r=true){this.hideLoading();this.elements.error.style.display='block';if(this.elements.errorMsg)this.elements.errorMsg.textContent=m;if(this.elements.retryBtn)this.elements.retryBtn.style.display=r?'inline-block':'none';}
+hideError(){if(this.elements.error)this.elements.error.style.display='none';}
 retry(){
-if(this.retryCount>=this.maxRetries){
-this.showError('Maximum retry attempts reached. Please check your connection.',false);
-return;
-}
-this.retryCount++;
-this.hideError();
-this.showLoading('Retrying... (Attempt '+this.retryCount+'/'+this.maxRetries+')');
-if(this.player){
-try{this.player.dispose();}catch(e){}
-this.player=null;
-}
-this.posterGenerated=false;
-this.isPlaying=false;
+if(this.retryCount>=this.maxRetries){this.showError('Max retries reached.',false);return;}
+this.retryCount++;this.hideError();this.showLoading('Retrying... ('+this.retryCount+'/'+this.maxRetries+')');
+if(this.player)try{this.player.dispose();}catch(e){}
+this.player=null;this.posterGenerated=false;this.isPlaying=false;
 setTimeout(()=>this.loadPlayer(),1000);
-}
-async probeVideoCodec(){
-if(!this.elements.videoEl)return null;
-return new Promise((resolve)=>{
-const videoEl=this.elements.videoEl;
-const handleLoadedMetadata=()=>{
-videoEl.removeEventListener('loadedmetadata',handleLoadedMetadata);
-const track=videoEl.videoTracks&&videoEl.videoTracks[0];
-if(track){
-this.updateCodecInfo('Codec: '+(track.label||'Unknown'));
-}
-const info={
-duration:videoEl.duration,
-videoWidth:videoEl.videoWidth,
-videoHeight:videoEl.videoHeight,
-supportsRange:false
-};
-fetch(this.videoUrl,{method:'HEAD'})
-.then(response=>{
-info.supportsRange=response.headers.get('Accept-Ranges')==='bytes';
-console.log('Server supports Range requests:',info.supportsRange);
-resolve(info);
-})
-.catch(()=>resolve(info));
-};
-videoEl.addEventListener('loadedmetadata',handleLoadedMetadata);
-setTimeout(()=>{
-videoEl.removeEventListener('loadedmetadata',handleLoadedMetadata);
-resolve(null);
-},5000);
-});
-}
-isTimeBuffered(time,buffered){
-if(!buffered||buffered.length===0)return false;
-for(let i=0;i<buffered.length;i++){
-if(time>=buffered.start(i)&&time<=buffered.end(i)){
-return true;
-}
-}
-return false;
-}
-getBufferAhead(time,buffered){
-if(!buffered||buffered.length===0)return 0;
-for(let i=0;i<buffered.length;i++){
-if(time>=buffered.start(i)&&time<=buffered.end(i)){
-return buffered.end(i)-time;
-}
-}
-return 0;
 }
 loadPlayer(){
 this.showLoading('Initializing player...');
-window.__VideoPlayerManager.loadVideoJS((success)=>{
-if(this.isDestroyed)return;
-if(success){
-this.initVideoJS();
-}else{
-this.fallbackToNative();
-}
-});
+window.__VideoPlayerManager.loadVideoJS(s=>{if(this.isDestroyed)return;s?this.initVideoJS():this.fallbackToNative();});
 }
 generatePoster(){
 if(this.posterGenerated||!this.elements.videoEl)return;
-const videoEl=this.elements.videoEl;
-const canvas=this.elements.posterCanvas;
-const handleLoadedData=()=>{
+const v=this.elements.videoEl,c=this.elements.posterCanvas;
+const onData=()=>{if(this.posterGenerated||v.duration<=0)return;setTimeout(()=>{v.currentTime=Math.min(v.duration*0.1,5);},100);};
+const onSeek=()=>{
 if(this.posterGenerated)return;
-setTimeout(()=>{
-if(videoEl.duration&&videoEl.duration>0){
-videoEl.currentTime=Math.min(videoEl.duration*0.1,5);
-}
-},100);
+try{c.width=v.videoWidth||640;c.height=v.videoHeight||360;
+const ctx=c.getContext('2d');ctx.drawImage(v,0,0,c.width,c.height);c.style.display='block';
+this.posterGenerated=true;v.currentTime=0;this.showPlayButton();this.hideLoading();
+}catch(e){console.warn('Poster failed:',e);this.showPlayButton();this.hideLoading();}
+v.removeEventListener('seeked',onSeek);
 };
-const handleSeeked=()=>{
-if(this.posterGenerated)return;
-try{
-canvas.width=videoEl.videoWidth||640;
-canvas.height=videoEl.videoHeight||360;
-const ctx=canvas.getContext('2d');
-ctx.drawImage(videoEl,0,0,canvas.width,canvas.height);
-canvas.style.display='block';
-this.posterGenerated=true;
-videoEl.currentTime=0;
-this.showPlayButton();
-}catch(e){
-console.warn('Poster generation failed:',e);
-this.showPlayButton();
-}
-videoEl.removeEventListener('seeked',handleSeeked);
-};
-this.addEventListener(videoEl,'loadeddata',handleLoadedData);
-this.addEventListener(videoEl,'seeked',handleSeeked);
+this.addEventListener(v,'loadeddata',onData);
+this.addEventListener(v,'seeked',onSeek);
 }
 initVideoJS(){
 if(this.isDestroyed)return;
 try{
-this.player=videojs(this.uniqueId+'-player',{
-controls:true,
-autoplay:false,
-preload:'auto',
-fluid:true,
-aspectRatio:'16:9',
-playbackRates:[0.5,0.75,1,1.25,1.5,2],
-html5:{
-vhs:{
-withCredentials:false,
-handleManifestRedirects:true,
-overrideNative:true
-},
-nativeVideoTracks:false,
-nativeAudioTracks:false,
-nativeTextTracks:false
-},
-controlBar:{
-volumePanel:{inline:false},
-children:['playToggle','volumePanel','currentTimeDisplay','timeDivider','durationDisplay','progressControl','remainingTimeDisplay','playbackRateMenuButton','pictureInPictureToggle','fullscreenToggle']
-}
-});
+this.player=videojs(this.uniqueId+'-player',{controls:true,autoplay:false,preload:'metadata',fluid:true,aspectRatio:'16:9',playbackRates:[0.5,0.75,1,1.25,1.5,2],html5:{vhs:{overrideNative:true}},controlBar:{volumePanel:{inline:false}}});
 this.player.ready(()=>{
 if(this.isDestroyed)return;
-this.showLoading('Probing video format...');
-this.probeVideoCodec().then(info=>{
-if(info){
-console.log('Video info:',info);
-}
-this.hideLoading();
+this.showLoading('Probing format...');
+this.probeVideoCodec().then(()=>{this.hideLoading();});
+this.hideError();this.generatePoster();this.bindVideoJSEvents();this.setupBufferMonitoring();
 });
-this.hideError();
-this.generatePoster();
-this.bindVideoJSEvents();
-this.setupBufferMonitoring();
-});
-this.player.on('loadstart',()=>{
-this.showLoading('Loading video...');
-});
-this.player.on('loadedmetadata',()=>{
-this.showLoading('Video ready, loading data...');
-});
-this.player.on('loadeddata',()=>{
-this.hideLoading();
-});
-this.player.on('canplay',()=>{
-this.hideLoading();
-});
-this.player.on('waiting',()=>{
-if(this.loadingState!=='loading'){
-this.showLoading('Buffering...');
-}
-});
-this.player.on('canplaythrough',()=>{
-this.hideLoading();
-});
-this.player.on('play',()=>{
-this.isPlaying=true;
-this.hideLoading();
-this.hidePlayButton();
-if(this.elements.posterCanvas)this.elements.posterCanvas.classList.add('hidden');
-});
-this.player.on('playing',()=>{
-this.isPlaying=true;
-this.hidePlayButton();
-this.hideLoading();
-});
-this.player.on('pause',()=>{
-this.isPlaying=false;
-if(!this.player.seeking()&&this.player.currentTime()>0&&!this.player.ended()){
-this.showPlayButton();
-}
-});
-this.player.on('ended',()=>{
-this.isPlaying=false;
-if(this.elements.posterCanvas)this.elements.posterCanvas.classList.remove('hidden');
-this.showPlayButton();
-});
-this.player.on('seeking',()=>{
-const currentTime=this.player.currentTime();
-const buffered=this.player.buffered();
-const isBuffered=this.isTimeBuffered(currentTime,buffered);
-if(!isBuffered){
-this.showLoading('Seeking to unbuffered position...');
-}
-this.hidePlayButton();
-if(this.seekTimeout){
-clearTimeout(this.seekTimeout);
-}
-});
+this.player.on('loadeddata',()=>{this.hideLoading();this.showPlayButton();});
+this.player.on('canplay',()=>{this.hideLoading();this.showPlayButton();});
+this.player.on('waiting',()=>{if(this.isPlaying)this.showLoading('Buffering...');});
+this.player.on('canplaythrough',()=>{this.hideLoading();this.showPlayButton();});
+this.player.on('play',()=>{this.isPlaying=true;this.hideLoading();this.hidePlayButton();if(this.elements.posterCanvas)this.elements.posterCanvas.classList.add('hidden');});
+this.player.on('playing',()=>{this.isPlaying=true;this.hidePlayButton();this.hideLoading();});
+this.player.on('pause',()=>{this.isPlaying=false;if(this.player.currentTime()>0&&!this.player.ended())this.showPlayButton();});
+this.player.on('ended',()=>{this.isPlaying=false;if(this.elements.posterCanvas)this.elements.posterCanvas.classList.remove('hidden');this.showPlayButton();});
+this.player.on('seeking',()=>{const t=this.player.currentTime(),b=this.player.buffered();if(!this.isTimeBuffered(t,b))this.showLoading('Seeking...');this.hidePlayButton();});
+// === initVideoJS seeked 事件替换 ===
 this.player.on('seeked',()=>{
-const currentTime=this.player.currentTime();
-const buffered=this.player.buffered();
-const isBuffered=this.isTimeBuffered(currentTime,buffered);
-const bufferAhead=this.getBufferAhead(currentTime,buffered);
-if(!isBuffered||bufferAhead<2){
-this.showLoading('Waiting for buffer...');
-const waitForBuffer=()=>{
-if(this.isDestroyed||!this.player)return;
-const buf=this.player.buffered();
-const ct=this.player.currentTime();
-const ready=this.isTimeBuffered(ct,buf);
-const ahead=this.getBufferAhead(ct,buf);
-if(ready&&ahead>=2){
-this.hideLoading();
-if(this.isPlaying&&this.player.paused()){
-this.player.play().catch(e=>{
-console.warn('Play after seek failed:',e);
-this.showPlayButton();
+    const t=this.player.currentTime(),b=this.player.buffered();
+    const a=this.getBufferAhead(t,b);
+    if(!this.isTimeBuffered(t,b)||a<2){
+        this.showLoading('Waiting for buffer...');
+    }else{
+        this.hideLoading(); // 只隐藏缓冲遮罩
+        this.hidePlayButton();
+    }
 });
-}else if(!this.isPlaying&&this.player.paused()){
-this.showPlayButton();
-}
-}else{
-this.seekTimeout=setTimeout(waitForBuffer,300);
-}
-};
-waitForBuffer();
-}else{
-this.hideLoading();
-if(!this.isPlaying&&this.player.paused()){
-this.showPlayButton();
-}
-}
-});
-this.player.on('error',()=>{
-const error=this.player.error();
-console.error('Video error:',error);
-if(error&&error.code===4&&this.supportsWebCodecs){
-this.showError('Video format not supported by browser. Trying alternative method...',true);
-setTimeout(()=>this.tryWebCodecsPlayback(),1000);
-}else if(this.retryCount<this.maxRetries){
-this.showError((error?error.message:'Failed to load video')+'. Click retry to try again.',true);
-}else{
-this.showError(error?error.message:'Failed to load video',false);
-}
-});
-}catch(error){
-console.error('VideoJS init failed:',error);
-this.fallbackToNative();
-}
+this.player.on('error',()=>{const e=this.player.error();this.showError((e&&e.message)||'Failed to load video',this.retryCount<this.maxRetries);});
+}catch(e){console.error('VideoJS init failed:',e);this.fallbackToNative();}
 }
 setupBufferMonitoring(){
 if(!this.player)return;
-const videoElement=this.player.el().querySelector('video');
-if(!videoElement)return;
-this.addEventListener(videoElement,'progress',()=>{
-if(videoElement.buffered.length>0&&videoElement.duration){
-const bufferedEnd=videoElement.buffered.end(videoElement.buffered.length-1);
-const percent=(bufferedEnd/videoElement.duration)*100;
-if(percent<100&&this.loadingState==='loading'){
-this.updateLoadingProgress(percent);
-}
-}
-});
-}
-async tryWebCodecsPlayback(){
-console.log('Attempting WebCodecs playback...');
-this.showLoading('Trying advanced codec support...');
-try{
-const response=await fetch(this.videoUrl);
-if(!response.ok)throw new Error('Failed to fetch video');
-this.showError('WebCodecs playback not fully implemented. Please use a compatible video format.',false);
-}catch(error){
-console.error('WebCodecs playback failed:',error);
-this.showError('All playback methods failed. Video format may not be supported.',false);
-}
+const v=this.player.el().querySelector('video');
+if(!v)return;
+this.addEventListener(v,'progress',()=>{if(v.buffered.length>0&&v.duration){const p=(v.buffered.end(v.buffered.length-1)/v.duration)*100;if(p<100&&this.loadingState==='loading')this.updateLoadingProgress(p);}});
 }
 fallbackToNative(){
 if(this.isDestroyed)return;
-console.log('Using native HTML5 player');
 this.showLoading('Initializing native player...');
 if(!this.elements.videoEl)return;
-this.elements.videoEl.style.display='block';
-this.elements.videoEl.controls=true;
-this.addEventListener(this.elements.videoEl,'loadstart',()=>{
-this.showLoading('Loading video...');
-});
-this.addEventListener(this.elements.videoEl,'loadedmetadata',()=>{
-this.showLoading('Video ready...');
-this.hideError();
-this.probeVideoCodec();
-this.generatePoster();
-});
-this.addEventListener(this.elements.videoEl,'loadeddata',()=>{
-this.hideLoading();
-});
-this.addEventListener(this.elements.videoEl,'waiting',()=>{
-this.showLoading('Buffering...');
-});
-this.addEventListener(this.elements.videoEl,'canplay',()=>{
-this.hideLoading();
-this.hideError();
-if(!this.isPlaying){
-this.showPlayButton();
-}
-});
-this.addEventListener(this.elements.videoEl,'canplaythrough',()=>{
-this.hideLoading();
-});
-this.addEventListener(this.elements.videoEl,'progress',()=>{
-const videoEl=this.elements.videoEl;
-if(videoEl.buffered.length>0&&videoEl.duration){
-const bufferedEnd=videoEl.buffered.end(videoEl.buffered.length-1);
-const percent=(bufferedEnd/videoEl.duration)*100;
-if(percent<100&&this.loadingState==='loading'){
-this.updateLoadingProgress(percent);
-}
-}
-});
-this.addEventListener(this.elements.videoEl,'error',(e)=>{
-console.error('Native video error:',e);
-const error=this.elements.videoEl.error;
-let errorMessage='Failed to load video';
-if(error){
-switch(error.code){
-case 1:errorMessage='Video loading aborted';break;
-case 2:errorMessage='Network error while loading video';break;
-case 3:errorMessage='Video decoding failed';break;
-case 4:errorMessage='Video format not supported';break;
-}
-}
-if(this.retryCount<this.maxRetries){
-this.showError(errorMessage+'. Click retry to try again.',true);
-}else{
-this.showError(errorMessage,false);
-}
-});
-this.addEventListener(this.elements.videoEl,'play',()=>{
-this.isPlaying=true;
-this.hideLoading();
-this.hidePlayButton();
-if(this.elements.posterCanvas)this.elements.posterCanvas.classList.add('hidden');
-});
-this.addEventListener(this.elements.videoEl,'playing',()=>{
-this.isPlaying=true;
-this.hidePlayButton();
-this.hideLoading();
-});
-this.addEventListener(this.elements.videoEl,'pause',()=>{
-this.isPlaying=false;
-if(this.elements.videoEl.currentTime>0&&!this.elements.videoEl.ended){
-this.showPlayButton();
-}
-});
-this.addEventListener(this.elements.videoEl,'ended',()=>{
-this.isPlaying=false;
-if(this.elements.posterCanvas)this.elements.posterCanvas.classList.remove('hidden');
-this.showPlayButton();
-});
-this.addEventListener(this.elements.videoEl,'seeking',()=>{
-const currentTime=this.elements.videoEl.currentTime;
-const buffered=this.elements.videoEl.buffered;
-const isBuffered=this.isTimeBuffered(currentTime,buffered);
-if(!isBuffered){
-this.showLoading('Seeking...');
-}
-this.hidePlayButton();
-if(this.seekTimeout){
-clearTimeout(this.seekTimeout);
-}
-});
-this.addEventListener(this.elements.videoEl,'seeked',()=>{
-const currentTime=this.elements.videoEl.currentTime;
-const buffered=this.elements.videoEl.buffered;
-const isBuffered=this.isTimeBuffered(currentTime,buffered);
-const bufferAhead=this.getBufferAhead(currentTime,buffered);
-if(!isBuffered||bufferAhead<1){
-this.showLoading('Buffering...');
-const waitForBuffer=()=>{
+const bar=this.elements.videoEl.parentElement.querySelector('.vjs-control-bar');
+if(bar)bar.style.display='none';
+this.elements.videoEl.style.display='block';this.elements.videoEl.controls=true;
+this.addEventListener(this.elements.videoEl,'loadedmetadata',()=>{this.hideError();this.probeVideoCodec();this.generatePoster();});
+this.addEventListener(this.elements.videoEl,'loadeddata',()=>{this.hideLoading();this.showPlayButton();});
+this.addEventListener(this.elements.videoEl,'canplay',()=>{this.hideLoading();this.showPlayButton();});
+this.addEventListener(this.elements.videoEl,'waiting',()=>{if(this.isPlaying)this.showLoading('Buffering...');});
+this.addEventListener(this.elements.videoEl,'progress',()=>{const v=this.elements.videoEl;if(v.buffered.length>0&&v.duration){const p=(v.buffered.end(v.buffered.length-1)/v.duration)*100;if(p<100&&this.loadingState==='loading')this.updateLoadingProgress(p);}});
+this.addEventListener(this.elements.videoEl,'play',()=>{this.isPlaying=true;this.hideLoading();this.hidePlayButton();if(this.elements.posterCanvas)this.elements.posterCanvas.classList.add('hidden');});
+this.addEventListener(this.elements.videoEl,'playing',()=>{this.isPlaying=true;this.hidePlayButton();this.hideLoading();});
+this.addEventListener(this.elements.videoEl,'pause',()=>{this.isPlaying=false;if(this.elements.videoEl.currentTime>0&&!this.elements.videoEl.ended)this.showPlayButton();});
+this.addEventListener(this.elements.videoEl,'ended',()=>{this.isPlaying=false;if(this.elements.posterCanvas)this.elements.posterCanvas.classList.remove('hidden');this.showPlayButton();});
+let last=0;
+const loop=()=>{
 if(this.isDestroyed||!this.elements.videoEl)return;
-const buf=this.elements.videoEl.buffered;
-const ct=this.elements.videoEl.currentTime;
-const ready=this.isTimeBuffered(ct,buf);
-const ahead=this.getBufferAhead(ct,buf);
-if(ready&&ahead>=1){
-this.hideLoading();
-if(this.isPlaying&&this.elements.videoEl.paused){
-this.elements.videoEl.play().catch(e=>{
-console.warn('Play after seek failed:',e);
-this.showPlayButton();
-});
-}else if(!this.isPlaying&&this.elements.videoEl.paused){
-this.showPlayButton();
+const v=this.elements.videoEl,ct=v.currentTime;
+if(Math.abs(ct-last)>1&&!v.paused&&!v.seeking){
+const b=v.buffered;
+if(!this.isTimeBuffered(ct,b))this.showLoading('Seeking...');
+this.hidePlayButton();
 }
-}else{
-this.seekTimeout=setTimeout(waitForBuffer,300);
+last=ct;
+// === fallbackToNative loop 替换 ===
+if(this.loadingState==='loading'&&this.isPlaying){
+    const b=v.buffered;
+    if(this.isTimeBuffered(ct,b)&&this.getBufferAhead(ct,b)>=1){
+        this.hideLoading(); // 只隐藏缓冲遮罩
+        this.hidePlayButton(); // 强制隐藏
+    }
 }
+requestAnimationFrame(loop);
 };
-waitForBuffer();
-}else{
-this.hideLoading();
-if(!this.isPlaying&&this.elements.videoEl.paused){
-this.showPlayButton();
-}
-}
-});
+requestAnimationFrame(loop);
 this.bindNativeEvents();
 }
 bindVideoJSEvents(){
-if(this.elements.posterCanvas){
-this.addEventListener(this.elements.posterCanvas,'click',()=>{
-if(this.player){
-this.player.play();
-}
-});
-}
-if(this.elements.playBtn){
-this.addEventListener(this.elements.playBtn,'click',()=>{
-if(this.player){
-if(this.player.paused()){
-this.player.play();
-}else{
-this.player.pause();
-}
-}
-});
-}
-if(this.elements.pipBtn){
-this.addEventListener(this.elements.pipBtn,'click',(e)=>{
-e.stopPropagation();
-if(!this.player)return;
-const videoElement=this.player.el().querySelector('video');
-if(document.pictureInPictureEnabled&&videoElement){
-if(document.pictureInPictureElement===videoElement){
-document.exitPictureInPicture();
-}else{
-videoElement.requestPictureInPicture().catch(err=>console.error('PiP error:',err));
-}
-}
-});
-}
+if(this.elements.posterCanvas)this.addEventListener(this.elements.posterCanvas,'click',()=>{if(this.player)this.player.play();});
+if(this.elements.playBtn)this.addEventListener(this.elements.playBtn,'click',()=>{if(this.player)this.player.paused()?this.player.play():this.player.pause();});
+if(this.elements.pipBtn)this.addEventListener(this.elements.pipBtn,'click',e=>{e.stopPropagation();if(!this.player)return;const v=this.player.el().querySelector('video');if(document.pictureInPictureEnabled&&v){document.pictureInPictureElement===v?document.exitPictureInPicture():v.requestPictureInPicture().catch(()=>{});}});
 }
 bindNativeEvents(){
-if(this.elements.posterCanvas){
-this.addEventListener(this.elements.posterCanvas,'click',()=>{
-if(this.elements.videoEl){
-this.elements.videoEl.play();
+if(this.elements.posterCanvas)this.addEventListener(this.elements.posterCanvas,'click',()=>{if(this.elements.videoEl)this.elements.videoEl.play();});
+if(this.elements.playBtn)this.addEventListener(this.elements.playBtn,'click',()=>{if(this.elements.videoEl)this.elements.videoEl.paused()?this.elements.videoEl.play():this.elements.videoEl.pause();});
+if(this.elements.pipBtn)this.addEventListener(this.elements.pipBtn,'click',e=>{e.stopPropagation();if(document.pictureInPictureEnabled&&this.elements.videoEl){document.pictureInPictureElement===this.elements.videoEl?document.exitPictureInPicture():this.elements.videoEl.requestPictureInPicture().catch(()=>{});}});
 }
+async probeVideoCodec(){
+if(!this.elements.videoEl)return null;
+return new Promise(r=>{
+const v=this.elements.videoEl;
+const onMeta=()=>{v.removeEventListener('loadedmetadata',onMeta);fetch(VIDEO_URL,{method:'HEAD'}).then(res=>{r({supportsRange:res.headers.get('Accept-Ranges')==='bytes'});}).catch(()=>r({}));};
+v.addEventListener('loadedmetadata',onMeta);
+setTimeout(()=>{v.removeEventListener('loadedmetadata',onMeta);r({});},3000);
 });
 }
-if(this.elements.playBtn){
-this.addEventListener(this.elements.playBtn,'click',()=>{
-if(this.elements.videoEl){
-if(this.elements.videoEl.paused){
-this.elements.videoEl.play();
-}else{
-this.elements.videoEl.pause();
-}
-}
-});
-}
-if(this.elements.pipBtn){
-this.addEventListener(this.elements.pipBtn,'click',(e)=>{
-e.stopPropagation();
-if(document.pictureInPictureEnabled&&this.elements.videoEl){
-if(document.pictureInPictureElement===this.elements.videoEl){
-document.exitPictureInPicture();
-}else{
-this.elements.videoEl.requestPictureInPicture().catch(err=>console.error('PiP error:',err));
-}
-}
-});
-}
-}
+isTimeBuffered(t,b){if(!b||b.length===0)return false;for(let i=0;i<b.length;i++)if(t>=b.start(i)&&t<=b.end(i))return true;return false;}
+getBufferAhead(t,b){if(!b||b.length===0)return 0;for(let i=0;i<b.length;i++)if(t>=b.start(i)&&t<=b.end(i))return b.end(i)-t;return 0;}
 destroy(){
 this.isDestroyed=true;
-if(this.bufferingTimeout){
 clearTimeout(this.bufferingTimeout);
-this.bufferingTimeout=null;
-}
-if(this.seekTimeout){
-clearTimeout(this.seekTimeout);
-this.seekTimeout=null;
-}
 this.removeAllEventListeners();
 window.__VideoPlayerManager.unregisterInstance(this.uniqueId);
 }
@@ -845,29 +338,16 @@ window.addEventListener('beforeunload',()=>player.destroy());
 })();
 </script>`, uniqueId, safeVideoPath, videoType)
 }
-
-// getVideoMimeType 根据文件扩展名返回对应的 MIME 类型
 func getVideoMimeType(ext string) string {
-	mimeTypes := map[string]string{
-		".mp4":  "video/mp4",
-		".webm": "video/webm",
-		".ogg":  "video/ogg",
-		".ogv":  "video/ogg",
-		".mov":  "video/quicktime",
-		".avi":  "video/x-msvideo",
-		".wmv":  "video/x-ms-wmv",
-		".flv":  "video/x-flv",
-		".mkv":  "video/x-matroska",
-		".m4v":  "video/x-m4v",
-		".3gp":  "video/3gpp",
-		".3g2":  "video/3gpp2",
-		".mpg":  "video/mpeg",
-		".mpeg": "video/mpeg",
-		".ts":   "video/mp2t",
-		".m3u8": "application/x-mpegURL",
+	m := map[string]string{
+		".mp4": "video/mp4", ".webm": "video/webm", ".ogg": "video/ogg", ".ogv": "video/ogg",
+		".mov": "video/quicktime", ".avi": "video/x-msvideo", ".wmv": "video/x-ms-wmv",
+		".flv": "video/x-flv", ".mkv": "video/x-matroska", ".m4v": "video/x-m4v",
+		".3gp": "video/3gpp", ".3g2": "video/3gpp2", ".mpg": "video/mpeg", ".mpeg": "video/mpeg",
+		".ts": "video/mp2t", ".m3u8": "application/x-mpegURL",
 	}
-	if mimeType, ok := mimeTypes[ext]; ok {
-		return mimeType
+	if t, ok := m[ext]; ok {
+		return t
 	}
 	return "video/mp4"
 }
