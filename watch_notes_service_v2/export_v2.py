@@ -1134,6 +1134,7 @@ class AppleNotesExporter:
             raise FileNotFoundError(f"Database not found: {self.db_path}")
 
         os.makedirs(self.output_dir, exist_ok=True)
+        self._current_notes_ids = []
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()

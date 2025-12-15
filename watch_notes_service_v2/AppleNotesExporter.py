@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
     QLineEdit, QPushButton, QTextEdit,
     QFileDialog, QMessageBox, QCheckBox, QTabWidget, QSpacerItem, QSizePolicy
 )
-from PySide6.QtCore import Qt, QFileSystemWatcher, QTimer, QPoint, QSize
+from PySide6.QtCore import Qt, QFileSystemWatcher, QTimer, QPoint, QSize, QThread, Signal, Slot, QObject
 from PySide6.QtGui import QIcon, QFont
 from PySide6.QtGui import QColor, QPixmap, QPainter
 
@@ -56,9 +56,82 @@ class StatusLight(QLabel):
         self.setPixmap(pix)
 
 
+class ExportWorker(QObject):
+    """后台导出任务，避免在 UI 线程阻塞"""
+
+    finished = Signal(bool, list, bool)  # success, new_ids, auto
+    log = Signal(str)
+    error = Signal(str)
+
+    def __init__(self, db_path: str, out_path: str, folder_name: str | None, auto: bool):
+        super().__init__()
+        self.db_path = db_path
+        self.out_path = out_path
+        self.folder_name = folder_name
+        self.auto = auto
+
+    @Slot()
+    def run(self):
+        try:
+            self.log.emit(f"🚀 Export started ({'auto' if self.auto else 'manual'})")
+            exporter = AppleNotesExporter(self.db_path, self.out_path)
+            exporter.export_all(folder_name=self.folder_name)
+            new_ids = exporter.get_curr_note_ids()
+            self.finished.emit(True, new_ids, self.auto)
+        except Exception as e:
+            self.error.emit(str(e))
+            self.finished.emit(False, [], self.auto)
+
+
+class RsyncWorker(QObject):
+    """后台 rsync 任务"""
+
+    finished = Signal(bool, bool)  # success, auto
+    log = Signal(str)
+
+    def __init__(self, user: str, ip: str, port: str, remote: str, out: str, auto: bool):
+        super().__init__()
+        self.user = user
+        self.ip = ip
+        self.port = port
+        self.remote = remote
+        self.out = out
+        self.auto = auto
+
+    @Slot()
+    def run(self):
+        try:
+            cmd = [
+                "rsync", "--delete", "-avz", "-e",
+                f"ssh -p {self.port}",
+                f"{self.out}",
+                f"{self.user}@{self.ip}:{self.remote}/"
+            ]
+            self.log.emit(f"· Command: {' '.join(cmd)}")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            if result.returncode == 0:
+                self.log.emit("✅ Rsync completed successfully.")
+                self.finished.emit(True, self.auto)
+            else:
+                self.log.emit(f"✗ Rsync error (code {result.returncode}):\n{result.stderr.strip()}")
+                self.finished.emit(False, self.auto)
+        except Exception as e:
+            self.log.emit(f"✗ Rsync exception: {e}")
+            self.finished.emit(False, self.auto)
+
+
 class ExportServiceWindow(QMainWindow):
+    log_signal = Signal(str)
+
     def __init__(self):
         super().__init__()
+        self.log_signal.connect(self._append_log)
+        self._export_running = False
+        self._rsync_running = False
+        self.export_thread: QThread | None = None
+        self.export_worker: ExportWorker | None = None
+        self.rsync_thread: QThread | None = None
+        self.rsync_worker: RsyncWorker | None = None
         self.setWindowTitle("🍏 Apple Notes Exporter")
         self.resize(600, 580)
         # 文件系统监视器
@@ -87,7 +160,7 @@ class ExportServiceWindow(QMainWindow):
         self._cfg_last_hash: str | None = None
 
         # UI 样式
-        font = QFont("Helvetica Neue", 11)
+        font = QFont("SF Pro Text", 11)
         self.setFont(font)
         #TODO 用来存储这一次与上一次的差异
         self.old_note_ids = []
@@ -95,8 +168,8 @@ class ExportServiceWindow(QMainWindow):
         # 主容器和布局
         container = QWidget()
         main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(12, 12, 12, 12)
-        main_layout.setSpacing(8)
+        main_layout.setContentsMargins(16, 16, 16, 14)
+        main_layout.setSpacing(10)
         container.setLayout(main_layout)
         self.setCentralWidget(container)
 
@@ -114,13 +187,20 @@ class ExportServiceWindow(QMainWindow):
         self.log_output = QTextEdit()
         self.log_output.setReadOnly(True)
         self.log_output.setStyleSheet("""
-            background-color: #2c2c2c;
-            color: #ffffff;
-            border: none;
-            selection-background-color: #3c3c3c;
-            font-family: Menlo, Monaco, 'Courier New', monospace;
+            background-color: rgba(255,255,255,0.9);
+            color: #0f172a;
+            border: 1px solid #d1ddf2;
+            border-radius: 12px;
+            selection-background-color: #0a84ff;
+            selection-color: #ffffff;
+            font-family: 'SFMono-Regular', Menlo, Monaco, 'Courier New', monospace;
+            font-size: 12px;
+            padding: 6px;
         """)
         main_layout.addWidget(self.log_output, 1)
+
+        # 主题皮肤
+        self._apply_theme()
 
         # 默认路径
         default_db = Path.home() / "Library/Group Containers/group.com.apple.notes/NoteStore.sqlite"
@@ -298,6 +378,104 @@ class ExportServiceWindow(QMainWindow):
             # 捕获异常以免影响 UI 循环
             self.log(f"⚠️ Snapshot config failed: {e}")
 
+    def _apply_theme(self):
+        """参考 iOS 16/17 的浅色玻璃风格"""
+        self.setStyleSheet("""
+        QMainWindow {
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #f7f9fc, stop:0.5 #f1f5ff, stop:1 #eef3ff);
+            color: #111827;
+        }
+        QWidget {
+            background-color: transparent;
+        }
+        QTabWidget::pane {
+            border: 1px solid #d9e3f5;
+            border-radius: 14px;
+            top: -2px;
+            background: rgba(255,255,255,0.72);
+        }
+        QTabWidget::tab-bar {
+            alignment: center;
+        }
+        QTabBar::tab {
+            background: rgba(255,255,255,0.82);
+            color: #4b5563;
+            padding: 10px 18px;
+            border: 1px solid #d9e3f5;
+            border-bottom: 2px solid #d9e3f5;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            margin-right: 8px;
+            min-width: 110px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        QTabBar::tab:selected {
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #0a84ff, stop:1 #5ac8fa);
+            color: #ffffff;
+            border-color: #0a84ff;
+            border-bottom: 2px solid #0a84ff;
+        }
+        QLabel {
+            color: #0f172a;
+            letter-spacing: 0.2px;
+        }
+        QLineEdit, QTextEdit {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #d9e3f5;
+            border-radius: 10px;
+            padding: 10px;
+            color: #0f172a;
+            selection-background-color: #0a84ff;
+            selection-color: #ffffff;
+        }
+        QTextEdit {
+            border: 1px solid #d1ddf2;
+        }
+        QPushButton {
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #0a84ff, stop:1 #5ac8fa);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        QPushButton:hover {
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #0a74df, stop:1 #3bb7f3);
+        }
+        QPushButton:disabled {
+            background: #e5e7eb;
+            color: #94a3b8;
+            box-shadow: none;
+        }
+        QCheckBox {
+            color: #111827;
+            spacing: 6px;
+        }
+        QScrollBar:vertical {
+            background: #e5e7eb;
+            width: 12px;
+            margin: 6px 4px 6px 0px;
+            border-radius: 6px;
+        }
+        QScrollBar::handle:vertical {
+            background: #0a84ff;
+            min-height: 28px;
+            border-radius: 6px;
+        }
+        QScrollBar::handle:vertical:hover {
+            background: #2563eb;
+        }
+        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+            height: 0px;
+        }
+        """)
+
     # ---------------------------- UI 构建 ----------------------------
 
     def _build_export_tab(self):
@@ -309,8 +487,10 @@ class ExportServiceWindow(QMainWindow):
 
         # App 名称
         title_label = QLabel("Apple Notes Export")
-        title_label.setFont(QFont("Helvetica Neue", 16, QFont.Weight.Bold))
+        title_font = QFont("SF Pro Display", 17, QFont.Weight.Bold)
+        title_label.setFont(title_font)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_label.setStyleSheet("color: #e5e7eb; padding: 6px;")
         layout.addWidget(title_label)
 
         # Database Path
@@ -377,8 +557,9 @@ class ExportServiceWindow(QMainWindow):
         sync_tab.setLayout(layout)
 
         title_label = QLabel("Rsync Synchronization")
-        title_label.setFont(QFont("Helvetica Neue", 16, QFont.Weight.Bold))
+        title_label.setFont(QFont("SF Pro Display", 17, QFont.Weight.Bold))
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_label.setStyleSheet("color: #e5e7eb; padding: 6px;")
         layout.addWidget(title_label)
 
         # SSH User
@@ -441,7 +622,13 @@ class ExportServiceWindow(QMainWindow):
             self.out_input.setText(path)
 
     def log(self, message: str):
-        """在日志框里输出信息，并滚动到最底部"""
+        """线程安全地写入日志"""
+        if threading.current_thread() is threading.main_thread():
+            self._append_log(message)
+        else:
+            self.log_signal.emit(message)
+
+    def _append_log(self, message: str):
         self.log_output.append(message)
         self.log_output.verticalScrollBar().setValue(
             self.log_output.verticalScrollBar().maximum()
@@ -501,46 +688,32 @@ class ExportServiceWindow(QMainWindow):
             QMessageBox.critical(self, "Error", "Output directory is not set")
             return
 
+        if self._export_running:
+            self.log("⏳ Export already running, skipping new request.")
+            return
+
+        self._export_running = True
         self.btn_export.setEnabled(False)
         self.btn_list.setEnabled(False)
         self.btn_rsync.setEnabled(False)
 
-        def task():
-            try:
-                exporter = AppleNotesExporter(db, out)
-                exporter.export_all(folder_name=folder_name)
-
-                if len(self.old_note_ids)==0:
-                    self.old_note_ids = exporter.get_curr_note_ids()
-                else:
-                    new_ids = exporter.get_curr_note_ids()
-                    added = [nid for nid in new_ids if nid not in self.old_note_ids]
-                    removed = [oid for oid in self.old_note_ids if oid not in new_ids]
-                    if added:
-                        self.log(f"🆕 New notes added: {added}")
-                    if removed:
-                        self.log(f"🗑️ Notes removed: {removed}")
-                        self.auto_delete_files(removed, out)
-                    self.old_note_ids = new_ids
-                self.log("✅ Export completed successfully.")
-                if auto:
-                    self.log("ℹ️ (Auto-export triggered)")
-                if self.chk_rsync_auto.isChecked():
-                    self.log("🔄 Auto-rsync triggered")
-                    self._rsync_timer.start(500)
-
-                self._run_rsync(auto=False)
-                self.log("🔄 Auto-rsync triggered")
-            except Exception as e:
-                self.log(f"✗ Export failed: {e}")
-            finally:
-                self.btn_export.setEnabled(True)
-                self.btn_list.setEnabled(True)
-                self.btn_rsync.setEnabled(True)
-
-        threading.Thread(target=task, daemon=True).start()
+        self.export_thread = QThread(self)
+        self.export_worker = ExportWorker(db, out, folder_name, auto)
+        self.export_worker.moveToThread(self.export_thread)
+        self.export_worker.log.connect(self.log)
+        self.export_worker.error.connect(self._on_export_error)
+        self.export_worker.finished.connect(self._on_export_finished)
+        self.export_worker.finished.connect(self.export_thread.quit)
+        self.export_worker.finished.connect(self.export_worker.deleteLater)
+        self.export_thread.finished.connect(self._cleanup_export_thread)
+        self.export_thread.started.connect(self.export_worker.run)
+        self.export_thread.start()
 
     def _run_rsync(self, auto: bool):
+        if self._rsync_running:
+            self.log("⏳ Rsync already running, skipping request.")
+            return
+
         user = self.user_input.text().strip() or "root"
         ip = self.ip_input.text().strip()
         port = self.port_input.text().strip() or "22"
@@ -548,34 +721,88 @@ class ExportServiceWindow(QMainWindow):
         out = self.out_input.text().strip()
 
         if not ip or not remote:
-            QMessageBox.critical(self, "Error", "Server IP and Remote Path are required")
+            if auto:
+                self.log("⚠️ Skip auto-rsync: Server IP and Remote Path are required")
+            else:
+                QMessageBox.critical(self, "Error", "Server IP and Remote Path are required")
             return
 
+        self._rsync_running = True
         self.btn_rsync.setEnabled(False)
         self.log(f"🔄 Starting rsync to {user}@{ip}:{remote} …")
 
-        def task():
-            try:
-                cmd = [
-                    "rsync","--delete" , "-avz", "-e" ,
-                    f"ssh -p {port}",
-                    f"{out}",
-                    f"{user}@{ip}:{remote}/"
-                ]
-                self.log(f"· Command: {' '.join(cmd)}")
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-                if result.returncode == 0:
-                    self.log("✅ Rsync completed successfully.")
-                    if auto:
-                        self.log("ℹ️ (Auto-rsync triggered)")
-                else:
-                    self.log(f"✗ Rsync error (code {result.returncode}):\n{result.stderr.strip()}")
-            except Exception as e:
-                self.log(f"✗ Rsync exception: {e}")
-            finally:
-                self.btn_rsync.setEnabled(True)
+        self.rsync_thread = QThread(self)
+        self.rsync_worker = RsyncWorker(user, ip, port, remote, out, auto)
+        self.rsync_worker.moveToThread(self.rsync_thread)
+        self.rsync_worker.log.connect(self.log)
+        self.rsync_worker.finished.connect(self._on_rsync_finished)
+        self.rsync_worker.finished.connect(self.rsync_thread.quit)
+        self.rsync_worker.finished.connect(self.rsync_worker.deleteLater)
+        self.rsync_thread.finished.connect(self._cleanup_rsync_thread)
+        self.rsync_thread.started.connect(self.rsync_worker.run)
+        self.rsync_thread.start()
 
-        threading.Thread(target=task, daemon=True).start()
+    def _on_export_error(self, message: str):
+        self.log(f"✗ Export failed: {message}")
+        if self.export_worker and not self.export_worker.auto:
+            QMessageBox.critical(self, "Export Error", message)
+
+    def _handle_note_changes(self, new_ids: list[str]):
+        if not new_ids:
+            self.log("⚠️ Export completed but no note ids were captured.")
+            return
+
+        if not self.old_note_ids:
+            self.old_note_ids = new_ids
+            self.log(f"📒 Tracking {len(new_ids)} exported notes.")
+            return
+
+        added = [nid for nid in new_ids if nid not in self.old_note_ids]
+        removed = [oid for oid in self.old_note_ids if oid not in new_ids]
+
+        if added:
+            self.log(f"🆕 New notes added: {added}")
+        if removed:
+            self.log(f"🗑️ Notes removed: {removed}")
+            self.auto_delete_files(removed, self.out_input.text().strip())
+
+        self.old_note_ids = new_ids
+
+    def _on_export_finished(self, success: bool, new_ids: list, auto: bool):
+        self._export_running = False
+        self.btn_export.setEnabled(True)
+        self.btn_list.setEnabled(True)
+        self.btn_rsync.setEnabled(True)
+
+        if success:
+            self.log("✅ Export completed successfully." + (" (auto)" if auto else ""))
+            self._handle_note_changes(new_ids)
+            if self.chk_rsync_auto.isChecked():
+                self.log("🔄 Auto-rsync queued")
+                self._rsync_timer.start(500)
+        else:
+            self.log("✗ Export failed.")
+
+    def _on_rsync_finished(self, success: bool, auto: bool):
+        self._rsync_running = False
+        self.btn_rsync.setEnabled(True)
+        if success and auto:
+            self.log("ℹ️ (Auto-rsync triggered)")
+
+    def _cleanup_export_thread(self):
+        # 确保线程已停再释放引用
+        if self.export_thread and self.export_thread.isRunning():
+            self.export_thread.quit()
+            self.export_thread.wait(500)
+        self.export_thread = None
+        self.export_worker = None
+
+    def _cleanup_rsync_thread(self):
+        if self.rsync_thread and self.rsync_thread.isRunning():
+            self.rsync_thread.quit()
+            self.rsync_thread.wait(500)
+        self.rsync_thread = None
+        self.rsync_worker = None
 
     def auto_delete_files(self, removed, out):
         """自动删除导出目录中已被删除的笔记文件"""
