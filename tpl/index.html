@@ -63,9 +63,9 @@
         {{ $year = $postYear }}
         <h4 class="text_center">{{.Category}}/{{ $year }}</h4>
         <table width="620" border="1" class="content center">
-            <tbody>
+            <tbody class="main-tbody">
             {{ end }}
-            <tr>
+            <tr class="post-row">
                 <td width="120">  {{ $create }}</td>
                 <td class="title-cell">
                     <a href="{{ .File }}">{{ .Title }}</a>

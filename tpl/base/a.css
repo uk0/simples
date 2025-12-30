@@ -140,19 +140,30 @@ nav a {
 .postlist {
     width: 100%;
     border-collapse: collapse;
-    border-radius: 16px;
+    border-radius: 22px;
     background: var(--glass);
     box-shadow: var(--shadow);
-    border: 1px solid var(--border);
+    border: 1px solid rgb(255 255 255 / 0%);
     overflow: visible; /* 允许 tooltip 溢出显示 */
     transition: background 0.4s;
+    border-bottom: rgb(255 255 255 / 0%);
+    border-top: rgb(255 255 255 / 0%);
 }
 .content td,
 .postlist td {
     padding: 8px;
     color: var(--text-main);
     width: 100%;
+    border-radius:18px;
 }
+
+.post-row{
+    border-radius: 18px;
+}
+.main-tbody{
+    border-radius: 3px;
+}
+
 .postlist tr:hover td {
     background: rgba(255, 255, 255, 0.3);
 }
